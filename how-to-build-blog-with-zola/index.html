@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https:/polly.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https:/polly.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https:/polly.github.io>
+                    <img class="avatar pure-img-responsive" src=https:/polly.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https:/polly.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https:/polly.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https:/polly.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https:/polly.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https:/polly.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https:/polly.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+    <div class="blog-post">
+        <h1>如何借助GPT搭建Zola个人博客</h1>
+        <div class="content">
+            <p><img src="https://media.licdn.com/dms/image/D5612AQG8OZj2KQEQtg/article-cover_image-shrink_720_1280/0/1694623029215?e=2147483647&amp;v=beta&amp;t=DwGrBLpQS7BA7eYSvw3T2NTNCXjAzw8l86KSTQTb77A" alt="Zola Logo" /></p>
+<p>Zola是一个使用Rust编写的静态网站生成器。它非常快速，易于使用，并且包含许多有用的功能，如Markdown支持、模板和主题。</p>
+<p>在本文中，我将向你展示如何借助GPT搭建Zola个人博客。</p>
+<h2 id="an-zhuang-zola">安装Zola</h2>
+<p>首先，你需要在你的计算机上安装Zola。你可以从Zola的官方网站下载最新的版本。</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">curl -s</span><span> https://getzola.org/install.sh | </span><span style="color:#bf616a;">bash
+</span></code></pre>
+<h2 id="chuang-jian-xin-de-zolaxiang-mu">创建新的Zola项目</h2>
+<p>安装Zola后，你可以使用zola init命令来创建一个新的Zola项目。</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">zola</span><span> init myblog
+</span></code></pre>
+<h2 id="bian-xie-ni-de-di-yi-pian-bo-wen">编写你的第一篇博文</h2>
+<p>在你的Zola项目中，你可以在content目录下创建一个新的Markdown文件来编写你的第一篇博文。</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">+++
+</span><span style="color:#bf616a;">title</span><span> = &quot;</span><span style="color:#a3be8c;">我的第一篇博文</span><span>&quot;
+</span><span style="color:#bf616a;">date</span><span> = 2024-05-01
+</span><span style="color:#bf616a;">+++
+</span><span>
+</span><span style="color:#bf616a;">这是我的第一篇博文！
+</span></code></pre>
+<h2 id="gou-jian-he-yu-lan-ni-de-wang-zhan">构建和预览你的网站</h2>
+<p>最后，你可以使用zola serve命令来构建和预览你的网站。</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">zola</span><span> serve
+</span></code></pre>
+<p>现在，你可以在你的浏览器中打开http://localhost:1111来查看你的网站。</p>
+<p>借助GPT，你可以更快速、更高效地搭建你的Zola个人博客。希望你喜欢这篇文章！</p>
+
+        </div>
+        <div class="navigation">
+            
+            
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+</html>

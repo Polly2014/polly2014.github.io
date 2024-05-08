@@ -1,0 +1,408 @@
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    display: block;
+    width: 20%;
+    overflow: hidden;
+    background-color: #333;  /* 设置侧边栏的背景颜色 */
+    color: #f2f2f2;  /* 设置侧边栏的文字颜色 */
+}
+.content {
+    width: 80%;
+    padding: 20px;
+    overflow: auto;
+    background-color: #f2f2f2;  /* 添加背景颜色 */
+    color: #333;  /* 添加文字颜色 */
+}
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+    .sidebar, .content {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .content {
+        padding: 10px;
+        padding-top: 0;  /* 添加这一行 */
+    }
+    .sidebar .introduction,
+    .sidebar .social {
+        display: none;
+    }
+    .nav .nav-links li {
+        display: inline-block;
+        margin: 20px;
+    }
+    .blog-post img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-height: 600px) {
+    .avatar {
+        margin-top: 20px;  /* 当屏幕高度变小时，减小上边距 */
+    }
+}
+
+/* 头像 */
+.avatar {
+    display: block;
+    width: 50%;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: 50%;
+    border: 10px solid #b3c7d6;  /* 修改边框颜色为淡蓝色 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);  /* 调整阴影颜色和模糊度 */
+    transition: transform 1s;  /* 添加过渡效果 */
+}
+.avatar:hover {
+    transform: rotate(360deg);  /* 添加旋转效果 */
+}
+.introduction {
+    text-align: center;
+    display: block;
+    font-size: 1.2em;  /* 增加字体大小 */
+    padding: 20px;  /* 添加内边距 */
+}
+
+/* 导航部分 */
+.nav {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.nav .nav-links {
+    list-style-type: none;
+    padding: 0;
+}
+
+.nav .nav-links li {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.nav .nav-links li a {
+    color: #f2f2f2;  /* 修改字体颜色 */
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, text-decoration 0.3s ease;
+    cursor: pointer;
+}
+
+.nav .nav-links li a:hover {
+    color: #0077b5;
+    text-decoration: none;  /* 鼠标悬停时的下划线 */
+}
+
+.nav .nav-links li a i {
+    width: 20px;  /* 设置图标的宽度 */
+    margin-right: 5px;  /* 设置图标和文字之间的间隔 */
+    font-size: 16px;  /* 设置图标的大小 */
+    text-align: center;  /* 让图标在其容器内居中 */
+    display: inline-block;  /* 让图标成为一个内联块级元素 */
+}
+
+.nav .nav-links li a:hover i {  /* 添加这一行 */
+    color: #0077b5;
+    text-decoration: none;  /* 鼠标悬停时的下划线 */
+}
+
+/* 社交链接部分 */
+.social {
+    text-align: center;  /* 让.social-links整体水平居中 */
+}
+
+.social .social-links {
+    list-style-type: none;
+    padding: 0;
+    display: inline-block;  /* 让.social-links成为一个内联块级元素 */
+}
+
+.social .social-links li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.social .social-links li a,
+.social .social-links li a i {  /* 添加这一行 */
+    color: #f2f2f2;  /* 修改图标颜色 */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.social .social-links li a:hover,
+.social .social-links li a:hover i {  /* 添加这一行 */
+    color: #0077b5;  /* 鼠标悬停时的颜色 */
+}
+
+
+/* 论文发表部分 */
+
+.section-content {
+    margin-bottom: 20px;
+}
+
+.publication {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.publication h3 {
+    color: #333; /* 修改标题颜色 */
+    font-size: 1.2em; /* 修改标题大小 */
+    margin-bottom: 8px; /* 减小标题和下一元素之间的间距 */
+}
+
+.publication h3 a {
+    text-decoration: none; /* 移除下划线 */
+    color: #333; /* 设置链接颜色 */
+}
+
+.publication h3 a:visited {
+    color: #666; /* 设置点击过后的颜色 */
+}
+
+.publication h3 a:hover {
+    color: #007BFF;
+}
+
+.publication p {
+    margin-bottom: 8px;
+    color: #666; /* 修改段落颜色 */
+    line-height: 1.5; /* 修改行高 */
+}
+
+.publication .abstract {
+    text-indent: 2em;
+    color: #999; /* 修改摘要颜色 */
+}
+
+.publication .links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px; /* 增加上边距 */
+}
+
+/* 博文页面 */
+.blog-title {
+    font-size: 2em;
+    color: #333;
+}
+
+.blog-post {
+    margin-bottom: 2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1em;
+}
+
+.post-title {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.post-title a {
+    text-decoration: none;
+    color: #333;
+}
+
+.post-title a:hover {
+    color: #ADD8E6;
+}
+
+.post-author, .post-date {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.post-summary {
+    margin-top: 1em;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+/* 博文页面 */
+.blog-post img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+/* 关于我页面 */
+.about-me {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.about-me h1, .about-me h2, .about-me h3 {
+    color: #444;
+}
+
+.about-me p {
+    margin-bottom: 20px;
+}
+
+.social-links {
+    list-style: none;
+    padding: 0;
+}
+
+.social-links li a:hover {
+    color: #000080;
+}
+
+.social-links li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.social-links li a {
+    color: #333;
+    text-decoration: none;
+}
+
+.donate {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.donate img {
+    width: 240px;
+    height: 320px;
+}
+
+/* 首页 */
+.home {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+.home a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.home h1, .home h2 {
+    color: #444;
+}
+
+.home .latest-posts li {
+    margin-bottom: 5px;
+}
+
+.home .latest-posts li a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.home .latest-posts li a:hover {
+    color: #2980b9;
+}
+
+.home .latest-posts li span {
+    color: #777;
+    font-size: 0.8em;
+}
+
+.social-links li a,
+.social-links li a:visited {
+    color: #333;
+    text-decoration: none;
+}
+
+.home .latest-posts li a,
+.home .latest-posts li a:visited {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.home .latest-posts li a:hover {
+    color: #2980b9;
+}
+
+.home .more-posts {
+    display: inline-block;
+    color: #fff;  /* 文字颜色为白色 */
+    background-color: #444;  /* 背景颜色为深灰色 */
+    padding: 5px 10px;
+    margin-top: 20px;
+    text-decoration: none;
+    border: none;  /* 去掉边框 */
+    border-radius: 0;  /* 去掉边框半径 */
+    transition: background-color 0.3s ease;
+    font-size: 0.8em;  /* 调整字体大小 */
+}
+
+.home .more-posts:hover {
+    background-color: #333;  /* 鼠标悬停时的背景颜色为更深的灰色 */
+}
+
+/* Archive页面 */
+.archive-page h1 {
+    color: #333;
+    font-size: 1.8em;
+    text-align: left;
+}
+
+.archive-page h2 {
+    color: #666;
+    font-size: 1.3em;
+    margin-top: 1em;
+}
+
+.archive-page ul {
+    list-style: none;
+    padding: 0;
+    margin-left: 1em;
+}
+
+.archive-page li {
+    margin-bottom: 0.5em;
+    padding-left: 0.5em;
+}
+
+.archive-page a {
+    color: #333;
+    text-decoration: none;
+}
+
+.archive-page a:hover {
+    color: #666;
+}
+
+.archive-page span {
+    color: #999;
+    font-size: 0.8em;
+    margin-left: 0.5em;
+}
+
+.custom-list-item {
+    list-style-type: disc;
+}
