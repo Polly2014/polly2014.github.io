@@ -17,10 +17,7 @@ a {
 a:hover,
 a:focus {
     text-decoration: underline;
-}
-
-h3 {
-    font-weight: 100;
+    cursor: pointer;
 }
 
 /* LAYOUT CSS */
@@ -279,39 +276,28 @@ h3 {
 
 .publication h3 {
     color: #333; /* 修改标题颜色 */
-    font-size: 1.2em; /* 修改标题大小 */
     margin-bottom: 5px; /* 减小标题和下一元素之间的间距 */
-}
-
-.publication h3 a {
-    text-decoration: none; /* 移除下划线 */
-    color: #333; /* 设置链接颜色 */
-}
-
-.publication h3 a:visited {
-    color: #666; /* 设置点击过后的颜色 */
-}
-
-.publication h3 a:hover {
-    color: #666;
+    font-weight: 200; /* 修改标题字体粗细 */
 }
 
 .publication p {
     margin-bottom: 5px;
     margin-top: 5px;
+    font: 0.8em sans-serif;
     color: #666; /* 修改段落颜色 */
     line-height: 1.5; /* 修改行高 */
-}
-
-.publication .abstract {
-    text-indent: 2em;
-    color: #999; /* 修改摘要颜色 */
 }
 
 .publication .links {
     display: flex;
     justify-content: space-between;
     margin-top: 5px; /* 增加上边距 */
+    font: 0.9em sans-serif;
+}
+
+/* About Me 页面 */
+.about-me a {
+    color: rgb(61, 146, 201);
 }
 
 @media (max-width: 600px) {
