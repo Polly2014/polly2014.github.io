@@ -1,3 +1,68 @@
-<!doctype html>
-<title>404 Not Found</title>
-<h1>404 Not Found</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https://polly2014.github.io>
+                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+<p>抱歉，你访问的页面不存在。</p>
+<p id="countdown">3秒后返回上一页</p>
+<a href="https://polly2014.github.io/@index">立即返回首页</a>
+<script>
+    var countdownElement = document.getElementById('countdown');
+    var countdown = 3;
+    var countdownInterval = setInterval(function() {
+        countdown--;
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            window.history.back();
+        } else {
+            countdownElement.textContent = countdown + '秒后返回上一页';
+        }
+    }, 1000);
+</script>
+
+        </div>
+    </div>
+</body>
+</html>
