@@ -83,6 +83,48 @@ a:focus {
     margin-left: 0.5em;
 }
 
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 1em;
+    text-align: left;
+    background-color: #f9f9f9;  /* 表格背景颜色 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);  /* 添加阴影效果 */
+}
+
+table th, table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #2c3e50;  /* 表头背景颜色 */
+    color: #fff;  /* 表头文字颜色 */
+    text-align: center;  /* 表头文字居中 */
+}
+
+table tr:nth-child(even) {
+    background-color: #f4f4f4;  /* 偶数行背景颜色 */
+}
+
+table tr:hover {
+    background-color: #eaeaea;  /* 鼠标悬停行背景颜色 */
+}
+
+table td {
+    color: #666;  /* 单元格文字颜色 */
+}
+
+/* 表格标题样式 */
+.table-title {
+    text-align: center;
+    font-size: 1.5em;
+    margin: 20px 0;
+    color: #333;
+}
+
 
 
 /* 头像 */
