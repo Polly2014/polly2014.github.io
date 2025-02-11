@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly&#x27;s Blog - API</title>
+    <subtitle>Wangbaoli</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/api/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-02-12T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/api/atom.xml</id>
+    <entry xml:lang="en">
+        <title>程序员瑞士军刀之OpenHands部署指南</title>
+        <published>2025-02-12T00:00:00+00:00</published>
+        <updated>2025-02-12T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-deployment-guidance/"/>
+        <id>https://polly2014.github.io/openhands-deployment-guidance/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/openhands-deployment-guidance/">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
+&lt;p&gt;在现代软件开发中，自动化和智能化工具的使用变得越来越重要。OpenHands 是一个强大的工具，可以帮助开发者快速部署和管理项目。本指南将详细介绍如何在 Azure 上部署 OpenHands，包括安装 Docker 和 Docker Compose，配置 Azure 的 GPT-4 API 接口，并将服务映射到外网的 80 端口。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bu-zou-1-zai-azure-shang-chuang-jian-xu-ni-ji&quot;&gt;步骤 1: 在 Azure 上创建虚拟机&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;登录 &lt;a href=&quot;https:&#x2F;&#x2F;portal.azure.com&quot;&gt;Azure 门户&lt;&#x2F;a&gt;。&lt;&#x2F;li&gt;
+&lt;li&gt;创建一个新的虚拟机，选择以下配置：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;操作系统&lt;&#x2F;strong&gt;: Ubuntu 20.04 LTS&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;大小&lt;&#x2F;strong&gt;: 至少 2 核 CPU 和 4GB 内存&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;网络&lt;&#x2F;strong&gt;: 确保启用了 HTTP 和 HTTPS 端口。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;启动虚拟机并通过 SSH 连接到它。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ssh&lt;&#x2F;span&gt;&lt;span&gt; azureuser@your-vm-ip
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bu-zou-2-an-zhuang-docker-he-docker-compose&quot;&gt;步骤 2: 安装 Docker 和 Docker Compose&lt;&#x2F;h2&gt;
+&lt;p&gt;在虚拟机中运行以下命令以安装 Docker 和 Docker Compose：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装 Docker&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; apt-transport-https ca-certificates curl software-properties-common
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -fsSL&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu&#x2F;gpg | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; gpg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --dearmor -o&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;docker-archive-keyring.gpg
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deb [arch=&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dpkg --print-architecture&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;) signed-by=&#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;docker-archive-keyring.gpg] https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lsb_release -cs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;) stable&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;docker.list &amp;gt; &#x2F;dev&#x2F;null
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; docker-ce docker-ce-cli containerd.io
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;安装 Docker Compose&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; curl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -L &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;docker&#x2F;compose&#x2F;releases&#x2F;download&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; https:&#x2F;&#x2F;api.github.com&#x2F;repos&#x2F;docker&#x2F;compose&#x2F;releases&#x2F;latest &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep -oP &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;tag_name&amp;quot;: &amp;quot;\K[^&amp;quot;]+&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&#x2F;docker-compose-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;local&#x2F;bin&#x2F;docker-compose
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; chmod +x &#x2F;usr&#x2F;local&#x2F;bin&#x2F;docker-compose
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;验证安装：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker --version
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose --version
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bu-zou-3-bu-shu-openhands&quot;&gt;步骤 3: 部署 OpenHands&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;克隆 OpenHands 的代码仓库：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; clone https:&#x2F;&#x2F;github.com&#x2F;openhands&#x2F;openhands.git
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; openhands
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;创建一个 .env 文件以配置环境变量：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GPT_API_KEY=your-azure-gpt4-api-key&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt; .env
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;使用 Docker Compose 启动服务：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bu-zou-4-pei-zhi-azure-de-gpt-4-api-jie-kou&quot;&gt;步骤 4: 配置 Azure 的 GPT-4 API 接口&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;登录 Azure 门户。&lt;&#x2F;li&gt;
+&lt;li&gt;创建一个新的 OpenAI 服务。&lt;&#x2F;li&gt;
+&lt;li&gt;获取 API 密钥和终端点。&lt;&#x2F;li&gt;
+&lt;li&gt;将 API 密钥添加到 .env 文件中：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GPT_API_KEY=your-azure-gpt4-api-key&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt;&amp;gt; .env
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;重启服务以应用更改：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; down
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bu-zou-5-jiang-fu-wu-ying-she-dao-wai-wang-de-80-duan-kou&quot;&gt;步骤 5: 将服务映射到外网的 80 端口&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;编辑 docker-compose.yml 文件，将服务的端口映射到 80：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;services:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openhands:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ports:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:5000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;重启服务：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; down
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;
+&lt;p&gt;通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4 API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
