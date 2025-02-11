@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https://polly2014.github.io>
+                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+    <div class="blog-post">
+        <h1>程序员瑞士军刀之OpenHands部署指南</h1>
+        <div class="content">
+            <h2 id="qian-yan">前言</h2>
+<p>在现代软件开发中，自动化和智能化工具的使用变得越来越重要。OpenHands 是一个强大的工具，可以帮助开发者快速部署和管理项目。本指南将详细介绍如何在 Azure 上部署 OpenHands，包括安装 Docker 和 Docker Compose，配置 Azure 的 GPT-4 API 接口，并将服务映射到外网的 80 端口。</p>
+<hr />
+<h2 id="bu-zou-1-zai-azure-shang-chuang-jian-xu-ni-ji">步骤 1: 在 Azure 上创建虚拟机</h2>
+<ol>
+<li>登录 <a href="https://portal.azure.com">Azure 门户</a>。</li>
+<li>创建一个新的虚拟机，选择以下配置：
+<ul>
+<li><strong>操作系统</strong>: Ubuntu 20.04 LTS</li>
+<li><strong>大小</strong>: 至少 2 核 CPU 和 4GB 内存</li>
+<li><strong>网络</strong>: 确保启用了 HTTP 和 HTTPS 端口。</li>
+</ul>
+</li>
+<li>启动虚拟机并通过 SSH 连接到它。</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">ssh</span><span> azureuser@your-vm-ip
+</span></code></pre>
+<h2 id="bu-zou-2-an-zhuang-docker-he-docker-compose">步骤 2: 安装 Docker 和 Docker Compose</h2>
+<p>在虚拟机中运行以下命令以安装 Docker 和 Docker Compose：</p>
+<ol>
+<li>安装 Docker</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> apt update
+</span><span style="color:#bf616a;">sudo</span><span> apt install</span><span style="color:#bf616a;"> -y</span><span> apt-transport-https ca-certificates curl software-properties-common
+</span><span style="color:#bf616a;">curl -fsSL</span><span> https://download.docker.com/linux/ubuntu/gpg | </span><span style="color:#bf616a;">sudo</span><span> gpg</span><span style="color:#bf616a;"> --dearmor -o</span><span> /usr/share/keyrings/docker-archive-keyring.gpg
+</span><span style="color:#96b5b4;">echo </span><span>&quot;</span><span style="color:#a3be8c;">deb [arch=</span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">dpkg --print-architecture</span><span style="color:#a3be8c;">) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu </span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">lsb_release -cs</span><span style="color:#a3be8c;">) stable</span><span>&quot; | </span><span style="color:#bf616a;">sudo</span><span> tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</span><span style="color:#bf616a;">sudo</span><span> apt update
+</span><span style="color:#bf616a;">sudo</span><span> apt install</span><span style="color:#bf616a;"> -y</span><span> docker-ce docker-ce-cli containerd.io
+</span></code></pre>
+<ol start="2">
+<li>安装 Docker Compose</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> curl</span><span style="color:#bf616a;"> -L </span><span>&quot;</span><span style="color:#a3be8c;">https://github.com/docker/compose/releases/download/</span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">curl -s</span><span style="color:#a3be8c;"> https://api.github.com/repos/docker/compose/releases/latest </span><span>| </span><span style="color:#bf616a;">grep -oP </span><span>&#39;</span><span style="color:#a3be8c;">&quot;tag_name&quot;: &quot;\K[^&quot;]+</span><span>&#39;</span><span style="color:#a3be8c;">)/docker-compose-</span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">uname -s</span><span style="color:#a3be8c;">)-</span><span>$</span><span style="color:#a3be8c;">(</span><span style="color:#bf616a;">uname -m</span><span style="color:#a3be8c;">)</span><span>&quot;</span><span style="color:#bf616a;"> -o</span><span> /usr/local/bin/docker-compose
+</span><span style="color:#bf616a;">sudo</span><span> chmod +x /usr/local/bin/docker-compose
+</span></code></pre>
+<ol start="2">
+<li>验证安装：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">docker --version
+</span><span style="color:#bf616a;">docker-compose --version
+</span></code></pre>
+<h2 id="bu-zou-3-bu-shu-openhands">步骤 3: 部署 OpenHands</h2>
+<ol>
+<li>克隆 OpenHands 的代码仓库：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">git</span><span> clone https://github.com/openhands/openhands.git
+</span><span style="color:#96b5b4;">cd</span><span> openhands
+</span></code></pre>
+<ol start="2">
+<li>创建一个 .env 文件以配置环境变量：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#96b5b4;">echo </span><span>&quot;</span><span style="color:#a3be8c;">GPT_API_KEY=your-azure-gpt4-api-key</span><span>&quot; &gt; .env
+</span></code></pre>
+<ol start="3">
+<li>使用 Docker Compose 启动服务：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">docker-compose</span><span> up</span><span style="color:#bf616a;"> -d
+</span></code></pre>
+<h2 id="bu-zou-4-pei-zhi-azure-de-gpt-4-api-jie-kou">步骤 4: 配置 Azure 的 GPT-4 API 接口</h2>
+<ol>
+<li>登录 Azure 门户。</li>
+<li>创建一个新的 OpenAI 服务。</li>
+<li>获取 API 密钥和终端点。</li>
+<li>将 API 密钥添加到 .env 文件中：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#96b5b4;">echo </span><span>&quot;</span><span style="color:#a3be8c;">GPT_API_KEY=your-azure-gpt4-api-key</span><span>&quot; &gt;&gt; .env
+</span></code></pre>
+<ol start="5">
+<li>重启服务以应用更改：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">docker-compose</span><span> down
+</span><span style="color:#bf616a;">docker-compose</span><span> up</span><span style="color:#bf616a;"> -d
+</span></code></pre>
+<h2 id="bu-zou-5-jiang-fu-wu-ying-she-dao-wai-wang-de-80-duan-kou">步骤 5: 将服务映射到外网的 80 端口</h2>
+<ol>
+<li>编辑 docker-compose.yml 文件，将服务的端口映射到 80：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">services:
+</span><span>  </span><span style="color:#bf616a;">openhands:
+</span><span>    </span><span style="color:#bf616a;">ports:
+</span><span>      </span><span style="color:#bf616a;">- </span><span>&quot;</span><span style="color:#a3be8c;">80:5000</span><span>&quot;
+</span></code></pre>
+<ol start="2">
+<li>重启服务：</li>
+</ol>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">docker-compose</span><span> down
+</span><span style="color:#bf616a;">docker-compose</span><span> up</span><span style="color:#bf616a;"> -d
+</span></code></pre>
+<ol start="3">
+<li>确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。</li>
+</ol>
+<h2 id="jie-yu">结语</h2>
+<p>通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4 API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。</p>
+
+        </div>
+        <div class="navigation">
+            
+            
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+</html>
