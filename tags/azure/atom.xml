@@ -103,7 +103,7 @@
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;services:
 &lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openhands:
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ports:
-&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:5000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:3000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;ol start=&quot;2&quot;&gt;
 &lt;li&gt;重启服务：&lt;&#x2F;li&gt;
@@ -116,6 +116,34 @@
 &lt;&#x2F;ol&gt;
 &lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;
 &lt;p&gt;通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4 API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Azure部署DeepSeek&#x2F;GPT大模型服务</title>
+        <published>2025-02-11T00:00:00+00:00</published>
+        <updated>2025-02-11T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/azure-deepseek-service-deployment-guidance/"/>
+        <id>https://polly2014.github.io/azure-deepseek-service-deployment-guidance/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/azure-deepseek-service-deployment-guidance/">&lt;ol&gt;
+&lt;li&gt;打开 &lt;a href=&quot;https:&#x2F;&#x2F;ai.azure.com&#x2F;&quot;&gt;Azure Foundry&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;创建project.
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foundry_create_project.png&quot; alt=&quot;Azure Foundry Create Project&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;在project里创建Model Endpoint.
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foundry_model_endpoint.png&quot; alt=&quot;Azure Foundry Model Endpoint&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;打开创建的Model Endpoint，里面就是key和endpoint了.s
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foudnry_model_key.png&quot; alt=&quot;Azure Foundry Endpoint Key&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
 </content>
         
     </entry>
