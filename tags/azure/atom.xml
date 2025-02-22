@@ -8,7 +8,7 @@
     <updated>2025-02-12T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/azure/atom.xml</id>
     <entry xml:lang="en">
-        <title>程序员瑞士军刀之OpenHands部署指南</title>
+        <title>Azure部署OpenHands指南</title>
         <published>2025-02-12T00:00:00+00:00</published>
         <updated>2025-02-12T00:00:00+00:00</updated>
         
@@ -66,56 +66,91 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;bu-zou-3-bu-shu-openhands&quot;&gt;步骤 3: 部署 OpenHands&lt;&#x2F;h2&gt;
 &lt;ol&gt;
-&lt;li&gt;克隆 OpenHands 的代码仓库：&lt;&#x2F;li&gt;
+&lt;li&gt;拉取 OpenHands 镜像文件：&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; clone https:&#x2F;&#x2F;github.com&#x2F;openhands&#x2F;openhands.git
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; openhands
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; pull docker.all-hands.dev&#x2F;all-hands-ai&#x2F;runtime:0.25-nikolaik
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;ol start=&quot;2&quot;&gt;
-&lt;li&gt;创建一个 .env 文件以配置环境变量：&lt;&#x2F;li&gt;
+&lt;li&gt;启动 OpenHands 服务：&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GPT_API_KEY=your-azure-gpt4-api-key&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt; .env
+&lt;ul&gt;
+&lt;li&gt;Option-1: WSL&#x2F;Power Shell运行命令：&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -it --rm --pull&lt;&#x2F;span&gt;&lt;span&gt;=always \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -e&lt;&#x2F;span&gt;&lt;span&gt; SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev&#x2F;all-hands-ai&#x2F;runtime:0.25-nikolaik \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -e&lt;&#x2F;span&gt;&lt;span&gt; LOG_ALL_EVENTS=true \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -v&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;var&#x2F;run&#x2F;docker.sock:&#x2F;var&#x2F;run&#x2F;docker.sock \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -v ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.openhands-state:&#x2F;.openhands-state \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -p&lt;&#x2F;span&gt;&lt;span&gt; 80:3000 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --add-host&lt;&#x2F;span&gt;&lt;span&gt; host.docker.internal:host-gateway \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --name&lt;&#x2F;span&gt;&lt;span&gt; openhands-app \
+&lt;&#x2F;span&gt;&lt;span&gt;    docker.all-hands.dev&#x2F;all-hands-ai&#x2F;openhands:0.25
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;ol start=&quot;3&quot;&gt;
-&lt;li&gt;使用 Docker Compose 启动服务：&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
+&lt;ul&gt;
+&lt;li&gt;Option-2: 创建&lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt;文件，并在同目录下运行&lt;code&gt;docker-compose up&lt;&#x2F;code&gt;启动服务. yaml文件内容：&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openhands-app&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;docker.all-hands.dev&#x2F;all-hands-ai&#x2F;openhands:0.25
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;container_name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;openhands-app
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SANDBOX_RUNTIME_CONTAINER_IMAGE&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;docker.all-hands.dev&#x2F;all-hands-ai&#x2F;runtime:0.25-nikolaik
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG_ALL_EVENTS&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;volumes&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;var&#x2F;run&#x2F;docker.sock:&#x2F;var&#x2F;run&#x2F;docker.sock
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;~&#x2F;.openhands-state:&#x2F;.openhands-state
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ports&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:3000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;extra_hosts&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;host.docker.internal:host-gateway&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tty&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;stdin_open&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;restart&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;no&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;bu-zou-4-pei-zhi-azure-de-gpt-4-api-jie-kou&quot;&gt;步骤 4: 配置 Azure 的 GPT-4 API 接口&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Option-3：如需挂载本地文件系统，使用如下&lt;code&gt;docker-compose.yaml&lt;&#x2F;code&gt;文件，并在同目录下运行&lt;code&gt;docker-compose up&lt;&#x2F;code&gt;启动服务即可. yaml文件内容：&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;services&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openhands-app&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;docker.all-hands.dev&#x2F;all-hands-ai&#x2F;openhands:0.25
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;container_name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;openhands-app
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SANDBOX_RUNTIME_CONTAINER_IMAGE&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;docker.all-hands.dev&#x2F;all-hands-ai&#x2F;runtime:0.25-nikolaik
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG_ALL_EVENTS&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SANDBOX_USER_ID&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;polly&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;WORKSPACE_MOUNT_PATH&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;D:\docker_workspace\OpenHands\StartExperiencesApp
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;volumes&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;var&#x2F;run&#x2F;docker.sock:&#x2F;var&#x2F;run&#x2F;docker.sock
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;~&#x2F;.openhands-state:&#x2F;.openhands-state
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;D:\docker_workspace\OpenHands\StartExperiencesApp:&#x2F;opt&#x2F;workspace_base
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ports&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:3000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;extra_hosts&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;host.docker.internal:host-gateway&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tty&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;stdin_open&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;restart&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;no&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;PS：确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zou-4-pei-zhi-azure-de-llm-api-service-jie-kou&quot;&gt;步骤 4: 配置 Azure 的 LLM API Service 接口&lt;&#x2F;h2&gt;
+&lt;p&gt;参考文章：&lt;a href=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;&quot;&gt;Azure部署DeepSeek&#x2F;GPT大模型服务&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zou-5-openhands-zhong-pei-zhi-llm-api-jie-kou&quot;&gt;步骤 5: OpenHands 中配置LLM API 接口&lt;&#x2F;h2&gt;
 &lt;ol&gt;
-&lt;li&gt;登录 Azure 门户。&lt;&#x2F;li&gt;
-&lt;li&gt;创建一个新的 OpenAI 服务。&lt;&#x2F;li&gt;
-&lt;li&gt;获取 API 密钥和终端点。&lt;&#x2F;li&gt;
-&lt;li&gt;将 API 密钥添加到 .env 文件中：&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GPT_API_KEY=your-azure-gpt4-api-key&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt;&amp;gt; .env
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;ol start=&quot;5&quot;&gt;
-&lt;li&gt;重启服务以应用更改：&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; down
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;bu-zou-5-jiang-fu-wu-ying-she-dao-wai-wang-de-80-duan-kou&quot;&gt;步骤 5: 将服务映射到外网的 80 端口&lt;&#x2F;h2&gt;
-&lt;ol&gt;
-&lt;li&gt;编辑 docker-compose.yml 文件，将服务的端口映射到 80：&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;services:
-&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openhands:
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ports:
-&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;80:3000&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;ol start=&quot;2&quot;&gt;
-&lt;li&gt;重启服务：&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; down
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose&lt;&#x2F;span&gt;&lt;span&gt; up&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;ol start=&quot;3&quot;&gt;
-&lt;li&gt;确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;浏览器访问 &lt;code&gt;http:&#x2F;&#x2F;&amp;lt;your-azure-server-ip&amp;gt;&lt;&#x2F;code&gt;，打开OpenHands首页
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Homepage.png&quot; alt=&quot;OpenHands Homepage&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;点击左下角“设置”按钮，配置LLM API Servie
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Configuration.png&quot; alt=&quot;OpenHands Configuration&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;开启你的AI Coding旅程
+&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Coding.png&quot; alt=&quot;OpenHands Coding&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;
-&lt;p&gt;通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4 API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。&lt;&#x2F;p&gt;
+&lt;p&gt;通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4o API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。&lt;&#x2F;p&gt;
 </content>
         
     </entry>
@@ -141,7 +176,7 @@
 &lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foundry_create_project.png&quot; alt=&quot;Azure Foundry Create Project&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;在project里创建Model Endpoint.
 &lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foundry_model_endpoint.png&quot; alt=&quot;Azure Foundry Model Endpoint&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;打开创建的Model Endpoint，里面就是key和endpoint了.s
+&lt;li&gt;打开创建的Model Endpoint，里面就是key和endpoint了.
 &lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foudnry_model_key.png&quot; alt=&quot;Azure Foundry Endpoint Key&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 </content>
