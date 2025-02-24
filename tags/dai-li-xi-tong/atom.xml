@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly&#x27;s Blog - 代理系统</title>
+    <subtitle>Wangbaoli</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/dai-li-xi-tong/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-02-24T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/dai-li-xi-tong/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands 源码解析系列（五）：代理系统与任务分配</title>
+        <published>2025-02-24T00:00:00+00:00</published>
+        <updated>2025-02-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-005/"/>
+        <id>https://polly2014.github.io/openhands-source-code-analysis-005/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-005/">&lt;p&gt;代理系统是 OpenHands 的核心组件之一，负责执行具体任务。本文将深入解析代理的设计模式及其在任务分配中的作用，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;dai-li-de-she-ji-xiang-jie&quot;&gt;代理的设计详解&lt;&#x2F;h2&gt;
+&lt;p&gt;代理系统的核心逻辑位于 &lt;code&gt;agenthub&lt;&#x2F;code&gt; 模块，以下是其设计的详细分析：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;模块化设计&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;特点&lt;&#x2F;strong&gt;：每个代理负责特定任务（如代码生成、网页浏览）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;优势&lt;&#x2F;strong&gt;：模块化设计使得新增代理类型变得简单。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;基类定义&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;文件路径&lt;&#x2F;strong&gt;：&lt;code&gt;agenthub&#x2F;micro&#x2F;microagent.py&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：定义所有代理的通用接口和行为。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;示例代码&lt;&#x2F;strong&gt;：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;MicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;__init__&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.name = name
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handle_request&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;request&lt;&#x2F;span&gt;&lt;span&gt;: dict) -&amp;gt; dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;raise &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NotImplementedError&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Subclasses must implement this method&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-li-dai-li-xiang-jie&quot;&gt;示例代理详解&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是两个主要代理的详细分析：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;BrowsingAgent&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：处理网页搜索任务。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;文件路径&lt;&#x2F;strong&gt;：&lt;code&gt;agenthub&#x2F;browsing_agent&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;调用搜索引擎 API，获取搜索结果。&lt;&#x2F;li&gt;
+&lt;li&gt;返回结果的格式化数据。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;CodeActAgent&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：处理代码生成和分析任务。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;文件路径&lt;&#x2F;strong&gt;：&lt;code&gt;agenthub&#x2F;codeact_agent&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;调用 LLM 模块生成代码。&lt;&#x2F;li&gt;
+&lt;li&gt;分析用户提供的代码片段，返回优化建议。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ren-wu-fen-pei-xiang-jie&quot;&gt;任务分配详解&lt;&#x2F;h2&gt;
+&lt;p&gt;任务分配的核心逻辑位于 &lt;code&gt;controller&#x2F;agent_controller.py&lt;&#x2F;code&gt;，以下是其详细分析：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;选择代理&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：根据用户意图分配合适的代理。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;示例代码&lt;&#x2F;strong&gt;：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;assign_agent&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parsed_action&lt;&#x2F;span&gt;&lt;span&gt;: dict):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;parsed_action[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;action&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] == &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;search&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BrowsingAgent&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span&gt;parsed_action[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;action&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] == &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CodeActAgent&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ChatAgent&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;执行任务&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：调用代理的 &lt;code&gt;handle_request&lt;&#x2F;code&gt; 方法处理请求。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;每个代理实现特定的任务逻辑。&lt;&#x2F;li&gt;
+&lt;li&gt;返回处理结果给调用方。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shen-du-fen-xi-kuo-zhan-xing-yu-you-hua&quot;&gt;深度分析：扩展性与优化&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;扩展性&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;新增代理类型：
+&lt;ul&gt;
+&lt;li&gt;在 &lt;code&gt;agenthub&lt;&#x2F;code&gt; 模块中添加新的代理类。&lt;&#x2F;li&gt;
+&lt;li&gt;在 &lt;code&gt;agent_controller.py&lt;&#x2F;code&gt; 中注册新代理。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;示例：新增一个 &lt;code&gt;DataAnalysisAgent&lt;&#x2F;code&gt;，用于处理数据分析任务。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;性能优化&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用异步编程：
+&lt;ul&gt;
+&lt;li&gt;在代理的任务处理中引入 &lt;code&gt;async&#x2F;await&lt;&#x2F;code&gt;，提升并发性能。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;缓存机制：
+&lt;ul&gt;
+&lt;li&gt;对于常见的任务结果进行缓存，减少重复计算。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;通过以上分析，我们可以看到 OpenHands 的代理系统设计清晰且易于扩展。在下一篇文章中，我们将深入解析与大语言模型（LLM）的交互逻辑，带你了解其核心实现。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;dai-li-de-she-ji&quot;&gt;代理的设计&lt;&#x2F;h2&gt;
+&lt;p&gt;代理的核心逻辑位于 &lt;code&gt;agenthub&lt;&#x2F;code&gt; 模块，主要特点包括：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;模块化设计&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个代理负责特定任务（如代码生成、网页浏览）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;基类定义&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有代理继承自 &lt;code&gt;MicroAgent&lt;&#x2F;code&gt; 基类。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-li-dai-li&quot;&gt;示例代理&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;BrowsingAgent&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;处理网页搜索任务。&lt;&#x2F;li&gt;
+&lt;li&gt;位于 &lt;code&gt;agenthub&#x2F;browsing_agent&lt;&#x2F;code&gt;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;CodeActAgent&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;处理代码生成和分析任务。&lt;&#x2F;li&gt;
+&lt;li&gt;位于 &lt;code&gt;agenthub&#x2F;codeact_agent&lt;&#x2F;code&gt;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ren-wu-fen-pei&quot;&gt;任务分配&lt;&#x2F;h2&gt;
+&lt;p&gt;任务分配的核心逻辑位于 &lt;code&gt;controller&#x2F;agent_controller.py&lt;&#x2F;code&gt;，主要功能包括：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;选择代理&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据用户意图分配合适的代理。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;执行任务&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;调用代理的 &lt;code&gt;handle_request&lt;&#x2F;code&gt; 方法处理请求。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过模块化的代理设计，OpenHands 能够高效地执行多种任务。在下一篇文章中，我们将深入解析与大语言模型（LLM）的交互逻辑。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;下一篇：&lt;a href=&quot;#&quot;&gt;OpenHands 源码解析系列（六）：与大语言模型（LLM）的交互&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

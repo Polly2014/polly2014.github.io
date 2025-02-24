@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly&#x27;s Blog - 架构设计</title>
+    <subtitle>Wangbaoli</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/jia-gou-she-ji/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-02-24T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/jia-gou-she-ji/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands 源码解析系列（一）：项目概览与架构设计</title>
+        <published>2025-02-24T00:00:00+00:00</published>
+        <updated>2025-02-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-001/"/>
+        <id>https://polly2014.github.io/openhands-source-code-analysis-001/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-001/">&lt;p&gt;OpenHands 是一个自动化的 AI 软件工程师项目，旨在通过前后端协作和强大的代理系统，帮助开发者完成复杂的任务。本文将深入解析 OpenHands 的整体架构和模块设计，帮助读者理解其核心逻辑和实现细节。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;hou-duan-jia-gou-fen-xi&quot;&gt;后端架构分析&lt;&#x2F;h2&gt;
+&lt;p&gt;后端是 OpenHands 的核心部分，负责处理用户请求、分配任务以及与大语言模型（LLM）的交互。以下是后端的主要模块及其职责：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Controller 模块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;openhands&#x2F;controller&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;主要功能：解析用户输入的意图，并将任务分配给合适的代理。&lt;&#x2F;li&gt;
+&lt;li&gt;核心文件：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;action_parser.py&lt;&#x2F;code&gt;：负责将用户输入解析为系统可理解的动作。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;agent_controller.py&lt;&#x2F;code&gt;：根据解析结果选择合适的代理。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;AgentHub 模块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;openhands&#x2F;agenthub&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;主要功能：管理不同类型的代理（如代码生成代理、网页浏览代理）。&lt;&#x2F;li&gt;
+&lt;li&gt;核心文件：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;browsing_agent&lt;&#x2F;code&gt;：处理网页搜索任务。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;codeact_agent&lt;&#x2F;code&gt;：处理代码生成和分析任务。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;LLM 模块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;openhands&#x2F;llm&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;主要功能：与大语言模型交互，生成自然语言响应或代码。&lt;&#x2F;li&gt;
+&lt;li&gt;核心文件：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;llm.py&lt;&#x2F;code&gt;：封装与 LLM 的交互逻辑。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;streaming_llm.py&lt;&#x2F;code&gt;：支持流式响应。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Storage 模块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;openhands&#x2F;storage&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;主要功能：提供数据存储功能，包括本地存储和云存储（如 S3）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Server 模块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;openhands&#x2F;server&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;主要功能：提供后端服务的入口，处理前端的 API 请求。&lt;&#x2F;li&gt;
+&lt;li&gt;核心文件：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;app.py&lt;&#x2F;code&gt;：定义了后端的主要路由。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;routes&#x2F;conversation.py&lt;&#x2F;code&gt;：处理与对话相关的 API 请求。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qian-duan-jia-gou-fen-xi&quot;&gt;前端架构分析&lt;&#x2F;h2&gt;
+&lt;p&gt;前端基于 React 构建，提供用户界面和交互逻辑。以下是前端的主要特点：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;技术栈&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 React 构建组件化界面。&lt;&#x2F;li&gt;
+&lt;li&gt;使用 TypeScript 提供类型安全。&lt;&#x2F;li&gt;
+&lt;li&gt;使用 Tailwind CSS 进行样式设计。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心组件&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ChatInput&lt;&#x2F;code&gt;：捕获用户输入并发送到后端。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;ChatDisplay&lt;&#x2F;code&gt;：显示对话内容并动态更新。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API 调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;文件路径：&lt;code&gt;frontend&#x2F;src&#x2F;api&#x2F;conversation.ts&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;功能：封装与后端的 API 交互逻辑。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yun-xing-luo-ji-xiang-jie&quot;&gt;运行逻辑详解&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;用户输入&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户通过前端的 &lt;code&gt;ChatInput&lt;&#x2F;code&gt; 组件输入内容。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;前端发送请求&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入内容通过 &lt;code&gt;conversation.ts&lt;&#x2F;code&gt; 中的 API 方法发送到后端。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;后端处理请求&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;controller&#x2F;action_parser.py&lt;&#x2F;code&gt; 解析用户意图。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;controller&#x2F;agent_controller.py&lt;&#x2F;code&gt; 分配合适的代理。&lt;&#x2F;li&gt;
+&lt;li&gt;代理通过 &lt;code&gt;llm&#x2F;llm.py&lt;&#x2F;code&gt; 与大语言模型交互，生成响应。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;前端显示响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;后端返回响应，前端更新 &lt;code&gt;ChatDisplay&lt;&#x2F;code&gt; 组件，显示新的对话内容。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;通过以上分析，我们可以看到 OpenHands 的架构设计清晰，模块职责分明，便于扩展和维护。在接下来的文章中，我们将深入解析每个模块的实现细节，带你全面掌握 OpenHands 的源码。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xiang-mu-gai-lan&quot;&gt;项目概览&lt;&#x2F;h2&gt;
+&lt;p&gt;OpenHands 的代码库分为两个主要部分：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;后端&lt;&#x2F;strong&gt;：基于 Python，负责核心逻辑、代理管理和与大语言模型（LLM）的交互。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前端&lt;&#x2F;strong&gt;：基于 React，提供用户界面，捕获用户输入并与后端交互。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;此外，项目采用模块化设计，便于扩展和维护。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jia-gou-she-ji&quot;&gt;架构设计&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-hou-duan-jia-gou&quot;&gt;&lt;strong&gt;1. 后端架构&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;后端代码位于 &lt;code&gt;openhands&lt;&#x2F;code&gt; 目录，主要模块包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Controller&lt;&#x2F;strong&gt;：负责解析用户意图并分配代理。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;AgentHub&lt;&#x2F;strong&gt;：管理不同类型的代理（如代码生成、网页浏览）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;LLM&lt;&#x2F;strong&gt;：与大语言模型交互，生成响应。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Events&lt;&#x2F;strong&gt;：处理事件流。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Storage&lt;&#x2F;strong&gt;：管理数据存储。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Server&lt;&#x2F;strong&gt;：提供 API 接口，与前端通信。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-qian-duan-jia-gou&quot;&gt;&lt;strong&gt;2. 前端架构&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;前端代码位于 &lt;code&gt;frontend&lt;&#x2F;code&gt; 目录，主要特点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 React 构建组件化界面。&lt;&#x2F;li&gt;
+&lt;li&gt;通过 API 与后端交互。&lt;&#x2F;li&gt;
+&lt;li&gt;提供用户友好的对话界面。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;mo-kuai-zhi-ze&quot;&gt;模块职责&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模块&lt;&#x2F;th&gt;&lt;th&gt;主要职责&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Controller&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;解析用户输入，分配任务给合适的代理。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;AgentHub&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;提供多种代理，完成特定任务（如代码生成、搜索）。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;LLM&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;调用大语言模型，生成自然语言响应或代码。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Events&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;管理事件流，支持异步处理。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Storage&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;提供本地存储、云存储（如 S3）等多种存储方式。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Server&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;提供后端服务的入口，处理前端的 API 请求。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yun-xing-luo-ji-gai-lan&quot;&gt;运行逻辑概览&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;用户输入&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;用户通过前端输入内容。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前端发送请求&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;前端将用户输入通过 API 发送到后端。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;后端处理&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;后端解析用户意图，初始化对话上下文。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前端显示响应&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;前端接收后端的响应并更新界面。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;OpenHands 的架构设计清晰，模块职责分明，便于扩展和维护。在接下来的文章中，我们将深入解析每个模块的实现细节，带你全面掌握 OpenHands 的源码。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;下一篇：&lt;a href=&quot;#&quot;&gt;OpenHands 源码解析系列（二）：前端架构与用户交互流程&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

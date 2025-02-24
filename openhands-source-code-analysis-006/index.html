@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https://polly2014.github.io>
+                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+    <div class="blog-post">
+        <h1>OpenHands 源码解析系列（六）：与大语言模型（LLM）的交互</h1>
+        <div class="content">
+            <p>在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。</p>
+<hr />
+<h2 id="llm-mo-kuai-xiang-jie">LLM 模块详解</h2>
+<p>LLM 模块的核心逻辑位于 <code>llm/llm.py</code>，以下是其主要功能的详细分析：</p>
+<ol>
+<li>
+<p><strong>API 调用</strong>：</p>
+<ul>
+<li><strong>功能</strong>：调用外部 LLM 服务（如 OpenAI GPT）。</li>
+<li><strong>实现细节</strong>：
+<ul>
+<li>使用 HTTP 请求与 LLM 服务交互。</li>
+<li>支持多种模型（如 GPT-3.5、GPT-4）。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>流式响应</strong>：</p>
+<ul>
+<li><strong>功能</strong>：支持流式生成响应，提升用户体验。</li>
+<li><strong>实现细节</strong>：
+<ul>
+<li>使用 WebSocket 或 HTTP/2 实现流式数据传输。</li>
+<li>在前端逐步显示生成的内容。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="shi-li-dai-ma-xiang-jie">示例代码详解</h2>
+<p>以下是一个完整的 LLM 调用示例，展示了如何与外部 LLM 服务交互：</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">LLM</span><span style="color:#eff1f5;">:
+</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#96b5b4;">__init__</span><span>(</span><span style="color:#bf616a;">self</span><span>, </span><span style="color:#bf616a;">model_name</span><span>: str, </span><span style="color:#bf616a;">api_key</span><span>: str):
+</span><span>        </span><span style="color:#bf616a;">self</span><span>.model_name = model_name
+</span><span>        </span><span style="color:#bf616a;">self</span><span>.api_key = api_key
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">generate_response</span><span>(</span><span style="color:#bf616a;">self</span><span>, </span><span style="color:#bf616a;">prompt</span><span>: str) -&gt; str:
+</span><span>        headers = {&quot;</span><span style="color:#a3be8c;">Authorization</span><span>&quot;: </span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">Bearer </span><span>{</span><span style="color:#bf616a;">self</span><span>.api_key}&quot;}
+</span><span>        payload = {&quot;</span><span style="color:#a3be8c;">model</span><span>&quot;: </span><span style="color:#bf616a;">self</span><span>.model_name, &quot;</span><span style="color:#a3be8c;">prompt</span><span>&quot;: prompt, &quot;</span><span style="color:#a3be8c;">max_tokens</span><span>&quot;: </span><span style="color:#d08770;">100</span><span>}
+</span><span>        response = requests.</span><span style="color:#bf616a;">post</span><span>(&quot;</span><span style="color:#a3be8c;">https://api.openai.com/v1/completions</span><span>&quot;, </span><span style="color:#bf616a;">json</span><span>=payload, </span><span style="color:#bf616a;">headers</span><span>=headers)
+</span><span>        </span><span style="color:#b48ead;">return </span><span>response.</span><span style="color:#bf616a;">json</span><span>().</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">choices</span><span>&quot;)[</span><span style="color:#d08770;">0</span><span>].</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">text</span><span>&quot;)
+</span></code></pre>
+<hr />
+<h2 id="jiao-hu-liu-cheng-xiang-jie">交互流程详解</h2>
+<p>以下是 OpenHands 与 LLM 的交互流程的详细分析：</p>
+<ol>
+<li>
+<p><strong>生成提示</strong>：</p>
+<ul>
+<li><strong>功能</strong>：代理根据用户输入生成提示（prompt）。</li>
+<li><strong>实现细节</strong>：
+<ul>
+<li>提示可以包含上下文信息，以提高生成结果的相关性。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>调用 LLM</strong>：</p>
+<ul>
+<li><strong>功能</strong>：通过 <code>llm.py</code> 调用大语言模型。</li>
+<li><strong>实现细节</strong>：
+<ul>
+<li>使用 <code>generate_response</code> 方法发送请求并接收响应。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>返回响应</strong>：</p>
+<ul>
+<li><strong>功能</strong>：LLM 返回生成的响应文本。</li>
+<li><strong>实现细节</strong>：
+<ul>
+<li>响应可以是完整的文本，也可以是流式数据。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="shen-du-fen-xi-kuo-zhan-xing-yu-you-hua">深度分析：扩展性与优化</h2>
+<ol>
+<li>
+<p><strong>扩展性</strong>：</p>
+<ul>
+<li>支持多种 LLM 服务：
+<ul>
+<li>可以通过配置文件切换不同的 LLM 服务（如 OpenAI、Anthropic）。</li>
+</ul>
+</li>
+<li>自定义提示模板：
+<ul>
+<li>提供模板化的提示生成方式，适应不同的任务需求。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>性能优化</strong>：</p>
+<ul>
+<li>缓存机制：
+<ul>
+<li>对于常见的提示和响应结果进行缓存，减少重复调用。</li>
+</ul>
+</li>
+<li>并发处理：
+<ul>
+<li>使用异步编程（如 <code>asyncio</code>）同时处理多个 LLM 请求。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<p>通过以上分析，我们可以看到 OpenHands 的 LLM 模块设计清晰且功能强大。在下一篇文章中，我们将解析事件流与存储管理的实现细节，带你了解其核心逻辑。</p>
+<hr />
+<h2 id="llm-mo-kuai">LLM 模块</h2>
+<p>LLM 模块的核心逻辑位于 <code>llm/llm.py</code>，主要功能包括：</p>
+<ol>
+<li>
+<p><strong>API 调用</strong>：</p>
+<ul>
+<li>调用外部 LLM 服务（如 OpenAI GPT）。</li>
+</ul>
+</li>
+<li>
+<p><strong>流式响应</strong>：</p>
+<ul>
+<li>支持流式生成响应，提升用户体验。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="shi-li-dai-ma">示例代码</h2>
+<p>以下是一个简单的 LLM 调用示例：</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">LLM</span><span style="color:#eff1f5;">:
+</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#96b5b4;">__init__</span><span>(</span><span style="color:#bf616a;">self</span><span>, </span><span style="color:#bf616a;">model_name</span><span>: str):
+</span><span>        </span><span style="color:#bf616a;">self</span><span>.model_name = model_name
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">generate_response</span><span>(</span><span style="color:#bf616a;">self</span><span>, </span><span style="color:#bf616a;">prompt</span><span>: str) -&gt; str:
+</span><span>        response = </span><span style="color:#bf616a;">external_llm_api_call</span><span>(</span><span style="color:#bf616a;">model</span><span>=</span><span style="color:#bf616a;">self</span><span>.model_name, </span><span style="color:#bf616a;">prompt</span><span>=prompt)
+</span><span>        </span><span style="color:#b48ead;">return </span><span>response
+</span></code></pre>
+<hr />
+<h2 id="jiao-hu-liu-cheng">交互流程</h2>
+<ol>
+<li>
+<p><strong>生成提示</strong>：</p>
+<ul>
+<li>代理生成提示（prompt）。</li>
+</ul>
+</li>
+<li>
+<p><strong>调用 LLM</strong>：</p>
+<ul>
+<li>通过 <code>llm.py</code> 调用大语言模型。</li>
+</ul>
+</li>
+<li>
+<p><strong>返回响应</strong>：</p>
+<ul>
+<li>LLM 返回生成的响应文本。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="zong-jie">总结</h2>
+<p>通过与大语言模型的交互，OpenHands 能够生成高质量的响应。在下一篇文章中，我们将解析事件流与存储管理的实现细节。</p>
+<hr />
+<p>下一篇：<a href="#">OpenHands 源码解析系列（七）：事件流与存储管理</a></p>
+
+        </div>
+        <div class="navigation">
+            
+            
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+</html>

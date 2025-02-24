@@ -5,8 +5,200 @@
     <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/llm/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-02-11T00:00:00+00:00</updated>
+    <updated>2025-02-24T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands 源码解析系列（六）：与大语言模型（LLM）的交互</title>
+        <published>2025-02-24T00:00:00+00:00</published>
+        <updated>2025-02-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-006/"/>
+        <id>https://polly2014.github.io/openhands-source-code-analysis-006/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-006/">&lt;p&gt;在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;llm-mo-kuai-xiang-jie&quot;&gt;LLM 模块详解&lt;&#x2F;h2&gt;
+&lt;p&gt;LLM 模块的核心逻辑位于 &lt;code&gt;llm&#x2F;llm.py&lt;&#x2F;code&gt;，以下是其主要功能的详细分析：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API 调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：调用外部 LLM 服务（如 OpenAI GPT）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;使用 HTTP 请求与 LLM 服务交互。&lt;&#x2F;li&gt;
+&lt;li&gt;支持多种模型（如 GPT-3.5、GPT-4）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;流式响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：支持流式生成响应，提升用户体验。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;使用 WebSocket 或 HTTP&#x2F;2 实现流式数据传输。&lt;&#x2F;li&gt;
+&lt;li&gt;在前端逐步显示生成的内容。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-li-dai-ma-xiang-jie&quot;&gt;示例代码详解&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是一个完整的 LLM 调用示例，展示了如何与外部 LLM 服务交互：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;LLM&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;__init__&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model_name&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api_key&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model_name = model_name
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.api_key = api_key
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;generate_response&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;        headers = {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Authorization&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Bearer &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.api_key}&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;        payload = {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model_name, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: prompt, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;        response = requests.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;api.openai.com&#x2F;v1&#x2F;completions&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;=payload, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;headers&lt;&#x2F;span&gt;&lt;span&gt;=headers)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;response.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;choices&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jiao-hu-liu-cheng-xiang-jie&quot;&gt;交互流程详解&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是 OpenHands 与 LLM 的交互流程的详细分析：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;生成提示&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：代理根据用户输入生成提示（prompt）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;提示可以包含上下文信息，以提高生成结果的相关性。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;调用 LLM&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：通过 &lt;code&gt;llm.py&lt;&#x2F;code&gt; 调用大语言模型。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;generate_response&lt;&#x2F;code&gt; 方法发送请求并接收响应。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;返回响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：LLM 返回生成的响应文本。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现细节&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;响应可以是完整的文本，也可以是流式数据。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shen-du-fen-xi-kuo-zhan-xing-yu-you-hua&quot;&gt;深度分析：扩展性与优化&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;扩展性&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;支持多种 LLM 服务：
+&lt;ul&gt;
+&lt;li&gt;可以通过配置文件切换不同的 LLM 服务（如 OpenAI、Anthropic）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;自定义提示模板：
+&lt;ul&gt;
+&lt;li&gt;提供模板化的提示生成方式，适应不同的任务需求。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;性能优化&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;缓存机制：
+&lt;ul&gt;
+&lt;li&gt;对于常见的提示和响应结果进行缓存，减少重复调用。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;并发处理：
+&lt;ul&gt;
+&lt;li&gt;使用异步编程（如 &lt;code&gt;asyncio&lt;&#x2F;code&gt;）同时处理多个 LLM 请求。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;通过以上分析，我们可以看到 OpenHands 的 LLM 模块设计清晰且功能强大。在下一篇文章中，我们将解析事件流与存储管理的实现细节，带你了解其核心逻辑。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;llm-mo-kuai&quot;&gt;LLM 模块&lt;&#x2F;h2&gt;
+&lt;p&gt;LLM 模块的核心逻辑位于 &lt;code&gt;llm&#x2F;llm.py&lt;&#x2F;code&gt;，主要功能包括：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;API 调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;调用外部 LLM 服务（如 OpenAI GPT）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;流式响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;支持流式生成响应，提升用户体验。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-li-dai-ma&quot;&gt;示例代码&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是一个简单的 LLM 调用示例：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;LLM&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;__init__&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model_name&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model_name = model_name
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;generate_response&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;        response = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;external_llm_api_call&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model_name, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;=prompt)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;response
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jiao-hu-liu-cheng&quot;&gt;交互流程&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;生成提示&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;代理生成提示（prompt）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;调用 LLM&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过 &lt;code&gt;llm.py&lt;&#x2F;code&gt; 调用大语言模型。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;返回响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;LLM 返回生成的响应文本。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过与大语言模型的交互，OpenHands 能够生成高质量的响应。在下一篇文章中，我们将解析事件流与存储管理的实现细节。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;下一篇：&lt;a href=&quot;#&quot;&gt;OpenHands 源码解析系列（七）：事件流与存储管理&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Azure部署DeepSeek&#x2F;GPT大模型服务</title>
         <published>2025-02-11T00:00:00+00:00</published>
