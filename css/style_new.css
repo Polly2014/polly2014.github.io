@@ -20,6 +20,12 @@ a:focus {
     cursor: pointer;
 }
 
+/* 默认隐藏移动端元素 */
+.menu-toggle,
+.overlay {
+    display: none; /* PC端默认隐藏 */
+}
+
 /* LAYOUT CSS */
 .pure-img-responsive {
     max-width: 100%;
@@ -616,8 +622,8 @@ table td {
     .sidebar {
         position: fixed;
         top: 0;
-        left: -80%; /* 初始状态隐藏在左侧 */
-        width: 80%;
+        left: -70%; /* 初始状态隐藏在左侧 */
+        width: 70%;
         height: 100vh;
         z-index: 1000;
         transition: left 0.3s ease-out;
@@ -635,7 +641,7 @@ table td {
     }
 
     /* 显示汉堡菜单图标 */
-        .menu-toggle {
+    .menu-toggle {
         position: fixed;
         top: 15px;
         left: 15px;
