@@ -48,389 +48,74 @@
     <div class="blog-post">
         <h1>OpenHands API 使用指南：构建智能化开发体验</h1>
         <div class="content">
-            <h2 id="overview">Overview</h2>
-<p>This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.</p>
+            <p>This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.</p>
 <hr />
 <h2 id="general-endpoints">General Endpoints</h2>
-<h3 id="health-check">Health Check</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /health</code></li>
-<li><strong>Description</strong>: A simple health check endpoint to verify that the server is running.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Returns the string <code>&quot;OK&quot;</code>.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/health</code></td><td>GET</td><td>A simple health check endpoint.</td><td><strong>200 OK</strong>: Returns the string <code>&quot;OK&quot;</code>.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="conversation-api">Conversation API</h2>
-<h3 id="get-runtime-configuration">Get Runtime Configuration</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/config</code></li>
-<li><strong>Description</strong>: Retrieves the runtime configuration, including session ID and runtime ID.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object containing <code>runtime_id</code> and <code>session_id</code>.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-vscode-url">Get VSCode URL</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/vscode-url</code></li>
-<li><strong>Description</strong>: Retrieves the VSCode URL for the runtime.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object containing the <code>vscode_url</code>.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if the URL cannot be retrieved.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-web-hosts">Get Web Hosts</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/web-hosts</code></li>
-<li><strong>Description</strong>: Retrieves the hosts used by the runtime.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object containing the <code>hosts</code>.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if the hosts cannot be retrieved.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations/{conversation_id}/config</code></td><td>GET</td><td>Retrieves the runtime configuration.</td><td><strong>200 OK</strong>: JSON object with <code>runtime_id</code> and <code>session_id</code>.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/vscode-url</code></td><td>GET</td><td>Retrieves the VSCode URL.</td><td><strong>200 OK</strong>: JSON object with <code>vscode_url</code>.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/web-hosts</code></td><td>GET</td><td>Retrieves the runtime hosts.</td><td><strong>200 OK</strong>: JSON object with <code>hosts</code>.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="feedback-api">Feedback API</h2>
-<h3 id="submit-feedback">Submit Feedback</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>POST /api/conversations/{conversation_id}/submit-feedback</code></li>
-<li><strong>Description</strong>: Submits user feedback for a specific conversation.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>JSON object containing feedback details such as <code>email</code>, <code>version</code>, <code>permissions</code>, <code>polarity</code>, and <code>feedback</code>.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with stored feedback data.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if feedback submission fails.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations/{conversation_id}/submit-feedback</code></td><td>POST</td><td>Submits user feedback.</td><td><strong>200 OK</strong>: JSON object with stored feedback data.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="file-management-api">File Management API</h2>
-<h3 id="list-files">List Files</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/list-files</code></li>
-<li><strong>Description</strong>: Lists files in the specified path within the runtime.</li>
-<li><strong>Query Parameters</strong>:
-<ul>
-<li><code>path</code> (optional): The directory path to list files from.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of file names.</li>
-<li><strong>404 Not Found</strong>: If the runtime is not initialized.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if file listing fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="select-file">Select File</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/select-file</code></li>
-<li><strong>Description</strong>: Retrieves the content of a specified file.</li>
-<li><strong>Query Parameters</strong>:
-<ul>
-<li><code>file</code>: The path of the file to retrieve.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object containing the file content.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if file retrieval fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="upload-files">Upload Files</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>POST /api/conversations/{conversation_id}/upload-files</code></li>
-<li><strong>Description</strong>: Uploads a list of files to the runtime workspace.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>Form data containing files to upload.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with details of uploaded and skipped files.</li>
-<li><strong>400 Bad Request</strong>: If no files are successfully uploaded.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if file upload fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="save-file">Save File</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>POST /api/conversations/{conversation_id}/save-file</code></li>
-<li><strong>Description</strong>: Saves a file to the runtime file store.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>JSON object containing <code>filePath</code> and <code>content</code>.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Success message.</li>
-<li><strong>400 Bad Request</strong>: If <code>filePath</code> or <code>content</code> is missing.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if file saving fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="zip-directory">Zip Directory</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/zip-directory</code></li>
-<li><strong>Description</strong>: Compresses the current workspace into a ZIP file and returns it.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Returns the ZIP file.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if compression fails.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations/{conversation_id}/list-files</code></td><td>GET</td><td>Lists files in the runtime.</td><td><strong>200 OK</strong>: JSON array of file names.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/select-file</code></td><td>GET</td><td>Retrieves file content.</td><td><strong>200 OK</strong>: JSON object with file content.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/upload-files</code></td><td>POST</td><td>Uploads files to the workspace.</td><td><strong>200 OK</strong>: JSON object with upload details.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/save-file</code></td><td>POST</td><td>Saves a file to the runtime.</td><td><strong>200 OK</strong>: Success message.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}/zip-directory</code></td><td>GET</td><td>Compresses the workspace.</td><td><strong>200 OK</strong>: Returns the ZIP file.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="github-api">GitHub API</h2>
-<h3 id="get-repositories">Get Repositories</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/github/repositories</code></li>
-<li><strong>Description</strong>: Retrieves a list of GitHub repositories.</li>
-<li><strong>Query Parameters</strong>:
-<ul>
-<li><code>page</code>: Page number (default: 1).</li>
-<li><code>per_page</code>: Number of repositories per page (default: 10).</li>
-<li><code>sort</code>: Sorting criteria (default: <code>pushed</code>).</li>
-<li><code>installation_id</code> (optional): GitHub installation ID.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of repositories.</li>
-<li><strong>401 Unauthorized</strong>: If authentication fails.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if retrieval fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-user">Get User</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/github/user</code></li>
-<li><strong>Description</strong>: Retrieves GitHub user information.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with user details.</li>
-<li><strong>401 Unauthorized</strong>: If authentication fails.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if retrieval fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-installation-ids">Get Installation IDs</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/github/installations</code></li>
-<li><strong>Description</strong>: Retrieves GitHub installation IDs.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of installation IDs.</li>
-<li><strong>401 Unauthorized</strong>: If authentication fails.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if retrieval fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="search-repositories">Search Repositories</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/github/search/repositories</code></li>
-<li><strong>Description</strong>: Searches for GitHub repositories based on a query.</li>
-<li><strong>Query Parameters</strong>:
-<ul>
-<li><code>query</code>: Search query.</li>
-<li><code>per_page</code>: Number of results per page (default: 5).</li>
-<li><code>sort</code>: Sorting criteria (default: <code>stars</code>).</li>
-<li><code>order</code>: Sorting order (default: <code>desc</code>).</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of repositories.</li>
-<li><strong>401 Unauthorized</strong>: If authentication fails.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if search fails.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/github/repositories</code></td><td>GET</td><td>Retrieves GitHub repositories.</td><td><strong>200 OK</strong>: JSON array of repositories.</td></tr>
+<tr><td><code>/api/github/user</code></td><td>GET</td><td>Retrieves GitHub user information.</td><td><strong>200 OK</strong>: JSON object with user details.</td></tr>
+<tr><td><code>/api/github/installations</code></td><td>GET</td><td>Retrieves GitHub installation IDs.</td><td><strong>200 OK</strong>: JSON array of installation IDs.</td></tr>
+<tr><td><code>/api/github/search/repositories</code></td><td>GET</td><td>Searches GitHub repositories.</td><td><strong>200 OK</strong>: JSON array of repositories.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="conversation-management-api">Conversation Management API</h2>
-<h3 id="create-new-conversation">Create New Conversation</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>POST /api/conversations</code></li>
-<li><strong>Description</strong>: Initializes a new conversation or joins an existing one.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>JSON object containing <code>selected_repository</code>, <code>selected_branch</code>, <code>initial_user_msg</code>, and <code>image_urls</code>.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with the new conversation ID.</li>
-<li><strong>400 Bad Request</strong>: If settings are missing or authentication fails.</li>
-</ul>
-</li>
-</ul>
-<h3 id="search-conversations">Search Conversations</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations</code></li>
-<li><strong>Description</strong>: Searches for conversations.</li>
-<li><strong>Query Parameters</strong>:
-<ul>
-<li><code>page_id</code> (optional): Pagination ID.</li>
-<li><code>limit</code>: Number of results per page (default: 20).</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with conversation details.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-conversation">Get Conversation</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}</code></li>
-<li><strong>Description</strong>: Retrieves details of a specific conversation.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with conversation details.</li>
-<li><strong>404 Not Found</strong>: If the conversation does not exist.</li>
-</ul>
-</li>
-</ul>
-<h3 id="update-conversation">Update Conversation</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>PATCH /api/conversations/{conversation_id}</code></li>
-<li><strong>Description</strong>: Updates the title of a conversation.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>JSON object containing <code>title</code>.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Success message.</li>
-<li><strong>404 Not Found</strong>: If the conversation does not exist.</li>
-</ul>
-</li>
-</ul>
-<h3 id="delete-conversation">Delete Conversation</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>DELETE /api/conversations/{conversation_id}</code></li>
-<li><strong>Description</strong>: Deletes a conversation.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Success message.</li>
-<li><strong>404 Not Found</strong>: If the conversation does not exist.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations</code></td><td>POST</td><td>Initializes a new conversation.</td><td><strong>200 OK</strong>: JSON object with conversation ID.</td></tr>
+<tr><td><code>/api/conversations</code></td><td>GET</td><td>Searches for conversations.</td><td><strong>200 OK</strong>: JSON object with conversation details.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}</code></td><td>GET</td><td>Retrieves conversation details.</td><td><strong>200 OK</strong>: JSON object with conversation details.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}</code></td><td>PATCH</td><td>Updates conversation title.</td><td><strong>200 OK</strong>: Success message.</td></tr>
+<tr><td><code>/api/conversations/{conversation_id}</code></td><td>DELETE</td><td>Deletes a conversation.</td><td><strong>200 OK</strong>: Success message.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="public-api">Public API</h2>
-<h3 id="get-supported-models">Get Supported Models</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/options/models</code></li>
-<li><strong>Description</strong>: Retrieves a list of supported models.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of model names.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-supported-agents">Get Supported Agents</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/options/agents</code></li>
-<li><strong>Description</strong>: Retrieves a list of supported agents.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of agent names.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-security-analyzers">Get Security Analyzers</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/options/security-analyzers</code></li>
-<li><strong>Description</strong>: Retrieves a list of supported security analyzers.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON array of analyzer names.</li>
-</ul>
-</li>
-</ul>
-<h3 id="get-config">Get Config</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/options/config</code></li>
-<li><strong>Description</strong>: Retrieves the current server configuration.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with configuration details.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/options/models</code></td><td>GET</td><td>Retrieves supported models.</td><td><strong>200 OK</strong>: JSON array of model names.</td></tr>
+<tr><td><code>/api/options/agents</code></td><td>GET</td><td>Retrieves supported agents.</td><td><strong>200 OK</strong>: JSON array of agent names.</td></tr>
+<tr><td><code>/api/options/security-analyzers</code></td><td>GET</td><td>Retrieves security analyzers.</td><td><strong>200 OK</strong>: JSON array of analyzer names.</td></tr>
+<tr><td><code>/api/options/config</code></td><td>GET</td><td>Retrieves server configuration.</td><td><strong>200 OK</strong>: JSON object with configuration details.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="security-api">Security API</h2>
-<h3 id="security-analyzer">Security Analyzer</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>ANY /api/conversations/{conversation_id}/security/{path:path}</code></li>
-<li><strong>Description</strong>: A catch-all route for security analyzer API requests.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Response from the security analyzer.</li>
-<li><strong>404 Not Found</strong>: If the security analyzer is not initialized.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations/{conversation_id}/security/{path:path}</code></td><td>ANY</td><td>Security analyzer API requests.</td><td><strong>200 OK</strong>: Response from the security analyzer.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="settings-api">Settings API</h2>
-<h3 id="load-settings">Load Settings</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/settings</code></li>
-<li><strong>Description</strong>: Loads the current settings.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object with settings details.</li>
-<li><strong>404 Not Found</strong>: If settings are not found.</li>
-<li><strong>401 Unauthorized</strong>: If the token is invalid.</li>
-</ul>
-</li>
-</ul>
-<h3 id="store-settings">Store Settings</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>POST /api/settings</code></li>
-<li><strong>Description</strong>: Stores new settings.</li>
-<li><strong>Request Body</strong>:
-<ul>
-<li>JSON object containing settings details.</li>
-</ul>
-</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: Success message.</li>
-<li><strong>401 Unauthorized</strong>: If the GitHub token is invalid.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if storing settings fails.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/settings</code></td><td>GET</td><td>Loads current settings.</td><td><strong>200 OK</strong>: JSON object with settings details.</td></tr>
+<tr><td><code>/api/settings</code></td><td>POST</td><td>Stores new settings.</td><td><strong>200 OK</strong>: Success message.</td></tr>
+</tbody></table>
 <hr />
 <h2 id="trajectory-api">Trajectory API</h2>
-<h3 id="get-trajectory">Get Trajectory</h3>
-<ul>
-<li><strong>Endpoint</strong>: <code>GET /api/conversations/{conversation_id}/trajectory</code></li>
-<li><strong>Description</strong>: Retrieves the current trajectory of events.</li>
-<li><strong>Response</strong>:
-<ul>
-<li><strong>200 OK</strong>: JSON object containing the trajectory.</li>
-<li><strong>500 Internal Server Error</strong>: Error details if retrieval fails.</li>
-</ul>
-</li>
-</ul>
+<table><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>/api/conversations/{conversation_id}/trajectory</code></td><td>GET</td><td>Retrieves the current trajectory.</td><td><strong>200 OK</strong>: JSON object with trajectory details.</td></tr>
+</tbody></table>
 
         </div>
         <div class="navigation">

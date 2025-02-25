@@ -23,389 +23,74 @@
         <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-server-api-document/"/>
         <id>https://polly2014.github.io/openhands-server-api-document/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-server-api-document/">&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;&#x2F;h2&gt;
-&lt;p&gt;This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.&lt;&#x2F;p&gt;
+        <content type="html" xml:base="https://polly2014.github.io/openhands-server-api-document/">&lt;p&gt;This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;general-endpoints&quot;&gt;General Endpoints&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;health-check&quot;&gt;Health Check&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;health&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: A simple health check endpoint to verify that the server is running.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Returns the string &lt;code&gt;&amp;quot;OK&amp;quot;&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;health&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;A simple health check endpoint.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Returns the string &lt;code&gt;&amp;quot;OK&amp;quot;&lt;&#x2F;code&gt;.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;conversation-api&quot;&gt;Conversation API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;get-runtime-configuration&quot;&gt;Get Runtime Configuration&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;config&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the runtime configuration, including session ID and runtime ID.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object containing &lt;code&gt;runtime_id&lt;&#x2F;code&gt; and &lt;code&gt;session_id&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-vscode-url&quot;&gt;Get VSCode URL&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;vscode-url&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the VSCode URL for the runtime.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object containing the &lt;code&gt;vscode_url&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if the URL cannot be retrieved.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-web-hosts&quot;&gt;Get Web Hosts&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;web-hosts&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the hosts used by the runtime.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object containing the &lt;code&gt;hosts&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if the hosts cannot be retrieved.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;config&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves the runtime configuration.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with &lt;code&gt;runtime_id&lt;&#x2F;code&gt; and &lt;code&gt;session_id&lt;&#x2F;code&gt;.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;vscode-url&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves the VSCode URL.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with &lt;code&gt;vscode_url&lt;&#x2F;code&gt;.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;web-hosts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves the runtime hosts.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with &lt;code&gt;hosts&lt;&#x2F;code&gt;.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;feedback-api&quot;&gt;Feedback API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;submit-feedback&quot;&gt;Submit Feedback&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;POST &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;submit-feedback&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Submits user feedback for a specific conversation.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;JSON object containing feedback details such as &lt;code&gt;email&lt;&#x2F;code&gt;, &lt;code&gt;version&lt;&#x2F;code&gt;, &lt;code&gt;permissions&lt;&#x2F;code&gt;, &lt;code&gt;polarity&lt;&#x2F;code&gt;, and &lt;code&gt;feedback&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with stored feedback data.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if feedback submission fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;submit-feedback&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;POST&lt;&#x2F;td&gt;&lt;td&gt;Submits user feedback.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with stored feedback data.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;file-management-api&quot;&gt;File Management API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;list-files&quot;&gt;List Files&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;list-files&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Lists files in the specified path within the runtime.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Query Parameters&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;path&lt;&#x2F;code&gt; (optional): The directory path to list files from.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of file names.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If the runtime is not initialized.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if file listing fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;select-file&quot;&gt;Select File&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;select-file&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the content of a specified file.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Query Parameters&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;file&lt;&#x2F;code&gt;: The path of the file to retrieve.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object containing the file content.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if file retrieval fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;upload-files&quot;&gt;Upload Files&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;POST &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;upload-files&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Uploads a list of files to the runtime workspace.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;Form data containing files to upload.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with details of uploaded and skipped files.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;400 Bad Request&lt;&#x2F;strong&gt;: If no files are successfully uploaded.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if file upload fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;save-file&quot;&gt;Save File&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;POST &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;save-file&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Saves a file to the runtime file store.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;JSON object containing &lt;code&gt;filePath&lt;&#x2F;code&gt; and &lt;code&gt;content&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;400 Bad Request&lt;&#x2F;strong&gt;: If &lt;code&gt;filePath&lt;&#x2F;code&gt; or &lt;code&gt;content&lt;&#x2F;code&gt; is missing.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if file saving fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;zip-directory&quot;&gt;Zip Directory&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;zip-directory&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Compresses the current workspace into a ZIP file and returns it.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Returns the ZIP file.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if compression fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;list-files&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Lists files in the runtime.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of file names.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;select-file&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves file content.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with file content.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;upload-files&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;POST&lt;&#x2F;td&gt;&lt;td&gt;Uploads files to the workspace.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with upload details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;save-file&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;POST&lt;&#x2F;td&gt;&lt;td&gt;Saves a file to the runtime.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;zip-directory&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Compresses the workspace.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Returns the ZIP file.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;github-api&quot;&gt;GitHub API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;get-repositories&quot;&gt;Get Repositories&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;github&#x2F;repositories&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves a list of GitHub repositories.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Query Parameters&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;page&lt;&#x2F;code&gt;: Page number (default: 1).&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;per_page&lt;&#x2F;code&gt;: Number of repositories per page (default: 10).&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;sort&lt;&#x2F;code&gt;: Sorting criteria (default: &lt;code&gt;pushed&lt;&#x2F;code&gt;).&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;installation_id&lt;&#x2F;code&gt; (optional): GitHub installation ID.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of repositories.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If authentication fails.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if retrieval fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-user&quot;&gt;Get User&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;github&#x2F;user&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves GitHub user information.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with user details.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If authentication fails.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if retrieval fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-installation-ids&quot;&gt;Get Installation IDs&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;github&#x2F;installations&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves GitHub installation IDs.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of installation IDs.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If authentication fails.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if retrieval fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;search-repositories&quot;&gt;Search Repositories&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;github&#x2F;search&#x2F;repositories&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Searches for GitHub repositories based on a query.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Query Parameters&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;query&lt;&#x2F;code&gt;: Search query.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;per_page&lt;&#x2F;code&gt;: Number of results per page (default: 5).&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;sort&lt;&#x2F;code&gt;: Sorting criteria (default: &lt;code&gt;stars&lt;&#x2F;code&gt;).&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;order&lt;&#x2F;code&gt;: Sorting order (default: &lt;code&gt;desc&lt;&#x2F;code&gt;).&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of repositories.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If authentication fails.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if search fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;github&#x2F;repositories&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves GitHub repositories.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of repositories.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;github&#x2F;user&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves GitHub user information.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with user details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;github&#x2F;installations&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves GitHub installation IDs.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of installation IDs.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;github&#x2F;search&#x2F;repositories&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Searches GitHub repositories.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of repositories.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;conversation-management-api&quot;&gt;Conversation Management API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;create-new-conversation&quot;&gt;Create New Conversation&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;POST &#x2F;api&#x2F;conversations&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Initializes a new conversation or joins an existing one.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;JSON object containing &lt;code&gt;selected_repository&lt;&#x2F;code&gt;, &lt;code&gt;selected_branch&lt;&#x2F;code&gt;, &lt;code&gt;initial_user_msg&lt;&#x2F;code&gt;, and &lt;code&gt;image_urls&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with the new conversation ID.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;400 Bad Request&lt;&#x2F;strong&gt;: If settings are missing or authentication fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;search-conversations&quot;&gt;Search Conversations&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Searches for conversations.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Query Parameters&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;page_id&lt;&#x2F;code&gt; (optional): Pagination ID.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;limit&lt;&#x2F;code&gt;: Number of results per page (default: 20).&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with conversation details.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-conversation&quot;&gt;Get Conversation&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves details of a specific conversation.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with conversation details.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If the conversation does not exist.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;update-conversation&quot;&gt;Update Conversation&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;PATCH &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Updates the title of a conversation.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;JSON object containing &lt;code&gt;title&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If the conversation does not exist.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;delete-conversation&quot;&gt;Delete Conversation&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;DELETE &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Deletes a conversation.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If the conversation does not exist.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;POST&lt;&#x2F;td&gt;&lt;td&gt;Initializes a new conversation.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with conversation ID.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Searches for conversations.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with conversation details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves conversation details.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with conversation details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;PATCH&lt;&#x2F;td&gt;&lt;td&gt;Updates conversation title.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;DELETE&lt;&#x2F;td&gt;&lt;td&gt;Deletes a conversation.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;public-api&quot;&gt;Public API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;get-supported-models&quot;&gt;Get Supported Models&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;options&#x2F;models&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves a list of supported models.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of model names.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-supported-agents&quot;&gt;Get Supported Agents&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;options&#x2F;agents&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves a list of supported agents.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of agent names.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-security-analyzers&quot;&gt;Get Security Analyzers&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;options&#x2F;security-analyzers&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves a list of supported security analyzers.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of analyzer names.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;get-config&quot;&gt;Get Config&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;options&#x2F;config&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the current server configuration.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with configuration details.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;options&#x2F;models&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves supported models.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of model names.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;options&#x2F;agents&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves supported agents.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of agent names.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;options&#x2F;security-analyzers&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves security analyzers.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON array of analyzer names.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;options&#x2F;config&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves server configuration.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with configuration details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;security-api&quot;&gt;Security API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;security-analyzer&quot;&gt;Security Analyzer&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;ANY &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;security&#x2F;{path:path}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: A catch-all route for security analyzer API requests.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Response from the security analyzer.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If the security analyzer is not initialized.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;security&#x2F;{path:path}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;ANY&lt;&#x2F;td&gt;&lt;td&gt;Security analyzer API requests.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Response from the security analyzer.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;settings-api&quot;&gt;Settings API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;load-settings&quot;&gt;Load Settings&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;settings&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Loads the current settings.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with settings details.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;404 Not Found&lt;&#x2F;strong&gt;: If settings are not found.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If the token is invalid.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;store-settings&quot;&gt;Store Settings&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;POST &#x2F;api&#x2F;settings&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Stores new settings.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Request Body&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;JSON object containing settings details.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;401 Unauthorized&lt;&#x2F;strong&gt;: If the GitHub token is invalid.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if storing settings fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;settings&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Loads current settings.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with settings details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;settings&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;POST&lt;&#x2F;td&gt;&lt;td&gt;Stores new settings.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: Success message.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;trajectory-api&quot;&gt;Trajectory API&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;get-trajectory&quot;&gt;Get Trajectory&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Endpoint&lt;&#x2F;strong&gt;: &lt;code&gt;GET &#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;trajectory&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Description&lt;&#x2F;strong&gt;: Retrieves the current trajectory of events.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Response&lt;&#x2F;strong&gt;:
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object containing the trajectory.&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;500 Internal Server Error&lt;&#x2F;strong&gt;: Error details if retrieval fails.&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;&#x2F;api&#x2F;conversations&#x2F;{conversation_id}&#x2F;trajectory&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GET&lt;&#x2F;td&gt;&lt;td&gt;Retrieves the current trajectory.&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;200 OK&lt;&#x2F;strong&gt;: JSON object with trajectory details.&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 </content>
         
     </entry>
