@@ -605,3 +605,107 @@ table td {
 .thinking span:nth-child(3) {
     animation-delay: 0.4s;
 }
+
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+    .container {
+        position: relative; /* 为侧边栏滑动提供定位上下文 */
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -80%; /* 初始状态隐藏在左侧 */
+        width: 80%;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease-out;
+        padding: 20px;
+    }
+
+    .sidebar.active {
+        left: 0; /* 显示侧边栏 */
+    }
+
+    /* 隐藏不需要的元素 */
+    .pure-menu-heading, 
+    .introduction {
+        display: none;
+    }
+
+    /* 显示汉堡菜单图标 */
+        .menu-toggle {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1001;
+        width: 36px;  /* 减小整体尺寸 */
+        height: 36px;
+        border-radius: 50%;
+        background: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        border: 2px solid #333;  /* 添加白色边框 */
+    }
+    
+    .menu-toggle img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;  /* 确保图片正确填充圆形区域 */
+        border: none;  /* 移除图片的边框 */
+    }
+    
+    /* 添加悬停效果 */
+    .menu-toggle:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease-out;
+    }
+
+    /* 添加遮罩层 */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    /* 调整内容区域 */
+    .content {
+        width: 100%;
+        padding: 1em;
+    }
+
+    /* 优化导航菜单在移动端的显示 */
+    .nav .nav-links li {
+        margin: 10px 0;
+    }
+
+    .nav .nav-links li a {
+        padding: 10px;
+        display: block;
+    }
+
+    /* 调整社交图标在移动端的布局 */
+    .social {
+        margin-top: 20px;
+    }
+
+    .social .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+}

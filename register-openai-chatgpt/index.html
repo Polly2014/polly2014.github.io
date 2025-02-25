@@ -14,6 +14,12 @@
     
 </head>
 <body>
+    <!-- 添加汉堡菜单按钮 -->
+    <div class="menu-toggle">
+        <img src=https://polly2014.github.io/images/polly.png alt="Menu">
+    </div>
+    <!-- 添加遮罩层 -->
+    <div class="overlay"></div>
     <div class="pure-g container">
         <div class="sidebar pure-u-1 pure-u-md-1-5">
             <div class="title">
@@ -98,5 +104,52 @@
 
         </div>
     </div>
+    <!-- 在body标签结束前添加JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay');
+
+            // 切换侧边栏显示状态
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            // 点击菜单按钮显示侧边栏
+            menuToggle.addEventListener('click', toggleSidebar);
+
+            // 点击遮罩层隐藏侧边栏
+            overlay.addEventListener('click', toggleSidebar);
+
+            // 处理移动端滑动手势
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+
+            function handleSwipe() {
+                const swipeDistance = touchEndX - touchStartX;
+                // 从左向右滑动显示菜单
+                if (swipeDistance > 50 && touchStartX < 30) {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                }
+                // 从右向左滑动隐藏菜单
+                else if (swipeDistance < -50 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
