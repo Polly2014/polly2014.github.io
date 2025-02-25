@@ -349,3 +349,259 @@ table td {
         display: none;
     }
 }
+
+
+/* Polly Chat Styles */
+.polly-chat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 初始状态垂直居中 */
+    align-items: center;
+    height: 100%;
+    margin: auto;
+    transition: all 0.6s ease-out;
+}
+
+#chat-box {
+    width: 80%;
+    height: 0; /* 初始高度为0 */
+    opacity: 0; /* 初始透明 */
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 0 20px; /* 初始padding-top和bottom为0 */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.6s ease-out;
+}
+
+* 添加展开状态的类 */
+.polly-chat.expanded {
+    justify-content: flex-end; /* 切换到底部对齐 */
+    padding-bottom: 20px; /* 为底部留出空间 */
+}
+
+.polly-chat h2 {
+    font-size: 2.2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1.5em;
+    font-weight: 300; /* 使用较细的字重 */
+    letter-spacing: 1px; /* 增加字间距 */
+    position: relative;
+    padding-bottom: 15px; /* 为下划线留出空间 */
+}
+
+/* 添加简单的装饰性下划线 */
+.polly-chat h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: rgb(61, 146, 201); /* 使用网站主题蓝色 */
+    border-radius: 2px;
+}
+
+/* 添加淡入动画 */
+@keyframes titleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.polly-chat h2 {
+    animation: titleFadeIn 0.8s ease-out forwards;
+}
+
+#chat-box.expanded {
+    height: 500px; /* 展开后的高度 */
+    opacity: 1;
+    padding: 20px; /* 恢复完整padding */
+}
+
+.input-container {
+    position: relative;
+    width: 80%;
+    margin-bottom: 10px;
+    transition: transform 0.6s ease-out;
+}
+
+/* 可选：添加输入框上移动画 */
+.polly-chat.expanded .input-container {
+    transform: translateY(0);
+}
+
+.message-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 80%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.user-message {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+}
+
+.polly-message {
+    align-self: flex-start;
+}
+
+.input-container {
+    position: relative;
+    width: 80%;
+    margin-bottom: 10px;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+}
+
+.chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chat-avatar i {
+    font-size: 20px;
+    color: #666;
+}
+
+.chat-bubble {
+    padding: 8px 16px;
+    border-radius: 16px;
+    max-width: calc(100% - 50px);
+    word-wrap: break-word;
+    position: relative;
+}
+
+.chat-bubble.user {
+    background-color: #333;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.polly {
+    background-color: #f0f0f0;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+/* 添加消息气泡的小尾巴 */
+.chat-bubble.user:after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background-color: #333;
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+}
+
+.chat-bubble.polly:after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background-color: #f0f0f0;
+    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+}
+
+#user-input {
+    width: 100%;
+    padding: 12px 15px;
+    padding-right: 70px; /* 减小右侧padding */
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+}
+
+#send-button {
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px 12px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: calc(100% - 6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#send-button i {
+    font-size: 16px;
+}
+
+#send-button:hover {
+    background-color: #444;
+    transform: translateY(-50%) scale(0.98);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    33% { transform: translateY(-2px); }
+    66% { transform: translateY(2px); }
+}
+
+.thinking {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 0 8px;
+}
+
+.thinking span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #999;
+    border-radius: 50%;
+    animation: bounce 1s infinite;
+}
+
+.thinking span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.thinking span:nth-child(3) {
+    animation-delay: 0.4s;
+}
