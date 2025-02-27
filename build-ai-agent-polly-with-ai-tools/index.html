@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polly&#x27;s Blog</title>
+    <meta name="description" content="Wangbaoli">
+    <meta name="keywords" content="Polly, Blog, Baoli Wang">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
+    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
+    
+</head>
+<body>
+    <!-- 添加汉堡菜单按钮 -->
+    <div class="menu-toggle">
+        <img src=https://polly2014.github.io/images/polly.png alt="Menu">
+    </div>
+    <!-- 添加遮罩层 -->
+    <div class="overlay"></div>
+    <div class="pure-g container">
+        <div class="sidebar pure-u-1 pure-u-md-1-5">
+            <div class="title">
+                <a class="pure-menu-heading" href=https://polly2014.github.io>
+                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
+                </a>
+                <div class="introduction">
+                    <p>Polly&#x27;s Blog</p>
+                </div>
+                <div class="nav">
+                    <ul class="nav-links">
+                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
+                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
+                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
+                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
+                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
+                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
+                    </ul>
+                </div>
+                <div class="social">
+                    <ul class="social-links">
+                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
+                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content pure-u-1 pure-u-md-4-5">
+            
+    <div class="blog-post">
+        <h1>Polly诞生记：How to use AI Coding Agent &amp; Copilot to code an AI Agent</h1>
+        <div class="content">
+            <p><img src="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/AI_Agent_Polly_Done.png" alt="AI_Agent_Polly_Done" />
+在人工智能快速发展的今天，如何高效构建自己的AI Agent成为了开发者们关注的焦点。本文将详细介绍如何利用GitHub Copilot和OpenHands工具快速构建一个基于DeepSeek的AI助手 - Polly。整个过程不仅高效，而且能够体验到 AI 辅助编程的强大能力。</p>
+<h2 id="yi-shi-yong-openhands-fang-an-jia-gou-she-ji">一、使用 OpenHands 方案架构设计</h2>
+<h3 id="1-1-cong-ideadao-planbu-dao-yi-fen-zhong">1.1 从Idea到Plan不到一分钟</h3>
+<p><img src="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/AI_Agent_Polly_Idea_To_Plan.png" alt="AI_Agent_Polly" /></p>
+<p>关于界面:</p>
+<pre data-lang="text" style="background-color:#2b303b;color:#c0c5ce;" class="language-text "><code class="language-text" data-lang="text"><span>你的设计思路非常清晰，以下是我的一些建议和扩展想法：
+</span><span>
+</span><span>### 基本设计
+</span><span>1. **标题**：`&quot;You can talk with Polly&quot;` 是一个很好的标题，简洁明了。
+</span><span>2. **输入框和发送按钮**：用户可以通过输入框输入问题，点击发送按钮后，向后端的 LLM Service 发送请求并展示回复。
+</span><span>3. **回复展示**：在输入框下方动态展示 Polly 的回复。
+</span><span>
+</span><span>### 更加 Fancy 的想法
+</span><span>1. **对话气泡**：
+</span><span>   - 将用户输入和 Polly 的回复以对话气泡的形式展示，类似于聊天应用的界面。
+</span><span>   - 用户的输入在右侧显示，Polly 的回复在左侧显示。
+</span><span>
+</span><span>2. **Polly 的头像**：
+</span><span>   - 在每条 Polly 的回复旁边显示一个虚拟数字人的头像，增加互动感。
+</span><span>   - 头像可以是一个动态的 3D 模型或 GIF，模拟 Polly 的表情变化。
+</span><span>
+</span><span>3. **语音交互**：
+</span><span>   - 增加语音输入功能，用户可以通过语音与 Polly 交流。
+</span><span>   - Polly 的回复可以通过语音合成（TTS）播放出来。
+</span><span>
+</span><span>4. **动画效果**：
+</span><span>   - 在 Polly 回复时，显示一个“正在输入...”的动画，增加真实感。
+</span><span>   - Polly 的头像可以在回复时做出一些动态效果，比如眨眼或点头。
+</span><span>
+</span><span>5. **主题切换**：
+</span><span>   - 提供一个按钮，用户可以切换 Polly 的主题，比如“专业模式”、“幽默模式”或“科幻模式”，以改变 Polly 的回复风格。
+</span><span>
+</span><span>6. **知识图谱展示**：
+</span><span>   - 如果 Polly 的回复涉及到某些知识点，可以在右侧动态生成一个知识图谱，帮助用户更直观地理解。
+</span><span>
+</span><span>7. **多语言支持**：
+</span><span>   - 提供语言切换功能，用户可以选择与 Polly 用不同的语言交流。
+</span><span>
+</span><span>8. **历史记录**：
+</span><span>   - 在页面上保留对话历史，用户可以随时回顾之前的对话。
+</span><span>
+</span><span>9. **个性化设置**：
+</span><span>   - 用户可以自定义 Polly 的名字、头像、语音风格等，增加个性化体验。
+</span><span>
+</span><span>### 技术实现
+</span><span>- **前端**：
+</span><span>  - 使用 JavaScript（如 Vue.js 或 React）动态更新对话内容。
+</span><span>  - 使用 CSS 实现对话气泡和动画效果。
+</span><span>- **后端**：
+</span><span>  - 通过 AJAX 或 WebSocket 与 LLM Service 通信，实时获取 Polly 的回复。
+</span><span>- **LLM Service**：
+</span><span>  - Polly 的回复可以通过调用 LLM Service 的 API 实现，支持上下文对话。
+</span><span>
+</span><span>如果你觉得这些想法不错，我可以帮你实现基础功能，或者进一步设计和实现更 Fancy 的功能！你怎么看？
+</span></code></pre>
+<p>关于Agent设计：</p>
+<pre data-lang="text" style="background-color:#2b303b;color:#c0c5ce;" class="language-text "><code class="language-text" data-lang="text"><span>你的想法非常有创意！通过构建一个 **Polly Profile**，结合 DeepSeek 的服务，可以实现一个高度个性化的数字人。以下是一些改进和扩展的建议，帮助你打造一个更智能、更真实的数字人 Polly：
+</span><span>
+</span><span>### 1. **Polly Profile 的设计**
+</span><span>Polly Profile 是数字人的核心，应该包含以下几个方面的信息：
+</span><span>
+</span><span>#### **1.1 基础信息**
+</span><span>- **身份**: Polly 的背景信息，例如职业、兴趣、技能等。
+</span><span>  - 示例: &quot;我是Polly，一个热爱技术的博主，擅长编程、写作和摄影。&quot;
+</span><span>- **语气和风格**: 定义 Polly 的说话风格（幽默、正式、友好等）。
+</span><span>  - 示例: &quot;我喜欢用轻松幽默的方式与人交流。&quot;
+</span><span>
+</span><span>#### **1.2 知识领域**
+</span><span>- **专业知识**: 定义 Polly 擅长的领域，例如编程、设计、心理学等。
+</span><span>  - 示例: &quot;我对Python编程、前端开发和人工智能有深入了解。&quot;
+</span><span>- **个性化知识**: 包括你的个人经历、观点和兴趣。
+</span><span>  - 示例: &quot;我喜欢旅行，尤其是探索自然风光。&quot;
+</span><span>
+</span><span>#### **1.3 行为规则**
+</span><span>- **回答策略**: 定义 Polly 如何回答问题。
+</span><span>  - 示例: &quot;如果我不知道答案，我会坦诚告诉你，并尝试提供相关资源。&quot;
+</span><span>- **情感模拟**: Polly 如何表现情感，例如高兴、同情、幽默等。
+</span><span>
+</span><span>#### **1.4 动态学习**
+</span><span>- **记忆功能**: Polly 可以记住用户的偏好和历史对话。
+</span><span>  - 示例: &quot;记住用户喜欢的主题，下次对话时主动提及。&quot;
+</span><span>- **实时更新**: 通过 DeepSeek 的服务，动态获取最新知识。
+</span><span>
+</span><span>### 2. **技术实现建议**
+</span><span>为了让 Polly 更加智能和真实，可以从以下几个方面优化技术实现：
+</span><span>#### **2.1 Prompt Engineering**
+</span><span>- **多层Prompt设计**: 
+</span><span>  - **背景Prompt**: 定义 Polly 的身份和行为规则。
+</span><span>  - **上下文Prompt**: 根据用户的输入动态生成上下文。
+</span><span>  - **任务Prompt**: 针对特定任务（如技术支持、写作建议）生成专用Prompt。
+</span><span>- **示例Prompt**:
+</span></code></pre>
+<p>你是Polly，一个热爱技术的数字人。你擅长编程、写作和摄影。用友好和幽默的语气回答问题。如果你不知道答案，请坦诚告知并提供相关资源。
+用户问题: {用户输入}
+Polly的回答:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>
+</span><span>#### **2.2 DeepSeek 服务集成**
+</span><span>- **知识扩展**: 利用 DeepSeek 的服务，实时获取最新的知识和数据。
+</span><span>- 示例: 用户提问 &quot;最近的AI技术趋势是什么？&quot;，Polly 可以通过 DeepSeek 获取最新的技术文章并总结回答。
+</span><span>- **多模态支持**: 如果 DeepSeek 支持图片、视频等多模态数据，可以让 Polly 提供更丰富的回答形式。
+</span><span>
+</span><span>#### **2.3 个性化记忆**
+</span><span>- **用户偏好存储**: 使用数据库或文件系统存储用户的偏好和历史对话。
+</span><span>- **动态调整**: 根据用户的反馈调整 Polly 的行为和回答风格。
+</span><span>
+</span><span>#### **2.4 多轮对话**
+</span><span>- **上下文管理**: 通过对话历史，保持多轮对话的连贯性。
+</span><span>- 示例: 用户问 &quot;你喜欢什么电影？&quot; 后，接着问 &quot;为什么？&quot;，Polly 能理解上下文并回答。
+</span><span>
+</span><span>### 3. **用户体验优化**
+</span><span>为了让用户与 Polly 的互动更加自然，可以从以下方面优化用户体验：
+</span><span>
+</span><span>#### **3.1 视觉呈现**
+</span><span>- **数字人形象**: 使用 3D 模型或动画，打造一个可视化的 Polly。
+</span><span>- **表情和动作**: 根据对话内容动态调整 Polly 的表情和动作。
+</span><span>
+</span><span>#### **3.2 多渠道支持**
+</span><span>- **跨平台交互**: 将 Polly 集成到多个平台，例如网站、移动应用、社交媒体等。
+</span><span>- **语音交互**: 支持语音输入和输出，让用户可以通过语音与 Polly 交流。
+</span><span>
+</span><span>#### **3.3 个性化推荐**
+</span><span>- **内容推荐**: 根据用户的兴趣，主动推荐文章、视频或工具。
+</span><span>- **互动游戏**: 提供一些轻松的互动功能，例如问答游戏、心理测试等。
+</span><span>
+</span><span>### 4. **扩展功能**
+</span><span>- **情感分析**: 根据用户的语气和内容，判断用户的情绪，并做出相应的回应。
+</span><span>- **知识图谱**: 构建一个知识图谱，帮助 Polly 理解复杂问题并提供更准确的回答。
+</span><span>- **社区互动**: 让用户可以与其他 Polly 用户互动，形成一个社区。
+</span><span>
+</span><span>### 5. **示例场景**
+</span><span>以下是一些 Polly 的实际应用场景：
+</span><span>1. **技术支持**: 用户提问 &quot;如何用Python实现一个爬虫？&quot;，Polly 提供代码示例和解释。
+</span><span>2. **生活助手**: 用户问 &quot;周末有什么好玩的活动推荐？&quot;，Polly 根据用户位置和兴趣推荐活动。
+</span><span>3. **学习伙伴**: 用户学习新知识时，Polly 提供相关资源和练习题。
+</span><span>
+</span><span>### 总结
+</span><span>通过构建一个详细的 Polly Profile，并结合 DeepSeek 的服务，你可以打造一个高度个性化、智能化的数字人 Polly。他不仅可以模拟你的知识和个性，还能通过动态学习和实时更新，持续提升自己的能力。希望这些建议对你有所帮助！如果需要进一步的技术支持，我可以协助你实现具体功能。
+</span></code></pre>
+<h3 id="1-2-jia-gou-gai-shu">1.2 架构概述</h3>
+<p>Polly AI Agent 采用了前后端分离的架构设计，主要包括以下几个部分：</p>
+<ul>
+<li>前端：基于 OpenHands 构建的聊天界面</li>
+<li>后端：FastAPI 服务</li>
+<li>大模型：DeepSeek API</li>
+<li>部署：Azure Ubuntu 系统服务</li>
+</ul>
+<h3 id="1-3-ji-shu-zhan-xuan-ze">1.3 技术栈选择</h3>
+<ul>
+<li>前端：HTML/CSS/JavaScript</li>
+<li>后端：Python + FastAPI</li>
+<li>API 集成：DeepSeek API</li>
+<li>开发工具：GitHub Copilot、VS Code、OpenHands</li>
+<li>部署环境：Ubuntu + Systemd</li>
+</ul>
+<h2 id="er-openhands-gou-zao-wang-ye-qian-duan-liao-tian-gong-neng">二、OpenHands 构造网页前端聊天功能</h2>
+<h3 id="2-1-openhands-jie-shao">2.1 OpenHands 介绍</h3>
+<p>OpenHands 是一套开源的 AI 聊天组件库，提供了丰富的预构建组件，能够快速搭建聊天界面。使用 OpenHands，我们无需从零开始构建 UI，可以专注于业务逻辑的开发。</p>
+<h3 id="2-2-qian-duan-ye-mian-gou-jian">2.2 前端页面构建</h3>
+<p>首先，我们创建一个基本的 HTML 结构：</p>
+<pre data-lang="html" style="background-color:#2b303b;color:#c0c5ce;" class="language-html "><code class="language-html" data-lang="html"><span>&lt;!</span><span style="color:#b48ead;">DOCTYPE </span><span style="color:#d08770;">html</span><span>&gt;
+</span><span>&lt;</span><span style="color:#bf616a;">html </span><span style="color:#d08770;">lang</span><span>=&quot;</span><span style="color:#a3be8c;">zh</span><span>&quot;&gt;
+</span><span>&lt;</span><span style="color:#bf616a;">head</span><span>&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">meta </span><span style="color:#d08770;">charset</span><span>=&quot;</span><span style="color:#a3be8c;">UTF-8</span><span>&quot;&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">meta </span><span style="color:#d08770;">name</span><span>=&quot;</span><span style="color:#a3be8c;">viewport</span><span>&quot; </span><span style="color:#d08770;">content</span><span>=&quot;</span><span style="color:#a3be8c;">width=device-width, initial-scale=1.0</span><span>&quot;&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">title</span><span>&gt;Polly AI 助手&lt;/</span><span style="color:#bf616a;">title</span><span>&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">link </span><span style="color:#d08770;">rel</span><span>=&quot;</span><span style="color:#a3be8c;">stylesheet</span><span>&quot; </span><span style="color:#d08770;">href</span><span>=&quot;</span><span style="color:#a3be8c;">https://cdn.jsdelivr.net/npm/openhands/dist/openhands.min.css</span><span>&quot;&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">style</span><span>&gt;
+</span><span>        </span><span style="color:#bf616a;">body </span><span>{
+</span><span>            font-family: &#39;</span><span style="color:#a3be8c;">Arial</span><span>&#39;, sans-serif;
+</span><span>            margin: </span><span style="color:#d08770;">0</span><span>;
+</span><span>            padding: </span><span style="color:#d08770;">0</span><span>;
+</span><span>            background-color: </span><span style="color:#96b5b4;">#f5f5f5</span><span>;
+</span><span>        }
+</span><span>        </span><span style="color:#8fa1b3;">.</span><span style="color:#d08770;">chat-container </span><span>{
+</span><span>            max-width: </span><span style="color:#d08770;">800px</span><span>;
+</span><span>            margin: </span><span style="color:#d08770;">0 </span><span>auto;
+</span><span>            padding: </span><span style="color:#d08770;">20px</span><span>;
+</span><span>        }
+</span><span>        </span><span style="color:#65737e;">/* 更多样式... */
+</span><span>    &lt;/</span><span style="color:#bf616a;">style</span><span>&gt;
+</span><span>&lt;/</span><span style="color:#bf616a;">head</span><span>&gt;
+</span><span>&lt;</span><span style="color:#bf616a;">body</span><span>&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">div </span><span style="color:#d08770;">class</span><span>=&quot;</span><span style="color:#a3be8c;">chat-container</span><span>&quot;&gt;
+</span><span>        &lt;</span><span style="color:#bf616a;">h1</span><span>&gt;Polly AI 助手&lt;/</span><span style="color:#bf616a;">h1</span><span>&gt;
+</span><span>        &lt;</span><span style="color:#bf616a;">div </span><span style="color:#8fa1b3;">id</span><span>=&quot;</span><span style="color:#a3be8c;">chat-window</span><span>&quot; </span><span style="color:#d08770;">class</span><span>=&quot;</span><span style="color:#a3be8c;">oh-chat-window</span><span>&quot;&gt;&lt;/</span><span style="color:#bf616a;">div</span><span>&gt;
+</span><span>        &lt;</span><span style="color:#bf616a;">div </span><span style="color:#d08770;">class</span><span>=&quot;</span><span style="color:#a3be8c;">oh-input-container</span><span>&quot;&gt;
+</span><span>            &lt;</span><span style="color:#bf616a;">input </span><span style="color:#d08770;">type</span><span>=&quot;</span><span style="color:#a3be8c;">text</span><span>&quot; </span><span style="color:#8fa1b3;">id</span><span>=&quot;</span><span style="color:#a3be8c;">user-input</span><span>&quot; </span><span style="color:#d08770;">placeholder</span><span>=&quot;</span><span style="color:#a3be8c;">输入您的问题...</span><span>&quot;&gt;
+</span><span>            &lt;</span><span style="color:#bf616a;">button </span><span style="color:#8fa1b3;">id</span><span>=&quot;</span><span style="color:#a3be8c;">send-button</span><span>&quot;&gt;发送&lt;/</span><span style="color:#bf616a;">button</span><span>&gt;
+</span><span>        &lt;/</span><span style="color:#bf616a;">div</span><span>&gt;
+</span><span>    &lt;/</span><span style="color:#bf616a;">div</span><span>&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">script </span><span style="color:#d08770;">src</span><span>=&quot;</span><span style="color:#a3be8c;">https://cdn.jsdelivr.net/npm/openhands/dist/openhands.min.js</span><span>&quot;&gt;&lt;/</span><span style="color:#bf616a;">script</span><span>&gt;
+</span><span>    &lt;</span><span style="color:#bf616a;">script </span><span style="color:#d08770;">src</span><span>=&quot;</span><span style="color:#a3be8c;">app.js</span><span>&quot;&gt;&lt;/</span><span style="color:#bf616a;">script</span><span>&gt;
+</span><span>&lt;/</span><span style="color:#bf616a;">body</span><span>&gt;
+</span><span>&lt;/</span><span style="color:#bf616a;">html</span><span>&gt;
+</span></code></pre>
+<p>然后，编写 JavaScript 代码处理消息交互：</p>
+<pre data-lang="javascript" style="background-color:#2b303b;color:#c0c5ce;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#65737e;">// app.js
+</span><span>document.</span><span style="color:#96b5b4;">addEventListener</span><span>(&#39;</span><span style="color:#a3be8c;">DOMContentLoaded</span><span>&#39;, </span><span style="color:#b48ead;">function</span><span>() {
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">chatWindow </span><span>= document.</span><span style="color:#96b5b4;">getElementById</span><span>(&#39;</span><span style="color:#a3be8c;">chat-window</span><span>&#39;);
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">userInput </span><span>= document.</span><span style="color:#96b5b4;">getElementById</span><span>(&#39;</span><span style="color:#a3be8c;">user-input</span><span>&#39;);
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">sendButton </span><span>= document.</span><span style="color:#96b5b4;">getElementById</span><span>(&#39;</span><span style="color:#a3be8c;">send-button</span><span>&#39;);
+</span><span>    
+</span><span>    </span><span style="color:#65737e;">// API 配置
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">apiUrl </span><span>= &#39;</span><span style="color:#a3be8c;">https://xxx.com:50206/api/polly</span><span>&#39;;
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">apiKey </span><span>= &#39;</span><span style="color:#a3be8c;">your_api_key_here</span><span>&#39;;
+</span><span>    
+</span><span>    </span><span style="color:#65737e;">// 初始化聊天窗口
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">chat </span><span>= new OpenHands.ChatUI({
+</span><span>        element: </span><span style="color:#bf616a;">chatWindow</span><span>,
+</span><span>        theme: &#39;</span><span style="color:#a3be8c;">light</span><span>&#39;,
+</span><span>        initialMessage: &#39;</span><span style="color:#a3be8c;">你好！我是 Polly，有什么我可以帮助你的吗？</span><span>&#39;
+</span><span>    });
+</span><span>    
+</span><span>    </span><span style="color:#65737e;">// 发送消息处理
+</span><span>    </span><span style="color:#b48ead;">function </span><span style="color:#8fa1b3;">sendMessage</span><span>() {
+</span><span>        </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">message </span><span>= </span><span style="color:#bf616a;">userInput</span><span>.value.</span><span style="color:#8fa1b3;">trim</span><span>();
+</span><span>        </span><span style="color:#b48ead;">if </span><span>(!</span><span style="color:#bf616a;">message</span><span>) </span><span style="color:#b48ead;">return</span><span>;
+</span><span>        
+</span><span>        </span><span style="color:#65737e;">// 显示用户消息
+</span><span>        </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">addUserMessage</span><span>(</span><span style="color:#bf616a;">message</span><span>);
+</span><span>        </span><span style="color:#bf616a;">userInput</span><span>.value = &#39;&#39;;
+</span><span>        
+</span><span>        </span><span style="color:#65737e;">// 显示加载状态
+</span><span>        </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">showTyping</span><span>();
+</span><span>        
+</span><span>        </span><span style="color:#65737e;">// 发送请求到 API
+</span><span>        </span><span style="color:#8fa1b3;">fetch</span><span>(</span><span style="color:#bf616a;">apiUrl</span><span>, {
+</span><span>            method: &#39;</span><span style="color:#a3be8c;">POST</span><span>&#39;,
+</span><span>            headers: {
+</span><span>                &#39;</span><span style="color:#a3be8c;">Content-Type</span><span>&#39;: &#39;</span><span style="color:#a3be8c;">application/json</span><span>&#39;,
+</span><span>                &#39;</span><span style="color:#a3be8c;">X-API-Key</span><span>&#39;: </span><span style="color:#bf616a;">apiKey
+</span><span>            },
+</span><span>            body: JSON.</span><span style="color:#96b5b4;">stringify</span><span>({ message: </span><span style="color:#bf616a;">message </span><span>})
+</span><span>        })
+</span><span>        .</span><span style="color:#96b5b4;">then</span><span>(</span><span style="color:#bf616a;">response </span><span style="color:#b48ead;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#b48ead;">if </span><span>(!</span><span style="color:#bf616a;">response</span><span>.</span><span style="color:#bf616a;">ok</span><span>) </span><span style="color:#b48ead;">throw </span><span>new Error(&#39;</span><span style="color:#a3be8c;">API 请求失败</span><span>&#39;);
+</span><span>            </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">response</span><span>.</span><span style="color:#8fa1b3;">json</span><span>();
+</span><span>        })
+</span><span>        .</span><span style="color:#96b5b4;">then</span><span>(</span><span style="color:#bf616a;">data </span><span style="color:#b48ead;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#65737e;">// 隐藏加载状态并显示回复
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">hideTyping</span><span>();
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">addAssistantMessage</span><span>(</span><span style="color:#bf616a;">data</span><span>.</span><span style="color:#bf616a;">reply</span><span>);
+</span><span>        })
+</span><span>        .</span><span style="color:#96b5b4;">catch</span><span>(</span><span style="color:#bf616a;">error </span><span style="color:#b48ead;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#ebcb8b;">console</span><span>.</span><span style="color:#96b5b4;">error</span><span>(&#39;</span><span style="color:#a3be8c;">Error:</span><span>&#39;, </span><span style="color:#bf616a;">error</span><span>);
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">hideTyping</span><span>();
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">addSystemMessage</span><span>(&#39;</span><span style="color:#a3be8c;">抱歉，发生了错误，请稍后再试。</span><span>&#39;);
+</span><span>        });
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style="color:#65737e;">// 事件监听器
+</span><span>    </span><span style="color:#bf616a;">sendButton</span><span>.</span><span style="color:#96b5b4;">addEventListener</span><span>(&#39;</span><span style="color:#a3be8c;">click</span><span>&#39;, </span><span style="color:#bf616a;">sendMessage</span><span>);
+</span><span>    </span><span style="color:#bf616a;">userInput</span><span>.</span><span style="color:#96b5b4;">addEventListener</span><span>(&#39;</span><span style="color:#a3be8c;">keypress</span><span>&#39;, </span><span style="color:#b48ead;">function</span><span>(</span><span style="color:#bf616a;">e</span><span>) {
+</span><span>        </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">e</span><span>.</span><span style="color:#bf616a;">key </span><span>=== &#39;</span><span style="color:#a3be8c;">Enter</span><span>&#39;) </span><span style="color:#8fa1b3;">sendMessage</span><span>();
+</span><span>    });
+</span><span>});
+</span></code></pre>
+<h3 id="2-3-websocket-zhi-chi">2.3 WebSocket 支持</h3>
+<p>除了基本的 HTTP 请求外，还添加了 WebSocket 支持，实现实时通信：</p>
+<pre data-lang="javascript" style="background-color:#2b303b;color:#c0c5ce;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#65737e;">// WebSocket 连接
+</span><span style="color:#b48ead;">function </span><span style="color:#8fa1b3;">connectWebSocket</span><span>() {
+</span><span>    </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">ws </span><span>= new WebSocket(`</span><span style="color:#a3be8c;">wss://xxx.com:50206/ws/polly?api_key=${</span><span style="color:#bf616a;">apiKey</span><span style="color:#a3be8c;">}</span><span>`);
+</span><span>    
+</span><span>    </span><span style="color:#bf616a;">ws</span><span>.</span><span style="color:#8fa1b3;">onopen </span><span>= </span><span style="color:#b48ead;">function</span><span>() {
+</span><span>        </span><span style="color:#ebcb8b;">console</span><span>.</span><span style="color:#96b5b4;">log</span><span>(&#39;</span><span style="color:#a3be8c;">WebSocket 连接已建立</span><span>&#39;);
+</span><span>        </span><span style="color:#65737e;">// 发送心跳检测
+</span><span>        </span><span style="color:#96b5b4;">setInterval</span><span>(() </span><span style="color:#b48ead;">=&gt; </span><span>{
+</span><span>            </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">ws</span><span>.readyState === </span><span style="color:#ebcb8b;">WebSocket</span><span>.</span><span style="color:#bf616a;">OPEN</span><span>) {
+</span><span>                </span><span style="color:#bf616a;">ws</span><span>.</span><span style="color:#96b5b4;">send</span><span>(JSON.</span><span style="color:#96b5b4;">stringify</span><span>({ type: &#39;</span><span style="color:#a3be8c;">ping</span><span>&#39; }));
+</span><span>            }
+</span><span>        }, </span><span style="color:#d08770;">30000</span><span>);
+</span><span>    };
+</span><span>    
+</span><span>    </span><span style="color:#bf616a;">ws</span><span>.</span><span style="color:#8fa1b3;">onmessage </span><span>= </span><span style="color:#b48ead;">function</span><span>(</span><span style="color:#bf616a;">event</span><span>) {
+</span><span>        </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">data </span><span>= JSON.</span><span style="color:#96b5b4;">parse</span><span>(event.data);
+</span><span>        </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">data</span><span>.type === &#39;</span><span style="color:#a3be8c;">pong</span><span>&#39;) </span><span style="color:#b48ead;">return</span><span>; </span><span style="color:#65737e;">// 忽略心跳响应
+</span><span>        
+</span><span>        </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">data</span><span>.</span><span style="color:#bf616a;">reply</span><span>) {
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">addAssistantMessage</span><span>(</span><span style="color:#bf616a;">data</span><span>.</span><span style="color:#bf616a;">reply</span><span>);
+</span><span>        } </span><span style="color:#b48ead;">else if </span><span>(</span><span style="color:#bf616a;">data</span><span>.</span><span style="color:#bf616a;">error</span><span>) {
+</span><span>            </span><span style="color:#bf616a;">chat</span><span>.</span><span style="color:#8fa1b3;">addSystemMessage</span><span>(`</span><span style="color:#a3be8c;">错误: ${</span><span style="color:#bf616a;">data</span><span style="color:#a3be8c;">.</span><span style="color:#bf616a;">error</span><span style="color:#a3be8c;">}</span><span>`);
+</span><span>        }
+</span><span>    };
+</span><span>    
+</span><span>    </span><span style="color:#bf616a;">ws</span><span>.</span><span style="color:#8fa1b3;">onclose </span><span>= </span><span style="color:#b48ead;">function</span><span>() {
+</span><span>        </span><span style="color:#ebcb8b;">console</span><span>.</span><span style="color:#96b5b4;">log</span><span>(&#39;</span><span style="color:#a3be8c;">WebSocket 连接已关闭</span><span>&#39;);
+</span><span>        </span><span style="color:#65737e;">// 尝试重新连接
+</span><span>        </span><span style="color:#96b5b4;">setTimeout</span><span>(</span><span style="color:#bf616a;">connectWebSocket</span><span>, </span><span style="color:#d08770;">3000</span><span>);
+</span><span>    };
+</span><span>    
+</span><span>    </span><span style="color:#bf616a;">ws</span><span>.</span><span style="color:#8fa1b3;">onerror </span><span>= </span><span style="color:#b48ead;">function</span><span>(</span><span style="color:#bf616a;">error</span><span>) {
+</span><span>        </span><span style="color:#ebcb8b;">console</span><span>.</span><span style="color:#96b5b4;">error</span><span>(&#39;</span><span style="color:#a3be8c;">WebSocket 错误:</span><span>&#39;, </span><span style="color:#bf616a;">error</span><span>);
+</span><span>    };
+</span><span>    
+</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">ws</span><span>;
+</span><span>}
+</span></code></pre>
+<h2 id="san-openhands-github-copilot-da-jian-fastapi-fu-wu">三、OpenHands + GitHub Copilot 搭建 FastAPI 服务</h2>
+<h3 id="3-1-fastapi-fu-wu-gou-jian">3.1 FastAPI 服务构建</h3>
+<p>首先，需要安装必要的依赖：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">pip</span><span> install fastapi uvicorn pydantic-settings python-dotenv aiohttp
+</span></code></pre>
+<h3 id="3-2-pei-zhi-wen-jian-she-zhi">3.2 配置文件设置</h3>
+<p>创建 <code>config.py</code> 文件，管理应用配置：</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">from </span><span>pydantic_settings </span><span style="color:#b48ead;">import </span><span>BaseSettings
+</span><span style="color:#b48ead;">from </span><span>typing </span><span style="color:#b48ead;">import </span><span>List, Optional
+</span><span>
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">Settings</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseSettings</span><span style="color:#eff1f5;">):
+</span><span>    </span><span style="color:#65737e;"># API 配置
+</span><span>    api_key: str
+</span><span>    deepseek_api_key: str
+</span><span>    deepseek_api_timeout: int = </span><span style="color:#d08770;">60  </span><span style="color:#65737e;"># API 超时时间（秒）
+</span><span>    deepseek_max_retries: int = </span><span style="color:#d08770;">3   </span><span style="color:#65737e;"># 最大重试次数
+</span><span>    
+</span><span>    </span><span style="color:#65737e;"># 应用配置
+</span><span>    debug: bool = </span><span style="color:#d08770;">True
+</span><span>    port: int = </span><span style="color:#d08770;">50206
+</span><span>    host: str = &quot;</span><span style="color:#a3be8c;">0.0.0.0</span><span>&quot;
+</span><span>    environment: str = &quot;</span><span style="color:#a3be8c;">development</span><span>&quot;
+</span><span>    ssl_certfile: str = &quot;</span><span style="color:#a3be8c;">/home/azureuser/FastAPI_Server/certs/fullchain.pem</span><span>&quot;
+</span><span>    ssl_keyfile: str = &quot;</span><span style="color:#a3be8c;">/home/azureuser/FastAPI_Server/certs/privkey.pem</span><span>&quot;
+</span><span>    use_https: bool = </span><span style="color:#d08770;">True
+</span><span>    
+</span><span>    </span><span style="color:#65737e;"># 安全配置
+</span><span>    allowed_origins: List[str] = [
+</span><span>        &quot;</span><span style="color:#a3be8c;">https://polly2014.github.io</span><span>&quot;,
+</span><span>        &quot;</span><span style="color:#a3be8c;">http://localhost:1111</span><span>&quot;,
+</span><span>        &quot;</span><span style="color:#a3be8c;">http://127.0.0.1:1111</span><span>&quot;
+</span><span>    ]
+</span><span>    
+</span><span>    </span><span style="color:#65737e;"># 资源配置
+</span><span>    profile_url: str = &quot;</span><span style="color:#a3be8c;">https://your-storage.blob.core.windows.net/config/profile_polly.json</span><span>&quot;
+</span><span>    local_profile_path: str = &quot;</span><span style="color:#a3be8c;">profile_polly.json</span><span>&quot;
+</span><span>    
+</span><span style="color:#eff1f5;">    </span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">Config</span><span style="color:#eff1f5;">:
+</span><span>        env_file = &quot;</span><span style="color:#a3be8c;">.env</span><span>&quot;
+</span><span>        case_sensitive = </span><span style="color:#d08770;">False
+</span><span>
+</span><span>settings = </span><span style="color:#bf616a;">Settings</span><span>()
+</span></code></pre>
+<h3 id="3-3-zhu-yao-fu-wu-luo-ji">3.3 主要服务逻辑</h3>
+<p>下面是 <code>main.py</code> 文件的核心代码，实现了 REST API 和 WebSocket 端点：</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span>&lt;vscode_codeblock_uri&gt;vscode-remote://ssh-remote%2B20</span><span style="color:#d08770;">.51.201.85</span><span>/home/azureuser/FastAPI_Server/main.py&lt;/vscode_codeblock_uri&gt;</span><span style="color:#b48ead;">from </span><span>fastapi </span><span style="color:#b48ead;">import </span><span>FastAPI, WebSocket, HTTPException, Security, Depends, WebSocketDisconnect
+</span><span style="color:#b48ead;">from </span><span>fastapi.middleware.cors </span><span style="color:#b48ead;">import </span><span>CORSMiddleware
+</span><span style="color:#b48ead;">from </span><span>fastapi.security </span><span style="color:#b48ead;">import </span><span>APIKeyHeader
+</span><span style="color:#b48ead;">from </span><span>pydantic </span><span style="color:#b48ead;">import </span><span>BaseModel, Field
+</span><span style="color:#b48ead;">from </span><span>config </span><span style="color:#b48ead;">import </span><span>settings
+</span><span style="color:#b48ead;">import </span><span>logging
+</span><span style="color:#b48ead;">import </span><span>aiohttp
+</span><span style="color:#b48ead;">import </span><span>uvicorn
+</span><span style="color:#b48ead;">import </span><span>json
+</span><span style="color:#b48ead;">import </span><span>os
+</span><span>
+</span><span style="color:#65737e;"># 配置日志
+</span><span>logger = logging.</span><span style="color:#bf616a;">getLogger</span><span>(__name__)
+</span><span>logging.</span><span style="color:#bf616a;">basicConfig</span><span>(
+</span><span>    </span><span style="color:#bf616a;">level</span><span>=logging.</span><span style="color:#bf616a;">WARNING</span><span>,
+</span><span>    </span><span style="color:#bf616a;">format</span><span>=&#39;</span><span style="color:#d08770;">%(</span><span style="color:#bf616a;">asctime</span><span style="color:#d08770;">)s</span><span style="color:#a3be8c;"> - </span><span style="color:#d08770;">%(</span><span style="color:#bf616a;">name</span><span style="color:#d08770;">)s</span><span style="color:#a3be8c;"> - </span><span style="color:#d08770;">%(</span><span style="color:#bf616a;">levelname</span><span style="color:#d08770;">)s</span><span style="color:#a3be8c;"> - </span><span style="color:#d08770;">%(</span><span style="color:#bf616a;">message</span><span style="color:#d08770;">)s</span><span>&#39;,
+</span><span>    </span><span style="color:#bf616a;">handlers</span><span>=[
+</span><span>        logging.handlers.</span><span style="color:#bf616a;">RotatingFileHandler</span><span>(
+</span><span>            &#39;</span><span style="color:#a3be8c;">app.log</span><span>&#39;,
+</span><span>            </span><span style="color:#bf616a;">maxBytes</span><span>=</span><span style="color:#d08770;">1024</span><span>*</span><span style="color:#d08770;">1024</span><span>,
+</span><span>            </span><span style="color:#bf616a;">backupCount</span><span>=</span><span style="color:#d08770;">5
+</span><span>        ),
+</span><span>        logging.</span><span style="color:#bf616a;">StreamHandler</span><span>()
+</span><span>    ]
+</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># 创建 FastAPI 实例
+</span><span>app = </span><span style="color:#bf616a;">FastAPI</span><span>(
+</span><span>    </span><span style="color:#bf616a;">title</span><span>=&quot;</span><span style="color:#a3be8c;">Polly AI Agent</span><span>&quot;,
+</span><span>    </span><span style="color:#bf616a;">description</span><span>=&quot;</span><span style="color:#a3be8c;">Polly AI 聊天服务</span><span>&quot;,
+</span><span>    </span><span style="color:#bf616a;">version</span><span>=&quot;</span><span style="color:#a3be8c;">1.0.0</span><span>&quot;,
+</span><span>    </span><span style="color:#bf616a;">debug</span><span>=settings.debug
+</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># 配置 CORS
+</span><span>app.</span><span style="color:#bf616a;">add_middleware</span><span>(
+</span><span>    CORSMiddleware,
+</span><span>    </span><span style="color:#bf616a;">allow_origins</span><span>=settings.allowed_origins,
+</span><span>    </span><span style="color:#bf616a;">allow_credentials</span><span>=</span><span style="color:#d08770;">True</span><span>,
+</span><span>    </span><span style="color:#bf616a;">allow_methods</span><span>=[&quot;</span><span style="color:#a3be8c;">*</span><span>&quot;],
+</span><span>    </span><span style="color:#bf616a;">allow_headers</span><span>=[&quot;</span><span style="color:#a3be8c;">*</span><span>&quot;],
+</span><span>    </span><span style="color:#bf616a;">expose_headers</span><span>=[&quot;</span><span style="color:#a3be8c;">*</span><span>&quot;],
+</span><span>    </span><span style="color:#bf616a;">max_age</span><span>=</span><span style="color:#d08770;">3600</span><span>,
+</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># API 密钥验证
+</span><span>api_key_header = </span><span style="color:#bf616a;">APIKeyHeader</span><span>(</span><span style="color:#bf616a;">name</span><span>=&quot;</span><span style="color:#a3be8c;">X-API-Key</span><span>&quot;)
+</span><span>
+</span><span style="color:#b48ead;">async def </span><span style="color:#8fa1b3;">verify_api_key</span><span>(</span><span style="color:#bf616a;">api_key</span><span>: str = </span><span style="color:#bf616a;">Security</span><span>(api_key_header)):
+</span><span>    </span><span style="color:#b48ead;">if </span><span>api_key != settings.api_key:
+</span><span>        logger.</span><span style="color:#bf616a;">warning</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">无效的 API 密钥尝试</span><span>&quot;)
+</span><span>        </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">HTTPException</span><span>(
+</span><span>            </span><span style="color:#bf616a;">status_code</span><span>=</span><span style="color:#d08770;">403</span><span>,
+</span><span>            </span><span style="color:#bf616a;">detail</span><span>=&quot;</span><span style="color:#a3be8c;">无效的 API 密钥</span><span>&quot;
+</span><span>        )
+</span><span>    </span><span style="color:#b48ead;">return </span><span>api_key
+</span><span>
+</span><span style="color:#65737e;"># 数据模型
+</span><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">ChatRequest</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseModel</span><span style="color:#eff1f5;">):
+</span><span>    message: str = </span><span style="color:#bf616a;">Field</span><span>(</span><span style="color:#d08770;">...</span><span>, </span><span style="color:#bf616a;">min_length</span><span>=</span><span style="color:#d08770;">1</span><span>, </span><span style="color:#bf616a;">max_length</span><span>=</span><span style="color:#d08770;">1000</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># 核心 API 路由
+</span><span>@app.</span><span style="color:#bf616a;">post</span><span>(&quot;</span><span style="color:#a3be8c;">/api/polly</span><span>&quot;, </span><span style="color:#bf616a;">dependencies</span><span>=[</span><span style="color:#bf616a;">Depends</span><span>(verify_api_key)])
+</span><span style="color:#b48ead;">async def </span><span style="color:#8fa1b3;">chat</span><span>(</span><span style="color:#bf616a;">request</span><span>: ChatRequest):
+</span><span>    </span><span style="color:#b48ead;">try</span><span>:
+</span><span>        profile = </span><span style="color:#b48ead;">await </span><span style="color:#bf616a;">load_polly_profile</span><span>()
+</span><span>        prompt = </span><span style="color:#bf616a;">build_prompt</span><span>(profile)
+</span><span>        
+</span><span>        reply = </span><span style="color:#b48ead;">await </span><span style="color:#bf616a;">query_deepseek</span><span>(prompt, request.message)
+</span><span>        </span><span style="color:#b48ead;">return </span><span>{&quot;</span><span style="color:#a3be8c;">reply</span><span>&quot;: reply}
+</span><span>    
+</span><span>    </span><span style="color:#b48ead;">except </span><span>Exception </span><span style="color:#b48ead;">as </span><span>e:
+</span><span>        logger.</span><span style="color:#bf616a;">error</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">处理请求失败: </span><span>{</span><span style="color:#bf616a;">str</span><span>(e)}&quot;)
+</span><span>        </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">HTTPException</span><span>(</span><span style="color:#bf616a;">status_code</span><span>=</span><span style="color:#d08770;">500</span><span>, </span><span style="color:#bf616a;">detail</span><span>=</span><span style="color:#bf616a;">str</span><span>(e))
+</span><span>
+</span><span style="color:#65737e;"># WebSocket 端点
+</span><span>@app.</span><span style="color:#bf616a;">websocket</span><span>(&quot;</span><span style="color:#a3be8c;">/ws/polly</span><span>&quot;)
+</span><span style="color:#b48ead;">async def </span><span style="color:#8fa1b3;">websocket_endpoint</span><span>(</span><span style="color:#bf616a;">websocket</span><span>: WebSocket):
+</span><span>    </span><span style="color:#65737e;"># WebSocket 处理逻辑...
+</span><span>    </span><span style="color:#b48ead;">pass
+</span><span>
+</span><span style="color:#65737e;"># 运行服务器
+</span><span style="color:#b48ead;">if </span><span>__name__ == &quot;</span><span style="color:#a3be8c;">__main__</span><span>&quot;:
+</span><span>    </span><span style="color:#b48ead;">try</span><span>:
+</span><span>        logger.</span><span style="color:#bf616a;">info</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">Starting server on </span><span>{settings.host}</span><span style="color:#a3be8c;">:</span><span>{settings.port}&quot;)
+</span><span>        uvicorn.</span><span style="color:#bf616a;">run</span><span>(
+</span><span>            &quot;</span><span style="color:#a3be8c;">main:app</span><span>&quot;,
+</span><span>            </span><span style="color:#bf616a;">host</span><span>=settings.host,
+</span><span>            </span><span style="color:#bf616a;">port</span><span>=settings.port,
+</span><span>            </span><span style="color:#bf616a;">ssl_certfile</span><span>=settings.ssl_certfile,
+</span><span>            </span><span style="color:#bf616a;">ssl_keyfile</span><span>=settings.ssl_keyfile,
+</span><span>            </span><span style="color:#bf616a;">reload</span><span>=settings.debug,
+</span><span>            </span><span style="color:#bf616a;">log_level</span><span>=&quot;</span><span style="color:#a3be8c;">info</span><span>&quot;,
+</span><span>            </span><span style="color:#bf616a;">access_log</span><span>=</span><span style="color:#d08770;">False
+</span><span>        )
+</span><span>    </span><span style="color:#b48ead;">except </span><span>Exception </span><span style="color:#b48ead;">as </span><span>e:
+</span><span>        logger.</span><span style="color:#bf616a;">error</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">Server startup failed: </span><span>{e}&quot;)
+</span></code></pre>
+<h3 id="3-4-deepseek-api-ji-cheng">3.4 DeepSeek API 集成</h3>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">async def </span><span style="color:#8fa1b3;">query_deepseek</span><span>(</span><span style="color:#bf616a;">prompt</span><span>: str, </span><span style="color:#bf616a;">user_input</span><span>: str) -&gt; str:
+</span><span>    url = &quot;</span><span style="color:#a3be8c;">https://api.deepseek.com/chat/completions</span><span>&quot;
+</span><span>    headers = {
+</span><span>        &quot;</span><span style="color:#a3be8c;">Content-Type</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">application/json</span><span>&quot;,
+</span><span>        &quot;</span><span style="color:#a3be8c;">Authorization</span><span>&quot;: </span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">Bearer </span><span>{settings.deepseek_api_key}&quot;
+</span><span>    }
+</span><span>    payload = {
+</span><span>        &quot;</span><span style="color:#a3be8c;">model</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">deepseek-chat</span><span>&quot;,
+</span><span>        &quot;</span><span style="color:#a3be8c;">messages</span><span>&quot;: [
+</span><span>            {&quot;</span><span style="color:#a3be8c;">role</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">system</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">content</span><span>&quot;: prompt},
+</span><span>            {&quot;</span><span style="color:#a3be8c;">role</span><span>&quot;: &quot;</span><span style="color:#a3be8c;">user</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">content</span><span>&quot;: user_input}
+</span><span>        ],
+</span><span>        &quot;</span><span style="color:#a3be8c;">stream</span><span>&quot;: </span><span style="color:#d08770;">False
+</span><span>    }
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">async with </span><span>aiohttp.</span><span style="color:#bf616a;">ClientSession</span><span>() </span><span style="color:#b48ead;">as </span><span>session:
+</span><span>        </span><span style="color:#b48ead;">try</span><span>:
+</span><span>            </span><span style="color:#b48ead;">async with </span><span>session.</span><span style="color:#bf616a;">post</span><span>(url, </span><span style="color:#bf616a;">json</span><span>=payload, </span><span style="color:#bf616a;">headers</span><span>=headers) </span><span style="color:#b48ead;">as </span><span>response:
+</span><span>                </span><span style="color:#b48ead;">if </span><span>response.status != </span><span style="color:#d08770;">200</span><span>:
+</span><span>                    </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">HTTPException</span><span>(</span><span style="color:#bf616a;">status_code</span><span>=response.status, </span><span style="color:#bf616a;">detail</span><span>=&quot;</span><span style="color:#a3be8c;">API调用失败</span><span>&quot;)
+</span><span>                
+</span><span>                result = </span><span style="color:#b48ead;">await </span><span>response.</span><span style="color:#bf616a;">json</span><span>()
+</span><span>                </span><span style="color:#b48ead;">return </span><span>result[&quot;</span><span style="color:#a3be8c;">choices</span><span>&quot;][</span><span style="color:#d08770;">0</span><span>][&quot;</span><span style="color:#a3be8c;">message</span><span>&quot;][&quot;</span><span style="color:#a3be8c;">content</span><span>&quot;].</span><span style="color:#bf616a;">strip</span><span>()
+</span><span>                
+</span><span>        </span><span style="color:#b48ead;">except </span><span>Exception </span><span style="color:#b48ead;">as </span><span>e:
+</span><span>            logger.</span><span style="color:#bf616a;">error</span><span>(</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">DeepSeek API调用失败: </span><span>{</span><span style="color:#bf616a;">str</span><span>(e)}&quot;)
+</span><span>            </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">HTTPException</span><span>(</span><span style="color:#bf616a;">status_code</span><span>=</span><span style="color:#d08770;">500</span><span>, </span><span style="color:#bf616a;">detail</span><span>=</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">API调用错误: </span><span>{</span><span style="color:#bf616a;">str</span><span>(e)}&quot;)
+</span></code></pre>
+<h3 id="3-5-github-copilot-openhands-fu-zhu-kai-fa-ti-yan">3.5 GitHub Copilot &amp; OpenHands 辅助开发体验</h3>
+<p>在整个开发过程中，GitHub Copilot、OpenHands提供了极大的帮助：</p>
+<ol>
+<li><strong>Idea完善</strong>: 就AI Agent的Idea，OpenHands可以给你一个Sexy的全貌</li>
+<li><strong>代码补全</strong>：自动完成复杂的函数和类定义</li>
+<li><strong>错误修复</strong>：识别潜在的错误并提出修复建议</li>
+<li><strong>文档生成</strong>：生成函数和类的文档注释</li>
+<li><strong>最佳实践建议</strong>：提供符合 FastAPI 和 Python 最佳实践的代码结构</li>
+</ol>
+<p>举例来说，当编写 WebSocket 处理逻辑时，只需输入几行代码，Copilot 就能生成完整的连接管理、消息处理和错误处理代码。</p>
+<h2 id="si-qian-hou-duan-dui-jie-pei-zhi-ssl-zheng-shu-deng">四、前后端对接（配置 SSL、证书等）</h2>
+<h3 id="4-1-ssl-zheng-shu-pei-zhi">4.1 SSL 证书配置</h3>
+<p>为了确保通信安全，我们使用 Let's Encrypt 提供的免费 SSL 证书：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;"># 安装 Let&#39;s Encrypt 客户端
+</span><span style="color:#bf616a;">sudo</span><span> apt install certbot
+</span><span>
+</span><span style="color:#65737e;"># 获取证书
+</span><span style="color:#bf616a;">sudo</span><span> certbot certonly</span><span style="color:#bf616a;"> --standalone -d</span><span> xxx.com
+</span><span>
+</span><span style="color:#65737e;"># 创建证书目录
+</span><span style="color:#bf616a;">mkdir -p</span><span> /home/azureuser/FastAPI_Server/certs
+</span><span>
+</span><span style="color:#65737e;"># 复制证书文件
+</span><span style="color:#bf616a;">sudo</span><span> cp /etc/letsencrypt/live/xxx.com/fullchain.pem /home/azureuser/FastAPI_Server/certs/
+</span><span style="color:#bf616a;">sudo</span><span> cp /etc/letsencrypt/live/xxx.com/privkey.pem /home/azureuser/FastAPI_Server/certs/
+</span><span>
+</span><span style="color:#65737e;"># 设置正确的权限
+</span><span style="color:#bf616a;">sudo</span><span> chown azureuser:azureuser /home/azureuser/FastAPI_Server/certs/*.pem
+</span><span style="color:#bf616a;">sudo</span><span> chmod 644 /home/azureuser/FastAPI_Server/certs/fullchain.pem
+</span><span style="color:#bf616a;">sudo</span><span> chmod 600 /home/azureuser/FastAPI_Server/certs/privkey.pem
+</span></code></pre>
+<h3 id="4-2-zheng-shu-zi-dong-geng-xin-jiao-ben">4.2 证书自动更新脚本</h3>
+<p>创建一个脚本以便在证书更新时自动复制到应用目录：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#65737e;">#!/bin/bash
+</span><span style="color:#65737e;"># filepath: /home/azureuser/FastAPI_Server/copy_certs.sh
+</span><span>
+</span><span style="color:#65737e;"># 复制更新后的证书
+</span><span style="color:#bf616a;">cp</span><span> /etc/letsencrypt/live/xxx.com/fullchain.pem /home/azureuser/FastAPI_Server/certs/
+</span><span style="color:#bf616a;">cp</span><span> /etc/letsencrypt/live/xxx.com/privkey.pem /home/azureuser/FastAPI_Server/certs/
+</span><span>
+</span><span style="color:#65737e;"># 设置权限
+</span><span style="color:#bf616a;">chown</span><span> azureuser:azureuser /home/azureuser/FastAPI_Server/certs/fullchain.pem
+</span><span style="color:#bf616a;">chown</span><span> azureuser:azureuser /home/azureuser/FastAPI_Server/certs/privkey.pem
+</span><span style="color:#bf616a;">chmod</span><span> 644 /home/azureuser/FastAPI_Server/certs/fullchain.pem
+</span><span style="color:#bf616a;">chmod</span><span> 600 /home/azureuser/FastAPI_Server/certs/privkey.pem
+</span><span>
+</span><span style="color:#65737e;"># 重启 FastAPI 服务
+</span><span style="color:#bf616a;">systemctl</span><span> restart fastapi
+</span></code></pre>
+<p>将此脚本链接到 Let's Encrypt 的更新钩子目录：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> ln</span><span style="color:#bf616a;"> -s</span><span> /home/azureuser/FastAPI_Server/copy_certs.sh /etc/letsencrypt/renewal-hooks/post/copy_certs_fastapi.sh
+</span></code></pre>
+<h3 id="4-3-pei-zhi-wei-xi-tong-fu-wu">4.3 配置为系统服务</h3>
+<p>创建 systemd 服务文件，使应用能够作为系统服务运行：</p>
+<pre data-lang="ini" style="background-color:#2b303b;color:#c0c5ce;" class="language-ini "><code class="language-ini" data-lang="ini"><span>&lt;vscode_codeblock_uri&gt;vscode-</span><span style="color:#d08770;">remote://ssh-remote%2B20.51.201.85/etc/systemd/system/fastapi.service&lt;/vscode_codeblock_uri&gt;[Unit</span><span>]
+</span><span style="color:#bf616a;">Description</span><span>=Polly AI FastAPI Service
+</span><span style="color:#bf616a;">After</span><span>=network.target
+</span><span>
+</span><span style="color:#b48ead;">[Service]
+</span><span style="color:#bf616a;">User</span><span>=azureuser
+</span><span style="color:#bf616a;">Group</span><span>=azureuser
+</span><span style="color:#bf616a;">WorkingDirectory</span><span>=/home/azureuser/FastAPI_Server
+</span><span style="color:#bf616a;">Environment</span><span>=</span><span style="color:#a3be8c;">&quot;PATH=/home/azureuser/miniforge3/envs/FastAPI/bin&quot;
+</span><span style="color:#bf616a;">ExecStart</span><span>=/home/azureuser/miniforge3/envs/FastAPI/bin/python /home/azureuser/FastAPI_Server/main.py
+</span><span style="color:#bf616a;">Restart</span><span>=always
+</span><span style="color:#bf616a;">RestartSec</span><span>=</span><span style="color:#d08770;">10
+</span><span style="color:#bf616a;">StandardOutput</span><span>=journal
+</span><span style="color:#bf616a;">StandardError</span><span>=journal
+</span><span style="color:#bf616a;">SyslogIdentifier</span><span>=fastapi
+</span><span style="color:#bf616a;">Environment</span><span>=PYTHONUNBUFFERED=</span><span style="color:#d08770;">1
+</span><span>
+</span><span style="color:#b48ead;">[Install]
+</span><span style="color:#bf616a;">WantedBy</span><span>=multi-user.target
+</span></code></pre>
+<p>启用并启动服务：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> systemctl daemon-reload
+</span><span style="color:#bf616a;">sudo</span><span> systemctl enable fastapi
+</span><span style="color:#bf616a;">sudo</span><span> systemctl start fastapi
+</span></code></pre>
+<h3 id="4-4-fang-huo-qiang-pei-zhi">4.4 防火墙配置</h3>
+<p>确保服务端口在防火墙中开放：</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> ufw allow 50206/tcp
+</span><span style="color:#bf616a;">sudo</span><span> ufw status
+</span></code></pre>
+<h2 id="wu-diao-shi-yu-you-hua">五、调试与优化</h2>
+<h3 id="5-1-ri-zhi-pei-zhi">5.1 日志配置</h3>
+<p>为了更好地监控应用运行状态，我们精心配置了日志系统：</p>
+<ol>
+<li><strong>分级日志</strong>：区分 ERROR、WARNING、INFO 和 DEBUG 级别</li>
+<li><strong>日志轮转</strong>：防止日志文件过大</li>
+<li><strong>控制台输出控制</strong>：减少非必要的输出</li>
+</ol>
+<h3 id="5-2-xing-neng-you-hua">5.2 性能优化</h3>
+<ol>
+<li><strong>异步处理</strong>：使用 FastAPI 的异步特性处理并发请求</li>
+<li><strong>连接池管理</strong>：使用 aiohttp 连接池减少重复连接开销</li>
+<li><strong>缓存策略</strong>：针对频繁访问的资源实施缓存</li>
+</ol>
+<h2 id="liu-cheng-guo-zhan-shi">六、成果展示</h2>
+<p>成功构建了一个完整的 AI 助手系统：</p>
+<ul>
+<li>前端提供了友好的聊天界面</li>
+<li>后端实现了安全、高效的 API 服务</li>
+<li>系统可靠稳定，支持 HTTPS 和 WebSocket</li>
+<li>全系统支持自动更新和维护</li>
+</ul>
+<p>访问地址：<a href="https://polly2014.github.io">https://polly2014.github.io</a></p>
+<h2 id="qi-zong-jie-yu-zhan-wang">七、总结与展望</h2>
+<p>本项目展示了如何利用现代工具快速构建 AI 应用。通过 GitHub Copilot 和 OpenHands 的协助，在短时间内完成一个功能完整的 AI 助手。</p>
+<p>未来改进方向：</p>
+<ol>
+<li><strong>添加多模态支持</strong>：图像识别、语音交互</li>
+<li><strong>记忆功能</strong>：通过数据库支持用户对话历史</li>
+<li><strong>个性化定制</strong>：基于用户行为调整回复风格</li>
+</ol>
+<p>Coding Change the World的声音再度响起！</p>
+<hr />
+<p><strong>参考资料：</strong></p>
+<ol>
+<li><a href="https://fastapi.tiangolo.com/">FastAPI 官方文档</a></li>
+<li><a href="https://platform.deepseek.com/docs">DeepSeek API 文档</a></li>
+<li><a href="https://docs.github.com/en/copilot">GitHub Copilot 文档</a></li>
+<li><a href="https://github.com/openhands/openhands">OpenHands 项目</a></li>
+<li><a href="https://letsencrypt.org/docs/">Let's Encrypt 使用指南</a></li>
+</ol>
+
+        </div>
+        <div class="navigation">
+            
+            
+        </div>
+    </div>
+
+        </div>
+    </div>
+    <!-- 在body标签结束前添加JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay');
+
+            // 切换侧边栏显示状态
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            // 点击菜单按钮显示侧边栏
+            menuToggle.addEventListener('click', toggleSidebar);
+
+            // 点击遮罩层隐藏侧边栏
+            overlay.addEventListener('click', toggleSidebar);
+
+            // 处理移动端滑动手势
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+
+            function handleSwipe() {
+                const swipeDistance = touchEndX - touchStartX;
+                // 从左向右滑动显示菜单
+                if (swipeDistance > 50 && touchStartX < 30) {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                }
+                // 从右向左滑动隐藏菜单
+                else if (swipeDistance < -50 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
