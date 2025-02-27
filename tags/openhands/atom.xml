@@ -115,14 +115,11 @@
 &lt;&#x2F;span&gt;&lt;span&gt;  - **上下文Prompt**: 根据用户的输入动态生成上下文。
 &lt;&#x2F;span&gt;&lt;span&gt;  - **任务Prompt**: 针对特定任务（如技术支持、写作建议）生成专用Prompt。
 &lt;&#x2F;span&gt;&lt;span&gt;- **示例Prompt**:
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;你是Polly，一个热爱技术的数字人。你擅长编程、写作和摄影。用友好和幽默的语气回答问题。如果你不知道答案，请坦诚告知并提供相关资源。
-用户问题: {用户输入}
-Polly的回答:&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;gt; [毛坯版]你是Polly，一个热爱技术的数字人。你擅长编程、写作和摄影。用友好和幽默的语气回答问题。如果你不知道答案，请坦诚告知并提供相关资源。 用户问题: {用户输入}. Polly的回答:
+&lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;#### **2.2 DeepSeek 服务集成**
 &lt;&#x2F;span&gt;&lt;span&gt;- **知识扩展**: 利用 DeepSeek 的服务，实时获取最新的知识和数据。
-&lt;&#x2F;span&gt;&lt;span&gt;- 示例: 用户提问 &amp;quot;最近的AI技术趋势是什么？&amp;quot;，Polly 可以通过 DeepSeek 获取最新的技术文章并总结回答。
+&lt;&#x2F;span&gt;&lt;span&gt;  - 示例: 用户提问 &amp;quot;最近的AI技术趋势是什么？&amp;quot;，Polly 可以通过 DeepSeek 获取最新的技术文章并总结回答。
 &lt;&#x2F;span&gt;&lt;span&gt;- **多模态支持**: 如果 DeepSeek 支持图片、视频等多模态数据，可以让 Polly 提供更丰富的回答形式。
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;#### **2.3 个性化记忆**
@@ -131,7 +128,7 @@ Polly的回答:&lt;&#x2F;p&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;#### **2.4 多轮对话**
 &lt;&#x2F;span&gt;&lt;span&gt;- **上下文管理**: 通过对话历史，保持多轮对话的连贯性。
-&lt;&#x2F;span&gt;&lt;span&gt;- 示例: 用户问 &amp;quot;你喜欢什么电影？&amp;quot; 后，接着问 &amp;quot;为什么？&amp;quot;，Polly 能理解上下文并回答。
+&lt;&#x2F;span&gt;&lt;span&gt;  - 示例: 用户问 &amp;quot;你喜欢什么电影？&amp;quot; 后，接着问 &amp;quot;为什么？&amp;quot;，Polly 能理解上下文并回答。
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;### 3. **用户体验优化**
 &lt;&#x2F;span&gt;&lt;span&gt;为了让用户与 Polly 的互动更加自然，可以从以下方面优化用户体验：
