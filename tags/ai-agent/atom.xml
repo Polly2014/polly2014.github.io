@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly&#x27;s Blog - AI Agent</title>
     <subtitle>Wangbaoli</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/ai-agent/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/ai-agent/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-27T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/ai-agent/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>让AI成为你的分身：Polly AI Agent的诞生</title>
         <published>2025-02-27T00:00:00+00:00</published>
         <updated>2025-02-27T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/"/>
+        <link rel="alternate" href="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/" type="text/html"/>
         <id>https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;build-ai-agent-polly-with-ai-tools&#x2F;AI_Agent_Polly_Done.png&quot; alt=&quot;AI_Agent_Polly_Done&quot; &#x2F;&gt;
+        <content type="html">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;build-ai-agent-polly-with-ai-tools&#x2F;AI_Agent_Polly_Done.png&quot; alt=&quot;AI_Agent_Polly_Done&quot; &#x2F;&gt;
 在人工智能快速发展的今天，如何高效构建自己的AI Agent成为了开发者们关注的焦点。本文将详细介绍如何利用GitHub Copilot和OpenHands工具快速构建一个基于DeepSeek的AI助手 - Polly。整个过程不仅高效，而且能够体验到 AI 辅助编程的强大能力。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;yi-shi-yong-openhands-fang-an-jia-gou-she-ji&quot;&gt;一、使用 OpenHands 方案架构设计&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-1-cong-ideadao-planbu-dao-yi-fen-zhong&quot;&gt;1.1 从Idea到Plan不到一分钟&lt;&#x2F;h3&gt;
@@ -167,7 +161,7 @@
 &lt;li&gt;大模型：DeepSeek API&lt;&#x2F;li&gt;
 &lt;li&gt;部署：Azure Ubuntu 系统服务&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;1-3-ji-shu-zhan-xuan-ze&quot;&gt;1.3 技术栈选择&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;1-3-ji-zhu-zhan-xuan-ze&quot;&gt;1.3 技术栈选择&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;前端：HTML&#x2F;CSS&#x2F;JavaScript&lt;&#x2F;li&gt;
 &lt;li&gt;后端：Python + FastAPI&lt;&#x2F;li&gt;
@@ -506,7 +500,7 @@
 &lt;li&gt;&lt;strong&gt;Agent Profile 丰富化&lt;&#x2F;strong&gt;：通过 OpenHands 的工具，我得以构建一个高度个性化的 Polly Profile，定义了其知识领域、行为规则和动态学习能力。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;开发流程优化&lt;&#x2F;strong&gt;：OpenHands 提供的模板和最佳实践建议，使得开发过程更加高效和规范。&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
-&lt;h4 id=&quot;xie-tong-xiao-ying-ji-shu-yu-chuang-yi-de-wan-mei-jie-he&quot;&gt;&lt;strong&gt;协同效应：技术与创意的完美结合&lt;&#x2F;strong&gt;&lt;&#x2F;h4&gt;
+&lt;h4 id=&quot;xie-tong-xiao-ying-ji-zhu-yu-chuang-yi-de-wan-mei-jie-he&quot;&gt;&lt;strong&gt;协同效应：技术与创意的完美结合&lt;&#x2F;strong&gt;&lt;&#x2F;h4&gt;
 &lt;p&gt;GitHub Copilot 和 OpenHands 的结合，不仅是技术的加持，更是创意的催化剂。Copilot 让代码的实现变得轻松，而 OpenHands 则确保了项目的方向和深度。在它们的共同作用下，Polly AI Agent 从一个模糊的想法，蜕变为一个功能完善的数字人助手。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;si-qian-hou-duan-dui-jie-pei-zhi-ssl-zheng-shu-deng&quot;&gt;四、前后端对接（配置 SSL、证书等）&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;4-1-ssl-zheng-shu-pei-zhi&quot;&gt;4.1 SSL 证书配置&lt;&#x2F;h3&gt;
@@ -629,19 +623,13 @@
         <title>OpenHands vs Coding Copilots: 深度剖析与对比</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-vs-coding-copilots/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-vs-coding-copilots/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-vs-coding-copilots/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-vs-coding-copilots/">&lt;p&gt;随着人工智能技术的快速发展，编程助手（Coding Copilot&#x2F;Agent）逐渐成为开发者的重要工具。本文将深度剖析 OpenHands 与 Github Copilot、Cursor 等主流编程助手的区别，探索其设计理念与应用场景。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;随着人工智能技术的快速发展，编程助手（Coding Copilot&#x2F;Agent）逐渐成为开发者的重要工具。本文将深度剖析 OpenHands 与 Github Copilot、Cursor 等主流编程助手的区别，探索其设计理念与应用场景。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;he-xin-dui-bi&quot;&gt;核心对比&lt;&#x2F;h2&gt;
 &lt;p&gt;以下是 OpenHands 与 Github Copilot、Cursor 的核心对比：&lt;&#x2F;p&gt;

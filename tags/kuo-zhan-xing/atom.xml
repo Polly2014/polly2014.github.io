@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly&#x27;s Blog - 扩展性</title>
     <subtitle>Wangbaoli</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/kuo-zhan-xing/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/kuo-zhan-xing/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-24T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/kuo-zhan-xing/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>OpenHands 源码解析系列（八）：安全性与扩展性设计</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-008/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-008/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-008/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-008/">&lt;p&gt;在 OpenHands 中，安全性和扩展性是系统设计的重要考量。本文将深入解析 OpenHands 的安全性设计与系统扩展性的实现细节，帮助读者理解其核心逻辑和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 中，安全性和扩展性是系统设计的重要考量。本文将深入解析 OpenHands 的安全性设计与系统扩展性的实现细节，帮助读者理解其核心逻辑和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;an-quan-xing-she-ji&quot;&gt;安全性设计&lt;&#x2F;h2&gt;
 &lt;p&gt;安全性是 OpenHands 系统设计的核心目标之一，以下是安全性设计的详细分析：&lt;&#x2F;p&gt;

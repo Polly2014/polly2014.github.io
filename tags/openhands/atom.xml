@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly&#x27;s Blog - OpenHands</title>
     <subtitle>Wangbaoli</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/openhands/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/openhands/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-27T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/openhands/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>让AI成为你的分身：Polly AI Agent的诞生</title>
         <published>2025-02-27T00:00:00+00:00</published>
         <updated>2025-02-27T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/"/>
+        <link rel="alternate" href="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/" type="text/html"/>
         <id>https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;build-ai-agent-polly-with-ai-tools&#x2F;AI_Agent_Polly_Done.png&quot; alt=&quot;AI_Agent_Polly_Done&quot; &#x2F;&gt;
+        <content type="html">&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;build-ai-agent-polly-with-ai-tools&#x2F;AI_Agent_Polly_Done.png&quot; alt=&quot;AI_Agent_Polly_Done&quot; &#x2F;&gt;
 在人工智能快速发展的今天，如何高效构建自己的AI Agent成为了开发者们关注的焦点。本文将详细介绍如何利用GitHub Copilot和OpenHands工具快速构建一个基于DeepSeek的AI助手 - Polly。整个过程不仅高效，而且能够体验到 AI 辅助编程的强大能力。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;yi-shi-yong-openhands-fang-an-jia-gou-she-ji&quot;&gt;一、使用 OpenHands 方案架构设计&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-1-cong-ideadao-planbu-dao-yi-fen-zhong&quot;&gt;1.1 从Idea到Plan不到一分钟&lt;&#x2F;h3&gt;
@@ -167,7 +161,7 @@
 &lt;li&gt;大模型：DeepSeek API&lt;&#x2F;li&gt;
 &lt;li&gt;部署：Azure Ubuntu 系统服务&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;1-3-ji-shu-zhan-xuan-ze&quot;&gt;1.3 技术栈选择&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;1-3-ji-zhu-zhan-xuan-ze&quot;&gt;1.3 技术栈选择&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;前端：HTML&#x2F;CSS&#x2F;JavaScript&lt;&#x2F;li&gt;
 &lt;li&gt;后端：Python + FastAPI&lt;&#x2F;li&gt;
@@ -506,7 +500,7 @@
 &lt;li&gt;&lt;strong&gt;Agent Profile 丰富化&lt;&#x2F;strong&gt;：通过 OpenHands 的工具，我得以构建一个高度个性化的 Polly Profile，定义了其知识领域、行为规则和动态学习能力。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;开发流程优化&lt;&#x2F;strong&gt;：OpenHands 提供的模板和最佳实践建议，使得开发过程更加高效和规范。&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
-&lt;h4 id=&quot;xie-tong-xiao-ying-ji-shu-yu-chuang-yi-de-wan-mei-jie-he&quot;&gt;&lt;strong&gt;协同效应：技术与创意的完美结合&lt;&#x2F;strong&gt;&lt;&#x2F;h4&gt;
+&lt;h4 id=&quot;xie-tong-xiao-ying-ji-zhu-yu-chuang-yi-de-wan-mei-jie-he&quot;&gt;&lt;strong&gt;协同效应：技术与创意的完美结合&lt;&#x2F;strong&gt;&lt;&#x2F;h4&gt;
 &lt;p&gt;GitHub Copilot 和 OpenHands 的结合，不仅是技术的加持，更是创意的催化剂。Copilot 让代码的实现变得轻松，而 OpenHands 则确保了项目的方向和深度。在它们的共同作用下，Polly AI Agent 从一个模糊的想法，蜕变为一个功能完善的数字人助手。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;si-qian-hou-duan-dui-jie-pei-zhi-ssl-zheng-shu-deng&quot;&gt;四、前后端对接（配置 SSL、证书等）&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;4-1-ssl-zheng-shu-pei-zhi&quot;&gt;4.1 SSL 证书配置&lt;&#x2F;h3&gt;
@@ -629,19 +623,13 @@
         <title>OpenHands 二次开发系列（一）：前端重构设计规划 - GPT-4o版</title>
         <published>2025-02-26T00:00:00+00:00</published>
         <updated>2025-02-26T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-redevelopment-frontend-001/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-redevelopment-frontend-001/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-redevelopment-frontend-001/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-redevelopment-frontend-001/">&lt;h3 id=&quot;1-she-ji-feng-ge-yu-zhu-ti&quot;&gt;1. &lt;strong&gt;设计风格与主题&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+        <content type="html">&lt;h3 id=&quot;1-she-ji-feng-ge-yu-zhu-ti&quot;&gt;1. &lt;strong&gt;设计风格与主题&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;极客风格特点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
@@ -662,7 +650,7 @@
 &lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;hr &#x2F;&gt;
-&lt;h3 id=&quot;2-ji-shu-zhan-xuan-ze&quot;&gt;2. &lt;strong&gt;技术栈选择&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;2-ji-zhu-zhan-xuan-ze&quot;&gt;2. &lt;strong&gt;技术栈选择&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;前端框架&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
@@ -830,19 +818,13 @@
         <title>OpenHands 二次开发系列（二）：前端重构设计规划 - DeepSeek版</title>
         <published>2025-02-26T00:00:00+00:00</published>
         <updated>2025-02-26T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-redevelopment-frontend-002/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-redevelopment-frontend-002/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-redevelopment-frontend-002/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-redevelopment-frontend-002/">&lt;p&gt;要设计一个全新的前端，目标是打造一个酷炫、极客风格的界面，专为程序员用户量身定制。以下是设计思路和实现方案：&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;要设计一个全新的前端，目标是打造一个酷炫、极客风格的界面，专为程序员用户量身定制。以下是设计思路和实现方案：&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h3 id=&quot;she-ji-si-lu&quot;&gt;&lt;strong&gt;设计思路&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
 &lt;ol&gt;
@@ -950,7 +932,7 @@
 &lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;hr &#x2F;&gt;
-&lt;h3 id=&quot;ji-shu-zhan-xuan-ze&quot;&gt;&lt;strong&gt;技术栈选择&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;ji-zhu-zhan-xuan-ze&quot;&gt;&lt;strong&gt;技术栈选择&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;框架&lt;&#x2F;strong&gt;: React + Vite&lt;&#x2F;p&gt;
@@ -1103,19 +1085,13 @@
         <title>OpenHands API 使用指南：构建智能化开发体验</title>
         <published>2025-02-25T00:00:00+00:00</published>
         <updated>2025-02-25T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-server-api-document/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-server-api-document/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-server-api-document/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-server-api-document/">&lt;p&gt;This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;This document provides a detailed description of all the server-side APIs available in the OpenHands project. Each API is categorized by its respective route file and includes information about the endpoint, HTTP method, and functionality.&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;general-endpoints&quot;&gt;General Endpoints&lt;&#x2F;h2&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Endpoint&lt;&#x2F;th&gt;&lt;th&gt;Method&lt;&#x2F;th&gt;&lt;th&gt;Description&lt;&#x2F;th&gt;&lt;th&gt;Response&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
@@ -1190,19 +1166,13 @@
         <title>OpenHands 源码解析系列（一）：项目概览与架构设计</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-001/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-001/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-001/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-001/">&lt;p&gt;OpenHands 是一个自动化的 AI 软件工程师项目，旨在通过前后端协作和强大的代理系统，帮助开发者完成复杂的任务。本文将深入解析 OpenHands 的整体架构和模块设计，帮助读者理解其核心逻辑和实现细节。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;OpenHands 是一个自动化的 AI 软件工程师项目，旨在通过前后端协作和强大的代理系统，帮助开发者完成复杂的任务。本文将深入解析 OpenHands 的整体架构和模块设计，帮助读者理解其核心逻辑和实现细节。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;hou-duan-jia-gou-fen-xi&quot;&gt;后端架构分析&lt;&#x2F;h2&gt;
 &lt;p&gt;后端是 OpenHands 的核心部分，负责处理用户请求、分配任务以及与大语言模型（LLM）的交互。以下是后端的主要模块及其职责：&lt;&#x2F;p&gt;
@@ -1399,21 +1369,15 @@
         <title>OpenHands 源码解析系列（二）：前端架构与用户交互流程</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-002/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-002/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-002/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-002/">&lt;p&gt;OpenHands 的前端基于 React 构建，提供了用户友好的界面和高效的交互体验。本文将深入解析前端的技术栈、组件设计及与后端的交互逻辑，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;OpenHands 的前端基于 React 构建，提供了用户友好的界面和高效的交互体验。本文将深入解析前端的技术栈、组件设计及与后端的交互逻辑，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
-&lt;h2 id=&quot;ji-shu-zhan-fen-xi&quot;&gt;技术栈分析&lt;&#x2F;h2&gt;
+&lt;h2 id=&quot;ji-zhu-zhan-fen-xi&quot;&gt;技术栈分析&lt;&#x2F;h2&gt;
 &lt;p&gt;OpenHands 前端采用了现代化的技术栈，以下是每个技术的作用：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -1540,7 +1504,7 @@
 &lt;hr &#x2F;&gt;
 &lt;p&gt;通过以上分析，我们可以看到 OpenHands 前端的设计注重用户体验和代码可维护性。在下一篇文章中，我们将深入解析后端的架构与核心模块，带你了解其实现细节。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
-&lt;h2 id=&quot;ji-shu-zhan&quot;&gt;技术栈&lt;&#x2F;h2&gt;
+&lt;h2 id=&quot;ji-zhu-zhan&quot;&gt;技术栈&lt;&#x2F;h2&gt;
 &lt;p&gt;OpenHands 前端使用了以下技术：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;React&lt;&#x2F;strong&gt;：构建用户界面。&lt;&#x2F;li&gt;
@@ -1605,19 +1569,13 @@
         <title>OpenHands 源码解析系列（三）：后端架构与核心模块</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-003/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-003/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-003/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-003/">&lt;p&gt;OpenHands 的后端基于 Python 构建，负责核心逻辑、代理管理和与大语言模型（LLM）的交互。本文将深入解析后端的模块划分、启动流程及核心逻辑，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;OpenHands 的后端基于 Python 构建，负责核心逻辑、代理管理和与大语言模型（LLM）的交互。本文将深入解析后端的模块划分、启动流程及核心逻辑，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;mo-kuai-hua-fen-yu-zhi-ze&quot;&gt;模块划分与职责&lt;&#x2F;h2&gt;
 &lt;p&gt;OpenHands 的后端代码位于 &lt;code&gt;openhands&lt;&#x2F;code&gt; 目录，采用模块化设计，以下是主要模块及其职责的详细分析：&lt;&#x2F;p&gt;
@@ -1884,19 +1842,13 @@
         <title>OpenHands 源码解析系列（四）：对话管理与意图解析</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-004/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-004/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-004/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-004/">&lt;p&gt;在 OpenHands 中，对话管理和意图解析是后端的核心功能之一。本文将深入解析系统如何解析用户输入并分配代理，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 中，对话管理和意图解析是后端的核心功能之一。本文将深入解析系统如何解析用户输入并分配代理，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;yi-tu-jie-xi-xiang-jie&quot;&gt;意图解析详解&lt;&#x2F;h2&gt;
 &lt;p&gt;意图解析是 OpenHands 的第一步，负责将用户输入转换为系统可理解的动作。以下是意图解析的详细分析：&lt;&#x2F;p&gt;
@@ -2092,19 +2044,13 @@
         <title>OpenHands 源码解析系列（五）：代理系统与任务分配</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-005/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-005/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-005/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-005/">&lt;p&gt;代理系统是 OpenHands 的核心组件之一，负责执行具体任务。本文将深入解析代理的设计模式及其在任务分配中的作用，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;代理系统是 OpenHands 的核心组件之一，负责执行具体任务。本文将深入解析代理的设计模式及其在任务分配中的作用，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;dai-li-de-she-ji-xiang-jie&quot;&gt;代理的设计详解&lt;&#x2F;h2&gt;
 &lt;p&gt;代理系统的核心逻辑位于 &lt;code&gt;agenthub&lt;&#x2F;code&gt; 模块，以下是其设计的详细分析：&lt;&#x2F;p&gt;
@@ -2292,19 +2238,13 @@
         <title>OpenHands 源码解析系列（六）：与大语言模型（LLM）的交互</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-006/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-006/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-006/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-006/">&lt;p&gt;在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;llm-mo-kuai-xiang-jie&quot;&gt;LLM 模块详解&lt;&#x2F;h2&gt;
 &lt;p&gt;LLM 模块的核心逻辑位于 &lt;code&gt;llm&#x2F;llm.py&lt;&#x2F;code&gt;，以下是其主要功能的详细分析：&lt;&#x2F;p&gt;
@@ -2484,19 +2424,13 @@
         <title>OpenHands 源码解析系列（七）：事件流与存储管理</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-007/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-007/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-007/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-007/">&lt;p&gt;在 OpenHands 中，事件流和存储管理是系统的核心功能之一。本文将深入解析事件流的处理逻辑和存储管理模块的实现细节，帮助读者理解其设计理念和实现方式。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 中，事件流和存储管理是系统的核心功能之一。本文将深入解析事件流的处理逻辑和存储管理模块的实现细节，帮助读者理解其设计理念和实现方式。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;shi-jian-liu-chu-li-luo-ji&quot;&gt;事件流处理逻辑&lt;&#x2F;h2&gt;
 &lt;p&gt;事件流是 OpenHands 中用于管理异步任务和数据流的核心机制。以下是事件流处理的详细分析：&lt;&#x2F;p&gt;
@@ -2657,19 +2591,13 @@
         <title>OpenHands 源码解析系列（八）：安全性与扩展性设计</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-008/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-008/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-008/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-008/">&lt;p&gt;在 OpenHands 中，安全性和扩展性是系统设计的重要考量。本文将深入解析 OpenHands 的安全性设计与系统扩展性的实现细节，帮助读者理解其核心逻辑和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 中，安全性和扩展性是系统设计的重要考量。本文将深入解析 OpenHands 的安全性设计与系统扩展性的实现细节，帮助读者理解其核心逻辑和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;an-quan-xing-she-ji&quot;&gt;安全性设计&lt;&#x2F;h2&gt;
 &lt;p&gt;安全性是 OpenHands 系统设计的核心目标之一，以下是安全性设计的详细分析：&lt;&#x2F;p&gt;
@@ -2831,19 +2759,13 @@
         <title>OpenHands 源码解析系列（九）：从源码到实践</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-009/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-009/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-009/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-009/">&lt;p&gt;在 OpenHands 的开发与部署过程中，理解源码结构和实践流程是关键。本文将从源码到实践，帮助开发者快速上手 OpenHands 的开发与部署。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;在 OpenHands 的开发与部署过程中，理解源码结构和实践流程是关键。本文将从源码到实践，帮助开发者快速上手 OpenHands 的开发与部署。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;yuan-ma-jie-gou-hui-gu&quot;&gt;源码结构回顾&lt;&#x2F;h2&gt;
 &lt;p&gt;在前几篇文章中，我们已经详细解析了 OpenHands 的源码结构。以下是对关键模块的快速回顾：&lt;&#x2F;p&gt;
@@ -3019,19 +2941,13 @@
         <title>OpenHands 源码解析系列（十）：总结与展望</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-010/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-010/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-010/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-010/">&lt;p&gt;经过前九篇文章的详细解析，我们已经全面了解了 OpenHands 的架构设计、核心模块和实现细节。本篇文章将总结整个系列的核心内容，并展望 OpenHands 的未来发展方向。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;经过前九篇文章的详细解析，我们已经全面了解了 OpenHands 的架构设计、核心模块和实现细节。本篇文章将总结整个系列的核心内容，并展望 OpenHands 的未来发展方向。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;xi-lie-nei-rong-hui-gu&quot;&gt;系列内容回顾&lt;&#x2F;h2&gt;
 &lt;p&gt;以下是 OpenHands 源码解析系列的核心内容回顾：&lt;&#x2F;p&gt;
@@ -3168,19 +3084,13 @@
         <title>OpenHands vs Coding Copilots: 深度剖析与对比</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-vs-coding-copilots/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-vs-coding-copilots/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-vs-coding-copilots/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-vs-coding-copilots/">&lt;p&gt;随着人工智能技术的快速发展，编程助手（Coding Copilot&#x2F;Agent）逐渐成为开发者的重要工具。本文将深度剖析 OpenHands 与 Github Copilot、Cursor 等主流编程助手的区别，探索其设计理念与应用场景。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;随着人工智能技术的快速发展，编程助手（Coding Copilot&#x2F;Agent）逐渐成为开发者的重要工具。本文将深度剖析 OpenHands 与 Github Copilot、Cursor 等主流编程助手的区别，探索其设计理念与应用场景。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;he-xin-dui-bi&quot;&gt;核心对比&lt;&#x2F;h2&gt;
 &lt;p&gt;以下是 OpenHands 与 Github Copilot、Cursor 的核心对比：&lt;&#x2F;p&gt;
@@ -3245,19 +3155,13 @@
         <title>Azure部署OpenHands指南</title>
         <published>2025-02-12T00:00:00+00:00</published>
         <updated>2025-02-12T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-deployment-guidance/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-deployment-guidance/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-deployment-guidance/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-deployment-guidance/">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
+        <content type="html">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
 &lt;p&gt;在现代软件开发中，自动化和智能化工具的使用变得越来越重要。OpenHands 是一个强大的工具，可以帮助开发者快速部署和管理项目。本指南将详细介绍如何在 Azure 上部署 OpenHands，包括安装 Docker 和 Docker Compose，配置 Azure 的 GPT-4o API 接口，并将服务映射到外网的 80 端口。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;bu-zou-1-zai-azure-shang-chuang-jian-xu-ni-ji&quot;&gt;步骤 1: 在 Azure 上创建虚拟机&lt;&#x2F;h2&gt;

@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly&#x27;s Blog - Docker</title>
     <subtitle>Wangbaoli</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/docker/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/docker/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-12T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/docker/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>Azure部署OpenHands指南</title>
         <published>2025-02-12T00:00:00+00:00</published>
         <updated>2025-02-12T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-deployment-guidance/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-deployment-guidance/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-deployment-guidance/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-deployment-guidance/">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
+        <content type="html">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
 &lt;p&gt;在现代软件开发中，自动化和智能化工具的使用变得越来越重要。OpenHands 是一个强大的工具，可以帮助开发者快速部署和管理项目。本指南将详细介绍如何在 Azure 上部署 OpenHands，包括安装 Docker 和 Docker Compose，配置 Azure 的 GPT-4o API 接口，并将服务映射到外网的 80 端口。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;bu-zou-1-zai-azure-shang-chuang-jian-xu-ni-ji&quot;&gt;步骤 1: 在 Azure 上创建虚拟机&lt;&#x2F;h2&gt;
