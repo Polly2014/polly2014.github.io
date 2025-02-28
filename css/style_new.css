@@ -454,7 +454,7 @@ table td {
 }
 
 .user-message {
-    flex-direction: row;
+    flex-direction: row-reverse;
     align-self: flex-end;
 }
 
@@ -484,7 +484,6 @@ table td {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%; /* 确保图片本身也有圆角 */
 }
 
 .chat-avatar i {
@@ -714,57 +713,5 @@ table td {
         display: flex;
         justify-content: center;
         gap: 20px;
-    }
-    .polly-chat {
-        width: 100%;
-    }
-    
-    .polly-chat h2 {
-        font-size: 1.4em;
-        text-align: center;
-    }
-    
-    #chat-box {
-        padding: 5px;
-        width: 100%;
-        overflow-y: auto;
-    }
-    
-    .message-container {
-        display: flex;
-        align-items: flex-end;
-        margin-bottom: 10px;
-    }
-    
-    .message-container.user-message {
-        justify-content: flex-end;
-    }
-    
-    .message-container.polly-message {
-        justify-content: flex-start;
-    }
-    
-    .chat-avatar {
-        width: 30px;
-        height: 30px;
-        margin: 0 5px;
-    }
-    
-    .chat-avatar img,
-    .chat-avatar i {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-    }
-    
-    .chat-bubble {
-        max-width: 70%;
-        padding: 10px;
-        border-radius: 10px;
-        font-size: 0.9em;
-    }    
-    
-    #send-button i {
-        font-size: 1em;
     }
 }

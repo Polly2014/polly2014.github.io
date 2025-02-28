@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly&#x27;s Blog - LLM</title>
     <subtitle>Wangbaoli</subtitle>
-    <link href="https://polly2014.github.io/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/llm/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-24T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/llm/atom.xml</id>
@@ -11,13 +11,19 @@
         <title>OpenHands 源码解析系列（六）：与大语言模型（LLM）的交互</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-006/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-006/"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-006/</id>
         
-        <content type="html">&lt;p&gt;在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-006/">&lt;p&gt;在 OpenHands 中，大语言模型（LLM）是生成响应的核心组件之一。本文将深入解析系统如何通过 LLM 模块与大语言模型交互，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;llm-mo-kuai-xiang-jie&quot;&gt;LLM 模块详解&lt;&#x2F;h2&gt;
 &lt;p&gt;LLM 模块的核心逻辑位于 &lt;code&gt;llm&#x2F;llm.py&lt;&#x2F;code&gt;，以下是其主要功能的详细分析：&lt;&#x2F;p&gt;
@@ -197,13 +203,19 @@
         <title>Azure部署DeepSeek&#x2F;GPT大模型服务</title>
         <published>2025-02-11T00:00:00+00:00</published>
         <updated>2025-02-11T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/azure-deepseek-service-deployment-guidance/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/azure-deepseek-service-deployment-guidance/"/>
         <id>https://polly2014.github.io/azure-deepseek-service-deployment-guidance/</id>
         
-        <content type="html">&lt;ol&gt;
+        <content type="html" xml:base="https://polly2014.github.io/azure-deepseek-service-deployment-guidance/">&lt;ol&gt;
 &lt;li&gt;打开 &lt;a href=&quot;https:&#x2F;&#x2F;ai.azure.com&#x2F;&quot;&gt;Azure Foundry&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
 &lt;li&gt;创建project.
 &lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;azure-deepseek-service-deployment-guidance&#x2F;azure_foundry_create_project.png&quot; alt=&quot;Azure Foundry Create Project&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
