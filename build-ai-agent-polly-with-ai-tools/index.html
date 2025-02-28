@@ -52,7 +52,7 @@
         <div class="content pure-u-1 pure-u-md-4-5">
             
     <div class="blog-post">
-        <h1>Polly诞生记：How to use AI Coding Agent &amp; Copilot to code an AI Agent</h1>
+        <h1>让AI成为你的分身：Polly AI Agent的诞生</h1>
         <div class="content">
             <p><img src="https://polly2014.github.io/build-ai-agent-polly-with-ai-tools/AI_Agent_Polly_Done.png" alt="AI_Agent_Polly_Done" />
 在人工智能快速发展的今天，如何高效构建自己的AI Agent成为了开发者们关注的焦点。本文将详细介绍如何利用GitHub Copilot和OpenHands工具快速构建一个基于DeepSeek的AI助手 - Polly。整个过程不仅高效，而且能够体验到 AI 辅助编程的强大能力。</p>
@@ -208,7 +208,7 @@
 </ul>
 <h2 id="er-openhands-gou-zao-wang-ye-qian-duan-liao-tian-gong-neng">二、OpenHands 构造网页前端聊天功能</h2>
 <h3 id="2-1-openhands-jie-shao">2.1 OpenHands 介绍</h3>
-<p>OpenHands 是一套开源的 AI 聊天组件库，提供了丰富的预构建组件，能够快速搭建聊天界面。使用 OpenHands，我们无需从零开始构建 UI，可以专注于业务逻辑的开发。</p>
+<p>OpenHands 是一个开源的 AI 开发工具集，专注于帮助开发者从想法到实现的全过程。通过其强大的功能，帮助我细化了从 Idea 到 Plan 的过程，明确了前端和后端的架构设计，并丰富了 Agent Profile 的内容。</p>
 <h3 id="2-2-qian-duan-ye-mian-gou-jian">2.2 前端页面构建</h3>
 <p>首先，我们创建一个基本的 HTML 结构：</p>
 <pre data-lang="html" style="background-color:#2b303b;color:#c0c5ce;" class="language-html "><code class="language-html" data-lang="html"><span>&lt;!</span><span style="color:#b48ead;">DOCTYPE </span><span style="color:#d08770;">html</span><span>&gt;
@@ -522,15 +522,23 @@
 </span><span>            </span><span style="color:#b48ead;">raise </span><span style="color:#bf616a;">HTTPException</span><span>(</span><span style="color:#bf616a;">status_code</span><span>=</span><span style="color:#d08770;">500</span><span>, </span><span style="color:#bf616a;">detail</span><span>=</span><span style="color:#b48ead;">f</span><span>&quot;</span><span style="color:#a3be8c;">API调用错误: </span><span>{</span><span style="color:#bf616a;">str</span><span>(e)}&quot;)
 </span></code></pre>
 <h3 id="3-5-github-copilot-openhands-fu-zhu-kai-fa-ti-yan">3.5 GitHub Copilot &amp; OpenHands 辅助开发体验</h3>
-<p>在整个开发过程中，GitHub Copilot、OpenHands提供了极大的帮助：</p>
-<ol>
-<li><strong>Idea完善</strong>: 就AI Agent的Idea，OpenHands可以给你一个Sexy的全貌</li>
-<li><strong>代码补全</strong>：自动完成复杂的函数和类定义</li>
-<li><strong>错误修复</strong>：识别潜在的错误并提出修复建议</li>
-<li><strong>文档生成</strong>：生成函数和类的文档注释</li>
-<li><strong>最佳实践建议</strong>：提供符合 FastAPI 和 Python 最佳实践的代码结构</li>
-</ol>
-<p>举例来说，当编写 WebSocket 处理逻辑时，只需输入几行代码，Copilot 就能生成完整的连接管理、消息处理和错误处理代码。</p>
+<p>在 Polly AI Agent 的开发过程中，GitHub Copilot 和 OpenHands 成为不可或缺的“智囊团”，它们不仅提升了开发效率，更为整个项目注入了创新的灵感。</p>
+<h4 id="github-copilot-zhi-neng-bian-cheng-zhu-shou"><strong>GitHub Copilot：智能编程助手</strong></h4>
+<p>GitHub Copilot 的强大之处在于它能够实时理解开发者的意图，并提供精准的代码建议。在编写复杂逻辑时，Copilot 不仅能补全函数和类，还能根据上下文生成符合项目需求的代码片段。例如：</p>
+<ul>
+<li><strong>WebSocket 逻辑生成</strong>：在实现实时通信时，Copilot 自动生成了连接管理、消息处理和错误处理的完整代码框架。</li>
+<li><strong>错误修复与优化</strong>：通过分析代码，Copilot 提供了潜在问题的解决方案，并建议更优雅的实现方式。</li>
+<li><strong>文档与注释生成</strong>：自动生成清晰的函数注释和文档，确保代码的可读性和可维护性。</li>
+</ul>
+<h4 id="openhands-cong-chuang-yi-dao-shi-xian-de-qiao-liang"><strong>OpenHands：从创意到实现的桥梁</strong></h4>
+<p>OpenHands 则在项目的整体规划和架构设计中扮演了重要角色。它帮助我从最初的 Idea 出发，逐步细化为可执行的 Plan，并在以下方面提供了关键支持：</p>
+<ul>
+<li><strong>架构设计</strong>：明确了前后端分离的技术栈选择，以及各模块的职责划分。</li>
+<li><strong>Agent Profile 丰富化</strong>：通过 OpenHands 的工具，我得以构建一个高度个性化的 Polly Profile，定义了其知识领域、行为规则和动态学习能力。</li>
+<li><strong>开发流程优化</strong>：OpenHands 提供的模板和最佳实践建议，使得开发过程更加高效和规范。</li>
+</ul>
+<h4 id="xie-tong-xiao-ying-ji-shu-yu-chuang-yi-de-wan-mei-jie-he"><strong>协同效应：技术与创意的完美结合</strong></h4>
+<p>GitHub Copilot 和 OpenHands 的结合，不仅是技术的加持，更是创意的催化剂。Copilot 让代码的实现变得轻松，而 OpenHands 则确保了项目的方向和深度。在它们的共同作用下，Polly AI Agent 从一个模糊的想法，蜕变为一个功能完善的数字人助手。</p>
 <h2 id="si-qian-hou-duan-dui-jie-pei-zhi-ssl-zheng-shu-deng">四、前后端对接（配置 SSL、证书等）</h2>
 <h3 id="4-1-ssl-zheng-shu-pei-zhi">4.1 SSL 证书配置</h3>
 <p>为了确保通信安全，我们使用 Let's Encrypt 提供的免费 SSL 证书：</p>
@@ -636,7 +644,6 @@
 <li><strong>记忆功能</strong>：通过数据库支持用户对话历史</li>
 <li><strong>个性化定制</strong>：基于用户行为调整回复风格</li>
 </ol>
-<p>Coding Change the World的声音再度响起！</p>
 <hr />
 <p><strong>参考资料：</strong></p>
 <ol>
