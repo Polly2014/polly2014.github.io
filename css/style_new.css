@@ -448,7 +448,7 @@ table td {
 /* 调整聊天气泡间距，确保头像和气泡之间有适当空间 */
 .message-container {
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 10px;
     max-width: 80%;
     animation: fadeIn 0.3s ease-out;
