@@ -5,8 +5,200 @@
     <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/openhands/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-02-27T00:00:00+00:00</updated>
+    <updated>2025-03-01T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/openhands/atom.xml</id>
+    <entry xml:lang="en">
+        <title>深度解析OpenHands MicroAgent</title>
+        <published>2025-03-01T00:00:00+00:00</published>
+        <updated>2025-03-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-micro-agent/"/>
+        <id>https://polly2014.github.io/openhands-micro-agent/</id>
+        
+        <content type="html" xml:base="https://polly2014.github.io/openhands-micro-agent/">&lt;h2 id=&quot;yin-yan&quot;&gt;引言&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 是 OpenHands 系统中的一个重要模块，旨在通过模块化的方式提供特定的知识、任务和仓库相关的功能支持。本文将从 MicroAgent 的分类、作用、协作方式、源码实现以及测试覆盖等多个维度，全面解析其设计理念和技术实现。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;1-microagent-de-fen-lei-yu-zuo-yong&quot;&gt;&lt;strong&gt;1. MicroAgent 的分类与作用&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 分为三大类，每一类都有其特定的功能和应用场景：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-knowledgemicroagent&quot;&gt;&lt;strong&gt;(1) KnowledgeMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;&#x2F;strong&gt;：提供特定领域的知识支持，例如编程语言的最佳实践、框架指南、常见模式和工具使用等。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;触发机制&lt;&#x2F;strong&gt;：通过关键词触发。例如，当用户输入包含特定关键词的消息时，KnowledgeMicroAgent 会被激活。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;典型场景&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;用户询问某个框架的最佳实践。&lt;&#x2F;li&gt;
+&lt;li&gt;提供工具的使用指南。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-repomicroagent&quot;&gt;&lt;strong&gt;(2) RepoMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;&#x2F;strong&gt;：专注于仓库（Repository）相关的知识和指导，例如团队的代码规范、项目特定的工作流和文档引用。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;加载方式&lt;&#x2F;strong&gt;：从 &lt;code&gt;.openhands&#x2F;microagents&#x2F;repo.md&lt;&#x2F;code&gt; 文件中加载，或者从遗留的 &lt;code&gt;.openhands_instructions&lt;&#x2F;code&gt; 文件中加载。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;典型场景&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;提供项目特定的开发规范。&lt;&#x2F;li&gt;
+&lt;li&gt;自动加载与当前仓库相关的文档和说明。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-taskmicroagent&quot;&gt;&lt;strong&gt;(3) TaskMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;作用&lt;&#x2F;strong&gt;：专注于任务驱动的操作，例如执行特定的任务或工作流。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;典型场景&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;自动化执行某些重复性任务。&lt;&#x2F;li&gt;
+&lt;li&gt;提供任务的分步指导。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;2-microagent-de-xie-zuo-fang-shi&quot;&gt;&lt;strong&gt;2. MicroAgent 的协作方式&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 的协作方式体现在以下几个方面：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-mo-kuai-hua-she-ji&quot;&gt;&lt;strong&gt;(1) 模块化设计&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;每个 MicroAgent 都是一个独立的模块，具有自己的元数据（Metadata）和内容（Content）。这种模块化设计使得 MicroAgent 可以独立开发、测试和部署。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-tong-yi-jia-zai-yu-guan-li&quot;&gt;&lt;strong&gt;(2) 统一加载与管理&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;通过 &lt;code&gt;load_microagents_from_dir&lt;&#x2F;code&gt; 函数，系统可以从指定目录加载所有类型的 MicroAgent，并将它们分类存储为字典（&lt;code&gt;repo_agents&lt;&#x2F;code&gt;、&lt;code&gt;knowledge_agents&lt;&#x2F;code&gt;、&lt;code&gt;task_agents&lt;&#x2F;code&gt;）。这确保了 MicroAgent 的统一管理和高效加载。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-dong-tai-hong-fa-yu-zhi-xing&quot;&gt;&lt;strong&gt;(3) 动态触发与执行&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;触发机制&lt;&#x2F;strong&gt;：例如，KnowledgeMicroAgent 会根据用户输入的关键词动态触发。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;执行机制&lt;&#x2F;strong&gt;：TaskMicroAgent 可以根据任务需求执行特定的操作。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;4-yu-codeact-agent-de-ji-cheng&quot;&gt;&lt;strong&gt;(4) 与 CodeAct Agent 的集成&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;MicroAgent 是 CodeAct Agent 的重要组成部分。CodeAct Agent 可以调用 MicroAgent 提供的知识或任务支持，从而增强其功能。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;3-yuan-ma-jie-xi&quot;&gt;&lt;strong&gt;3. 源码解析&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是对 MicroAgent 核心源码的解析：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-microagent-de-ji-lei&quot;&gt;&lt;strong&gt;(1) MicroAgent 的基类&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;BaseMicroAgent&lt;&#x2F;code&gt; 是所有 MicroAgent 的基类，定义了 MicroAgent 的基本结构和加载逻辑。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;BaseMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseModel&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    name: str
+&lt;&#x2F;span&gt;&lt;span&gt;    content: str
+&lt;&#x2F;span&gt;&lt;span&gt;    metadata: MicroAgentMetadata
+&lt;&#x2F;span&gt;&lt;span&gt;    source: str  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 文件路径
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;: MicroAgentType
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;classmethod
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;load&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cls&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;: Union[str, Path], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;file_content&lt;&#x2F;span&gt;&lt;span&gt;: str | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseMicroAgent&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 从文件加载 MicroAgent
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心字段&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;name&lt;&#x2F;code&gt;：MicroAgent 的名称。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;content&lt;&#x2F;code&gt;：MicroAgent 的内容。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;metadata&lt;&#x2F;code&gt;：MicroAgent 的元数据，包括类型、触发器等。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;&#x2F;code&gt;：MicroAgent 的类型（Knowledge、Repo 或 Task）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;加载逻辑&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;从文件中读取内容。&lt;&#x2F;li&gt;
+&lt;li&gt;根据元数据的类型动态创建对应的子类（&lt;code&gt;KnowledgeMicroAgent&lt;&#x2F;code&gt;、&lt;code&gt;RepoMicroAgent&lt;&#x2F;code&gt; 或 &lt;code&gt;TaskMicroAgent&lt;&#x2F;code&gt;）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-knowledgemicroagent&quot;&gt;&lt;strong&gt;(2) KnowledgeMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;KnowledgeMicroAgent&lt;&#x2F;code&gt; 提供了关键词触发的功能。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;KnowledgeMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;match_trigger&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 匹配消息中的触发器
+&lt;&#x2F;span&gt;&lt;span&gt;        message = message.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lower&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;trigger &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.triggers:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;trigger.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lower&lt;&#x2F;span&gt;&lt;span&gt;() in message:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;trigger
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;property
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;triggers&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; list[str]:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.metadata.triggers
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;关键词匹配&lt;&#x2F;strong&gt;：通过 &lt;code&gt;match_trigger&lt;&#x2F;code&gt; 方法，判断用户输入是否包含触发关键词。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;触发器列表&lt;&#x2F;strong&gt;：从元数据中提取触发器。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-repomicroagent&quot;&gt;&lt;strong&gt;(3) RepoMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;RepoMicroAgent&lt;&#x2F;code&gt; 专注于仓库相关的知识。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;RepoMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;加载方式&lt;&#x2F;strong&gt;：从 &lt;code&gt;.openhands&#x2F;microagents&#x2F;repo.md&lt;&#x2F;code&gt; 或 &lt;code&gt;.openhands_instructions&lt;&#x2F;code&gt; 文件中加载。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;应用场景&lt;&#x2F;strong&gt;：提供项目特定的开发规范和文档。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;4-taskmicroagent&quot;&gt;&lt;strong&gt;(4) TaskMicroAgent&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;TaskMicroAgent&lt;&#x2F;code&gt; 专注于任务驱动的操作。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;TaskMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseMicroAgent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;应用场景&lt;&#x2F;strong&gt;：执行特定的任务或工作流。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;5-microagent-de-jia-zai-han-shu&quot;&gt;&lt;strong&gt;(5) MicroAgent 的加载函数&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;load_microagents_from_dir&lt;&#x2F;code&gt; 函数用于从指定目录加载所有 MicroAgent。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;load_microagents_from_dir&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;microagent_dir&lt;&#x2F;span&gt;&lt;span&gt;: Union[str, Path]) -&amp;gt; tuple[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;]:
+&lt;&#x2F;span&gt;&lt;span&gt;    repo_agents = {}
+&lt;&#x2F;span&gt;&lt;span&gt;    knowledge_agents = {}
+&lt;&#x2F;span&gt;&lt;span&gt;    task_agents = {}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;microagent_dir.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rglob&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;*.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;):
+&lt;&#x2F;span&gt;&lt;span&gt;        agent = BaseMicroAgent.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;load&lt;&#x2F;span&gt;&lt;span&gt;(file)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;isinstance&lt;&#x2F;span&gt;&lt;span&gt;(agent, RepoMicroAgent):
+&lt;&#x2F;span&gt;&lt;span&gt;            repo_agents[agent.name] = agent
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;isinstance&lt;&#x2F;span&gt;&lt;span&gt;(agent, KnowledgeMicroAgent):
+&lt;&#x2F;span&gt;&lt;span&gt;            knowledge_agents[agent.name] = agent
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;isinstance&lt;&#x2F;span&gt;&lt;span&gt;(agent, TaskMicroAgent):
+&lt;&#x2F;span&gt;&lt;span&gt;            task_agents[agent.name] = agent
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;repo_agents, knowledge_agents, task_agents
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;功能&lt;&#x2F;strong&gt;：从目录中递归加载所有 &lt;code&gt;.md&lt;&#x2F;code&gt; 文件，并根据类型分类存储。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;返回值&lt;&#x2F;strong&gt;：包含 &lt;code&gt;repo_agents&lt;&#x2F;code&gt;、&lt;code&gt;knowledge_agents&lt;&#x2F;code&gt; 和 &lt;code&gt;task_agents&lt;&#x2F;code&gt; 的字典。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;4-ce-shi-fu-gai&quot;&gt;&lt;strong&gt;4. 测试覆盖&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 的测试覆盖包括以下几个方面：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-ji-ben-gong-neng-ce-shi&quot;&gt;&lt;strong&gt;(1) 基本功能测试&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;测试 MicroAgent 的加载功能。&lt;&#x2F;li&gt;
+&lt;li&gt;验证不同类型的 MicroAgent 是否正确分类。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-te-shu-chang-jing-ce-shi&quot;&gt;&lt;strong&gt;(2) 特殊场景测试&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;测试嵌套目录中的 MicroAgent 加载。&lt;&#x2F;li&gt;
+&lt;li&gt;测试带有遗留文件（&lt;code&gt;.openhands_instructions&lt;&#x2F;code&gt;）的加载。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-yi-chang-chu-li-ce-shi&quot;&gt;&lt;strong&gt;(3) 异常处理测试&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;测试无效类型的 MicroAgent 是否抛出异常。&lt;&#x2F;li&gt;
+&lt;li&gt;测试缺失文件的场景。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;5-microagent-de-guan-xi-yu-xie-zuo&quot;&gt;&lt;strong&gt;5. MicroAgent 的关系与协作&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 之间的关系是松耦合的，每个 MicroAgent 独立提供特定的功能。它们通过以下方式协作：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;统一管理&lt;&#x2F;strong&gt;：通过 &lt;code&gt;load_microagents_from_dir&lt;&#x2F;code&gt; 函数统一加载和管理。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;动态调用&lt;&#x2F;strong&gt;：CodeAct Agent 根据需求动态调用不同类型的 MicroAgent。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;功能互补&lt;&#x2F;strong&gt;：KnowledgeMicroAgent 提供知识支持，RepoMicroAgent 提供项目规范，TaskMicroAgent 执行具体任务。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;&lt;strong&gt;总结&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;MicroAgent 是 OpenHands 系统中一个强大且灵活的模块，通过模块化设计和动态加载机制，为系统提供了知识支持、任务执行和仓库管理等多种功能。其与 CodeAct Agent 的深度集成，使得 OpenHands 能够更高效地满足用户的多样化需求。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>让AI成为你的分身：Polly AI Agent的诞生</title>
         <published>2025-02-27T00:00:00+00:00</published>
