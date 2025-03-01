@@ -632,8 +632,8 @@ table td {
     .sidebar {
         position: fixed;
         top: 0;
-        left: -70%; /* 初始状态隐藏在左侧 */
-        width: 70%;
+        left: -50%; /* 初始状态隐藏在左侧 */
+        width: 50%;
         height: 100vh;
         z-index: 1000;
         transition: left 0.3s ease-out;
