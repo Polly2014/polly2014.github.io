@@ -900,10 +900,14 @@ table td {
         padding-left: 1.2em; /* 减少列表缩进 */
     }
     
-    /* 调整消息容器间距 */
+     /* 调整聊天气泡间距，确保头像和气泡底部对齐 */
     .message-container {
-        gap: 8px; /* 减小头像与气泡之间的间距 */
-        margin-bottom: 12px; /* 减小消息间的垂直间距 */
+        display: flex;
+        align-items: flex-end; /* 改为底部对齐，而不是顶部对齐 */
+        gap: 10px;
+        max-width: 80%;
+        animation: fadeIn 0.3s ease-out;
+        margin-bottom: 15px; /* 增加消息间的垂直间距 */
     }
     
     .message-container {
