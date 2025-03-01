@@ -622,6 +622,138 @@ table td {
     animation-delay: 0.4s;
 }
 
+/* 增强 Markdown 内容在聊天气泡中的显示 */
+.chat-bubble {
+    /* 保留现有样式 */
+    padding: 8px 16px;
+    border-radius: 16px;
+    max-width: calc(100% - 50px);
+    word-wrap: break-word;
+    position: relative;
+    /* 添加以下样式 */
+    line-height: 1.5;
+}
+
+/* Markdown 内容样式 */
+.chat-bubble h1, .chat-bubble h2, .chat-bubble h3, .chat-bubble h4, .chat-bubble h5, .chat-bubble h6 {
+    margin-top: 10px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.chat-bubble h1 { font-size: 1.4em; }
+.chat-bubble h2 { font-size: 1.3em; }
+.chat-bubble h3 { font-size: 1.2em; }
+.chat-bubble h4 { font-size: 1.1em; }
+.chat-bubble h5, .chat-bubble h6 { font-size: 1em; }
+
+.chat-bubble p {
+    margin: 8px 0;
+}
+
+.chat-bubble ul, .chat-bubble ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.chat-bubble li {
+    margin-bottom: 4px;
+}
+
+.chat-bubble ul {
+    list-style-type: disc;
+}
+
+.chat-bubble ol {
+    list-style-type: decimal;
+}
+
+/* 代码块样式 */
+.chat-bubble pre {
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 10px 0;
+    font-family: monospace;
+}
+
+.chat-bubble code {
+    font-family: monospace;
+    background-color: rgba(175, 184, 193, 0.2);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.chat-bubble pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* 块引用样式 */
+.chat-bubble blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 10px;
+    margin: 10px 0 10px 5px;
+    color: #666;
+}
+
+/* 表格样式 */
+.chat-bubble table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.chat-bubble table th, .chat-bubble table td {
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+}
+
+.chat-bubble table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* 链接样式 */
+.chat-bubble a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+.chat-bubble a:hover {
+    text-decoration: underline;
+}
+
+/* 图片样式 */
+.chat-bubble img {
+    max-width: 100%;
+    margin: 8px 0;
+    border-radius: 4px;
+}
+
+/* 分隔线 */
+.chat-bubble hr {
+    height: 1px;
+    background-color: #ddd;
+    border: none;
+    margin: 12px 0;
+}
+
+/* 移动端样式优化 */
+@media (max-width: 768px) {
+    .chat-bubble pre {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+    
+    .chat-bubble h1 { font-size: 1.2em; }
+    .chat-bubble h2 { font-size: 1.1em; }
+    .chat-bubble h3, .chat-bubble h4, .chat-bubble h5, .chat-bubble h6 { font-size: 1em; }
+}
 
 /* 移动端样式 */
 @media (max-width: 768px) {
