@@ -1,260 +1,113 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Polly&#x27;s Blog</title>
-    <meta name="description" content="Wangbaoli">
-    <meta name="keywords" content="Polly, Blog, Baoli Wang">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
-    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-8JD13N7PHS');
-    </script>
-</head>
-<body>
-    <!-- 添加汉堡菜单按钮 -->
-    <div class="menu-toggle">
-        <img src=https://polly2014.github.io/images/polly.png alt="Menu">
-    </div>
-    <!-- 添加遮罩层 -->
-    <div class="overlay"></div>
-    <div class="pure-g container">
-        <div class="sidebar pure-u-1 pure-u-md-1-5">
-            <div class="title">
-                <a class="pure-menu-heading" href=https://polly2014.github.io>
-                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
-                </a>
-                <div class="introduction">
-                    <p>Polly&#x27;s Blog</p>
-                </div>
-                <div class="nav">
-                    <ul class="nav-links">
-                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
-                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
-                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
-                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
-                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
-                        <li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a></li>
-                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
-                    </ul>
-                </div>
-                <div class="social">
-                    <ul class="social-links">
-                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
-                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
-                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="content pure-u-1 pure-u-md-4-5">
-            
-    <div class="blog-post">
-        <h1>使用Kubernetes+Azure AAD搭建多租户版OpenHands系统</h1>
-        <div class="content">
-            <h2 id="gai-shu">概述</h2>
-<p>本教程将指导您如何使用 OpenHands、Kubernetes、Ingress 和账户管理系统（接入微软 Azure Active Directory）搭建一个多租户版的 OpenHands 系统。通过本教程，您将实现：</p>
-<ol>
-<li><strong>多用户支持</strong>：每个用户登录后访问自己的 OpenHands 实例。</li>
-<li><strong>身份验证</strong>：通过 Azure AD 实现用户身份验证。</li>
-<li><strong>动态实例分配</strong>：根据用户动态分配 OpenHands 实例。</li>
-<li><strong>数据隔离</strong>：确保每个用户的实例和数据互不干扰。</li>
-</ol>
-<hr />
-<h2 id="xi-tong-jia-gou">系统架构</h2>
-<p>系统架构如下：</p>
-<ol>
-<li>用户通过浏览器访问系统。</li>
-<li>系统引导用户通过 Azure AD 登录。</li>
-<li>登录成功后，系统根据用户 ID 查询或分配 OpenHands 实例。</li>
-<li>用户被路由到对应的 OpenHands 实例。</li>
-</ol>
-<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>[用户] --&gt; [账户管理系统] --&gt; [Azure AD 登录]
-</span><span>       --&gt; [用户实例映射表] --&gt; [Ingress/反向代理] --&gt; [OpenHands 实例]
-</span></code></pre>
-<hr />
-<h2 id="zhun-bei-gong-zuo">准备工作</h2>
-<ol>
-<li><strong>Docker 镜像</strong>：确保 OpenHands 的 Docker 镜像已构建并可用（例如 <code>docker.all-hands.dev/all-hands-ai/openhands:0.27</code>）。</li>
-<li><strong>Kubernetes 集群</strong>：确保 Kubernetes 集群已配置好（可以使用 Minikube、Kind 或云服务如 GKE、EKS 等）。</li>
-<li><strong>kubectl 工具</strong>：确保本地安装了 <code>kubectl</code> 并已连接到 Kubernetes 集群。</li>
-<li><strong>Azure AD 应用</strong>：在 Azure AD 中注册一个应用，用于用户身份验证。</li>
-</ol>
-<hr />
-<h2 id="bu-zou-1-bu-shu-openhands-dao-kubernetes">步骤 1: 部署 OpenHands 到 Kubernetes</h2>
-<h3 id="chuang-jian-kubernetes-pei-zhi-wen-jian">创建 Kubernetes 配置文件</h3>
-<p>以下是一个示例的 Kubernetes 配置文件，包含 Deployment 和 Service：</p>
-<h4 id="openhands-deployment-yaml"><code>openhands-deployment.yaml</code></h4>
-<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">apps/v1
-</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">Deployment
-</span><span style="color:#bf616a;">metadata</span><span>:
-</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-deployment
-</span><span>  </span><span style="color:#bf616a;">labels</span><span>:
-</span><span>    </span><span style="color:#bf616a;">app</span><span>: </span><span style="color:#a3be8c;">openhands
-</span><span style="color:#bf616a;">spec</span><span>:
-</span><span>  </span><span style="color:#bf616a;">replicas</span><span>: </span><span style="color:#d08770;">3  </span><span style="color:#65737e;"># 启动 3 个实例，可以根据需要调整
-</span><span>  </span><span style="color:#bf616a;">selector</span><span>:
-</span><span>    </span><span style="color:#bf616a;">matchLabels</span><span>:
-</span><span>      </span><span style="color:#bf616a;">app</span><span>: </span><span style="color:#a3be8c;">openhands
-</span><span>  </span><span style="color:#bf616a;">template</span><span>:
-</span><span>    </span><span style="color:#bf616a;">metadata</span><span>:
-</span><span>      </span><span style="color:#bf616a;">labels</span><span>:
-</span><span>        </span><span style="color:#bf616a;">app</span><span>: </span><span style="color:#a3be8c;">openhands
-</span><span>    </span><span style="color:#bf616a;">spec</span><span>:
-</span><span>      </span><span style="color:#bf616a;">containers</span><span>:
-</span><span>      - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands
-</span><span>        </span><span style="color:#bf616a;">image</span><span>: </span><span style="color:#a3be8c;">docker.all-hands.dev/all-hands-ai/openhands:0.27
-</span><span>        </span><span style="color:#bf616a;">ports</span><span>:
-</span><span>        - </span><span style="color:#bf616a;">containerPort</span><span>: </span><span style="color:#d08770;">3000
-</span><span>        </span><span style="color:#bf616a;">env</span><span>:
-</span><span>        - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">SANDBOX_RUNTIME_CONTAINER_IMAGE
-</span><span>          </span><span style="color:#bf616a;">value</span><span>: &quot;</span><span style="color:#a3be8c;">docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik</span><span>&quot;
-</span><span>        - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">LOG_ALL_EVENTS
-</span><span>          </span><span style="color:#bf616a;">value</span><span>: &quot;</span><span style="color:#a3be8c;">true</span><span>&quot;
-</span><span>        </span><span style="color:#bf616a;">volumeMounts</span><span>:
-</span><span>        - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-state
-</span><span>          </span><span style="color:#bf616a;">mountPath</span><span>: </span><span style="color:#a3be8c;">/.openhands-state
-</span><span>      </span><span style="color:#bf616a;">volumes</span><span>:
-</span><span>      - </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-state
-</span><span>        </span><span style="color:#bf616a;">emptyDir</span><span>: {}
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>使用Kubernetes+Azure AAD搭建多租户版OpenHands系统</h1><div class=content><h2 id=gai-shu>概述</h2><p>本教程将指导您如何使用 OpenHands、Kubernetes、Ingress 和账户管理系统（接入微软 Azure Active Directory）搭建一个多租户版的 OpenHands 系统。通过本教程，您将实现：<ol><li><strong>多用户支持</strong>：每个用户登录后访问自己的 OpenHands 实例。<li><strong>身份验证</strong>：通过 Azure AD 实现用户身份验证。<li><strong>动态实例分配</strong>：根据用户动态分配 OpenHands 实例。<li><strong>数据隔离</strong>：确保每个用户的实例和数据互不干扰。</ol><hr><h2 id=xi-tong-jia-gou>系统架构</h2><p>系统架构如下：<ol><li>用户通过浏览器访问系统。<li>系统引导用户通过 Azure AD 登录。<li>登录成功后，系统根据用户 ID 查询或分配 OpenHands 实例。<li>用户被路由到对应的 OpenHands 实例。</ol><pre style=background:#2b303b;color:#c0c5ce><code><span>[用户] --> [账户管理系统] --> [Azure AD 登录]
+</span><span>       --> [用户实例映射表] --> [Ingress/反向代理] --> [OpenHands 实例]
+</span></code></pre><hr><h2 id=zhun-bei-gong-zuo>准备工作</h2><ol><li><strong>Docker 镜像</strong>：确保 OpenHands 的 Docker 镜像已构建并可用（例如 <code>docker.all-hands.dev/all-hands-ai/openhands:0.27</code>）。<li><strong>Kubernetes 集群</strong>：确保 Kubernetes 集群已配置好（可以使用 Minikube、Kind 或云服务如 GKE、EKS 等）。<li><strong>kubectl 工具</strong>：确保本地安装了 <code>kubectl</code> 并已连接到 Kubernetes 集群。<li><strong>Azure AD 应用</strong>：在 Azure AD 中注册一个应用，用于用户身份验证。</ol><hr><h2 id=bu-zou-1-bu-shu-openhands-dao-kubernetes>步骤 1: 部署 OpenHands 到 Kubernetes</h2><h3 id=chuang-jian-kubernetes-pei-zhi-wen-jian>创建 Kubernetes 配置文件</h3><p>以下是一个示例的 Kubernetes 配置文件，包含 Deployment 和 Service：<h4 id=openhands-deployment-yaml><code>openhands-deployment.yaml</code></h4><pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>apiVersion</span><span>: </span><span style=color:#a3be8c>apps/v1
+</span><span style=color:#bf616a>kind</span><span>: </span><span style=color:#a3be8c>Deployment
+</span><span style=color:#bf616a>metadata</span><span>:
+</span><span>  </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-deployment
+</span><span>  </span><span style=color:#bf616a>labels</span><span>:
+</span><span>    </span><span style=color:#bf616a>app</span><span>: </span><span style=color:#a3be8c>openhands
+</span><span style=color:#bf616a>spec</span><span>:
+</span><span>  </span><span style=color:#bf616a>replicas</span><span>: </span><span style=color:#d08770>3  </span><span style=color:#65737e># 启动 3 个实例，可以根据需要调整
+</span><span>  </span><span style=color:#bf616a>selector</span><span>:
+</span><span>    </span><span style=color:#bf616a>matchLabels</span><span>:
+</span><span>      </span><span style=color:#bf616a>app</span><span>: </span><span style=color:#a3be8c>openhands
+</span><span>  </span><span style=color:#bf616a>template</span><span>:
+</span><span>    </span><span style=color:#bf616a>metadata</span><span>:
+</span><span>      </span><span style=color:#bf616a>labels</span><span>:
+</span><span>        </span><span style=color:#bf616a>app</span><span>: </span><span style=color:#a3be8c>openhands
+</span><span>    </span><span style=color:#bf616a>spec</span><span>:
+</span><span>      </span><span style=color:#bf616a>containers</span><span>:
+</span><span>      - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands
+</span><span>        </span><span style=color:#bf616a>image</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/openhands:0.27
+</span><span>        </span><span style=color:#bf616a>ports</span><span>:
+</span><span>        - </span><span style=color:#bf616a>containerPort</span><span>: </span><span style=color:#d08770>3000
+</span><span>        </span><span style=color:#bf616a>env</span><span>:
+</span><span>        - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>SANDBOX_RUNTIME_CONTAINER_IMAGE
+</span><span>          </span><span style=color:#bf616a>value</span><span>: "</span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik</span><span>"
+</span><span>        - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>LOG_ALL_EVENTS
+</span><span>          </span><span style=color:#bf616a>value</span><span>: "</span><span style=color:#a3be8c>true</span><span>"
+</span><span>        </span><span style=color:#bf616a>volumeMounts</span><span>:
+</span><span>        - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-state
+</span><span>          </span><span style=color:#bf616a>mountPath</span><span>: </span><span style=color:#a3be8c>/.openhands-state
+</span><span>      </span><span style=color:#bf616a>volumes</span><span>:
+</span><span>      - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-state
+</span><span>        </span><span style=color:#bf616a>emptyDir</span><span>: {}
 </span><span>---
-</span><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">v1
-</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">Service
-</span><span style="color:#bf616a;">metadata</span><span>:
-</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-service
-</span><span style="color:#bf616a;">spec</span><span>:
-</span><span>  </span><span style="color:#bf616a;">selector</span><span>:
-</span><span>    </span><span style="color:#bf616a;">app</span><span>: </span><span style="color:#a3be8c;">openhands
-</span><span>  </span><span style="color:#bf616a;">ports</span><span>:
-</span><span>  - </span><span style="color:#bf616a;">protocol</span><span>: </span><span style="color:#a3be8c;">TCP
-</span><span>    </span><span style="color:#bf616a;">port</span><span>: </span><span style="color:#d08770;">80
-</span><span>    </span><span style="color:#bf616a;">targetPort</span><span>: </span><span style="color:#d08770;">3000
-</span><span>  </span><span style="color:#bf616a;">type</span><span>: </span><span style="color:#a3be8c;">LoadBalancer
-</span></code></pre>
-<h3 id="bu-shu-dao-kubernetes">部署到 Kubernetes</h3>
-<p>将上述配置文件保存为 <code>openhands-deployment.yaml</code>，然后运行以下命令：</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">kubectl</span><span> apply</span><span style="color:#bf616a;"> -f</span><span> openhands-deployment.yaml
-</span></code></pre>
-<h3 id="yan-zheng-bu-shu">验证部署</h3>
-<ul>
-<li>检查 Pod 是否运行正常：<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">kubectl</span><span> get pods
-</span></code></pre>
-</li>
-<li>检查 Service 是否分配了外部 IP（如果使用 LoadBalancer 类型）：<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">kubectl</span><span> get service openhands-service
-</span></code></pre>
-您可以通过分配的外部 IP 访问 OpenHands 实例。</li>
-</ul>
-<hr />
-<h2 id="bu-zou-2-pei-zhi-ingress-shi-xian-lu-you">步骤 2: 配置 Ingress 实现路由</h2>
-<p>使用 Kubernetes 的 Ingress 控制器，通过不同的子路径或子域名分配实例。例如：</p>
-<ul>
-<li>用户 A 访问 <code>http://example.com/user-a</code></li>
-<li>用户 B 访问 <code>http://example.com/user-b</code></li>
-</ul>
-<h4 id="shi-li-ingress-pei-zhi">示例 Ingress 配置</h4>
-<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">apiVersion</span><span>: </span><span style="color:#a3be8c;">networking.k8s.io/v1
-</span><span style="color:#bf616a;">kind</span><span>: </span><span style="color:#a3be8c;">Ingress
-</span><span style="color:#bf616a;">metadata</span><span>:
-</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-ingress
-</span><span style="color:#bf616a;">spec</span><span>:
-</span><span>  </span><span style="color:#bf616a;">rules</span><span>:
-</span><span>  - </span><span style="color:#bf616a;">host</span><span>: </span><span style="color:#a3be8c;">example.com
-</span><span>    </span><span style="color:#bf616a;">http</span><span>:
-</span><span>      </span><span style="color:#bf616a;">paths</span><span>:
-</span><span>      - </span><span style="color:#bf616a;">path</span><span>: </span><span style="color:#a3be8c;">/user-a
-</span><span>        </span><span style="color:#bf616a;">pathType</span><span>: </span><span style="color:#a3be8c;">Prefix
-</span><span>        </span><span style="color:#bf616a;">backend</span><span>:
-</span><span>          </span><span style="color:#bf616a;">service</span><span>:
-</span><span>            </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-user-a
-</span><span>            </span><span style="color:#bf616a;">port</span><span>:
-</span><span>              </span><span style="color:#bf616a;">number</span><span>: </span><span style="color:#d08770;">80
-</span><span>      - </span><span style="color:#bf616a;">path</span><span>: </span><span style="color:#a3be8c;">/user-b
-</span><span>        </span><span style="color:#bf616a;">pathType</span><span>: </span><span style="color:#a3be8c;">Prefix
-</span><span>        </span><span style="color:#bf616a;">backend</span><span>:
-</span><span>          </span><span style="color:#bf616a;">service</span><span>:
-</span><span>            </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">openhands-user-b
-</span><span>            </span><span style="color:#bf616a;">port</span><span>:
-</span><span>              </span><span style="color:#bf616a;">number</span><span>: </span><span style="color:#d08770;">80
-</span></code></pre>
-<p>将上述配置保存为 <code>openhands-ingress.yaml</code>，然后运行：</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">kubectl</span><span> apply</span><span style="color:#bf616a;"> -f</span><span> openhands-ingress.yaml
-</span></code></pre>
-<hr />
-<h2 id="bu-zou-3-jie-ru-azure-ad-shi-xian-shen-fen-yan-zheng">步骤 3: 接入 Azure AD 实现身份验证</h2>
-<h3 id="zhu-ce-azure-ad-ying-yong">注册 Azure AD 应用</h3>
-<ol>
-<li>登录 <a href="https://portal.azure.com">Azure Portal</a>。</li>
-<li>在 Azure AD 中注册一个新的应用：
-<ul>
-<li>设置重定向 URI，例如 <code>https://example.com/auth/callback</code>。</li>
-<li>获取应用的 <code>Client ID</code> 和 <code>Client Secret</code>。</li>
-</ul>
-</li>
-<li>配置 API 权限，确保应用有 <code>openid</code> 和 <code>profile</code> 权限。</li>
-</ol>
-<h3 id="pei-zhi-shen-fen-yan-zheng-zhong-jian-jian">配置身份验证中间件</h3>
-<p>在账户管理系统中，使用支持 OAuth 2.0 或 OIDC 的库（如 Python 的 <code>authlib</code>）来处理用户登录。</p>
-<h4 id="shi-li-dai-ma-python-flask-ying-yong">示例代码（Python Flask 应用）</h4>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">from </span><span>flask </span><span style="color:#b48ead;">import </span><span>Flask, redirect, url_for, session
-</span><span style="color:#b48ead;">from </span><span>authlib.integrations.flask_client </span><span style="color:#b48ead;">import </span><span>OAuth
+</span><span style=color:#bf616a>apiVersion</span><span>: </span><span style=color:#a3be8c>v1
+</span><span style=color:#bf616a>kind</span><span>: </span><span style=color:#a3be8c>Service
+</span><span style=color:#bf616a>metadata</span><span>:
+</span><span>  </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-service
+</span><span style=color:#bf616a>spec</span><span>:
+</span><span>  </span><span style=color:#bf616a>selector</span><span>:
+</span><span>    </span><span style=color:#bf616a>app</span><span>: </span><span style=color:#a3be8c>openhands
+</span><span>  </span><span style=color:#bf616a>ports</span><span>:
+</span><span>  - </span><span style=color:#bf616a>protocol</span><span>: </span><span style=color:#a3be8c>TCP
+</span><span>    </span><span style=color:#bf616a>port</span><span>: </span><span style=color:#d08770>80
+</span><span>    </span><span style=color:#bf616a>targetPort</span><span>: </span><span style=color:#d08770>3000
+</span><span>  </span><span style=color:#bf616a>type</span><span>: </span><span style=color:#a3be8c>LoadBalancer
+</span></code></pre><h3 id=bu-shu-dao-kubernetes>部署到 Kubernetes</h3><p>将上述配置文件保存为 <code>openhands-deployment.yaml</code>，然后运行以下命令：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>kubectl</span><span> apply</span><span style=color:#bf616a> -f</span><span> openhands-deployment.yaml
+</span></code></pre><h3 id=yan-zheng-bu-shu>验证部署</h3><ul><li>检查 Pod 是否运行正常：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>kubectl</span><span> get pods
+</span></code></pre><li>检查 Service 是否分配了外部 IP（如果使用 LoadBalancer 类型）：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>kubectl</span><span> get service openhands-service
+</span></code></pre> 您可以通过分配的外部 IP 访问 OpenHands 实例。</ul><hr><h2 id=bu-zou-2-pei-zhi-ingress-shi-xian-lu-you>步骤 2: 配置 Ingress 实现路由</h2><p>使用 Kubernetes 的 Ingress 控制器，通过不同的子路径或子域名分配实例。例如：<ul><li>用户 A 访问 <code>http://example.com/user-a</code><li>用户 B 访问 <code>http://example.com/user-b</code></ul><h4 id=shi-li-ingress-pei-zhi>示例 Ingress 配置</h4><pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>apiVersion</span><span>: </span><span style=color:#a3be8c>networking.k8s.io/v1
+</span><span style=color:#bf616a>kind</span><span>: </span><span style=color:#a3be8c>Ingress
+</span><span style=color:#bf616a>metadata</span><span>:
+</span><span>  </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-ingress
+</span><span style=color:#bf616a>spec</span><span>:
+</span><span>  </span><span style=color:#bf616a>rules</span><span>:
+</span><span>  - </span><span style=color:#bf616a>host</span><span>: </span><span style=color:#a3be8c>example.com
+</span><span>    </span><span style=color:#bf616a>http</span><span>:
+</span><span>      </span><span style=color:#bf616a>paths</span><span>:
+</span><span>      - </span><span style=color:#bf616a>path</span><span>: </span><span style=color:#a3be8c>/user-a
+</span><span>        </span><span style=color:#bf616a>pathType</span><span>: </span><span style=color:#a3be8c>Prefix
+</span><span>        </span><span style=color:#bf616a>backend</span><span>:
+</span><span>          </span><span style=color:#bf616a>service</span><span>:
+</span><span>            </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-user-a
+</span><span>            </span><span style=color:#bf616a>port</span><span>:
+</span><span>              </span><span style=color:#bf616a>number</span><span>: </span><span style=color:#d08770>80
+</span><span>      - </span><span style=color:#bf616a>path</span><span>: </span><span style=color:#a3be8c>/user-b
+</span><span>        </span><span style=color:#bf616a>pathType</span><span>: </span><span style=color:#a3be8c>Prefix
+</span><span>        </span><span style=color:#bf616a>backend</span><span>:
+</span><span>          </span><span style=color:#bf616a>service</span><span>:
+</span><span>            </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>openhands-user-b
+</span><span>            </span><span style=color:#bf616a>port</span><span>:
+</span><span>              </span><span style=color:#bf616a>number</span><span>: </span><span style=color:#d08770>80
+</span></code></pre><p>将上述配置保存为 <code>openhands-ingress.yaml</code>，然后运行：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>kubectl</span><span> apply</span><span style=color:#bf616a> -f</span><span> openhands-ingress.yaml
+</span></code></pre><hr><h2 id=bu-zou-3-jie-ru-azure-ad-shi-xian-shen-fen-yan-zheng>步骤 3: 接入 Azure AD 实现身份验证</h2><h3 id=zhu-ce-azure-ad-ying-yong>注册 Azure AD 应用</h3><ol><li>登录 <a href=https://portal.azure.com>Azure Portal</a>。<li>在 Azure AD 中注册一个新的应用： <ul><li>设置重定向 URI，例如 <code>https://example.com/auth/callback</code>。<li>获取应用的 <code>Client ID</code> 和 <code>Client Secret</code>。</ul><li>配置 API 权限，确保应用有 <code>openid</code> 和 <code>profile</code> 权限。</ol><h3 id=pei-zhi-shen-fen-yan-zheng-zhong-jian-jian>配置身份验证中间件</h3><p>在账户管理系统中，使用支持 OAuth 2.0 或 OIDC 的库（如 Python 的 <code>authlib</code>）来处理用户登录。<h4 id=shi-li-dai-ma-python-flask-ying-yong>示例代码（Python Flask 应用）</h4><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>flask </span><span style=color:#b48ead>import </span><span>Flask, redirect, url_for, session
+</span><span style=color:#b48ead>from </span><span>authlib.integrations.flask_client </span><span style=color:#b48ead>import </span><span>OAuth
 </span><span>
-</span><span>app = </span><span style="color:#bf616a;">Flask</span><span>(__name__)
-</span><span>app.secret_key = &#39;</span><span style="color:#a3be8c;">random_secret_key</span><span>&#39;
-</span><span>oauth = </span><span style="color:#bf616a;">OAuth</span><span>(app)
+</span><span>app = </span><span style=color:#bf616a>Flask</span><span>(__name__)
+</span><span>app.secret_key = '</span><span style=color:#a3be8c>random_secret_key</span><span>'
+</span><span>oauth = </span><span style=color:#bf616a>OAuth</span><span>(app)
 </span><span>
-</span><span>azure = oauth.</span><span style="color:#bf616a;">register</span><span>(
-</span><span>    </span><span style="color:#bf616a;">name</span><span>=&#39;</span><span style="color:#a3be8c;">azure</span><span>&#39;,
-</span><span>    </span><span style="color:#bf616a;">client_id</span><span>=&#39;</span><span style="color:#a3be8c;">YOUR_CLIENT_ID</span><span>&#39;,
-</span><span>    </span><span style="color:#bf616a;">client_secret</span><span>=&#39;</span><span style="color:#a3be8c;">YOUR_CLIENT_SECRET</span><span>&#39;,
-</span><span>    </span><span style="color:#bf616a;">server_metadata_url</span><span>=&#39;</span><span style="color:#a3be8c;">https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0/.well-known/openid-configuration</span><span>&#39;,
-</span><span>    </span><span style="color:#bf616a;">client_kwargs</span><span>={
-</span><span>        &#39;</span><span style="color:#a3be8c;">scope</span><span>&#39;: &#39;</span><span style="color:#a3be8c;">openid profile email</span><span>&#39;,
+</span><span>azure = oauth.</span><span style=color:#bf616a>register</span><span>(
+</span><span>    </span><span style=color:#bf616a>name</span><span>='</span><span style=color:#a3be8c>azure</span><span>',
+</span><span>    </span><span style=color:#bf616a>client_id</span><span>='</span><span style=color:#a3be8c>YOUR_CLIENT_ID</span><span>',
+</span><span>    </span><span style=color:#bf616a>client_secret</span><span>='</span><span style=color:#a3be8c>YOUR_CLIENT_SECRET</span><span>',
+</span><span>    </span><span style=color:#bf616a>server_metadata_url</span><span>='</span><span style=color:#a3be8c>https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0/.well-known/openid-configuration</span><span>',
+</span><span>    </span><span style=color:#bf616a>client_kwargs</span><span>={
+</span><span>        '</span><span style=color:#a3be8c>scope</span><span>': '</span><span style=color:#a3be8c>openid profile email</span><span>',
 </span><span>    }
 </span><span>)
 </span><span>
-</span><span>@app.</span><span style="color:#bf616a;">route</span><span>(&#39;</span><span style="color:#a3be8c;">/</span><span>&#39;)
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">home</span><span>():
-</span><span>    </span><span style="color:#b48ead;">return </span><span>&#39;</span><span style="color:#a3be8c;">Welcome to OpenHands! &lt;a href=&quot;/login&quot;&gt;Login with Azure AD&lt;/a&gt;</span><span>&#39;
+</span><span>@app.</span><span style=color:#bf616a>route</span><span>('</span><span style=color:#a3be8c>/</span><span>')
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>home</span><span>():
+</span><span>    </span><span style=color:#b48ead>return </span><span>'</span><span style=color:#a3be8c>Welcome to OpenHands! &LTa href="/login">Login with Azure AD&LT/a></span><span>'
 </span><span>
-</span><span>@app.</span><span style="color:#bf616a;">route</span><span>(&#39;</span><span style="color:#a3be8c;">/login</span><span>&#39;)
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">login</span><span>():
-</span><span>    redirect_uri = </span><span style="color:#bf616a;">url_for</span><span>(&#39;</span><span style="color:#a3be8c;">auth_callback</span><span>&#39;, </span><span style="color:#bf616a;">_external</span><span>=</span><span style="color:#d08770;">True</span><span>)
-</span><span>    </span><span style="color:#b48ead;">return </span><span>azure.</span><span style="color:#bf616a;">authorize_redirect</span><span>(redirect_uri)
+</span><span>@app.</span><span style=color:#bf616a>route</span><span>('</span><span style=color:#a3be8c>/login</span><span>')
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>login</span><span>():
+</span><span>    redirect_uri = </span><span style=color:#bf616a>url_for</span><span>('</span><span style=color:#a3be8c>auth_callback</span><span>', </span><span style=color:#bf616a>_external</span><span>=</span><span style=color:#d08770>True</span><span>)
+</span><span>    </span><span style=color:#b48ead>return </span><span>azure.</span><span style=color:#bf616a>authorize_redirect</span><span>(redirect_uri)
 </span><span>
-</span><span>@app.</span><span style="color:#bf616a;">route</span><span>(&#39;</span><span style="color:#a3be8c;">/auth/callback</span><span>&#39;)
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">auth_callback</span><span>():
-</span><span>    token = azure.</span><span style="color:#bf616a;">authorize_access_token</span><span>()
-</span><span>    user_info = token.</span><span style="color:#bf616a;">get</span><span>(&#39;</span><span style="color:#a3be8c;">userinfo</span><span>&#39;)
-</span><span>    session[&#39;</span><span style="color:#a3be8c;">user</span><span>&#39;] = user_info
-</span><span>    </span><span style="color:#b48ead;">return f</span><span>&#39;</span><span style="color:#a3be8c;">Hello, </span><span>{user_info[&quot;</span><span style="color:#a3be8c;">name</span><span>&quot;]}</span><span style="color:#a3be8c;">!</span><span>&#39;
+</span><span>@app.</span><span style=color:#bf616a>route</span><span>('</span><span style=color:#a3be8c>/auth/callback</span><span>')
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>auth_callback</span><span>():
+</span><span>    token = azure.</span><span style=color:#bf616a>authorize_access_token</span><span>()
+</span><span>    user_info = token.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>userinfo</span><span>')
+</span><span>    session['</span><span style=color:#a3be8c>user</span><span>'] = user_info
+</span><span>    </span><span style=color:#b48ead>return f</span><span>'</span><span style=color:#a3be8c>Hello, </span><span>{user_info["</span><span style=color:#a3be8c>name</span><span>"]}</span><span style=color:#a3be8c>!</span><span>'
 </span><span>
-</span><span style="color:#b48ead;">if </span><span>__name__ == &#39;</span><span style="color:#a3be8c;">__main__</span><span>&#39;:
-</span><span>    app.</span><span style="color:#bf616a;">run</span><span>()
-</span></code></pre>
-<hr />
-<h2 id="bu-zou-4-yong-hu-yu-openhands-shi-li-de-ying-she">步骤 4: 用户与 OpenHands 实例的映射</h2>
-<h3 id="shu-ju-ku-cun-chu-ying-she-guan-xi">数据库存储映射关系</h3>
-<p>使用数据库（如 PostgreSQL 或 MongoDB）存储用户与实例的映射。例如：</p>
-<table><thead><tr><th>用户 ID (Azure AD)</th><th>OpenHands 实例 URL</th></tr></thead><tbody>
-<tr><td>user1@domain.com</td><td>http://openhands-1.com</td></tr>
-<tr><td>user2@domain.com</td><td>http://openhands-2.com</td></tr>
-<tr><td>user3@domain.com</td><td>http://openhands-3.com</td></tr>
-</tbody></table>
-<h3 id="dong-tai-lu-you">动态路由</h3>
-<p>使用 Ingress 或反向代理（如 Nginx）根据用户的身份动态路由到对应的实例。</p>
-<h4 id="shi-li-nginx-pei-zhi">示例 Nginx 配置</h4>
-<pre data-lang="nginx" style="background-color:#2b303b;color:#c0c5ce;" class="language-nginx "><code class="language-nginx" data-lang="nginx"><span>server {
+</span><span style=color:#b48ead>if </span><span>__name__ == '</span><span style=color:#a3be8c>__main__</span><span>':
+</span><span>    app.</span><span style=color:#bf616a>run</span><span>()
+</span></code></pre><hr><h2 id=bu-zou-4-yong-hu-yu-openhands-shi-li-de-ying-she>步骤 4: 用户与 OpenHands 实例的映射</h2><h3 id=shu-ju-ku-cun-chu-ying-she-guan-xi>数据库存储映射关系</h3><p>使用数据库（如 PostgreSQL 或 MongoDB）存储用户与实例的映射。例如：<table><thead><tr><th>用户 ID (Azure AD)<th>OpenHands 实例 URL<tbody><tr><td>user1@domain.com<td>http://openhands-1.com<tr><td>user2@domain.com<td>http://openhands-2.com<tr><td>user3@domain.com<td>http://openhands-3.com</table><h3 id=dong-tai-lu-you>动态路由</h3><p>使用 Ingress 或反向代理（如 Nginx）根据用户的身份动态路由到对应的实例。<h4 id=shi-li-nginx-pei-zhi>示例 Nginx 配置</h4><pre class=language-nginx data-lang=nginx style=background:#2b303b;color:#c0c5ce><code class=language-nginx data-lang=nginx><span>server {
 </span><span>    listen 80;
 </span><span>    server_name example.com;
 </span><span>
@@ -262,82 +115,4 @@
 </span><span>        proxy_pass http://openhands-instance-$user_id;
 </span><span>    }
 </span><span>}
-</span></code></pre>
-<hr />
-<h2 id="zhu-yi-shi-xiang">注意事项</h2>
-<ol>
-<li><strong>单用户限制</strong>：OpenHands 默认是单用户模式。如果需要支持多用户共享一个实例，可能需要对 OpenHands 的代码进行修改。</li>
-<li><strong>安全性</strong>：
-<ul>
-<li>确保所有通信使用 HTTPS。</li>
-<li>配置 Azure AD 的权限范围，避免过多权限暴露。</li>
-</ul>
-</li>
-<li><strong>扩展性</strong>：
-<ul>
-<li>使用 Kubernetes 的自动扩展功能，根据用户数量动态扩展实例。</li>
-<li>定期清理未使用的实例，优化资源利用。</li>
-</ul>
-</li>
-</ol>
-<hr />
-<p>通过本教程，您可以成功搭建一个多租户版的 OpenHands 系统。如果您有任何问题或需要进一步的帮助，请随时联系！</p>
-
-        </div>
-        <div class="navigation">
-            
-            
-        </div>
-    </div>
-
-        </div>
-    </div>
-    <!-- 在body标签结束前添加JavaScript -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.overlay');
-
-            // 切换侧边栏显示状态
-            function toggleSidebar() {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            }
-
-            // 点击菜单按钮显示侧边栏
-            menuToggle.addEventListener('click', toggleSidebar);
-
-            // 点击遮罩层隐藏侧边栏
-            overlay.addEventListener('click', toggleSidebar);
-
-            // 处理移动端滑动手势
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            document.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, false);
-
-            document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, false);
-
-            function handleSwipe() {
-                const swipeDistance = touchEndX - touchStartX;
-                // 从左向右滑动显示菜单
-                if (swipeDistance > 50 && touchStartX < 30) {
-                    sidebar.classList.add('active');
-                    overlay.classList.add('active');
-                }
-                // 从右向左滑动隐藏菜单
-                else if (swipeDistance < -50 && sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+</span></code></pre><hr><h2 id=zhu-yi-shi-xiang>注意事项</h2><ol><li><strong>单用户限制</strong>：OpenHands 默认是单用户模式。如果需要支持多用户共享一个实例，可能需要对 OpenHands 的代码进行修改。<li><strong>安全性</strong>： <ul><li>确保所有通信使用 HTTPS。<li>配置 Azure AD 的权限范围，避免过多权限暴露。</ul><li><strong>扩展性</strong>： <ul><li>使用 Kubernetes 的自动扩展功能，根据用户数量动态扩展实例。<li>定期清理未使用的实例，优化资源利用。</ul></ol><hr><p>通过本教程，您可以成功搭建一个多租户版的 OpenHands 系统。如果您有任何问题或需要进一步的帮助，请随时联系！</div><div class=navigation></div></div></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

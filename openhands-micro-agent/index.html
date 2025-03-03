@@ -1,297 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Polly&#x27;s Blog</title>
-    <meta name="description" content="Wangbaoli">
-    <meta name="keywords" content="Polly, Blog, Baoli Wang">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <!--<link rel="stylesheet" href="https://polly2014.github.io/css/style.css">-->
-    <link rel="stylesheet" href="https://polly2014.github.io/css/style_new.css">
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-8JD13N7PHS');
-    </script>
-</head>
-<body>
-    <!-- 添加汉堡菜单按钮 -->
-    <div class="menu-toggle">
-        <img src=https://polly2014.github.io/images/polly.png alt="Menu">
-    </div>
-    <!-- 添加遮罩层 -->
-    <div class="overlay"></div>
-    <div class="pure-g container">
-        <div class="sidebar pure-u-1 pure-u-md-1-5">
-            <div class="title">
-                <a class="pure-menu-heading" href=https://polly2014.github.io>
-                    <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png>
-                </a>
-                <div class="introduction">
-                    <p>Polly&#x27;s Blog</p>
-                </div>
-                <div class="nav">
-                    <ul class="nav-links">
-                        <li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a></li>
-                        <li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a></li>
-                        <li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a></li>
-                        <li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a></li>
-                        <li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a></li>
-                        <li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a></li>
-                        <li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></li>
-                    </ul>
-                </div>
-                <div class="social">
-                    <ul class="social-links">
-                        <li><a href="mailto:26716201@qq.com"><i class="fas fa-envelope"></i></a></li>
-                        <li><a href="https://twitter.com/Polly__007"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="https://www.linkedin.com/in/baoliwang"><i class="fab fa-linkedin-in"></i></a></li>
-                        <li><a href="https://github.com/Polly2014"><i class="fab fa-github"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="content pure-u-1 pure-u-md-4-5">
-            
-    <div class="blog-post">
-        <h1>深度解析OpenHands MicroAgent</h1>
-        <div class="content">
-            <h2 id="yin-yan">引言</h2>
-<p>MicroAgent 是 OpenHands 系统中的一个重要模块，旨在通过模块化的方式提供特定的知识、任务和仓库相关的功能支持。本文将从 MicroAgent 的分类、作用、协作方式、源码实现以及测试覆盖等多个维度，全面解析其设计理念和技术实现。</p>
-<hr />
-<h2 id="1-microagent-de-fen-lei-yu-zuo-yong"><strong>1. MicroAgent 的分类与作用</strong></h2>
-<p>MicroAgent 分为三大类，每一类都有其特定的功能和应用场景：</p>
-<h3 id="1-knowledgemicroagent"><strong>(1) KnowledgeMicroAgent</strong></h3>
-<ul>
-<li><strong>作用</strong>：提供特定领域的知识支持，例如编程语言的最佳实践、框架指南、常见模式和工具使用等。</li>
-<li><strong>触发机制</strong>：通过关键词触发。例如，当用户输入包含特定关键词的消息时，KnowledgeMicroAgent 会被激活。</li>
-<li><strong>典型场景</strong>：
-<ul>
-<li>用户询问某个框架的最佳实践。</li>
-<li>提供工具的使用指南。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-repomicroagent"><strong>(2) RepoMicroAgent</strong></h3>
-<ul>
-<li><strong>作用</strong>：专注于仓库（Repository）相关的知识和指导，例如团队的代码规范、项目特定的工作流和文档引用。</li>
-<li><strong>加载方式</strong>：从 <code>.openhands/microagents/repo.md</code> 文件中加载，或者从遗留的 <code>.openhands_instructions</code> 文件中加载。</li>
-<li><strong>典型场景</strong>：
-<ul>
-<li>提供项目特定的开发规范。</li>
-<li>自动加载与当前仓库相关的文档和说明。</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-taskmicroagent"><strong>(3) TaskMicroAgent</strong></h3>
-<ul>
-<li><strong>作用</strong>：专注于任务驱动的操作，例如执行特定的任务或工作流。</li>
-<li><strong>典型场景</strong>：
-<ul>
-<li>自动化执行某些重复性任务。</li>
-<li>提供任务的分步指导。</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h2 id="2-microagent-de-xie-zuo-fang-shi"><strong>2. MicroAgent 的协作方式</strong></h2>
-<p>MicroAgent 的协作方式体现在以下几个方面：</p>
-<h3 id="1-mo-kuai-hua-she-ji"><strong>(1) 模块化设计</strong></h3>
-<p>每个 MicroAgent 都是一个独立的模块，具有自己的元数据（Metadata）和内容（Content）。这种模块化设计使得 MicroAgent 可以独立开发、测试和部署。</p>
-<h3 id="2-tong-yi-jia-zai-yu-guan-li"><strong>(2) 统一加载与管理</strong></h3>
-<p>通过 <code>load_microagents_from_dir</code> 函数，系统可以从指定目录加载所有类型的 MicroAgent，并将它们分类存储为字典（<code>repo_agents</code>、<code>knowledge_agents</code>、<code>task_agents</code>）。这确保了 MicroAgent 的统一管理和高效加载。</p>
-<h3 id="3-dong-tai-hong-fa-yu-zhi-xing"><strong>(3) 动态触发与执行</strong></h3>
-<ul>
-<li><strong>触发机制</strong>：例如，KnowledgeMicroAgent 会根据用户输入的关键词动态触发。</li>
-<li><strong>执行机制</strong>：TaskMicroAgent 可以根据任务需求执行特定的操作。</li>
-</ul>
-<h3 id="4-yu-codeact-agent-de-ji-cheng"><strong>(4) 与 CodeAct Agent 的集成</strong></h3>
-<p>MicroAgent 是 CodeAct Agent 的重要组成部分。CodeAct Agent 可以调用 MicroAgent 提供的知识或任务支持，从而增强其功能。</p>
-<hr />
-<h2 id="3-yuan-ma-jie-xi"><strong>3. 源码解析</strong></h2>
-<p>以下是对 MicroAgent 核心源码的解析：</p>
-<h3 id="1-microagent-de-ji-lei"><strong>(1) MicroAgent 的基类</strong></h3>
-<p><code>BaseMicroAgent</code> 是所有 MicroAgent 的基类，定义了 MicroAgent 的基本结构和加载逻辑。</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">BaseMicroAgent</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseModel</span><span style="color:#eff1f5;">):
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/tags><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>深度解析OpenHands MicroAgent</h1><div class=content><h2 id=yin-yan>引言</h2><p>MicroAgent 是 OpenHands 系统中的一个重要模块，旨在通过模块化的方式提供特定的知识、任务和仓库相关的功能支持。本文将从 MicroAgent 的分类、作用、协作方式、源码实现以及测试覆盖等多个维度，全面解析其设计理念和技术实现。<hr><h2 id=1-microagent-de-fen-lei-yu-zuo-yong><strong>1. MicroAgent 的分类与作用</strong></h2><p>MicroAgent 分为三大类，每一类都有其特定的功能和应用场景：<h3 id=1-knowledgemicroagent><strong>(1) KnowledgeMicroAgent</strong></h3><ul><li><strong>作用</strong>：提供特定领域的知识支持，例如编程语言的最佳实践、框架指南、常见模式和工具使用等。<li><strong>触发机制</strong>：通过关键词触发。例如，当用户输入包含特定关键词的消息时，KnowledgeMicroAgent 会被激活。<li><strong>典型场景</strong>： <ul><li>用户询问某个框架的最佳实践。<li>提供工具的使用指南。</ul></ul><h3 id=2-repomicroagent><strong>(2) RepoMicroAgent</strong></h3><ul><li><strong>作用</strong>：专注于仓库（Repository）相关的知识和指导，例如团队的代码规范、项目特定的工作流和文档引用。<li><strong>加载方式</strong>：从 <code>.openhands/microagents/repo.md</code> 文件中加载，或者从遗留的 <code>.openhands_instructions</code> 文件中加载。<li><strong>典型场景</strong>： <ul><li>提供项目特定的开发规范。<li>自动加载与当前仓库相关的文档和说明。</ul></ul><h3 id=3-taskmicroagent><strong>(3) TaskMicroAgent</strong></h3><ul><li><strong>作用</strong>：专注于任务驱动的操作，例如执行特定的任务或工作流。<li><strong>典型场景</strong>： <ul><li>自动化执行某些重复性任务。<li>提供任务的分步指导。</ul></ul><hr><h2 id=2-microagent-de-xie-zuo-fang-shi><strong>2. MicroAgent 的协作方式</strong></h2><p>MicroAgent 的协作方式体现在以下几个方面：<h3 id=1-mo-kuai-hua-she-ji><strong>(1) 模块化设计</strong></h3><p>每个 MicroAgent 都是一个独立的模块，具有自己的元数据（Metadata）和内容（Content）。这种模块化设计使得 MicroAgent 可以独立开发、测试和部署。<h3 id=2-tong-yi-jia-zai-yu-guan-li><strong>(2) 统一加载与管理</strong></h3><p>通过 <code>load_microagents_from_dir</code> 函数，系统可以从指定目录加载所有类型的 MicroAgent，并将它们分类存储为字典（<code>repo_agents</code>、<code>knowledge_agents</code>、<code>task_agents</code>）。这确保了 MicroAgent 的统一管理和高效加载。<h3 id=3-dong-tai-hong-fa-yu-zhi-xing><strong>(3) 动态触发与执行</strong></h3><ul><li><strong>触发机制</strong>：例如，KnowledgeMicroAgent 会根据用户输入的关键词动态触发。<li><strong>执行机制</strong>：TaskMicroAgent 可以根据任务需求执行特定的操作。</ul><h3 id=4-yu-codeact-agent-de-ji-cheng><strong>(4) 与 CodeAct Agent 的集成</strong></h3><p>MicroAgent 是 CodeAct Agent 的重要组成部分。CodeAct Agent 可以调用 MicroAgent 提供的知识或任务支持，从而增强其功能。<hr><h2 id=3-yuan-ma-jie-xi><strong>3. 源码解析</strong></h2><p>以下是对 MicroAgent 核心源码的解析：<h3 id=1-microagent-de-ji-lei><strong>(1) MicroAgent 的基类</strong></h3><p><code>BaseMicroAgent</code> 是所有 MicroAgent 的基类，定义了 MicroAgent 的基本结构和加载逻辑。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>BaseMicroAgent</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>BaseModel</span><span style=color:#eff1f5>):
 </span><span>    name: str
 </span><span>    content: str
 </span><span>    metadata: MicroAgentMetadata
-</span><span>    source: str  </span><span style="color:#65737e;"># 文件路径
-</span><span>    </span><span style="color:#96b5b4;">type</span><span>: MicroAgentType
+</span><span>    source: str  </span><span style=color:#65737e># 文件路径
+</span><span>    </span><span style=color:#96b5b4>type</span><span>: MicroAgentType
 </span><span>
-</span><span>    @</span><span style="color:#96b5b4;">classmethod
-</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">load</span><span>(</span><span style="color:#bf616a;">cls</span><span>, </span><span style="color:#bf616a;">path</span><span>: Union[str, Path], </span><span style="color:#bf616a;">file_content</span><span>: str | </span><span style="color:#d08770;">None </span><span>= </span><span style="color:#d08770;">None</span><span>) -&gt; &#39;</span><span style="color:#a3be8c;">BaseMicroAgent</span><span>&#39;:
-</span><span>        </span><span style="color:#65737e;"># 从文件加载 MicroAgent
-</span><span>        </span><span style="color:#d08770;">...
-</span></code></pre>
-<ul>
-<li>
-<p><strong>核心字段</strong>：</p>
-<ul>
-<li><code>name</code>：MicroAgent 的名称。</li>
-<li><code>content</code>：MicroAgent 的内容。</li>
-<li><code>metadata</code>：MicroAgent 的元数据，包括类型、触发器等。</li>
-<li><code>type</code>：MicroAgent 的类型（Knowledge、Repo 或 Task）。</li>
-</ul>
-</li>
-<li>
-<p><strong>加载逻辑</strong>：</p>
-<ul>
-<li>从文件中读取内容。</li>
-<li>根据元数据的类型动态创建对应的子类（<code>KnowledgeMicroAgent</code>、<code>RepoMicroAgent</code> 或 <code>TaskMicroAgent</code>）。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-knowledgemicroagent"><strong>(2) KnowledgeMicroAgent</strong></h3>
-<p><code>KnowledgeMicroAgent</code> 提供了关键词触发的功能。</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">KnowledgeMicroAgent</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseMicroAgent</span><span style="color:#eff1f5;">):
-</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">match_trigger</span><span>(</span><span style="color:#bf616a;">self</span><span>, </span><span style="color:#bf616a;">message</span><span>: str) -&gt; str | </span><span style="color:#d08770;">None</span><span>:
-</span><span>        </span><span style="color:#65737e;"># 匹配消息中的触发器
-</span><span>        message = message.</span><span style="color:#bf616a;">lower</span><span>()
-</span><span>        </span><span style="color:#b48ead;">for </span><span>trigger </span><span style="color:#b48ead;">in </span><span style="color:#bf616a;">self</span><span>.triggers:
-</span><span>            </span><span style="color:#b48ead;">if </span><span>trigger.</span><span style="color:#bf616a;">lower</span><span>() in message:
-</span><span>                </span><span style="color:#b48ead;">return </span><span>trigger
-</span><span>        </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">None
+</span><span>    @</span><span style=color:#96b5b4>classmethod
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>load</span><span>(</span><span style=color:#bf616a>cls</span><span>, </span><span style=color:#bf616a>path</span><span>: Union[str, Path], </span><span style=color:#bf616a>file_content</span><span>: str | </span><span style=color:#d08770>None </span><span>= </span><span style=color:#d08770>None</span><span>) -> '</span><span style=color:#a3be8c>BaseMicroAgent</span><span>':
+</span><span>        </span><span style=color:#65737e># 从文件加载 MicroAgent
+</span><span>        </span><span style=color:#d08770>...
+</span></code></pre><ul><li><p><strong>核心字段</strong>：</p> <ul><li><code>name</code>：MicroAgent 的名称。<li><code>content</code>：MicroAgent 的内容。<li><code>metadata</code>：MicroAgent 的元数据，包括类型、触发器等。<li><code>type</code>：MicroAgent 的类型（Knowledge、Repo 或 Task）。</ul><li><p><strong>加载逻辑</strong>：</p> <ul><li>从文件中读取内容。<li>根据元数据的类型动态创建对应的子类（<code>KnowledgeMicroAgent</code>、<code>RepoMicroAgent</code> 或 <code>TaskMicroAgent</code>）。</ul></ul><h3 id=2-knowledgemicroagent><strong>(2) KnowledgeMicroAgent</strong></h3><p><code>KnowledgeMicroAgent</code> 提供了关键词触发的功能。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>KnowledgeMicroAgent</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>BaseMicroAgent</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>match_trigger</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>message</span><span>: str) -> str | </span><span style=color:#d08770>None</span><span>:
+</span><span>        </span><span style=color:#65737e># 匹配消息中的触发器
+</span><span>        message = message.</span><span style=color:#bf616a>lower</span><span>()
+</span><span>        </span><span style=color:#b48ead>for </span><span>trigger </span><span style=color:#b48ead>in </span><span style=color:#bf616a>self</span><span>.triggers:
+</span><span>            </span><span style=color:#b48ead>if </span><span>trigger.</span><span style=color:#bf616a>lower</span><span>() in message:
+</span><span>                </span><span style=color:#b48ead>return </span><span>trigger
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#d08770>None
 </span><span>
-</span><span>    @</span><span style="color:#96b5b4;">property
-</span><span>    </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">triggers</span><span>(</span><span style="color:#bf616a;">self</span><span>) -&gt; list[str]:
-</span><span>        </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">self</span><span>.metadata.triggers
-</span></code></pre>
-<ul>
-<li><strong>关键词匹配</strong>：通过 <code>match_trigger</code> 方法，判断用户输入是否包含触发关键词。</li>
-<li><strong>触发器列表</strong>：从元数据中提取触发器。</li>
-</ul>
-<h3 id="3-repomicroagent"><strong>(3) RepoMicroAgent</strong></h3>
-<p><code>RepoMicroAgent</code> 专注于仓库相关的知识。</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">RepoMicroAgent</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseMicroAgent</span><span style="color:#eff1f5;">):
-</span><span>    </span><span style="color:#d08770;">...
-</span></code></pre>
-<ul>
-<li><strong>加载方式</strong>：从 <code>.openhands/microagents/repo.md</code> 或 <code>.openhands_instructions</code> 文件中加载。</li>
-<li><strong>应用场景</strong>：提供项目特定的开发规范和文档。</li>
-</ul>
-<h3 id="4-taskmicroagent"><strong>(4) TaskMicroAgent</strong></h3>
-<p><code>TaskMicroAgent</code> 专注于任务驱动的操作。</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">class </span><span style="color:#ebcb8b;">TaskMicroAgent</span><span style="color:#eff1f5;">(</span><span style="color:#a3be8c;">BaseMicroAgent</span><span style="color:#eff1f5;">):
-</span><span>    </span><span style="color:#d08770;">...
-</span></code></pre>
-<ul>
-<li><strong>应用场景</strong>：执行特定的任务或工作流。</li>
-</ul>
-<h3 id="5-microagent-de-jia-zai-han-shu"><strong>(5) MicroAgent 的加载函数</strong></h3>
-<p><code>load_microagents_from_dir</code> 函数用于从指定目录加载所有 MicroAgent。</p>
-<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">load_microagents_from_dir</span><span>(</span><span style="color:#bf616a;">microagent_dir</span><span>: Union[str, Path]) -&gt; tuple[</span><span style="color:#d08770;">...</span><span>]:
+</span><span>    @</span><span style=color:#96b5b4>property
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>triggers</span><span>(</span><span style=color:#bf616a>self</span><span>) -> list[str]:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.metadata.triggers
+</span></code></pre><ul><li><strong>关键词匹配</strong>：通过 <code>match_trigger</code> 方法，判断用户输入是否包含触发关键词。<li><strong>触发器列表</strong>：从元数据中提取触发器。</ul><h3 id=3-repomicroagent><strong>(3) RepoMicroAgent</strong></h3><p><code>RepoMicroAgent</code> 专注于仓库相关的知识。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>RepoMicroAgent</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>BaseMicroAgent</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#d08770>...
+</span></code></pre><ul><li><strong>加载方式</strong>：从 <code>.openhands/microagents/repo.md</code> 或 <code>.openhands_instructions</code> 文件中加载。<li><strong>应用场景</strong>：提供项目特定的开发规范和文档。</ul><h3 id=4-taskmicroagent><strong>(4) TaskMicroAgent</strong></h3><p><code>TaskMicroAgent</code> 专注于任务驱动的操作。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>TaskMicroAgent</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>BaseMicroAgent</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#d08770>...
+</span></code></pre><ul><li><strong>应用场景</strong>：执行特定的任务或工作流。</ul><h3 id=5-microagent-de-jia-zai-han-shu><strong>(5) MicroAgent 的加载函数</strong></h3><p><code>load_microagents_from_dir</code> 函数用于从指定目录加载所有 MicroAgent。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>load_microagents_from_dir</span><span>(</span><span style=color:#bf616a>microagent_dir</span><span>: Union[str, Path]) -> tuple[</span><span style=color:#d08770>...</span><span>]:
 </span><span>    repo_agents = {}
 </span><span>    knowledge_agents = {}
 </span><span>    task_agents = {}
 </span><span>
-</span><span>    </span><span style="color:#b48ead;">for </span><span>file </span><span style="color:#b48ead;">in </span><span>microagent_dir.</span><span style="color:#bf616a;">rglob</span><span>(&#39;</span><span style="color:#a3be8c;">*.md</span><span>&#39;):
-</span><span>        agent = BaseMicroAgent.</span><span style="color:#bf616a;">load</span><span>(file)
-</span><span>        </span><span style="color:#b48ead;">if </span><span style="color:#96b5b4;">isinstance</span><span>(agent, RepoMicroAgent):
+</span><span>    </span><span style=color:#b48ead>for </span><span>file </span><span style=color:#b48ead>in </span><span>microagent_dir.</span><span style=color:#bf616a>rglob</span><span>('</span><span style=color:#a3be8c>*.md</span><span>'):
+</span><span>        agent = BaseMicroAgent.</span><span style=color:#bf616a>load</span><span>(file)
+</span><span>        </span><span style=color:#b48ead>if </span><span style=color:#96b5b4>isinstance</span><span>(agent, RepoMicroAgent):
 </span><span>            repo_agents[agent.name] = agent
-</span><span>        </span><span style="color:#b48ead;">elif </span><span style="color:#96b5b4;">isinstance</span><span>(agent, KnowledgeMicroAgent):
+</span><span>        </span><span style=color:#b48ead>elif </span><span style=color:#96b5b4>isinstance</span><span>(agent, KnowledgeMicroAgent):
 </span><span>            knowledge_agents[agent.name] = agent
-</span><span>        </span><span style="color:#b48ead;">elif </span><span style="color:#96b5b4;">isinstance</span><span>(agent, TaskMicroAgent):
+</span><span>        </span><span style=color:#b48ead>elif </span><span style=color:#96b5b4>isinstance</span><span>(agent, TaskMicroAgent):
 </span><span>            task_agents[agent.name] = agent
 </span><span>
-</span><span>    </span><span style="color:#b48ead;">return </span><span>repo_agents, knowledge_agents, task_agents
-</span></code></pre>
-<ul>
-<li><strong>功能</strong>：从目录中递归加载所有 <code>.md</code> 文件，并根据类型分类存储。</li>
-<li><strong>返回值</strong>：包含 <code>repo_agents</code>、<code>knowledge_agents</code> 和 <code>task_agents</code> 的字典。</li>
-</ul>
-<hr />
-<h2 id="4-ce-shi-fu-gai"><strong>4. 测试覆盖</strong></h2>
-<p>MicroAgent 的测试覆盖包括以下几个方面：</p>
-<h3 id="1-ji-ben-gong-neng-ce-shi"><strong>(1) 基本功能测试</strong></h3>
-<ul>
-<li>测试 MicroAgent 的加载功能。</li>
-<li>验证不同类型的 MicroAgent 是否正确分类。</li>
-</ul>
-<h3 id="2-te-shu-chang-jing-ce-shi"><strong>(2) 特殊场景测试</strong></h3>
-<ul>
-<li>测试嵌套目录中的 MicroAgent 加载。</li>
-<li>测试带有遗留文件（<code>.openhands_instructions</code>）的加载。</li>
-</ul>
-<h3 id="3-yi-chang-chu-li-ce-shi"><strong>(3) 异常处理测试</strong></h3>
-<ul>
-<li>测试无效类型的 MicroAgent 是否抛出异常。</li>
-<li>测试缺失文件的场景。</li>
-</ul>
-<hr />
-<h2 id="5-microagent-de-guan-xi-yu-xie-zuo"><strong>5. MicroAgent 的关系与协作</strong></h2>
-<p>MicroAgent 之间的关系是松耦合的，每个 MicroAgent 独立提供特定的功能。它们通过以下方式协作：</p>
-<ul>
-<li><strong>统一管理</strong>：通过 <code>load_microagents_from_dir</code> 函数统一加载和管理。</li>
-<li><strong>动态调用</strong>：CodeAct Agent 根据需求动态调用不同类型的 MicroAgent。</li>
-<li><strong>功能互补</strong>：KnowledgeMicroAgent 提供知识支持，RepoMicroAgent 提供项目规范，TaskMicroAgent 执行具体任务。</li>
-</ul>
-<hr />
-<h2 id="zong-jie"><strong>总结</strong></h2>
-<p>MicroAgent 是 OpenHands 系统中一个强大且灵活的模块，通过模块化设计和动态加载机制，为系统提供了知识支持、任务执行和仓库管理等多种功能。其与 CodeAct Agent 的深度集成，使得 OpenHands 能够更高效地满足用户的多样化需求。</p>
-
-        </div>
-        <div class="navigation">
-            
-            
-        </div>
-    </div>
-
-        </div>
-    </div>
-    <!-- 在body标签结束前添加JavaScript -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.overlay');
-
-            // 切换侧边栏显示状态
-            function toggleSidebar() {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            }
-
-            // 点击菜单按钮显示侧边栏
-            menuToggle.addEventListener('click', toggleSidebar);
-
-            // 点击遮罩层隐藏侧边栏
-            overlay.addEventListener('click', toggleSidebar);
-
-            // 处理移动端滑动手势
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            document.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, false);
-
-            document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, false);
-
-            function handleSwipe() {
-                const swipeDistance = touchEndX - touchStartX;
-                // 从左向右滑动显示菜单
-                if (swipeDistance > 50 && touchStartX < 30) {
-                    sidebar.classList.add('active');
-                    overlay.classList.add('active');
-                }
-                // 从右向左滑动隐藏菜单
-                else if (swipeDistance < -50 && sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+</span><span>    </span><span style=color:#b48ead>return </span><span>repo_agents, knowledge_agents, task_agents
+</span></code></pre><ul><li><strong>功能</strong>：从目录中递归加载所有 <code>.md</code> 文件，并根据类型分类存储。<li><strong>返回值</strong>：包含 <code>repo_agents</code>、<code>knowledge_agents</code> 和 <code>task_agents</code> 的字典。</ul><hr><h2 id=4-ce-shi-fu-gai><strong>4. 测试覆盖</strong></h2><p>MicroAgent 的测试覆盖包括以下几个方面：<h3 id=1-ji-ben-gong-neng-ce-shi><strong>(1) 基本功能测试</strong></h3><ul><li>测试 MicroAgent 的加载功能。<li>验证不同类型的 MicroAgent 是否正确分类。</ul><h3 id=2-te-shu-chang-jing-ce-shi><strong>(2) 特殊场景测试</strong></h3><ul><li>测试嵌套目录中的 MicroAgent 加载。<li>测试带有遗留文件（<code>.openhands_instructions</code>）的加载。</ul><h3 id=3-yi-chang-chu-li-ce-shi><strong>(3) 异常处理测试</strong></h3><ul><li>测试无效类型的 MicroAgent 是否抛出异常。<li>测试缺失文件的场景。</ul><hr><h2 id=5-microagent-de-guan-xi-yu-xie-zuo><strong>5. MicroAgent 的关系与协作</strong></h2><p>MicroAgent 之间的关系是松耦合的，每个 MicroAgent 独立提供特定的功能。它们通过以下方式协作：<ul><li><strong>统一管理</strong>：通过 <code>load_microagents_from_dir</code> 函数统一加载和管理。<li><strong>动态调用</strong>：CodeAct Agent 根据需求动态调用不同类型的 MicroAgent。<li><strong>功能互补</strong>：KnowledgeMicroAgent 提供知识支持，RepoMicroAgent 提供项目规范，TaskMicroAgent 执行具体任务。</ul><hr><h2 id=zong-jie><strong>总结</strong></h2><p>MicroAgent 是 OpenHands 系统中一个强大且灵活的模块，通过模块化设计和动态加载机制，为系统提供了知识支持、任务执行和仓库管理等多种功能。其与 CodeAct Agent 的深度集成，使得 OpenHands 能够更高效地满足用户的多样化需求。</div><div class=navigation></div></div></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
