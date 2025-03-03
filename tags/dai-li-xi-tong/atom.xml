@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - 代理系统</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/dai-li-xi-tong/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/dai-li-xi-tong/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-24T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/dai-li-xi-tong/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>OpenHands 源码解析系列（五）：代理系统与任务分配</title>
         <published>2025-02-24T00:00:00+00:00</published>
         <updated>2025-02-24T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-source-code-analysis-005/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-source-code-analysis-005/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-source-code-analysis-005/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-source-code-analysis-005/">&lt;p&gt;代理系统是 OpenHands 的核心组件之一，负责执行具体任务。本文将深入解析代理的设计模式及其在任务分配中的作用，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;代理系统是 OpenHands 的核心组件之一，负责执行具体任务。本文将深入解析代理的设计模式及其在任务分配中的作用，帮助读者理解其实现细节和设计理念。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;dai-li-de-she-ji-xiang-jie&quot;&gt;代理的设计详解&lt;&#x2F;h2&gt;
 &lt;p&gt;代理系统的核心逻辑位于 &lt;code&gt;agenthub&lt;&#x2F;code&gt; 模块，以下是其设计的详细分析：&lt;&#x2F;p&gt;

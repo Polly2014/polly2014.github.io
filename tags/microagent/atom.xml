@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - MicroAgent</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link rel="self" type="application/atom+xml" href="https://polly2014.github.io/tags/microagent/atom.xml"/>
-    <link rel="alternate" type="text/html" href="https://polly2014.github.io"/>
+    <link href="https://polly2014.github.io/tags/microagent/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-01T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/microagent/atom.xml</id>
@@ -11,19 +11,13 @@
         <title>深度解析OpenHands MicroAgent</title>
         <published>2025-03-01T00:00:00+00:00</published>
         <updated>2025-03-01T00:00:00+00:00</updated>
-        
         <author>
-          <name>
-            
-              Unknown
-            
-          </name>
+          <name>Unknown</name>
         </author>
-        
-        <link rel="alternate" type="text/html" href="https://polly2014.github.io/openhands-micro-agent/"/>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-micro-agent/" type="text/html"/>
         <id>https://polly2014.github.io/openhands-micro-agent/</id>
         
-        <content type="html" xml:base="https://polly2014.github.io/openhands-micro-agent/">&lt;h2 id=&quot;yin-yan&quot;&gt;引言&lt;&#x2F;h2&gt;
+        <content type="html">&lt;h2 id=&quot;yin-yan&quot;&gt;引言&lt;&#x2F;h2&gt;
 &lt;p&gt;MicroAgent 是 OpenHands 系统中的一个重要模块，旨在通过模块化的方式提供特定的知识、任务和仓库相关的功能支持。本文将从 MicroAgent 的分类、作用、协作方式、源码实现以及测试覆盖等多个维度，全面解析其设计理念和技术实现。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;1-microagent-de-fen-lei-yu-zuo-yong&quot;&gt;&lt;strong&gt;1. MicroAgent 的分类与作用&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
