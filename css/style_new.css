@@ -743,6 +743,61 @@ table td {
     margin: 12px 0;
 }
 
+/* 评论容器样式 */
+#giscus-container {
+    margin-top: 40px;
+    width: 100%;
+    background-color: transparent;
+}
+
+/* 评论区标题 */
+#giscus-container h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+/* 评论区标题装饰线 */
+#giscus-container h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: rgb(61, 146, 201); /* 使用网站主题蓝色 */
+}
+
+/* Giscus 框架样式 */
+.giscus-frame {
+    width: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* 加载动画样式 */
+.giscus-loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* 评论区底部边距 */
+.blog-post + #giscus-container {
+    margin-bottom: 30px;
+}
+
+.color-bg-primary {
+    background-color: #333;
+    color: #fff;
+}
+
 /* 移动端样式优化 */
 @media (max-width: 768px) {
     .chat-bubble pre {
@@ -946,6 +1001,16 @@ table td {
     
     #send-button i {
         font-size: 1em;
+    }
+
+    #giscus-container {
+        margin-top: 30px;
+        padding: 15px 0;
+    }
+    
+    #giscus-container h2 {
+        font-size: 1.3em;
+        margin-bottom: 15px;
     }
 }
 

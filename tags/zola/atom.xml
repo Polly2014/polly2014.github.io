@@ -5,8 +5,114 @@
     <link href="https://polly2014.github.io/tags/zola/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-04T00:00:00+00:00</updated>
+    <updated>2025-03-05T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/zola/atom.xml</id>
+    <entry xml:lang="en">
+        <title>GitHub Actions: 实现Zola博客的自动化部署</title>
+        <published>2025-03-05T00:00:00+00:00</published>
+        <updated>2025-03-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/integrate-giscus-into-blog/" type="text/html"/>
+        <id>https://polly2014.github.io/integrate-giscus-into-blog/</id>
+        
+        <content type="html">&lt;h2 id=&quot;jian-jie&quot;&gt;简介&lt;&#x2F;h2&gt;
+&lt;p&gt;本文将详细介绍如何在 Zola 博客中集成 Giscus 评论系统。Giscus 是一个现代化的评论系统，基于 GitHub Discussions，能够为你的博客提供无缝的用户互动体验。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qian-ti-tiao-jian&quot;&gt;前提条件&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;一个基于 Zola 的博客系统。&lt;&#x2F;li&gt;
+&lt;li&gt;两个 GitHub 仓库：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;www.polly.com&lt;&#x2F;code&gt;（私有）：包含 Zola 源代码。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;polly2014.github.io&lt;&#x2F;code&gt;（公开）：托管编译后的 &lt;code&gt;public&lt;&#x2F;code&gt; 文件夹。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;在 &lt;code&gt;polly2014.github.io&lt;&#x2F;code&gt; 仓库中启用了 GitHub Discussions。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;ji-cheng-bu-zou&quot;&gt;集成步骤&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-bu-pei-zhi-giscus&quot;&gt;第一步：配置 Giscus&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;访问 &lt;a href=&quot;https:&#x2F;&#x2F;giscus.app&#x2F;&quot;&gt;Giscus&lt;&#x2F;a&gt; 并进行以下配置：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;仓库&lt;&#x2F;strong&gt;：选择 &lt;code&gt;Polly2014&#x2F;polly2014.github.io&lt;&#x2F;code&gt;。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;讨论分类&lt;&#x2F;strong&gt;：创建或选择一个分类（例如 &amp;quot;Announcements&amp;quot;）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;映射方式&lt;&#x2F;strong&gt;：选择 &lt;code&gt;pathname&lt;&#x2F;code&gt;，将讨论与博客页面进行映射。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;主题&lt;&#x2F;strong&gt;：选择 &amp;quot;light&amp;quot; 或其他与你博客匹配的主题。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;语言&lt;&#x2F;strong&gt;：设置为 &lt;code&gt;zh-CN&lt;&#x2F;code&gt;（中文）。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;懒加载&lt;&#x2F;strong&gt;：启用以优化性能。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;复制生成的嵌入代码。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;di-er-bu-geng-xin-bo-ke-mo-ban&quot;&gt;第二步：更新博客模板&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;打开 &lt;code&gt;templates&lt;&#x2F;code&gt; 文件夹中的 &lt;code&gt;blog.html&lt;&#x2F;code&gt; 模板文件。&lt;&#x2F;li&gt;
+&lt;li&gt;添加以下代码：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;giscus&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;link &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;rel&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;stylesheet&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;href&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;static&#x2F;css&#x2F;style_new.css&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;src&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;giscus.app&#x2F;client.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-repo&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Polly2014&#x2F;polly2014.github.io&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-repo-id&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;R_kgDOL45duA&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-category&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Announcements&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-category-id&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;DIC_kwDOL45duM4CnjaK&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-mapping&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;pathname&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-strict&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-reactions-enabled&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-emit-metadata&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-input-position&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bottom&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-theme&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;light&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-lang&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;zh-CN&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-loading&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;lazy&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;crossorigin&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;anonymous&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;async&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-san-bu-zi-ding-yi-yang-shi&quot;&gt;第三步：自定义样式&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;打开 &lt;code&gt;static&#x2F;css&lt;&#x2F;code&gt; 文件夹中的 &lt;code&gt;style_new.css&lt;&#x2F;code&gt; 文件。&lt;&#x2F;li&gt;
+&lt;li&gt;添加以下样式以确保 Giscus 与博客主题一致：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;giscus &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    background-color: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#f2f2f2&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    font-family: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Arial&lt;&#x2F;span&gt;&lt;span&gt;, sans-serif;
+&lt;&#x2F;span&gt;&lt;span&gt;    color: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#333&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    padding: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;20px&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    border-radius: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;8px&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    box-shadow: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 4px 6px &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.1&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    margin-top: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;20px&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;giscus-frame &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    border: none;
+&lt;&#x2F;span&gt;&lt;span&gt;    width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-si-bu-ce-shi-yu-bu-shu&quot;&gt;第四步：测试与部署&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;使用 Zola 编译你的博客。&lt;&#x2F;li&gt;
+&lt;li&gt;将更新后的 &lt;code&gt;public&lt;&#x2F;code&gt; 文件夹推送到 &lt;code&gt;polly2014.github.io&lt;&#x2F;code&gt; 仓库。&lt;&#x2F;li&gt;
+&lt;li&gt;访问你的博客，验证 Giscus 评论系统是否正常工作。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;ping-lun-xi-tong-dui-bi-fen-xi&quot;&gt;评论系统对比分析&lt;&#x2F;h2&gt;
+&lt;p&gt;除了 Giscus，以下是其他常见评论系统的对比：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;评论系统&lt;&#x2F;th&gt;&lt;th&gt;特点&lt;&#x2F;th&gt;&lt;th&gt;优点&lt;&#x2F;th&gt;&lt;th&gt;缺点&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Giscus&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;基于 GitHub Discussions，支持 Markdown 和多语言。&lt;&#x2F;td&gt;&lt;td&gt;免费、无广告、与 GitHub 集成。&lt;&#x2F;td&gt;&lt;td&gt;需要 GitHub 账号，适合技术博客。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Disqus&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;流行的第三方评论系统，支持社交登录。&lt;&#x2F;td&gt;&lt;td&gt;易于集成，功能丰富。&lt;&#x2F;td&gt;&lt;td&gt;免费版有广告，隐私性较差。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Commento&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;开源评论系统，可自托管。&lt;&#x2F;td&gt;&lt;td&gt;无广告，隐私性好。&lt;&#x2F;td&gt;&lt;td&gt;自托管需要服务器资源。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Remark42&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;开源自托管，支持匿名评论和社交登录。&lt;&#x2F;td&gt;&lt;td&gt;无广告，支持多种登录方式。&lt;&#x2F;td&gt;&lt;td&gt;自托管需要维护，功能较简单。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Utterances&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;基于 GitHub Issues，轻量化。&lt;&#x2F;td&gt;&lt;td&gt;免费、无广告、与 GitHub 集成。&lt;&#x2F;td&gt;&lt;td&gt;需要 GitHub 账号，功能较简单。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过本文的步骤，即可轻松在 Zola 博客中集成 Giscus 评论系统，并为用户提供现代化的互动体验。根据你的需求，也可以选择其他评论系统。&lt;&#x2F;p&gt;
+&lt;p&gt;欢迎在评论区分享你的想法或提出问题！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>GitHub Actions: 实现Zola博客的自动化部署</title>
         <published>2025-03-04T00:00:00+00:00</published>
