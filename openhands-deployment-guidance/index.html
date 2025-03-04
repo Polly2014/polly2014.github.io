@@ -7,24 +7,27 @@
 </span><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> docker-ce docker-ce-cli containerd.io
 </span></code></pre><ol start=2><li>安装 Docker Compose</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> curl</span><span style=color:#bf616a> -L </span><span>"</span><span style=color:#a3be8c>https://github.com/docker/compose/releases/download/</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>curl -s</span><span style=color:#a3be8c> https://api.github.com/repos/docker/compose/releases/latest </span><span>| </span><span style=color:#bf616a>grep -oP </span><span>'</span><span style=color:#a3be8c>"tag_name": "\K[^"]+</span><span>'</span><span style=color:#a3be8c>)/docker-compose-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -s</span><span style=color:#a3be8c>)-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -m</span><span style=color:#a3be8c>)</span><span>"</span><span style=color:#bf616a> -o</span><span> /usr/local/bin/docker-compose
 </span><span style=color:#bf616a>sudo</span><span> chmod +x /usr/local/bin/docker-compose
-</span></code></pre><ol start=2><li>验证安装：</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker --version
+</span></code></pre><ol start=3><li>验证安装：</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker --version
 </span><span style=color:#bf616a>docker-compose --version
+</span></code></pre><ol start=4><li>(Optional) 创建 docker 用户组并加入当前用户，上一步验证失败时运行</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> usermod</span><span style=color:#bf616a> -aG</span><span> docker $</span><span style=color:#bf616a>USER
+</span><span style=color:#bf616a>newgrp</span><span> docker
+</span><span style=color:#bf616a>sudo</span><span> systemctl restart docker
 </span></code></pre><h2 id=bu-zou-3-bu-shu-openhands>步骤 3: 部署 OpenHands</h2><ol><li>拉取 OpenHands 镜像文件：</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker</span><span> pull docker.all-hands.dev/all-hands-ai/runtime:0.25-nikolaik
 </span></code></pre><ol start=2><li>启动 OpenHands 服务：</ol><ul><li>Option-1: WSL/Power Shell运行命令：</ul><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker</span><span> run</span><span style=color:#bf616a> -it --rm --pull</span><span>=always \
-</span><span style=color:#bf616a>    -e</span><span> SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.25-nikolaik \
+</span><span style=color:#bf616a>    -e</span><span> SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik \
 </span><span style=color:#bf616a>    -e</span><span> LOG_ALL_EVENTS=true \
 </span><span style=color:#bf616a>    -v</span><span> /var/run/docker.sock:/var/run/docker.sock \
 </span><span style=color:#bf616a>    -v ~</span><span>/.openhands-state:/.openhands-state \
 </span><span style=color:#bf616a>    -p</span><span> 80:3000 \
 </span><span style=color:#bf616a>    --add-host</span><span> host.docker.internal:host-gateway \
 </span><span style=color:#bf616a>    --name</span><span> openhands-app \
-</span><span>    docker.all-hands.dev/all-hands-ai/openhands:0.25
+</span><span>    docker.all-hands.dev/all-hands-ai/openhands:0.27
 </span></code></pre><ul><li>Option-2: 创建<code>docker-compose.yaml</code>文件，并在同目录下运行<code>docker-compose up</code>启动服务. yaml文件内容：</ul><pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>services</span><span>:
 </span><span>  </span><span style=color:#bf616a>openhands-app</span><span>:
-</span><span>    </span><span style=color:#bf616a>image</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/openhands:0.25
+</span><span>    </span><span style=color:#bf616a>image</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/openhands:0.27
 </span><span>    </span><span style=color:#bf616a>container_name</span><span>: </span><span style=color:#a3be8c>openhands-app
 </span><span>    </span><span style=color:#bf616a>environment</span><span>:
-</span><span>      </span><span style=color:#bf616a>SANDBOX_RUNTIME_CONTAINER_IMAGE</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/runtime:0.25-nikolaik
+</span><span>      </span><span style=color:#bf616a>SANDBOX_RUNTIME_CONTAINER_IMAGE</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik
 </span><span>      </span><span style=color:#bf616a>LOG_ALL_EVENTS</span><span>: "</span><span style=color:#a3be8c>true</span><span>"
 </span><span>    </span><span style=color:#bf616a>volumes</span><span>:
 </span><span>      - </span><span style=color:#a3be8c>/var/run/docker.sock:/var/run/docker.sock
@@ -41,7 +44,7 @@
 </span><span>    </span><span style=color:#bf616a>image</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/openhands:0.25
 </span><span>    </span><span style=color:#bf616a>container_name</span><span>: </span><span style=color:#a3be8c>openhands-app
 </span><span>    </span><span style=color:#bf616a>environment</span><span>:
-</span><span>      </span><span style=color:#bf616a>SANDBOX_RUNTIME_CONTAINER_IMAGE</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/runtime:0.25-nikolaik
+</span><span>      </span><span style=color:#bf616a>SANDBOX_RUNTIME_CONTAINER_IMAGE</span><span>: </span><span style=color:#a3be8c>docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik
 </span><span>      </span><span style=color:#bf616a>LOG_ALL_EVENTS</span><span>: "</span><span style=color:#a3be8c>true</span><span>"
 </span><span>      </span><span style=color:#bf616a>SANDBOX_USER_ID</span><span>: "</span><span style=color:#a3be8c>polly</span><span>"
 </span><span>      </span><span style=color:#bf616a>WORKSPACE_MOUNT_PATH</span><span>: </span><span style=color:#a3be8c>D:\docker_workspace\OpenHands\StartExperiencesApp
