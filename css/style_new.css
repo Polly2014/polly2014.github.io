@@ -692,12 +692,21 @@ table td {
     padding: 0;
 }
 
-/* 块引用样式 */
-.chat-bubble blockquote {
-    border-left: 4px solid #ddd;
-    padding-left: 10px;
-    margin: 10px 0 10px 5px;
-    color: #666;
+/* 引用样式调整 */
+blockquote {
+    border-left: 4px solid #333; /* 使用网站主题蓝色作为边框 */
+    padding: 10px 15px;
+    margin: 20px 0;
+    background-color: rgba(61, 146, 201, 0.05); /* 添加淡蓝色背景 */
+    color: #555; /* 引用文字颜色稍暗 */
+    border-radius: 0 4px 4px 0; /* 右侧圆角 */
+    font-style: italic; /* 斜体 */
+    position: relative;
+}
+
+blockquote p {
+    margin: 5px 0;
+    line-height: 1.6;
 }
 
 /* 表格样式 */
@@ -741,6 +750,31 @@ table td {
     background-color: #ddd;
     border: none;
     margin: 12px 0;
+}
+
+/* 聊天气泡中的引用样式 */
+.chat-bubble blockquote {
+    border-left: 3px solid rgb(61, 146, 201); /* 稍窄的边框 */
+    padding: 6px 10px;
+    margin: 10px 0;
+    background-color: rgba(61, 146, 201, 0.05);
+    color: #666;
+    font-size: 0.95em;
+}
+
+/* 如果你想为毛主席的诗词引用添加特殊样式 */
+.poetry-quote {
+    border-left: 4px solid #d14836; /* 红色边框 */
+    background-color: rgba(209, 72, 54, 0.05); /* 淡红色背景 */
+    padding: 15px 20px;
+    margin: 25px 0;
+    font-family: "KaiTi", "楷体", serif; /* 使用楷体增加典雅感 */
+}
+
+.poetry-quote p {
+    margin: 8px 0;
+    line-height: 1.8;
+    font-size: 1.05em;
 }
 
 /* 评论容器样式 */
@@ -1001,6 +1035,16 @@ table td {
     
     #send-button i {
         font-size: 1em;
+    }
+
+    blockquote {
+        padding: 8px 12px;
+        margin: 15px 0;
+    }
+    
+    .poetry-quote {
+        padding: 10px 15px;
+        margin: 20px 0;
     }
 
     #giscus-container {
