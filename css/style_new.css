@@ -248,27 +248,172 @@ table td {
     transition: box-shadow 0.3s ease-in-out;
 }
 
-.post-title {
-    font-size: 24px;
-    margin-bottom: 5px;
+/* 博客文章元数据样式优化 - 简约风格 */
+.post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 8px 0 12px;
+    align-items: center;
+    font-size: 0.85em;
+    color: #777;
 }
 
-.post-title a {
-    color: #333;
+.post-meta-item {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    font-size: 0.85em;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+/* 图标设置 */
+.post-meta-item i {
+    margin-right: 6px;
+    font-size: 0.95em;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+/* 确保所有文本元素垂直居中 */
+.post-meta-item i,
+.post-meta-item a,
+.post-meta-item span {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* 日期项目样式 - 禁用文本选择效果 */
+.post-date {
+    color: #777;
+    display: flex;
+    align-items: center;
+    cursor: default;
+    user-select: none;
+}
+
+/* 重要：覆盖日期图标的悬停效果 */
+.post-date:hover i {
+    color: #888; /* 保持原始颜色 */
+}
+
+/* 分类样式 - 移除下划线动画，只在分类项上保留 */
+.post-category {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.post-category a {
+    color: #666;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 使分类悬停时图标和文字颜色同步变化 */
+.post-category:hover i {
+    color: rgb(61, 146, 201);
+}
+
+.category-item {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    line-height: 1;
+    position: relative; /* 为下划线动画添加定位上下文 */
+    padding-bottom: 2px;
+}
+
+/* 添加分类项的下划线效果 */
+.category-item:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: rgb(61, 146, 201);
+    transition: width 0.3s ease;
+}
+
+.category-item:hover:after {
+    width: 100%;
+}
+
+.category-item:hover {
+    color: rgb(61, 146, 201);
     text-decoration: none;
 }
 
-.post-title a:hover {
+/* 标签样式 - 添加与分类相同的视觉效果 */
+.post-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    height: 100%; /* 确保标签容器占满父元素高度 */
+}
+
+.tag-item {
     color: #666;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    position: relative;
+    padding: 0 3px 2px 3px; /* 增加底部内边距给下划线留空间 */
 }
 
-.post-date {
-    font-size: 14px;
-    color: #999;
+/* 为标签添加下划线效果 */
+.tag-item:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: rgb(61, 146, 201);
+    transition: width 0.3s ease;
 }
 
-.post-summary {
-    font-size: 16px;
+.tag-item:hover:after {
+    width: 100%;
+}
+
+/* 标签悬停效果 */
+.tag-item:hover {
+    color: rgb(61, 146, 201);
+    text-decoration: none;
+}
+
+/* 标签父元素悬停时图标颜色同步变化 - 排除日期 */
+.post-meta-item:not(.post-date):hover i {
+    color: rgb(61, 146, 201);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .post-meta {
+        gap: 12px;
+        margin: 6px 0;
+    }
+    
+    .post-meta-item {
+        height: 18px;
+        font-size: 0.8em;
+    }
+    
+    .tag-item {
+        font-size: 0.8em;
+        height: 16px;
+    }
 }
 
 /* Archive页面 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 博客优化</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/bo-ke-you-hua/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-03-05T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/bo-ke-you-hua/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Coding with AI Coder系列（一）：利用OpenHands优化Zola博客分类系统</title>
+        <published>2025-03-05T00:00:00+00:00</published>
+        <updated>2025-03-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/optimize-blog-category-with-openhands/" type="text/html"/>
+        <id>https://polly2014.github.io/optimize-blog-category-with-openhands/</id>
+        
+        <content type="html">&lt;p&gt;在这篇文章中，我们记录了如何利用OpenHands优化Zola博客的分类系统，将原有的tags系统替换为更合理的category系统。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bei-jing&quot;&gt;背景&lt;&#x2F;h2&gt;
+&lt;p&gt;原有的博客系统使用tags来组织内容，但这种方式在分类明确的情况下显得不够直观。我们决定引入category系统，每篇博文对应一个category，同时保留tags作为辅助标签。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-xian-bu-zou&quot;&gt;实现步骤&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-li-yong-openhandssheng-cheng-categorylie-biao&quot;&gt;1. 利用OpenHands生成category列表&lt;&#x2F;h3&gt;
+&lt;p&gt;我们通过与OpenHands的对话，生成了一个初步的category列表。以下是与OpenHands的对话示例：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Prompt:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;遍历content&#x2F;blog目录下的所有博文，根据标题和内容生成一个初步的category列表，分类包括：Technology, Essay, Life, Academic, Other。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;OpenHands响应:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;已完成分类：
+&lt;&#x2F;span&gt;&lt;span&gt;- Technology: 技术相关内容，如源码解析、系统设计等。
+&lt;&#x2F;span&gt;&lt;span&gt;- Essay: 随笔和感悟。
+&lt;&#x2F;span&gt;&lt;span&gt;- Life: 旅行和生活。
+&lt;&#x2F;span&gt;&lt;span&gt;- Academic: 学术相关内容。
+&lt;&#x2F;span&gt;&lt;span&gt;- Other: 其他内容。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;2-zi-dong-geng-xin-markdownwen-jian&quot;&gt;2. 自动更新Markdown文件&lt;&#x2F;h3&gt;
+&lt;p&gt;我们继续与OpenHands对话，自动为每篇博文的Markdown文件添加了&lt;code&gt;category&lt;&#x2F;code&gt;字段，并将其移动到&lt;code&gt;[taxonomies]&lt;&#x2F;code&gt;部分。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Prompt:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;为content&#x2F;blog目录下的所有Markdown文件添加category字段，并将其移动到[taxonomies]部分。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;OpenHands响应:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;所有Markdown文件已更新，category字段已成功添加到[taxonomies]部分。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-xiu-gai-mo-ban-wen-jian&quot;&gt;3. 修改模板文件&lt;&#x2F;h3&gt;
+&lt;p&gt;我们通过OpenHands的模板编辑功能，修改了以下模板文件以支持category的展示：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Prompt:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;修改tags&#x2F;list.html，将tags重命名为category，并展示所有分类。
+&lt;&#x2F;span&gt;&lt;span&gt;修改tags&#x2F;single.html，展示单个category下的所有文章。
+&lt;&#x2F;span&gt;&lt;span&gt;修改blog-list.html，在文章列表中加入category、tags、author、访问量等信息。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;OpenHands响应:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;tags&#x2F;list.html, tags&#x2F;single.html, blog-list.html文件已成功修改，支持category的展示，并在blog-list.html中加入了更多信息：
+&lt;&#x2F;span&gt;&lt;span&gt;- Category: 显示文章所属的分类。
+&lt;&#x2F;span&gt;&lt;span&gt;- Tags: 展示文章的标签。
+&lt;&#x2F;span&gt;&lt;span&gt;- Author: 显示作者信息。
+&lt;&#x2F;span&gt;&lt;span&gt;- Views: 显示文章的访问量。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ce-shi-he-yan-zheng&quot;&gt;测试和验证&lt;&#x2F;h2&gt;
+&lt;p&gt;完成修改后，我们启动本地服务器，验证了分类系统的效果。新的分类系统使博客内容更加清晰，用户可以更方便地浏览感兴趣的内容。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过OpenHands的强大功能，我们成功构建了一个更合理的分类系统，为博客的内容组织和用户体验带来了显著提升。如果你也在使用Zola博客系统，希望这篇文章能为你提供一些参考。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
