@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Nginx</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/nginx/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-03-06T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/nginx/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands Backend Server Setup and Deployment with SSL</title>
+        <published>2025-03-06T00:00:00+00:00</published>
+        <updated>2025-03-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-backend-setup-deployment-ssl/" type="text/html"/>
+        <id>https://polly2014.github.io/openhands-backend-setup-deployment-ssl/</id>
+        
+        <content type="html">&lt;p&gt;OpenHands 是一个基于 Python 的后端服务，使用 FastAPI 框架构建。本文将详细记录如何从源码独立编译部署 OpenHands 的 Server 端，并为其配置 SSL&#x2F;HTTPS，以实现安全的生产环境服务。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fastapi-poetry-uvicorn-nginx-he-ssl-de-guan-xi&quot;&gt;FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的关系&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;FastAPI&lt;&#x2F;strong&gt;：
+FastAPI 是一个现代的 Python Web 框架，专注于快速开发和高性能。它支持异步编程，能够处理高并发请求。FastAPI 提供了自动生成的交互式 API 文档（如 Swagger UI 和 ReDoc），使开发者能够轻松测试和调试 API。它的类型提示和数据验证功能基于 Python 的 &lt;code&gt;pydantic&lt;&#x2F;code&gt;，确保了数据的可靠性和安全性。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Poetry&lt;&#x2F;strong&gt;：
+Poetry 是一个强大的 Python 项目管理工具，用于管理依赖、虚拟环境和项目构建。它通过 &lt;code&gt;pyproject.toml&lt;&#x2F;code&gt; 文件定义项目的依赖关系和元数据，确保开发环境的一致性。Poetry 的虚拟环境隔离功能使得项目之间的依赖不会相互干扰，同时简化了依赖安装和版本管理。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Uvicorn&lt;&#x2F;strong&gt;：
+Uvicorn 是一个高性能的 ASGI 服务器，用于运行基于 FastAPI 的应用。ASGI（Asynchronous Server Gateway Interface）是 WSGI 的异步版本，支持 WebSocket 和 HTTP&#x2F;2 等现代协议。Uvicorn 的轻量化设计使其能够快速启动并处理大量并发请求，是运行 FastAPI 应用的理想选择。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Nginx&lt;&#x2F;strong&gt;：
+Nginx 是一个功能强大的 Web 服务器和反向代理工具，广泛用于处理静态资源、负载均衡和 SSL&#x2F;HTTPS 配置。在本项目中，Nginx 充当反向代理，将外部请求转发到运行在 Uvicorn 上的 FastAPI 应用，同时负责管理 SSL 证书和加密通信。Nginx 的高性能和灵活性使其成为生产环境的首选。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;SSL&lt;&#x2F;strong&gt;：
+SSL（Secure Sockets Layer）是一种加密协议，用于保护客户端与服务器之间的通信安全。通过 HTTPS（HTTP over SSL），可以确保数据在传输过程中不会被窃取或篡改。SSL 证书由受信任的证书颁发机构（CA）签发，验证服务器的身份。在本项目中，SSL 通过 Nginx 或 Caddy 自动管理，提供安全的访问通道。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;bu-shu-jia-gou&quot;&gt;部署架构&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span&gt;                      +-------------+
+&lt;&#x2F;span&gt;&lt;span&gt;                      |             |
+&lt;&#x2F;span&gt;&lt;span&gt;                      |  Internet   |
+&lt;&#x2F;span&gt;&lt;span&gt;                      |             |
+&lt;&#x2F;span&gt;&lt;span&gt;                      +------+------+
+&lt;&#x2F;span&gt;&lt;span&gt;                             |
+&lt;&#x2F;span&gt;&lt;span&gt;                             | HTTPS (443)
+&lt;&#x2F;span&gt;&lt;span&gt;                             |
+&lt;&#x2F;span&gt;&lt;span&gt;                      +------+------+
+&lt;&#x2F;span&gt;&lt;span&gt;                      |             |
+&lt;&#x2F;span&gt;&lt;span&gt;                      |   Nginx     | SSL 终止
+&lt;&#x2F;span&gt;&lt;span&gt;                      |             |
+&lt;&#x2F;span&gt;&lt;span&gt;                      +------+------+
+&lt;&#x2F;span&gt;&lt;span&gt;                             |
+&lt;&#x2F;span&gt;&lt;span&gt;                             | HTTP (localhost:54013)
+&lt;&#x2F;span&gt;&lt;span&gt;                             |
+&lt;&#x2F;span&gt;&lt;span&gt;       +-----------------+---+---+-----------------+
+&lt;&#x2F;span&gt;&lt;span&gt;       |                 |       |                 |
+&lt;&#x2F;span&gt;&lt;span&gt;       |                 |       |                 |
+&lt;&#x2F;span&gt;&lt;span&gt;+------+------+    +-----+------+     +------+-----+
+&lt;&#x2F;span&gt;&lt;span&gt;|             |    |            |     |            |
+&lt;&#x2F;span&gt;&lt;span&gt;|  Uvicorn    |    |  Uvicorn   | ... |  Uvicorn   | ASGI 服务器
+&lt;&#x2F;span&gt;&lt;span&gt;|  Worker 1   |    |  Worker 2  |     |  Worker n  |
+&lt;&#x2F;span&gt;&lt;span&gt;|             |    |            |     |            |
+&lt;&#x2F;span&gt;&lt;span&gt;+------+------+    +------+-----+     +------+-----+
+&lt;&#x2F;span&gt;&lt;span&gt;       |                 |                  |
+&lt;&#x2F;span&gt;&lt;span&gt;       |                 |                  |
+&lt;&#x2F;span&gt;&lt;span&gt;+------+------+    +-----+------+     +-----+------+
+&lt;&#x2F;span&gt;&lt;span&gt;|             |    |            |     |            |
+&lt;&#x2F;span&gt;&lt;span&gt;|  FastAPI    |    |  FastAPI   |     |  FastAPI   | Web 框架
+&lt;&#x2F;span&gt;&lt;span&gt;|  App        |    |  App       |     |  App       |
+&lt;&#x2F;span&gt;&lt;span&gt;|             |    |            |     |            |
+&lt;&#x2F;span&gt;&lt;span&gt;+-------------+    +------------+     +------------+
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;shi-xian-bu-zou&quot;&gt;实现步骤&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-cong-yuan-ma-bian-yi-openhands-server&quot;&gt;1. 从源码编译 OpenHands Server&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;an-zhuang-yi-lai&quot;&gt;安装依赖&lt;&#x2F;h4&gt;
+&lt;p&gt;确保服务器上安装以下工具：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python 3.8 或更高版本&lt;&#x2F;li&gt;
+&lt;li&gt;Poetry&lt;&#x2F;li&gt;
+&lt;li&gt;Make&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;ke-long-yuan-ma&quot;&gt;克隆源码&lt;&#x2F;h4&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 克隆 OpenHands 仓库
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; clone https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;OpenHands.git
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; OpenHands
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;an-zhuang-yi-lai-1&quot;&gt;安装依赖&lt;&#x2F;h4&gt;
+&lt;p&gt;进入后端目录并安装依赖：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; openhands
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poetry&lt;&#x2F;span&gt;&lt;span&gt; install
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;qi-dong-fu-wu&quot;&gt;启动服务&lt;&#x2F;h4&gt;
+&lt;p&gt;使用 Uvicorn 启动 FastAPI 应用：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poetry&lt;&#x2F;span&gt;&lt;span&gt; run uvicorn openhands.server.app:app&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --host&lt;&#x2F;span&gt;&lt;span&gt; 0.0.0.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --port&lt;&#x2F;span&gt;&lt;span&gt; 54013
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;此命令会启动 OpenHands 的后端服务，监听端口 &lt;code&gt;54013&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-pei-zhi-ssl-https&quot;&gt;2. 配置 SSL&#x2F;HTTPS&lt;&#x2F;h3&gt;
+&lt;p&gt;为了为后端服务添加 HTTPS 支持，可以使用 Nginx 或 Caddy 作为反向代理。&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;shi-yong-nginx-pei-zhi-https&quot;&gt;使用 Nginx 配置 HTTPS&lt;&#x2F;h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;安装 Nginx&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install nginx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;申请 SSL 证书&lt;&#x2F;strong&gt;（使用 Let&#x27;s Encrypt 和 Certbot）：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install certbot python3-certbot-nginx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; certbot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --nginx -d&lt;&#x2F;span&gt;&lt;span&gt; your-domain.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配置 Nginx 反向代理&lt;&#x2F;strong&gt;：
+编辑 &lt;code&gt;&#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;openhands&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nginx&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nginx &quot;&gt;&lt;code class=&quot;language-nginx&quot; data-lang=&quot;nginx&quot;&gt;&lt;span&gt;server {
+&lt;&#x2F;span&gt;&lt;span&gt;    listen 80;
+&lt;&#x2F;span&gt;&lt;span&gt;    server_name your-domain.com;
+&lt;&#x2F;span&gt;&lt;span&gt;    return 301 https:&#x2F;&#x2F;$host$request_uri;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;server {
+&lt;&#x2F;span&gt;&lt;span&gt;    listen 443 ssl;
+&lt;&#x2F;span&gt;&lt;span&gt;    server_name your-domain.com;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_certificate &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;your-domain.com&#x2F;fullchain.pem;
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_certificate_key &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;your-domain.com&#x2F;privkey.pem;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    location &#x2F; {
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_pass http:&#x2F;&#x2F;127.0.0.1:54013; # 后端服务的地址
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header Host $host;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Real-IP $remote_addr;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Forwarded-Proto $scheme;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;启用配置并重启 Nginx&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; ln&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -s&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;openhands &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nginx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart nginx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;shi-yong-caddy-pei-zhi-https&quot;&gt;使用 Caddy 配置 HTTPS&lt;&#x2F;h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;安装 Caddy&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; debian-keyring debian-archive-keyring apt-transport-https
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -1sLf &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;dl.cloudsmith.io&#x2F;public&#x2F;caddy&#x2F;stable&#x2F;gpg.key&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;caddy-archive-keyring.asc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -1sLf &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;dl.cloudsmith.io&#x2F;public&#x2F;caddy&#x2F;stable&#x2F;deb.deb.txt&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;caddy-stable.list
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install caddy
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配置 Caddyfile&lt;&#x2F;strong&gt;：
+编辑 &lt;code&gt;&#x2F;etc&#x2F;caddy&#x2F;Caddyfile&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;caddy&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-caddy &quot;&gt;&lt;code class=&quot;language-caddy&quot; data-lang=&quot;caddy&quot;&gt;&lt;span&gt;your-domain.com {
+&lt;&#x2F;span&gt;&lt;span&gt;   reverse_proxy 127.0.0.1:54013
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;启动 Caddy&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart caddy
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Caddy 会自动申请和管理 SSL 证书。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-optional-sheng-chan-huan-jing-you-hua&quot;&gt;3. [Optional] 生产环境优化&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;4-optional-jin-cheng-guan-li-yu-zi-qi-dong&quot;&gt;4. [Optional] 进程管理与自启动&lt;&#x2F;h3&gt;
+&lt;p&gt;使用 Systemd 管理服务进程：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建服务配置：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nano &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;openhands.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;添加以下内容：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;int&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-int &quot;&gt;&lt;code class=&quot;language-int&quot; data-lang=&quot;int&quot;&gt;&lt;span&gt;[Unit]
+&lt;&#x2F;span&gt;&lt;span&gt;Description=OpenHands FastAPI Server
+&lt;&#x2F;span&gt;&lt;span&gt;After=network.target
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[Service]
+&lt;&#x2F;span&gt;&lt;span&gt;User=ubuntu
+&lt;&#x2F;span&gt;&lt;span&gt;WorkingDirectory=&#x2F;path&#x2F;to&#x2F;OpenHands&#x2F;openhands
+&lt;&#x2F;span&gt;&lt;span&gt;ExecStart=&#x2F;path&#x2F;to&#x2F;poetry&#x2F;bin&#x2F;poetry run uvicorn openhands.server.app:app --host 0.0.0.0 --port 54013
+&lt;&#x2F;span&gt;&lt;span&gt;Restart=always
+&lt;&#x2F;span&gt;&lt;span&gt;RestartSec=10
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[Install]
+&lt;&#x2F;span&gt;&lt;span&gt;WantedBy=multi-user.target
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;启用并启动服务&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl daemon-reload
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl enable openhands
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start openhands
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;5-yan-zheng-bu-shu&quot;&gt;5. 验证部署&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;确保后端服务正在运行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;127.0.0.1:54013
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;通过浏览器访问 &lt;code&gt;https:&#x2F;&#x2F;your-domain.com&lt;&#x2F;code&gt;，验证 HTTPS 是否正常工作。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;nginxxing-neng-you-hua&quot;&gt;Nginx性能优化&lt;&#x2F;h2&gt;
+&lt;p&gt;修改 &#x2F;etc&#x2F;nginx&#x2F;nginx.conf，添加以下优化：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nginx&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nginx &quot;&gt;&lt;code class=&quot;language-nginx&quot; data-lang=&quot;nginx&quot;&gt;&lt;span&gt;worker_processes auto;
+&lt;&#x2F;span&gt;&lt;span&gt;worker_connections 1024;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;http {
+&lt;&#x2F;span&gt;&lt;span&gt;    # 启用 gzip 压缩
+&lt;&#x2F;span&gt;&lt;span&gt;    gzip on;
+&lt;&#x2F;span&gt;&lt;span&gt;    gzip_comp_level 5;
+&lt;&#x2F;span&gt;&lt;span&gt;    gzip_types text&#x2F;plain text&#x2F;css application&#x2F;json application&#x2F;javascript;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    # 调整缓冲区大小
+&lt;&#x2F;span&gt;&lt;span&gt;    client_body_buffer_size 10K;
+&lt;&#x2F;span&gt;&lt;span&gt;    client_header_buffer_size 1k;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    # 启用 HTTP&#x2F;2
+&lt;&#x2F;span&gt;&lt;span&gt;    http2 on;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    # SSL 优化
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_session_cache shared:SSL:10m;
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_session_timeout 10m;
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_protocols TLSv1.2 TLSv1.3;
+&lt;&#x2F;span&gt;&lt;span&gt;    ssl_prefer_server_ciphers off;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;chang-jian-wen-ti-pai-cha&quot;&gt;常见问题排查&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;fu-wu-wu-fa-qi-dong&quot;&gt;服务无法启动&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;检查端口是否被占用：&lt;code&gt;sudo lsof -i:54013&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;检查 Python 环境：&lt;code&gt;python --version&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;查看日志：&lt;code&gt;poetry run uvicorn openhands.server.app:app --log-level debug&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;ssl-pei-zhi-wen-ti&quot;&gt;SSL 配置问题&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;证书路径错误：确认证书文件路径正确 &lt;&#x2F;li&gt;
+&lt;li&gt;Nginx 配置测试：运行 &lt;code&gt;sudo nginx -t&lt;&#x2F;code&gt; 检查配置&lt;&#x2F;li&gt;
+&lt;li&gt;防火墙设置：确保 80&#x2F;443 端口已开放 &lt;code&gt;sudo ufw status&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;yu-ming-jie-xi-wen-ti&quot;&gt;域名解析问题&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;确认 DNS 记录已正确设置：&lt;code&gt;dig your-domain.com&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;等待 DNS 缓存更新（可能需要 24-48 小时）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过以上步骤，我们成功实现了 OpenHands Server 端的独立编译部署，并为其配置了 SSL&#x2F;HTTPS。FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的协作确保了服务的高效性和安全性。&lt;&#x2F;p&gt;
+&lt;p&gt;这种部署架构具有显著的可扩展性优势：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;水平扩展&lt;&#x2F;strong&gt;：当负载增加时，可以轻松添加更多 Uvicorn 工作进程或部署多个服务实例，由 Nginx 进行负载均衡，实现无缝扩容。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;技术栈灵活性&lt;&#x2F;strong&gt;：架构的各组件可以单独升级或替换（如 Caddy 替代 Nginx），无需重新设计整个系统。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;资源隔离&lt;&#x2F;strong&gt;：使用 Poetry 创建的虚拟环境确保应用依赖独立，便于多个项目在同一服务器上共存。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;容器化潜力&lt;&#x2F;strong&gt;：此架构可轻松迁移至 Docker 容器或 Kubernetes 集群，进一步提升部署的一致性和可靠性。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;通过这种方式部署的 OpenHands 后端服务既安全可靠，又具备了应对未来业务增长的技术基础。如果有其他问题或需求，请随时联系！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,117 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>OpenHands Backend Server Setup and Deployment with SSL</h1><div class=content><p>OpenHands 是一个基于 Python 的后端服务，使用 FastAPI 框架构建。本文将详细记录如何从源码独立编译部署 OpenHands 的 Server 端，并为其配置 SSL/HTTPS，以实现安全的生产环境服务。<h2 id=fastapi-poetry-uvicorn-nginx-he-ssl-de-guan-xi>FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的关系</h2><ul><li><p><strong>FastAPI</strong>： FastAPI 是一个现代的 Python Web 框架，专注于快速开发和高性能。它支持异步编程，能够处理高并发请求。FastAPI 提供了自动生成的交互式 API 文档（如 Swagger UI 和 ReDoc），使开发者能够轻松测试和调试 API。它的类型提示和数据验证功能基于 Python 的 <code>pydantic</code>，确保了数据的可靠性和安全性。</p><li><p><strong>Poetry</strong>： Poetry 是一个强大的 Python 项目管理工具，用于管理依赖、虚拟环境和项目构建。它通过 <code>pyproject.toml</code> 文件定义项目的依赖关系和元数据，确保开发环境的一致性。Poetry 的虚拟环境隔离功能使得项目之间的依赖不会相互干扰，同时简化了依赖安装和版本管理。</p><li><p><strong>Uvicorn</strong>： Uvicorn 是一个高性能的 ASGI 服务器，用于运行基于 FastAPI 的应用。ASGI（Asynchronous Server Gateway Interface）是 WSGI 的异步版本，支持 WebSocket 和 HTTP/2 等现代协议。Uvicorn 的轻量化设计使其能够快速启动并处理大量并发请求，是运行 FastAPI 应用的理想选择。</p><li><p><strong>Nginx</strong>： Nginx 是一个功能强大的 Web 服务器和反向代理工具，广泛用于处理静态资源、负载均衡和 SSL/HTTPS 配置。在本项目中，Nginx 充当反向代理，将外部请求转发到运行在 Uvicorn 上的 FastAPI 应用，同时负责管理 SSL 证书和加密通信。Nginx 的高性能和灵活性使其成为生产环境的首选。</p><li><p><strong>SSL</strong>： SSL（Secure Sockets Layer）是一种加密协议，用于保护客户端与服务器之间的通信安全。通过 HTTPS（HTTP over SSL），可以确保数据在传输过程中不会被窃取或篡改。SSL 证书由受信任的证书颁发机构（CA）签发，验证服务器的身份。在本项目中，SSL 通过 Nginx 或 Caddy 自动管理，提供安全的访问通道。</p></ul><h2 id=bu-shu-jia-gou>部署架构</h2><pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span>                      +-------------+
+</span><span>                      |             |
+</span><span>                      |  Internet   |
+</span><span>                      |             |
+</span><span>                      +------+------+
+</span><span>                             |
+</span><span>                             | HTTPS (443)
+</span><span>                             |
+</span><span>                      +------+------+
+</span><span>                      |             |
+</span><span>                      |   Nginx     | SSL 终止
+</span><span>                      |             |
+</span><span>                      +------+------+
+</span><span>                             |
+</span><span>                             | HTTP (localhost:54013)
+</span><span>                             |
+</span><span>       +-----------------+---+---+-----------------+
+</span><span>       |                 |       |                 |
+</span><span>       |                 |       |                 |
+</span><span>+------+------+    +-----+------+     +------+-----+
+</span><span>|             |    |            |     |            |
+</span><span>|  Uvicorn    |    |  Uvicorn   | ... |  Uvicorn   | ASGI 服务器
+</span><span>|  Worker 1   |    |  Worker 2  |     |  Worker n  |
+</span><span>|             |    |            |     |            |
+</span><span>+------+------+    +------+-----+     +------+-----+
+</span><span>       |                 |                  |
+</span><span>       |                 |                  |
+</span><span>+------+------+    +-----+------+     +-----+------+
+</span><span>|             |    |            |     |            |
+</span><span>|  FastAPI    |    |  FastAPI   |     |  FastAPI   | Web 框架
+</span><span>|  App        |    |  App       |     |  App       |
+</span><span>|             |    |            |     |            |
+</span><span>+-------------+    +------------+     +------------+
+</span></code></pre><h2 id=shi-xian-bu-zou>实现步骤</h2><h3 id=1-cong-yuan-ma-bian-yi-openhands-server>1. 从源码编译 OpenHands Server</h3><h4 id=an-zhuang-yi-lai>安装依赖</h4><p>确保服务器上安装以下工具：<ul><li>Python 3.8 或更高版本<li>Poetry<li>Make</ul><h4 id=ke-long-yuan-ma>克隆源码</h4><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 克隆 OpenHands 仓库
+</span><span style=color:#bf616a>git</span><span> clone https://github.com/Polly2014/OpenHands.git
+</span><span style=color:#96b5b4>cd</span><span> OpenHands
+</span></code></pre><h4 id=an-zhuang-yi-lai-1>安装依赖</h4><p>进入后端目录并安装依赖：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#96b5b4>cd</span><span> openhands
+</span><span style=color:#bf616a>poetry</span><span> install
+</span></code></pre><h4 id=qi-dong-fu-wu>启动服务</h4><p>使用 Uvicorn 启动 FastAPI 应用：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>poetry</span><span> run uvicorn openhands.server.app:app</span><span style=color:#bf616a> --host</span><span> 0.0.0.0</span><span style=color:#bf616a> --port</span><span> 54013
+</span></code></pre><p>此命令会启动 OpenHands 的后端服务，监听端口 <code>54013</code>。<h3 id=2-pei-zhi-ssl-https>2. 配置 SSL/HTTPS</h3><p>为了为后端服务添加 HTTPS 支持，可以使用 Nginx 或 Caddy 作为反向代理。<h4 id=shi-yong-nginx-pei-zhi-https>使用 Nginx 配置 HTTPS</h4><ol><li><p><strong>安装 Nginx</strong>：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install nginx
+</span></code></pre><li><p><strong>申请 SSL 证书</strong>（使用 Let's Encrypt 和 Certbot）：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> apt install certbot python3-certbot-nginx
+</span><span style=color:#bf616a>sudo</span><span> certbot</span><span style=color:#bf616a> --nginx -d</span><span> your-domain.com
+</span></code></pre><li><p><strong>配置 Nginx 反向代理</strong>： 编辑 <code>/etc/nginx/sites-available/openhands</code>：</p> <pre class=language-nginx data-lang=nginx style=background:#2b303b;color:#c0c5ce><code class=language-nginx data-lang=nginx><span>server {
+</span><span>    listen 80;
+</span><span>    server_name your-domain.com;
+</span><span>    return 301 https://$host$request_uri;
+</span><span>}
+</span><span>
+</span><span>server {
+</span><span>    listen 443 ssl;
+</span><span>    server_name your-domain.com;
+</span><span>
+</span><span>    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+</span><span>    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+</span><span>
+</span><span>    location / {
+</span><span>        proxy_pass http://127.0.0.1:54013; # 后端服务的地址
+</span><span>        proxy_set_header Host $host;
+</span><span>        proxy_set_header X-Real-IP $remote_addr;
+</span><span>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span><span>        proxy_set_header X-Forwarded-Proto $scheme;
+</span><span>    }
+</span><span>}
+</span></code></pre><li><p><strong>启用配置并重启 Nginx</strong>：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> ln</span><span style=color:#bf616a> -s</span><span> /etc/nginx/sites-available/openhands /etc/nginx/sites-enabled/
+</span><span style=color:#bf616a>sudo</span><span> nginx</span><span style=color:#bf616a> -t
+</span><span style=color:#bf616a>sudo</span><span> systemctl restart nginx
+</span></code></pre></ol><h4 id=shi-yong-caddy-pei-zhi-https>使用 Caddy 配置 HTTPS</h4><ol><li><p><strong>安装 Caddy</strong>：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> debian-keyring debian-archive-keyring apt-transport-https
+</span><span style=color:#bf616a>curl -1sLf </span><span>'</span><span style=color:#a3be8c>https://dl.cloudsmith.io/public/caddy/stable/gpg.key</span><span>' | </span><span style=color:#bf616a>sudo</span><span> tee /usr/share/keyrings/caddy-archive-keyring.asc
+</span><span style=color:#bf616a>curl -1sLf </span><span>'</span><span style=color:#a3be8c>https://dl.cloudsmith.io/public/caddy/stable/deb.deb.txt</span><span>' | </span><span style=color:#bf616a>sudo</span><span> tee /etc/apt/sources.list.d/caddy-stable.list
+</span><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install caddy
+</span></code></pre><li><p><strong>配置 Caddyfile</strong>： 编辑 <code>/etc/caddy/Caddyfile</code>：</p> <pre class=language-caddy data-lang=caddy style=background:#2b303b;color:#c0c5ce><code class=language-caddy data-lang=caddy><span>your-domain.com {
+</span><span>   reverse_proxy 127.0.0.1:54013
+</span><span>}
+</span></code></pre><li><p><strong>启动 Caddy</strong>：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> systemctl restart caddy
+</span></code></pre></ol><p>Caddy 会自动申请和管理 SSL 证书。<h3 id=3-optional-sheng-chan-huan-jing-you-hua>3. [Optional] 生产环境优化</h3><h3 id=4-optional-jin-cheng-guan-li-yu-zi-qi-dong>4. [Optional] 进程管理与自启动</h3><p>使用 Systemd 管理服务进程：<ol><li>创建服务配置：</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> nano /etc/systemd/system/openhands.service
+</span></code></pre><ol start=2><li>添加以下内容：</ol><pre class=language-int data-lang=int style=background:#2b303b;color:#c0c5ce><code class=language-int data-lang=int><span>[Unit]
+</span><span>Description=OpenHands FastAPI Server
+</span><span>After=network.target
+</span><span>
+</span><span>[Service]
+</span><span>User=ubuntu
+</span><span>WorkingDirectory=/path/to/OpenHands/openhands
+</span><span>ExecStart=/path/to/poetry/bin/poetry run uvicorn openhands.server.app:app --host 0.0.0.0 --port 54013
+</span><span>Restart=always
+</span><span>RestartSec=10
+</span><span>
+</span><span>[Install]
+</span><span>WantedBy=multi-user.target
+</span></code></pre><ol start=3><li>启用并启动服务</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> systemctl daemon-reload
+</span><span style=color:#bf616a>sudo</span><span> systemctl enable openhands
+</span><span style=color:#bf616a>sudo</span><span> systemctl start openhands
+</span></code></pre><h3 id=5-yan-zheng-bu-shu>5. 验证部署</h3><ol><li><p>确保后端服务正在运行：</p> <pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>curl</span><span> http://127.0.0.1:54013
+</span></code></pre><li><p>通过浏览器访问 <code>https://your-domain.com</code>，验证 HTTPS 是否正常工作。</p></ol><h2 id=nginxxing-neng-you-hua>Nginx性能优化</h2><p>修改 /etc/nginx/nginx.conf，添加以下优化：<pre class=language-nginx data-lang=nginx style=background:#2b303b;color:#c0c5ce><code class=language-nginx data-lang=nginx><span>worker_processes auto;
+</span><span>worker_connections 1024;
+</span><span>
+</span><span>http {
+</span><span>    # 启用 gzip 压缩
+</span><span>    gzip on;
+</span><span>    gzip_comp_level 5;
+</span><span>    gzip_types text/plain text/css application/json application/javascript;
+</span><span>    
+</span><span>    # 调整缓冲区大小
+</span><span>    client_body_buffer_size 10K;
+</span><span>    client_header_buffer_size 1k;
+</span><span>    
+</span><span>    # 启用 HTTP/2
+</span><span>    http2 on;
+</span><span>    
+</span><span>    # SSL 优化
+</span><span>    ssl_session_cache shared:SSL:10m;
+</span><span>    ssl_session_timeout 10m;
+</span><span>    ssl_protocols TLSv1.2 TLSv1.3;
+</span><span>    ssl_prefer_server_ciphers off;
+</span><span>}
+</span></code></pre><h2 id=chang-jian-wen-ti-pai-cha>常见问题排查</h2><h3 id=fu-wu-wu-fa-qi-dong>服务无法启动</h3><ul><li>检查端口是否被占用：<code>sudo lsof -i:54013</code><li>检查 Python 环境：<code>python --version</code><li>查看日志：<code>poetry run uvicorn openhands.server.app:app --log-level debug</code></ul><h3 id=ssl-pei-zhi-wen-ti>SSL 配置问题</h3><ul><li>证书路径错误：确认证书文件路径正确<li>Nginx 配置测试：运行 <code>sudo nginx -t</code> 检查配置<li>防火墙设置：确保 80/443 端口已开放 <code>sudo ufw status</code></ul><h3 id=yu-ming-jie-xi-wen-ti>域名解析问题</h3><ul><li>确认 DNS 记录已正确设置：<code>dig your-domain.com</code><li>等待 DNS 缓存更新（可能需要 24-48 小时）</ul><h2 id=zong-jie>总结</h2><p>通过以上步骤，我们成功实现了 OpenHands Server 端的独立编译部署，并为其配置了 SSL/HTTPS。FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的协作确保了服务的高效性和安全性。<p>这种部署架构具有显著的可扩展性优势：<ol><li><p><strong>水平扩展</strong>：当负载增加时，可以轻松添加更多 Uvicorn 工作进程或部署多个服务实例，由 Nginx 进行负载均衡，实现无缝扩容。</p><li><p><strong>技术栈灵活性</strong>：架构的各组件可以单独升级或替换（如 Caddy 替代 Nginx），无需重新设计整个系统。</p><li><p><strong>资源隔离</strong>：使用 Poetry 创建的虚拟环境确保应用依赖独立，便于多个项目在同一服务器上共存。</p><li><p><strong>容器化潜力</strong>：此架构可轻松迁移至 Docker 容器或 Kubernetes 集群，进一步提升部署的一致性和可靠性。</p></ol><p>通过这种方式部署的 OpenHands 后端服务既安全可靠，又具备了应对未来业务增长的技术基础。如果有其他问题或需求，请随时联系！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
