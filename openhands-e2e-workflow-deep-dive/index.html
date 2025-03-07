@@ -1,0 +1,209 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>OpenHands：端到端流程原理深度剖析</h1><div class=content><h2 id=1-yin-yan><strong>1. 引言</strong></h2><p>在现代软件开发中，自动化工具已经成为不可或缺的一部分。然而，传统的自动化工具往往局限于特定场景，无法灵活适应复杂的用户需求。为了解决这一问题，OpenHands 应运而生。<p>OpenHands 是一个自动化 AI 软件工程师，旨在通过端到端的交互流程，帮助用户完成从代码生成到测试运行、从文件操作到 Web 自动化等多种任务。它的核心组件——Agent，能够智能地解析用户请求、分解任务并协调执行环境完成操作。<h3 id=openhands-de-du-te-you-shi><strong>OpenHands 的独特优势</strong></h3><ul><li><strong>自然语言交互</strong>：用户可以通过简单的自然语言描述任务，无需掌握复杂的技术细节。<li><strong>模块化设计</strong>：系统由多个独立模块组成，支持灵活扩展和动态调用。<li><strong>安全性与隔离</strong>：通过沙箱技术和严格的权限管理，确保任务执行的安全性。<li><strong>端到端自动化</strong>：从用户请求到任务完成，全流程自动化，无需人工干预。</ul><h2 id=2-openhands-de-zheng-ti-jia-gou><strong>2. OpenHands 的整体架构</strong></h2><h3 id=jia-gou-tu><strong>架构图</strong></h3><p>上图展示了 OpenHands 的整体架构，包括用户、前端、Server、Agent、MicroAgent、Sandbox/Browser/Shell 等模块之间的交互关系。<h3 id=mo-kuai-jian-jie><strong>模块简介</strong></h3><table><thead><tr><th>模块名称<th>描述<tbody><tr><td><strong>用户</strong><td>用户通过自然语言描述任务，例如“生成一个 Python 函数并编写单元测试”。用户请求是整个流程的起点。<tr><td><strong>前端</strong><td>提供用户交互界面，支持文件上传、任务配置和结果展示，基于 React 构建，确保用户体验流畅。<tr><td><strong>Server</strong><td>基于 FastAPI 构建，负责接收用户请求并将其转发给 Agent。Server 提供 RESTful API 接口，支持任务的分发、会话管理和请求验证，同时与前端交互，确保用户请求能够被正确解析并传递到后端的 Agent。<tr><td><strong>Agent</strong><td>OpenHands 的核心组件，负责解析用户请求、分解任务并协调执行。它是整个系统的“大脑”，通过调用 MicroAgent 和执行环境完成复杂任务。<tr><td><strong>MicroAgent</strong><td>执行具体任务的子模块，例如文件操作、代码生成、测试运行等。每个 MicroAgent 专注于特定功能，支持动态加载和扩展，确保任务的灵活性和高效性。<tr><td><strong>LLM</strong><td>提供强大的自然语言处理能力，支持任务解析、语义分析和动态评分标准生成，确保复杂任务能够被准确理解和执行。<tr><td><strong>Memory</strong><td>管理会话记忆和上下文信息，确保任务执行的连续性。通过 Condenser 和 ConversationMemory 模块实现高效的记忆管理。<tr><td><strong>Security</strong><td>负责权限管理和安全审计，确保任务执行的安全性。通过沙箱技术和严格的输入验证防止恶意代码注入。<tr><td><strong>Storage</strong><td>负责数据存储和检索，支持任务结果的持久化，确保用户能够随时访问历史任务结果。<tr><td><strong>Sandbox</strong><td>提供安全、隔离的任务执行环境，确保任务执行不会影响系统的其他部分。<tr><td><strong>Browser/Shell</strong><td>实际的执行环境，用于完成 Web 自动化或 Shell 命令操作，支持跨平台和多种任务类型。</table><p>本文将对 OpenHands 的架构、工作流程、技术实现以及应用场景进行全面解析。通过深入剖析每个组件的设计原理与技术细节，帮助读者理解 OpenHands 的工作机制，并探索其在自动化领域的潜力。<h2 id=3-gong-zuo-liu-cheng-cong-yong-hu-dao-zhi-xing-huan-jing><strong>3. 工作流程：从用户到执行环境</strong></h2><p>OpenHands 的工作流程是一个端到端的自动化过程，从用户请求到任务完成，每个步骤都经过精心设计以确保高效、准确和安全。以下是以自动化开发与部署一个 Web 应用为核心的详细工作流程解析。<hr><h3 id=3-1-yong-hu-qing-qiu-de-chu-li><strong>3.1 用户请求的处理</strong></h3><ul><li><p><strong>用户交互</strong>：</p> <ul><li>用户通过前端描述任务，例如： <blockquote><p>"创建一个待办事项管理工具，前端用 React，后端用 FastAPI，支持添加、删除和标记任务为完成。将其部署到 Vercel。"</blockquote><li>前端通过 RESTful API 将请求发送到 Server。</ul><li><p><strong>Server 的作用</strong>：</p> <ul><li>Server 接收用户请求并通过 FastAPI 路由处理，定义在 <code>openhands.server.routes.conversation.py</code> 中：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>@router.</span><span style=color:#bf616a>post</span><span>("</span><span style=color:#a3be8c>/api/v1/execute</span><span>")
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>execute_task</span><span>(</span><span style=color:#bf616a>request</span><span>: Request):
+</span><span>    data = </span><span style=color:#b48ead>await </span><span>request.</span><span style=color:#bf616a>json</span><span>()
+</span><span>    task_description = data.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>task_description</span><span>")
+</span><span>    agent = Agent.</span><span style=color:#bf616a>get_cls</span><span>("</span><span style=color:#a3be8c>CodeActAgent</span><span>")()
+</span><span>    result = </span><span style=color:#b48ead>await </span><span>agent.</span><span style=color:#bf616a>handle_task</span><span>(task_description)
+</span><span>    </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>result</span><span>": result}
+</span></code></pre></ul></ul><hr><h3 id=3-2-codeactagent-de-ren-wu-fen-jie><strong>3.2 CodeActAgent 的任务分解</strong></h3><ul><li><p><strong>任务分解</strong>：</p> <ul><li>CodeActAgent 接收用户请求后，将其分解为多个子任务： <ol><li>生成前端代码。<li>生成后端代码。<li>优化代码（调用 LLM）。<li>在本地运行测试。<li>打包代码并上传到 Vercel。</ol></ul><li><p><strong>调用 LLM</strong>：</p> <ul><li>使用 CodeActAgent 的 <code>step</code> 方法与 LLM 交互，优化代码：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>step</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>state</span><span>: State) -> Action:
+</span><span>    messages = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_get_messages</span><span>(state)
+</span><span>    params = {"</span><span style=color:#a3be8c>messages</span><span>": </span><span style=color:#bf616a>self</span><span>.llm.</span><span style=color:#bf616a>format_messages_for_llm</span><span>(messages)}
+</span><span>    response = </span><span style=color:#bf616a>self</span><span>.llm.</span><span style=color:#bf616a>completion</span><span>(**params)
+</span><span>    actions = codeact_function_calling.</span><span style=color:#bf616a>response_to_actions</span><span>(response)
+</span><span>    </span><span style=color:#b48ead>for </span><span>action </span><span style=color:#b48ead>in </span><span>actions:
+</span><span>        </span><span style=color:#bf616a>self</span><span>.pending_actions.</span><span style=color:#bf616a>append</span><span>(action)
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.pending_actions.</span><span style=color:#bf616a>popleft</span><span>()
+</span></code></pre></ul><li><p><strong>上下文管理</strong>：</p> <ul><li>使用 Memory 模块（如 <code>ConversationMemory</code> 和 <code>Condenser</code>）管理会话记忆和上下文信息：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>self</span><span>.conversation_memory = </span><span style=color:#bf616a>ConversationMemory</span><span>(</span><span style=color:#bf616a>self</span><span>.prompt_manager)
+</span><span style=color:#bf616a>self</span><span>.condenser = Condenser.</span><span style=color:#bf616a>from_config</span><span>(</span><span style=color:#bf616a>self</span><span>.config.condenser)
+</span></code></pre></ul></ul><hr><h3 id=3-3-microagent-de-ren-wu-zhi-xing><strong>3.3 MicroAgent 的任务执行</strong></h3><p>在 OpenHands 中，MicroAgent 是执行具体任务的核心模块。以下是与 Todo App 开发和部署相关的 MicroAgent 实现：<ul><li><p><strong>CodeGenerationMicroAgent</strong>：</p> <ul><li>负责生成前端和后端代码。<li>示例代码（非 OpenHands 源码，仅为案例展示）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>CodeGenerationMicroAgent</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>generate_frontend_code</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#b48ead>return </span><span>"""
+</span><span style=color:#a3be8c>        import React, { useState } from 'react';
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        function App() {
+</span><span style=color:#a3be8c>            const [tasks, setTasks] = useState([]);
+</span><span style=color:#a3be8c>            const addTask = (task) => setTasks([...tasks, { task, completed: false }]);
+</span><span style=color:#a3be8c>            const toggleTask = (index) => {
+</span><span style=color:#a3be8c>                const newTasks = [...tasks];
+</span><span style=color:#a3be8c>                newTasks[index].completed = !newTasks[index].completed;
+</span><span style=color:#a3be8c>                setTasks(newTasks);
+</span><span style=color:#a3be8c>            };
+</span><span style=color:#a3be8c>            return (
+</span><span style=color:#a3be8c>                &LTdiv>
+</span><span style=color:#a3be8c>                    &LTh1>Todo List&LT/h1>
+</span><span style=color:#a3be8c>                    &LTinput id="taskInput" placeholder="Add a task" />
+</span><span style=color:#a3be8c>                    &LTbutton onClick={() => addTask(document.getElementById('taskInput').value)}>Add&LT/button>
+</span><span style=color:#a3be8c>                    &LTul>
+</span><span style=color:#a3be8c>                        {tasks.map((t, i) => (
+</span><span style=color:#a3be8c>                            &LTli key=</span><span style=color:#d08770>{i}</span><span style=color:#a3be8c> onClick={() => toggleTask(i)} style=</span><span style=color:#96b5b4>{{</span><span style=color:#a3be8c> textDecoration: t.completed ? 'line-through' : 'none' </span><span style=color:#96b5b4>}}</span><span style=color:#a3be8c>>
+</span><span style=color:#a3be8c>                                </span><span style=color:#d08770>{t.task}
+</span><span style=color:#a3be8c>                            &LT/li>
+</span><span style=color:#a3be8c>                        ))}
+</span><span style=color:#a3be8c>                    &LT/ul>
+</span><span style=color:#a3be8c>                &LT/div>
+</span><span style=color:#a3be8c>            );
+</span><span style=color:#a3be8c>        }
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        export default App;
+</span><span style=color:#a3be8c>        </span><span>"""
+</span><span>
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>generate_backend_code</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#b48ead>return </span><span>"""
+</span><span style=color:#a3be8c>        from fastapi import FastAPI
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        app = FastAPI()
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        tasks = []
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        @app.post("/add_task")
+</span><span style=color:#a3be8c>        def add_task(task: str):
+</span><span style=color:#a3be8c>            tasks.append({"task": task, "completed": False})
+</span><span style=color:#a3be8c>            return {"message": "Task added successfully"}
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        @app.get("/tasks")
+</span><span style=color:#a3be8c>        def get_tasks():
+</span><span style=color:#a3be8c>            return tasks
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>        @app.put("/toggle_task/</span><span style=color:#d08770>{index}</span><span style=color:#a3be8c>")
+</span><span style=color:#a3be8c>        def toggle_task(index: int):
+</span><span style=color:#a3be8c>            if 0 <= index < len(tasks):
+</span><span style=color:#a3be8c>                tasks[index]["completed"] = not tasks[index]["completed"]
+</span><span style=color:#a3be8c>                return {"message": "Task updated successfully"}
+</span><span style=color:#a3be8c>            return {"error": "Invalid index"}
+</span><span style=color:#a3be8c>        </span><span>"""
+</span></code></pre></ul><li><p><strong>BrowserMicroAgent</strong>：</p> <ul><li>负责自动化部署到 Vercel。<li>示例代码（非 OpenHands 源码，仅为案例展示）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>BrowserMicroAgent</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>deploy_to_vercel</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>project_path</span><span>):
+</span><span>        </span><span style=color:#65737e># 使用浏览器自动化完成部署
+</span><span>        browser = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>initialize_browser</span><span>()
+</span><span>        browser.</span><span style=color:#bf616a>goto</span><span>("</span><span style=color:#a3be8c>https://vercel.com</span><span>")
+</span><span>        browser.</span><span style=color:#bf616a>login</span><span>("</span><span style=color:#a3be8c>user@example.com</span><span>", "</span><span style=color:#a3be8c>password</span><span>")
+</span><span>        browser.</span><span style=color:#bf616a>upload_project</span><span>(project_path)
+</span><span>        </span><span style=color:#b48ead>return </span><span>"</span><span style=color:#a3be8c>https://todo-app.vercel.app</span><span>"
+</span></code></pre></ul></ul><hr><h3 id=3-4-zhi-xing-huan-jing-de-jiao-hu><strong>3.4 执行环境的交互</strong></h3><p>OpenHands 的执行环境交互通过文件操作和路径解析实现，确保任务执行的安全性和隔离性。<ul><li><p><strong>文件路径解析</strong>：</p> <ul><li>使用 <code>resolve_path</code> 方法将用户提供的路径解析为主机文件系统上的路径，同时确保路径安全性。<li>示例代码（真实代码）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>resolve_path</span><span>(
+</span><span>    </span><span style=color:#bf616a>file_path</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>working_directory</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>workspace_base</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>workspace_mount_path_in_sandbox</span><span>: str,
+</span><span>):
+</span><span>    path_in_sandbox = </span><span style=color:#bf616a>Path</span><span>(file_path)
+</span><span>    </span><span style=color:#b48ead>if </span><span>not path_in_sandbox.</span><span style=color:#bf616a>is_absolute</span><span>():
+</span><span>        path_in_sandbox = </span><span style=color:#bf616a>Path</span><span>(working_directory) / path_in_sandbox
+</span><span>    abs_path_in_sandbox = path_in_sandbox.</span><span style=color:#bf616a>resolve</span><span>()
+</span><span>    </span><span style=color:#b48ead>if </span><span>not abs_path_in_sandbox.</span><span style=color:#bf616a>is_relative_to</span><span>(workspace_mount_path_in_sandbox):
+</span><span>        </span><span style=color:#b48ead>raise </span><span style=color:#bf616a>PermissionError</span><span>(</span><span style=color:#b48ead>f</span><span>'</span><span style=color:#a3be8c>File access not permitted: </span><span>{file_path}')
+</span><span>    path_in_workspace = abs_path_in_sandbox.</span><span style=color:#bf616a>relative_to</span><span>(
+</span><span>        </span><span style=color:#bf616a>Path</span><span>(workspace_mount_path_in_sandbox)
+</span><span>    )
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>Path</span><span>(workspace_base) / path_in_workspace
+</span></code></pre></ul><li><p><strong>文件读取</strong>：</p> <ul><li>使用 <code>read_file</code> 方法读取文件内容，返回 <code>FileReadObservation</code> 对象。<li>示例代码（真实代码）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>read_file</span><span>(
+</span><span>    </span><span style=color:#bf616a>path</span><span>, </span><span style=color:#bf616a>workdir</span><span>, </span><span style=color:#bf616a>workspace_base</span><span>, </span><span style=color:#bf616a>workspace_mount_path_in_sandbox</span><span>, </span><span style=color:#bf616a>start</span><span>=</span><span style=color:#d08770>0</span><span>, </span><span style=color:#bf616a>end</span><span>=-</span><span style=color:#d08770>1
+</span><span>) -> Observation:
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        whole_path = </span><span style=color:#bf616a>resolve_path</span><span>(
+</span><span>            path, workdir, workspace_base, workspace_mount_path_in_sandbox
+</span><span>        )
+</span><span>    </span><span style=color:#b48ead>except </span><span>PermissionError:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>ErrorObservation</span><span>(
+</span><span>            </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>You're not allowed to access this path: </span><span>{path}</span><span style=color:#a3be8c>. You can only access paths inside the workspace.</span><span>"
+</span><span>        )
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#b48ead>with </span><span style=color:#96b5b4>open</span><span>(whole_path, '</span><span style=color:#a3be8c>r</span><span>', </span><span style=color:#bf616a>encoding</span><span>='</span><span style=color:#a3be8c>utf-8</span><span>') </span><span style=color:#b48ead>as </span><span>file:
+</span><span>            lines = </span><span style=color:#bf616a>read_lines</span><span>(file.</span><span style=color:#bf616a>readlines</span><span>(), start, end)
+</span><span>    </span><span style=color:#b48ead>except </span><span>FileNotFoundError:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>ErrorObservation</span><span>(</span><span style=color:#b48ead>f</span><span>'</span><span style=color:#a3be8c>File not found: </span><span>{path}')
+</span><span>    </span><span style=color:#b48ead>except </span><span>UnicodeDecodeError:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>ErrorObservation</span><span>(</span><span style=color:#b48ead>f</span><span>'</span><span style=color:#a3be8c>File could not be decoded as utf-8: </span><span>{path}')
+</span><span>    </span><span style=color:#b48ead>except </span><span>IsADirectoryError:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>ErrorObservation</span><span>(</span><span style=color:#b48ead>f</span><span>'</span><span style=color:#a3be8c>Path is a directory: </span><span>{path}</span><span style=color:#a3be8c>. You can only read files</span><span>')
+</span><span>    code_view = ''.</span><span style=color:#bf616a>join</span><span>(lines)
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>FileReadObservation</span><span>(</span><span style=color:#bf616a>path</span><span>=path, </span><span style=color:#bf616a>content</span><span>=code_view)
+</span></code></pre></ul><li><p><strong>文件写入</strong>：</p> <ul><li>使用 <code>write_file</code> 方法支持在指定范围内插入或覆盖文件内容。<li>示例代码（真实代码）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>write_file</span><span>(
+</span><span>    </span><span style=color:#bf616a>path</span><span>,
+</span><span>    </span><span style=color:#bf616a>workdir</span><span>,
+</span><span>    </span><span style=color:#bf616a>workspace_base</span><span>,
+</span><span>    </span><span style=color:#bf616a>workspace_mount_path_in_sandbox</span><span>,
+</span><span>    </span><span style=color:#bf616a>content</span><span>,
+</span><span>    </span><span style=color:#bf616a>start</span><span>=</span><span style=color:#d08770>0</span><span>,
+</span><span>    </span><span style=color:#bf616a>end</span><span>=-</span><span style=color:#d08770>1</span><span>,
+</span><span>) -> Observation:
+</span><span>    insert = content.</span><span style=color:#bf616a>split</span><span>('</span><span style=color:#96b5b4>\\</span><span style=color:#a3be8c>n</span><span>')
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        whole_path = </span><span style=color:#bf616a>resolve_path</span><span>(
+</span><span>            path, workdir, workspace_base, workspace_mount_path_in_sandbox
+</span><span>        )
+</span><span>        </span><span style=color:#b48ead>if </span><span>not os.path.</span><span style=color:#bf616a>exists</span><span>(os.path.</span><span style=color:#bf616a>dirname</span><span>(whole_path)):
+</span><span>            os.</span><span style=color:#bf616a>makedirs</span><span>(os.path.</span><span style=color:#bf616a>dirname</span><span>(whole_path))
+</span><span>        mode = '</span><span style=color:#a3be8c>w</span><span>' </span><span style=color:#b48ead>if </span><span>not os.path.</span><span style=color:#bf616a>exists</span><span>(whole_path) </span><span style=color:#b48ead>else </span><span>'</span><span style=color:#a3be8c>r+</span><span>'
+</span><span>        </span><span style=color:#b48ead>with </span><span style=color:#96b5b4>open</span><span>(whole_path, mode, </span><span style=color:#bf616a>encoding</span><span>='</span><span style=color:#a3be8c>utf-8</span><span>') </span><span style=color:#b48ead>as </span><span>file:
+</span><span>            </span><span style=color:#b48ead>if </span><span>mode != '</span><span style=color:#a3be8c>w</span><span>':
+</span><span>                all_lines = file.</span><span style=color:#bf616a>readlines</span><span>()
+</span><span>                new_file = </span><span style=color:#bf616a>insert_lines</span><span>(insert, all_lines, start, end)
+</span><span>            </span><span style=color:#b48ead>else</span><span>:
+</span><span>                new_file = [i + '</span><span style=color:#96b5b4>\\</span><span style=color:#a3be8c>n</span><span>' </span><span style=color:#b48ead>for </span><span>i </span><span style=color:#b48ead>in </span><span>insert]
+</span><span>            file.</span><span style=color:#bf616a>seek</span><span>(</span><span style=color:#d08770>0</span><span>)
+</span><span>            file.</span><span style=color:#bf616a>writelines</span><span>(new_file)
+</span><span>            file.</span><span style=color:#bf616a>truncate</span><span>()
+</span><span>    </span><span style=color:#b48ead>except </span><span>PermissionError </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>ErrorObservation</span><span>(</span><span style=color:#b48ead>f</span><span>'</span><span style=color:#a3be8c>Permission error on </span><span>{path}</span><span style=color:#a3be8c>: </span><span>{e}')
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>FileWriteObservation</span><span>(</span><span style=color:#bf616a>content</span><span>='', </span><span style=color:#bf616a>path</span><span>=path)
+</span></code></pre></ul><li><p><strong>沙箱隔离</strong>：</p> <ul><li>文件操作严格限制在工作区内，确保任务执行的安全性。</ul></ul><hr><h3 id=3-5-jie-guo-fan-hui><strong>3.5 结果返回</strong></h3><ul><li><strong>结果整合</strong>： <ul><li>CodeActAgent 整合 MicroAgent 的结果，并通过前端返回 Web 应用的部署链接。<li>示例返回结果：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>    "</span><span style=color:#a3be8c>result</span><span>": "</span><span style=color:#a3be8c>Web 应用已成功部署！访问链接：https://todo-app.vercel.app</span><span>"
+</span><span>}
+</span></code></pre></ul></ul><hr><h3 id=bu-chong-mo-kuai><strong>补充模块</strong></h3><ul><li><p><strong>Security</strong>：</p> <ul><li>确保任务执行的安全性，防止恶意代码注入。<li>示例代码：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Security</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>validate_input</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>input_data</span><span>: dict):
+</span><span>        </span><span style=color:#65737e># 验证用户输入，防止恶意代码注入
+</span><span>        </span><span style=color:#b48ead>if </span><span>"</span><span style=color:#a3be8c>dangerous_command</span><span>" in input_data:
+</span><span>            </span><span style=color:#b48ead>raise </span><span style=color:#bf616a>ValueError</span><span>("</span><span style=color:#a3be8c>Invalid input detected!</span><span>")
+</span></code></pre></ul><li><p><strong>Storage</strong>：</p> <ul><li>负责任务结果的持久化存储，支持用户随时访问历史任务结果。<li>示例代码：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Storage</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>save_result</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>task_id</span><span>: str, </span><span style=color:#bf616a>result</span><span>: dict):
+</span><span>        </span><span style=color:#b48ead>with </span><span style=color:#96b5b4>open</span><span>(</span><span style=color:#b48ead>f</span><span>"{task_id}</span><span style=color:#a3be8c>_result.json</span><span>", "</span><span style=color:#a3be8c>w</span><span>") </span><span style=color:#b48ead>as </span><span>f:
+</span><span>            json.</span><span style=color:#bf616a>dump</span><span>(result, f)
+</span></code></pre></ul></ul><h2 id=4-he-xin-zu-jian-shen-du-jie-xi><strong>4. 核心组件深度解析</strong></h2><p>OpenHands 的核心组件包括 Agent、MicroAgent 和执行环境。这些组件共同构成了系统的核心功能，确保任务能够高效、安全地完成。以下是对每个组件的详细剖析。<h3 id=4-1-agent><strong>4.1 Agent</strong></h3><p>Agent 是 OpenHands 的“大脑”，负责接收用户请求、解析任务并协调 MicroAgent 执行具体操作。每个 Agent 都专注于特定的功能领域，例如代码生成、网页浏览或任务分发。<h4 id=agent-fen-lei-biao-ge><strong>Agent 分类表格</strong></h4><table><thead><tr><th>Agent 名称<th>路径<th>功能描述<tbody><tr><td>BrowsingAgent<td><code>agenthub/browsing_agent/</code><td>处理网页浏览相关任务，例如从网页中提取信息。<tr><td>CodeActAgent<td><code>agenthub/codeact_agent/</code><td>专注于代码相关任务，例如代码生成、修复或分析。<tr><td>DelegatorAgent<td><code>agenthub/delegator_agent/</code><td>负责任务的分解和分发，协调多个 Agent 和 MicroAgent 的工作。<tr><td>DummyAgent<td><code>agenthub/dummy_agent/</code><td>一个简单的占位 Agent，主要用于测试或演示。<tr><td>VisualBrowsingAgent<td><code>agenthub/visualbrowsing_agent/</code><td>专注于视觉浏览任务，例如处理网页的视觉元素或截图。<tr><td>MicroAgent<td><code>agenthub/micro/</code><td>包含多个子模块，专注于特定领域的微任务，例如代码处理、数据库操作等。</table><h4 id=microagent-fen-lei-biao-ge><strong>MicroAgent 分类表格</strong></h4><table><thead><tr><th>MicroAgent 名称<th>路径<th>功能描述<tbody><tr><td>CodeGenerationMicroAgent<td><code>agenthub/micro/code_generation.py</code><td>负责生成代码，例如前端和后端代码生成。<tr><td>BrowserMicroAgent<td><code>agenthub/micro/browser.py</code><td>负责浏览器自动化操作，例如部署到云端。<tr><td>PDFParserMicroAgent<td><code>agenthub/micro/pdf_parser.py</code><td>负责从 PDF 文件中提取文本内容。<tr><td>ResumeScoringMicroAgent<td><code>agenthub/micro/resume_scoring.py</code><td>根据评分标准对简历进行评分。<tr><td>ReasonGeneratorMicroAgent<td><code>agenthub/micro/reason_generator.py</code><td>为筛选出的简历生成筛选理由。</table><h4 id=agent-de-zhu-ce-yu-diao-yong><strong>Agent 的注册与调用</strong></h4><ul><li><strong>注册</strong>： <ul><li>每个 Agent 在初始化时会注册到 Agent Hub。<li>注册信息包括 Agent 的名称、功能描述和路径。</ul><li><strong>调用</strong>： <ul><li>用户请求通过 Agent Hub 分发到合适的 Agent。<li>Agent Hub 根据任务类型选择合适的 Agent 或 MicroAgent。</ul></ul><h4 id=shi-li-dai-ma-agent-de-zhu-ce><strong>示例代码：Agent 的注册</strong></h4><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>openhands.agenthub </span><span style=color:#b48ead>import </span><span>AgentHub
+</span><span>
+</span><span style=color:#65737e># 注册 BrowsingAgent
+</span><span>AgentHub.</span><span style=color:#bf616a>register_agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>name</span><span>="</span><span style=color:#a3be8c>BrowsingAgent</span><span>",
+</span><span>    </span><span style=color:#bf616a>path</span><span>="</span><span style=color:#a3be8c>agenthub/browsing_agent/</span><span>",
+</span><span>    </span><span style=color:#bf616a>description</span><span>="</span><span style=color:#a3be8c>处理网页浏览相关任务</span><span>"
+</span><span>)
+</span><span>
+</span><span style=color:#65737e># 注册 CodeActAgent
+</span><span>AgentHub.</span><span style=color:#bf616a>register_agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>name</span><span>="</span><span style=color:#a3be8c>CodeActAgent</span><span>",
+</span><span>    </span><span style=color:#bf616a>path</span><span>="</span><span style=color:#a3be8c>agenthub/codeact_agent/</span><span>",
+</span><span>    </span><span style=color:#bf616a>description</span><span>="</span><span style=color:#a3be8c>专注于代码相关任务</span><span>"
+</span><span>)
+</span></code></pre><h4 id=shi-li-dai-ma-agent-de-diao-yong><strong>示例代码：Agent 的调用</strong></h4><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>openhands.agenthub </span><span style=color:#b48ead>import </span><span>AgentHub
+</span><span>
+</span><span style=color:#65737e># 用户请求
+</span><span>user_request = "</span><span style=color:#a3be8c>提取 https://example.com 的标题和内容</span><span>"
+</span><span>
+</span><span style=color:#65737e># 调用合适的 Agent
+</span><span>agent = AgentHub.</span><span style=color:#bf616a>get_agent</span><span>("</span><span style=color:#a3be8c>BrowsingAgent</span><span>")
+</span><span>result = agent.</span><span style=color:#bf616a>handle_request</span><span>(user_request)
+</span><span>
+</span><span style=color:#96b5b4>print</span><span>(result)
+</span></code></pre><h3 id=4-2-microagent><strong>4.2 MicroAgent</strong></h3><p>MicroAgent 是 Agent 的子模块，专注于特定领域的功能实现。它们是模块化的组件，例如处理代码、数据库操作或拼写修复。<h4 id=zhi-ze><strong>职责</strong></h4><ul><li><strong>任务执行</strong>： <ul><li>根据 Agent 的指令执行具体任务。<li>例如，生成代码、修改文件、运行测试等。</ul><li><strong>模块化设计</strong>： <ul><li>每个 MicroAgent 专注于特定功能，支持动态加载和扩展。</ul></ul><h4 id=shi-li-dai-ma-microagent-de-zhi-xing><strong>示例代码：MicroAgent 的执行</strong></h4><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>CodeGenerationMicroAgent</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>execute</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>task</span><span>):
+</span><span>        </span><span style=color:#65737e># 执行代码生成逻辑
+</span><span>        code = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>generate_code</span><span>(task["</span><span style=color:#a3be8c>content</span><span>"])
+</span><span>        </span><span style=color:#b48ead>return </span><span>code
+</span><span>
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>generate_code</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>content</span><span>):
+</span><span>        </span><span style=color:#65737e># 简单生成代码
+</span><span>        </span><span style=color:#b48ead>return f</span><span>"</span><span style=color:#a3be8c>def fibonacci(n):</span><span style=color:#96b5b4>\n</span><span style=color:#a3be8c>    if n <= 1: return n</span><span style=color:#96b5b4>\n</span><span style=color:#a3be8c>    return fibonacci(n-1) + fibonacci(n-2)</span><span>"
+</span></code></pre><h3 id=4-3-zhi-xing-huan-jing><strong>4.3 执行环境</strong></h3><p>执行环境是 OpenHands 的“工作场所”，包括 Sandbox、Browser 和 Shell。<h4 id=zhi-ze-1><strong>职责</strong></h4><ul><li><strong>安全执行</strong>： <ul><li>提供隔离的执行环境，确保任务执行的安全性。</ul><li><strong>跨环境支持</strong>： <ul><li>支持多种任务类型，例如 Web 自动化、Shell 命令执行等。</ul></ul><h4 id=shi-li-dai-ma-zhi-xing-huan-jing-de-jiao-hu><strong>示例代码：执行环境的交互</strong></h4><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Sandbox</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>execute_code</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>code</span><span>):
+</span><span>        </span><span style=color:#65737e># 在隔离环境中执行代码
+</span><span>        </span><span style=color:#96b5b4>exec</span><span>(code)
+</span><span>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Browser</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>load_page</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>url</span><span>):
+</span><span>        </span><span style=color:#65737e># 使用浏览器加载网页
+</span><span>        </span><span style=color:#b48ead>return f</span><span>"</span><span style=color:#a3be8c>Loaded page: </span><span>{url}"
+</span><span>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Shell</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>run_command</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>command</span><span>):
+</span><span>        </span><span style=color:#65737e># 执行系统命令
+</span><span>        </span><span style=color:#b48ead>return f</span><span>"</span><span style=color:#a3be8c>Executed command: </span><span>{command}"
+</span></code></pre><h4 id=ji-zhu-tiao-zhan><strong>技术挑战</strong></h4><ul><li><strong>安全性</strong>： <ul><li>解决方案：严格限制沙箱权限，防止恶意代码访问系统资源。</ul><li><strong>性能优化</strong>： <ul><li>解决方案：使用轻量级容器技术（如 Docker）减少资源开销。</ul></ul><h2 id=5-ji-zhu-zhan-yu-shi-xian-xi-jie><strong>5. 技术栈与实现细节</strong></h2><p>OpenHands 的技术栈涵盖了后端、前端、通信机制和安全性设计。以下是对每个部分的详细解析。<h3 id=5-1-hou-duan-python><strong>5.1 后端（Python）</strong></h3><p>后端是 OpenHands 的核心逻辑层，负责处理用户请求、任务分解和执行。<h4 id=shi-yong-de-kuang-jia-yu-ku><strong>使用的框架与库</strong></h4><table><thead><tr><th>框架/库名称<th>功能描述<tbody><tr><td>Flask/FastAPI<td>用于构建 REST API，支持高效的请求处理。<tr><td>Pytest<td>用于单元测试和集成测试，确保代码质量。<tr><td>Asyncio<td>实现异步任务处理，提高系统的并发能力。</table><h4 id=dai-ma-zu-zhi-yu-mo-kuai-hua-she-ji><strong>代码组织与模块化设计</strong></h4><table><thead><tr><th>目录结构<th>描述<tbody><tr><td><code>openhands/agent/</code><td>Agent 的实现。<tr><td><code>openhands/microagent/</code><td>MicroAgent 的实现。<tr><td><code>openhands/sandbox/</code><td>执行环境的实现。<tr><td><code>tests/unit/</code><td>单元测试代码。</table><h4 id=guan-jian-gong-neng-shi-xian><strong>关键功能实现</strong></h4><table><thead><tr><th>功能<th>描述<tbody><tr><td>任务分解<td>使用规则或 AI 模型解析用户请求并分解任务。<tr><td>上下文管理<td>使用字典或树结构存储任务上下文信息。<tr><td>错误处理<td>设计错误恢复机制，确保任务失败时能够自动重试。</table><h3 id=5-2-qian-duan-react><strong>5.2 前端（React）</strong></h3><p>前端是用户与 OpenHands 交互的界面，提供直观的操作体验。<h4 id=yong-hu-jie-mian-de-she-ji-yu-jiao-hu><strong>用户界面的设计与交互</strong></h4><ul><li><strong>React 框架</strong>： <ul><li>构建动态、响应式的用户界面。</ul><li><strong>组件化设计</strong>： <ul><li>每个功能模块对应一个独立的 React 组件，支持复用和扩展。</ul><li><strong>状态管理</strong>： <ul><li>使用 Redux 或 Context API 管理应用状态。</ul></ul><h4 id=guo-ji-hua-zhi-chi><strong>国际化支持</strong></h4><ul><li><strong>工具</strong>： <ul><li>使用 i18next 实现多语言支持。</ul><li><strong>环境变量配置</strong>： <ul><li>在 <code>frontend/.env</code> 文件中设置国际化相关变量。</ul></ul><h4 id=gou-jian-yu-you-hua><strong>构建与优化</strong></h4><ul><li><strong>构建工具</strong>： <ul><li>使用 Webpack 或 Vite 构建前端代码。</ul><li><strong>性能优化</strong>： <ul><li>通过代码分割和懒加载减少页面加载时间。</ul></ul><h3 id=5-3-tong-xin-ji-zhi><strong>5.3 通信机制</strong></h3><p>通信机制是前后端以及 Agent 与 MicroAgent 之间的桥梁。<h4 id=qian-hou-duan-tong-xin><strong>前后端通信</strong></h4><ul><li><strong>REST API</strong>： <ul><li>使用 HTTP 协议实现前后端通信。<li>例如，前端发送用户请求到后端，后端返回任务结果。</ul><li><strong>WebSocket</strong>： <ul><li>实现实时通信，例如任务进度更新。</ul></ul><h4 id=agent-yu-microagent-de-tong-xin><strong>Agent 与 MicroAgent 的通信</strong></h4><ul><li><strong>协议设计</strong>： <ul><li>使用 JSON 格式传递任务指令和结果。</ul><li><strong>异步调用</strong>： <ul><li>使用 Python 的 asyncio 实现异步通信。</ul></ul><h3 id=5-4-an-quan-xing><strong>5.4 安全性</strong></h3><p>安全性是 OpenHands 的重要设计目标，确保用户数据和任务执行的安全。<h4 id=shu-ju-an-quan><strong>数据安全</strong></h4><ul><li><strong>加密</strong>： <ul><li>使用 HTTPS 加密通信，防止数据泄露。</ul><li><strong>权限管理</strong>： <ul><li>限制用户对系统资源的访问权限。</ul></ul><h4 id=ren-wu-zhi-xing-an-quan><strong>任务执行安全</strong></h4><ul><li><strong>沙箱技术</strong>： <ul><li>使用容器或虚拟机隔离任务执行环境。</ul><li><strong>输入验证</strong>： <ul><li>验证用户输入，防止恶意代码注入。</ul></ul><h4 id=xi-tong-an-quan><strong>系统安全</strong></h4><ul><li><strong>防火墙</strong>： <ul><li>使用防火墙保护系统免受外部攻击。</ul><li><strong>日志监控</strong>： <ul><li>记录系统日志，检测异常行为。</ul></ul></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
