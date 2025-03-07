@@ -29,7 +29,8 @@
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;2-openhands-de-zheng-ti-jia-gou&quot;&gt;&lt;strong&gt;2. OpenHands 的整体架构&lt;&#x2F;strong&gt;&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;jia-gou-tu&quot;&gt;&lt;strong&gt;架构图&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
-&lt;p&gt;上图展示了 OpenHands 的整体架构，包括用户、前端、Server、Agent、MicroAgent、Sandbox&#x2F;Browser&#x2F;Shell 等模块之间的交互关系。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-e2e-workflow-deep-dive&#x2F;OpenHands_Architecture.png&quot; alt=&quot;OpenHands Architecture&quot; &#x2F;&gt;
+上图展示了 OpenHands 的整体架构，包括用户、前端、Server、Agent、MicroAgent、Sandbox&#x2F;Browser&#x2F;Shell 等模块之间的交互关系。&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;mo-kuai-jian-jie&quot;&gt;&lt;strong&gt;模块简介&lt;&#x2F;strong&gt;&lt;&#x2F;h3&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模块名称&lt;&#x2F;th&gt;&lt;th&gt;描述&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;用户&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;用户通过自然语言描述任务，例如“生成一个 Python 函数并编写单元测试”。用户请求是整个流程的起点。&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
