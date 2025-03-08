@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - OpenMP</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/openmp/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-03-08T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/openmp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>JPEG XS的并行化改造方案与实现</title>
+        <published>2025-03-08T00:00:00+00:00</published>
+        <updated>2025-03-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/jpeg-xs-parallel-optimization/" type="text/html"/>
+        <id>https://polly2014.github.io/jpeg-xs-parallel-optimization/</id>
+        
+        <content type="html">&lt;h2 id=&quot;bei-jing-jie-shao&quot;&gt;背景介绍&lt;&#x2F;h2&gt;
+&lt;p&gt;JPEG XS是一种低延迟、视觉无损的图像压缩标准，广泛应用于实时视频传输和高质量图像处理。其参考软件实现了编码和解码功能，但目前的实现是串行的，存在性能优化的空间。本次任务旨在分析其并行化的可能性，并给出详尽的并行化思路、方案与代码。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bian-jie-ma-guo-cheng-fen-xi&quot;&gt;编解码过程分析&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;bian-ma-guo-cheng&quot;&gt;编码过程&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;输入图像预处理&lt;&#x2F;strong&gt;：支持PNM、PGX、YUV等格式。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;配置编码参数&lt;&#x2F;strong&gt;：包括配置文件、比特率等。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;小波变换&lt;&#x2F;strong&gt;：分解图像为多个频率子带。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;量化&lt;&#x2F;strong&gt;：减少数据冗余。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;熵编码&lt;&#x2F;strong&gt;：压缩量化后的数据。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;码流生成&lt;&#x2F;strong&gt;：生成符合ISO标准的JPEG XS码流。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;jie-ma-guo-cheng&quot;&gt;解码过程&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;读取码流&lt;&#x2F;strong&gt;：解析JPEG XS码流结构。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;熵解码&lt;&#x2F;strong&gt;：恢复量化数据。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;逆量化&lt;&#x2F;strong&gt;：还原小波系数。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;逆小波变换&lt;&#x2F;strong&gt;：重建图像像素数据。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;色彩空间转换&lt;&#x2F;strong&gt;：还原RGB或YUV格式。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bing-xing-hua-gai-zao-si-lu&quot;&gt;并行化改造思路&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;chuan-xing-yu-bing-xing-fen-xi&quot;&gt;串行与并行分析&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;现状&lt;&#x2F;strong&gt;：编码和解码过程是串行的。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;优化可能性&lt;&#x2F;strong&gt;：编码过程的每一列是独立的，具有并行化潜力。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;bing-xing-hua-fang-an&quot;&gt;并行化方案&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;1-bing-xing-hua-lie-chu-li&quot;&gt;1. 并行化列处理&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;现状&lt;&#x2F;strong&gt;：列的初始化是通过循环逐列完成的。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;改造思路&lt;&#x2F;strong&gt;：使用OpenMP将列的初始化并行化。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;代码实现&lt;&#x2F;strong&gt;：&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#pragma&lt;&#x2F;span&gt;&lt;span&gt; omp parallel for
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; column = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; column &amp;lt; ctx-&amp;gt;ids.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npx&lt;&#x2F;span&gt;&lt;span&gt;; column++) {
+&lt;&#x2F;span&gt;&lt;span&gt;    ctx-&amp;gt;rc[column] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rate_control_open&lt;&#x2F;span&gt;&lt;span&gt;(xs_config, &amp;amp;ctx-&amp;gt;ids, column);
+&lt;&#x2F;span&gt;&lt;span&gt;    ctx-&amp;gt;precinct[column] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;precinct_open_column&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;ctx-&amp;gt;ids, ctx-&amp;gt;xs_config-&amp;gt;p.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;N_g&lt;&#x2F;span&gt;&lt;span&gt;, column);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;2-bing-xing-hua-xiao-bo-bian-huan&quot;&gt;2. 并行化小波变换&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;现状&lt;&#x2F;strong&gt;：小波变换是逐行逐列处理的。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;改造思路&lt;&#x2F;strong&gt;：将小波变换的行处理并行化。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;代码实现&lt;&#x2F;strong&gt;：&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#pragma&lt;&#x2F;span&gt;&lt;span&gt; omp parallel for
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; y = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; y &amp;lt; height; y++) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; x = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; x &amp;lt; width; x++) {
+&lt;&#x2F;span&gt;&lt;span&gt;        output[y][x] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;perform_wavelet_transform&lt;&#x2F;span&gt;&lt;span&gt;(input, y, x);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;3-gpujia-su&quot;&gt;3. GPU加速&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;现状&lt;&#x2F;strong&gt;：当前实现基于CPU。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;改造思路&lt;&#x2F;strong&gt;：使用CUDA或OpenCL将小波变换、量化和熵编码移植到GPU。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;优势&lt;&#x2F;strong&gt;：GPU擅长处理大规模并行任务，适合图像分块处理。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bian-yi-zhi-chi-openmp&quot;&gt;编译支持OpenMP&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;xiu-gai-cmakelists-txt&quot;&gt;修改&lt;code&gt;CMakeLists.txt&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;添加以下内容以支持OpenMP：&lt;pre data-lang=&quot;cmake&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cmake &quot;&gt;&lt;code class=&quot;language-cmake&quot; data-lang=&quot;cmake&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;find_package&lt;&#x2F;span&gt;&lt;span&gt;(OpenMP &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REQUIRED&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(OpenMP_CXX_FOUND)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;target_link_libraries&lt;&#x2F;span&gt;&lt;span&gt;(jxs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PRIVATE &lt;&#x2F;span&gt;&lt;span&gt;OpenMP::OpenMP_CXX)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;endif&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;shi-yong-gccbian-yi&quot;&gt;使用&lt;code&gt;gcc&lt;&#x2F;code&gt;编译&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;添加&lt;code&gt;-fopenmp&lt;&#x2F;code&gt;选项：&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gcc -fopenmp -o&lt;&#x2F;span&gt;&lt;span&gt; jxs_encoder xs_enc.c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -lm
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过上述并行化改造，可以显著提升JPEG XS参考软件的编解码性能。主要改动包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用OpenMP并行化列处理和小波变换。&lt;&#x2F;li&gt;
+&lt;li&gt;修改编译配置以支持多线程。&lt;&#x2F;li&gt;
+&lt;li&gt;考虑使用GPU加速核心计算。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;如果需要进一步优化或测试并行化效果，可以继续探索具体模块的实现。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
