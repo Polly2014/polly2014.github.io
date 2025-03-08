@@ -89,6 +89,39 @@ a:focus {
     margin-left: 0.5em;
 }
 
+/* 修改现有的代码块样式 */
+.content pre {
+    overflow-x: auto;  /* 添加水平滚动 */
+    white-space: pre;  /* 保持代码格式 */
+    word-wrap: normal; /* 防止代码自动换行 */
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 16px 0;
+    max-width: 100%;   /* 确保不超过父容器 */
+}
+
+/* 添加代码区域的样式 */
+.content pre code {
+    display: block;
+    overflow-x: auto;
+    padding: 0;
+    background: transparent;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 0.9em;
+    line-height: 1.45;
+    tab-size: 4;        /* 设置制表符宽度 */
+}
+
+/* 处理内联代码 */
+.content code:not(pre code) {
+    font-family: monospace;
+    background-color: rgba(175, 184, 193, 0.2);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
 /* 表格样式 */
 table {
     width: 100%;
@@ -246,6 +279,40 @@ table td {
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: box-shadow 0.3s ease-in-out;
+}
+
+/* 博客文章中的代码块样式 */
+.blog-post pre {
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 16px 0;
+    max-width: 100%;
+    border: 1px solid #e1e4e8;
+}
+
+.blog-post pre code {
+    display: block;
+    overflow-x: auto;
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+
+/* 确保聊天气泡中的代码块也能正确显示 */
+.chat-bubble pre {
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+    max-width: 100%;
+}
+
+.chat-bubble pre code {
+    display: block;
+    overflow-x: auto;
 }
 
 /* 博客文章元数据样式优化 - 简约风格 */
@@ -1201,10 +1268,49 @@ blockquote p {
         font-size: 1.3em;
         margin-bottom: 15px;
     }
+
+    .content pre {
+        padding: 12px;
+        margin: 12px 0;
+        font-size: 0.85em;
+        border-radius: 4px;
+    }
+    
+    .content pre code {
+        font-size: 0.85em;
+        line-height: 1.4;
+    }
+    
+    /* 改进移动端的滚动条样式 */
+    .content pre::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .content pre::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }
+    
+    .content pre::-webkit-scrollbar-track {
+        background: #f0f0f0;
+    }
 }
 
 /* 针对特小屏幕设备的额外优化 */
 @media (max-width: 375px) {
+    .content pre,
+    .blog-post pre,
+    .chat-bubble pre {
+        padding: 10px;
+        font-size: 0.8em;
+    }
+    
+    .content pre code,
+    .blog-post pre code,
+    .chat-bubble pre code {
+        font-size: 0.8em;
+    }
+    
     #chat-box {
         width: 98%; /* 进一步增加宽度利用空间 */
         padding: 3px;
