@@ -5,8 +5,110 @@
     <link href="https://polly2014.github.io/tags/devops/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-06T00:00:00+00:00</updated>
+    <updated>2025-03-09T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/devops/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands Issue Resolver 集成到 GitHub Actions 教程</title>
+        <published>2025-03-09T00:00:00+00:00</published>
+        <updated>2025-03-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/integrate-openhands-issue-resolver-into-github-actions/" type="text/html"/>
+        <id>https://polly2014.github.io/integrate-openhands-issue-resolver-into-github-actions/</id>
+        
+        <content type="html">&lt;p&gt;OpenHands Issue Resolver是一个强大的工具，可以帮助开发者自动化问题的解决过程。通过GitHub Actions的集成，您可以在每次提交代码时自动运行它，从而提高开发效率。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhun-bei-gong-zuo&quot;&gt;准备工作&lt;&#x2F;h2&gt;
+&lt;p&gt;在开始之前，请确保您已经完成以下准备工作：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;拥有一个GitHub仓库。&lt;&#x2F;li&gt;
+&lt;li&gt;确保仓库中启用了GitHub Actions。&lt;&#x2F;li&gt;
+&lt;li&gt;确保您有权限编辑仓库的&lt;code&gt;.github&#x2F;workflows&lt;&#x2F;code&gt;目录。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;pei-zhi-bu-zou&quot;&gt;配置步骤&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-bu-chuang-jian-github-actionsgong-zuo-liu-wen-jian&quot;&gt;第一步：创建GitHub Actions工作流文件&lt;&#x2F;h3&gt;
+&lt;p&gt;在您的仓库中，导航到&lt;code&gt;.github&#x2F;workflows&lt;&#x2F;code&gt;目录。如果该目录不存在，请创建一个。&lt;&#x2F;p&gt;
+&lt;p&gt;在该目录下，新建一个名为&lt;code&gt;openhands-resolver.yml&lt;&#x2F;code&gt;的文件，并添加以下内容：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Resolve Issue with OpenHands
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;issues&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;labeled&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pull_request&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;labeled&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;issue_comment&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;created&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pull_request_review_comment&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;created&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pull_request_review&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;submitted&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;permissions&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contents&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;write
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pull-requests&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;write
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;issues&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;write
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jobs&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call-openhands-resolver&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;All-Hands-AI&#x2F;OpenHands&#x2F;.github&#x2F;workflows&#x2F;openhands-resolver.yml@main
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;with&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;macro&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ vars.OPENHANDS_MACRO || &amp;#39;@openhands-agent&amp;#39; }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_iterations&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ fromJson(vars.OPENHANDS_MAX_ITER || 50) }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;base_container_image&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ vars.OPENHANDS_BASE_CONTAINER_IMAGE || &amp;#39;&amp;#39; }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LLM_MODEL&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ vars.LLM_MODEL || &amp;#39;azure&#x2F;gpt-4o&amp;#39; }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_branch&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ vars.TARGET_BRANCH || &amp;#39;dev&amp;#39; }}
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;secrets&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PAT_TOKEN&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.OPENHANDS_RESOLVER_TOKEN }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PAT_USERNAME&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.OPENHANDS_RESOLVER_USERNAME }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LLM_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.LLM_API_KEY }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LLM_BASE_URL&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.LLM_BASE_URL }}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-er-bu-pei-zhi-repo-quan-xian&quot;&gt;第二步，配置 Repo 权限&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;依次点击 &lt;code&gt;Settings -&amp;gt; Actions -&amp;gt; Genral -&amp;gt; Workflow permissions&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;勾选 &lt;code&gt;Read and write permissions&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;勾选 &lt;code&gt;Allow Github Actions to create and approve pull requests&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;di-san-bu-pei-zhi-github-secrets&quot;&gt;第三步：配置 GitHub Secrets&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;打开 &lt;a href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;actions&#x2F;security-for-github-actions&#x2F;security-guides&#x2F;using-secrets-in-github-actions&quot;&gt;GitHub Secrets&lt;&#x2F;a&gt;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;必须项： &lt;code&gt;LLM_API_KEY&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;可选项： &lt;code&gt;OPENHANDS_RESOLVER_TOKEN&lt;&#x2F;code&gt;, &lt;code&gt;OPENHANDS_RESOLVER_USERNAME&lt;&#x2F;code&gt;, &lt;code&gt;LLM_BASE_URL&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;为了让 OpenHands Issue Resolver 能够访问您的GitHub仓库，您需要配置&lt;code&gt;GITHUB_TOKEN&lt;&#x2F;code&gt;。幸运的是，GitHub 会自动为每个工作流运行提供一个&lt;code&gt;GITHUB_TOKEN&lt;&#x2F;code&gt;，您无需手动设置。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-si-bu-yan-zheng-pei-zhi&quot;&gt;第四步：验证配置&lt;&#x2F;h3&gt;
+&lt;p&gt;完成上述步骤后，提交并推送更改到您的仓库。即通过如下步骤触发 OpenHands Issue Resolver 工作流运行：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;在 Repo 中创建新的 Issue。&lt;&#x2F;li&gt;
+&lt;li&gt;给 Issue 添加 &lt;code&gt;fix-me&lt;&#x2F;code&gt; 的标签，或者在 Issue 的评论区 &lt;code&gt;@openhands-agent&lt;&#x2F;code&gt;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;fix-me&lt;&#x2F;code&gt; 标签， Agent 会基于所有的留言进行处理。&lt;&#x2F;li&gt;
+&lt;li&gt;使用 &lt;code&gt;@openhands-agent&lt;&#x2F;code&gt;， Agent进针对所处的留言帖子进行处理。
+&lt;img src=&quot;GtiHub_Issue_Creation.png&quot; alt=&quot;GitHub Issue Creation&quot; class=&quot;blog-image&quot;&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;Openhands Agent自动被触发，即可通过 Agent生成的新评论或在 GitHub Repo 的 “Actions” 选项卡中查看工作流的运行状态。
+&lt;img src=&quot;GitHub_Actions_001.png&quot; alt=&quot;GitHub Actions&quot; class=&quot;blog-image&quot;&gt;
+&lt;img src=&quot;GitHub_Actions_002.png&quot; alt=&quot;GitHub Actions&quot; class=&quot;blog-image&quot;&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;OpenHands完成工作，并生成了新的PR，可人工进行review, merge
+&lt;img src=&quot;GitHub_Issue_PR.png&quot; alt=&quot;GitHub Issue PR&quot; class=&quot;blog-image&quot;&gt;
+&lt;img src=&quot;GitHub_Issue_Finished.png&quot; alt=&quot;GitHub Issue Finished&quot; class=&quot;blog-image&quot;&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;然后如果一切正常，您将看到OpenHands Issue Resolver成功运行的日志。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;can-kao-zi-liao&quot;&gt;参考资料&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.all-hands.dev&#x2F;modules&#x2F;usage&#x2F;how-to&#x2F;github-action&quot;&gt;OpenHands GitHub Action使用文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;All-Hands-AI&#x2F;OpenHands&#x2F;blob&#x2F;main&#x2F;openhands&#x2F;resolver&#x2F;README.md&quot;&gt;OpenHands Issue Resolver README&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过以上步骤，您已经成功将OpenHands Issue Resolver集成到GitHub Actions中。现在，您可以享受自动化问题解决带来的便利了！&lt;&#x2F;p&gt;
+&lt;p&gt;如果您在配置过程中遇到任何问题，可随时在评论区下方留言。希望这篇文章对您有所帮助！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>OpenHands Backend Server Setup and Deployment with SSL</title>
         <published>2025-03-06T00:00:00+00:00</published>
