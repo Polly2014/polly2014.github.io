@@ -1,0 +1,219 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>OpenHands 多账户方案（二）: Nginx 反向代理与动态容器管理</h1><div class=content><h1 id=shi-yong-nginxshi-xian-duo-yong-hu-openhandsshi-li-dong-tai-fen-pei-fang-an>使用Nginx实现多用户OpenHands实例动态分配方案</h1><p>在本文中，我将介绍如何设计和实现一套系统，为每个登录用户自动分配独立的OpenHands实例，确保用户数据和计算资源的隔离。<h2 id=bei-jing>背景</h2><p>传统的方案通常是预先创建固定数量的OpenHands实例，并通过Nginx进行路由。然而，这种方式缺乏灵活性，无法根据实际需求动态扩展。我们需要一个更智能的系统，可以在用户登录时按需分配资源，并在不使用时释放资源。<h2 id=jia-gou-gai-shu>架构概述</h2><p>我们的动态实例分配系统包括三个核心组件：<ol><li><strong>前端登录系统</strong> - 处理用户身份验证<li><strong>实例管理服务</strong> - 负责创建和分配OpenHands实例<li><strong>反向代理系统</strong> - 将用户请求路由到其专属实例</ol><p><img alt="Multi Tenant Frontend Design" src=https://polly2014.github.io/openhands-multi-accounts-frontend-design/Multi-Tenant-Frontend-Design.png><h2 id=shi-xian-bu-zou-xiang-jie>实现步骤详解</h2><h3 id=1-chuang-jian-shi-li-guan-li-fu-wu>1. 创建实例管理服务</h3><p>实例管理服务负责处理用户登录请求，为每个用户分配和管理独立的OpenHands实例。<pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#b48ead>const </span><span style=color:#bf616a>express </span><span>= </span><span style=color:#96b5b4>require</span><span>('</span><span style=color:#a3be8c>express</span><span>');
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>session </span><span>= </span><span style=color:#96b5b4>require</span><span>('</span><span style=color:#a3be8c>express-session</span><span>');
+</span><span style=color:#b48ead>const </span><span>{ </span><span style=color:#bf616a>exec </span><span>} = </span><span style=color:#96b5b4>require</span><span>('</span><span style=color:#a3be8c>child_process</span><span>');
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>fs </span><span>= </span><span style=color:#96b5b4>require</span><span>('</span><span style=color:#a3be8c>fs</span><span>');
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>path </span><span>= </span><span style=color:#96b5b4>require</span><span>('</span><span style=color:#a3be8c>path</span><span>');
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>app </span><span>= </span><span style=color:#8fa1b3>express</span><span>();
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>port </span><span>= </span><span style=color:#d08770>4000</span><span>;
+</span><span>
+</span><span style=color:#65737e>// 用户会话管理
+</span><span style=color:#bf616a>app</span><span>.</span><span style=color:#8fa1b3>use</span><span>(</span><span style=color:#8fa1b3>session</span><span>({
+</span><span>  secret: '</span><span style=color:#a3be8c>your-secret-key</span><span>',
+</span><span>  resave: </span><span style=color:#d08770>false</span><span>,
+</span><span>  saveUninitialized: </span><span style=color:#d08770>true</span><span>,
+</span><span>  cookie: { secure: </span><span style=color:#d08770>true </span><span>}
+</span><span>}));
+</span><span>
+</span><span style=color:#bf616a>app</span><span>.</span><span style=color:#8fa1b3>use</span><span>(</span><span style=color:#bf616a>express</span><span>.</span><span style=color:#8fa1b3>json</span><span>());
+</span><span style=color:#bf616a>app</span><span>.</span><span style=color:#8fa1b3>use</span><span>(</span><span style=color:#bf616a>express</span><span>.</span><span style=color:#8fa1b3>urlencoded</span><span>({ extended: </span><span style=color:#d08770>true </span><span>}));
+</span><span>
+</span><span style=color:#65737e>// 存储用户实例信息
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>userInstances </span><span>= {};
+</span><span style=color:#b48ead>let </span><span style=color:#bf616a>nextPort </span><span>= </span><span style=color:#d08770>3001</span><span>; </span><span style=color:#65737e>// 起始端口号
+</span><span>
+</span><span style=color:#65737e>// 用户登录处理
+</span><span style=color:#bf616a>app</span><span>.</span><span style=color:#8fa1b3>post</span><span>('</span><span style=color:#a3be8c>/login</span><span>', </span><span style=color:#b48ead>async </span><span>(</span><span style=color:#bf616a>req</span><span>, </span><span style=color:#bf616a>res</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>  </span><span style=color:#b48ead>const </span><span>{ </span><span style=color:#bf616a>username</span><span>, </span><span style=color:#bf616a>password </span><span>} = </span><span style=color:#bf616a>req</span><span>.body;
+</span><span>  
+</span><span>  </span><span style=color:#65737e>// 实际应用中应有真实的用户验证逻辑
+</span><span>  
+</span><span>  </span><span style=color:#65737e>// 检查用户是否已有实例
+</span><span>  </span><span style=color:#b48ead>if </span><span>(!</span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>]) {
+</span><span>    </span><span style=color:#65737e>// 分配新实例
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>instancePort </span><span>= </span><span style=color:#bf616a>nextPort</span><span>++;
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>try </span><span>{
+</span><span>      </span><span style=color:#65737e>// 启动新的OpenHands实例
+</span><span>      </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>startNewInstance</span><span>(</span><span style=color:#bf616a>username</span><span>, </span><span style=color:#bf616a>instancePort</span><span>);
+</span><span>      
+</span><span>      </span><span style=color:#65737e>// 记录用户实例信息
+</span><span>      </span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>] = {
+</span><span>        port: </span><span style=color:#bf616a>instancePort</span><span>,
+</span><span>        path: `</span><span style=color:#a3be8c>/user/${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>}</span><span>`,
+</span><span>        lastAccess: </span><span style=color:#ebcb8b>Date</span><span>.</span><span style=color:#8fa1b3>now</span><span>()
+</span><span>      };
+</span><span>      
+</span><span>      </span><span style=color:#65737e>// 更新Nginx配置
+</span><span>      </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>updateNginxConfig</span><span>();
+</span><span>    } </span><span style=color:#b48ead>catch </span><span>(</span><span style=color:#bf616a>error</span><span>) {
+</span><span>      </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>error</span><span>(`</span><span style=color:#a3be8c>启动实例失败: ${</span><span style=color:#bf616a>error</span><span style=color:#a3be8c>.</span><span style=color:#bf616a>message</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>      </span><span style=color:#b48ead>return </span><span style=color:#bf616a>res</span><span>.</span><span style=color:#8fa1b3>status</span><span>(</span><span style=color:#d08770>500</span><span>).</span><span style=color:#8fa1b3>json</span><span>({ error: '</span><span style=color:#a3be8c>无法启动您的实例</span><span>' });
+</span><span>    }
+</span><span>  }
+</span><span>  
+</span><span>  </span><span style=color:#65737e>// 设置用户会话
+</span><span>  </span><span style=color:#bf616a>req</span><span>.</span><span style=color:#bf616a>session</span><span>.</span><span style=color:#bf616a>username </span><span>= </span><span style=color:#bf616a>username</span><span>;
+</span><span>  </span><span style=color:#bf616a>req</span><span>.</span><span style=color:#bf616a>session</span><span>.</span><span style=color:#bf616a>instancePath </span><span>= </span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>].</span><span style=color:#bf616a>path</span><span>;
+</span><span>  
+</span><span>  </span><span style=color:#65737e>// 重定向到用户的实例
+</span><span>  </span><span style=color:#bf616a>res</span><span>.</span><span style=color:#8fa1b3>redirect</span><span>(</span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>].</span><span style=color:#bf616a>path</span><span>);
+</span><span>});
+</span><span>
+</span><span style=color:#65737e>// 其他核心功能代码...
+</span></code></pre><ol start=2><li>实现实例启动和管理 为每个用户启动独立的OpenHands实例，并管理它们的生命周期：</ol><pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// 启动新实例的函数
+</span><span style=color:#b48ead>function </span><span style=color:#8fa1b3>startNewInstance</span><span>(</span><span style=color:#bf616a>username</span><span>, </span><span style=color:#bf616a>port</span><span>) {
+</span><span>  </span><span style=color:#b48ead>return </span><span>new Promise((</span><span style=color:#bf616a>resolve</span><span>, </span><span style=color:#bf616a>reject</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>    </span><span style=color:#65737e>// 创建用户专属的配置目录
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>userConfigDir </span><span>= </span><span style=color:#bf616a>path</span><span>.</span><span style=color:#96b5b4>join</span><span>(__dirname, '</span><span style=color:#a3be8c>user_configs</span><span>', </span><span style=color:#bf616a>username</span><span>);
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>if </span><span>(!</span><span style=color:#bf616a>fs</span><span>.</span><span style=color:#8fa1b3>existsSync</span><span>(</span><span style=color:#bf616a>userConfigDir</span><span>)) {
+</span><span>      </span><span style=color:#bf616a>fs</span><span>.</span><span style=color:#8fa1b3>mkdirSync</span><span>(</span><span style=color:#bf616a>userConfigDir</span><span>, { recursive: </span><span style=color:#d08770>true </span><span>});
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#65737e>// 启动Docker容器
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>cmd </span><span>= `</span><span style=color:#a3be8c>docker run -d --name openhands-${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>} -p ${</span><span style=color:#bf616a>port</span><span style=color:#a3be8c>}:3000 -v ${</span><span style=color:#bf616a>userConfigDir</span><span style=color:#a3be8c>}:/app/config openhands-image</span><span>`;
+</span><span>    
+</span><span>    </span><span style=color:#8fa1b3>exec</span><span>(</span><span style=color:#bf616a>cmd</span><span>, (</span><span style=color:#bf616a>error</span><span>, </span><span style=color:#bf616a>stdout</span><span>, </span><span style=color:#bf616a>stderr</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>      </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>error</span><span>) {
+</span><span>        </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>error</span><span>(`</span><span style=color:#a3be8c>执行错误: ${</span><span style=color:#bf616a>error</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#8fa1b3>reject</span><span>(</span><span style=color:#bf616a>error</span><span>);
+</span><span>      }
+</span><span>      </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>log</span><span>(`</span><span style=color:#a3be8c>实例已启动，端口: ${</span><span style=color:#bf616a>port</span><span style=color:#a3be8c>}, 输出: ${</span><span style=color:#bf616a>stdout</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>      </span><span style=color:#8fa1b3>resolve</span><span>();
+</span><span>    });
+</span><span>  });
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>// 定期清理不活跃的实例
+</span><span style=color:#96b5b4>setInterval</span><span>(() </span><span style=color:#b48ead>=> </span><span>{
+</span><span>  </span><span style=color:#b48ead>const </span><span style=color:#bf616a>now </span><span>= </span><span style=color:#ebcb8b>Date</span><span>.</span><span style=color:#8fa1b3>now</span><span>();
+</span><span>  </span><span style=color:#b48ead>const </span><span style=color:#bf616a>inactivityPeriod </span><span>= </span><span style=color:#d08770>2 </span><span>* </span><span style=color:#d08770>60 </span><span>* </span><span style=color:#d08770>60 </span><span>* </span><span style=color:#d08770>1000</span><span>; </span><span style=color:#65737e>// 2小时
+</span><span>  
+</span><span>  </span><span style=color:#ebcb8b>Object</span><span>.</span><span style=color:#96b5b4>keys</span><span>(</span><span style=color:#bf616a>userInstances</span><span>).</span><span style=color:#96b5b4>forEach</span><span>(</span><span style=color:#bf616a>username </span><span style=color:#b48ead>=> </span><span>{
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>instance </span><span>= </span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>];
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>now </span><span>- </span><span style=color:#bf616a>instance</span><span>.</span><span style=color:#bf616a>lastAccess </span><span>> </span><span style=color:#bf616a>inactivityPeriod</span><span>) {
+</span><span>      </span><span style=color:#65737e>// 停止实例
+</span><span>      </span><span style=color:#8fa1b3>exec</span><span>(`</span><span style=color:#a3be8c>docker stop openhands-${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>} && docker rm openhands-${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>}</span><span>`, () </span><span style=color:#b48ead>=> </span><span>{
+</span><span>        </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>log</span><span>(`</span><span style=color:#a3be8c>已停止不活跃实例: ${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>        delete </span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>];
+</span><span>        </span><span style=color:#65737e>// 更新Nginx配置
+</span><span>        </span><span style=color:#8fa1b3>updateNginxConfig</span><span>().</span><span style=color:#96b5b4>catch</span><span>(</span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>error</span><span>);
+</span><span>      });
+</span><span>    }
+</span><span>  });
+</span><span>}, </span><span style=color:#d08770>15 </span><span>* </span><span style=color:#d08770>60 </span><span>* </span><span style=color:#d08770>1000</span><span>); </span><span style=color:#65737e>// 每15分钟检查一次
+</span></code></pre><ol start=3><li>动态更新Nginx配置 系统能够动态更新Nginx配置，确保每个用户请求都被正确路由到其专属实例：</ol><pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// 更新Nginx配置
+</span><span style=color:#b48ead>function </span><span style=color:#8fa1b3>updateNginxConfig</span><span>() {
+</span><span>  </span><span style=color:#b48ead>return </span><span>new Promise((</span><span style=color:#bf616a>resolve</span><span>, </span><span style=color:#bf616a>reject</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>    </span><span style=color:#b48ead>let </span><span style=color:#bf616a>nginxConfig </span><span>= `
+</span><span style=color:#a3be8c>server {
+</span><span style=color:#a3be8c>    listen 80;
+</span><span style=color:#a3be8c>    server_name aicoder.westus.cloudapp.azure.com;
+</span><span style=color:#a3be8c>    return 301 https://$host$request_uri;
+</span><span style=color:#a3be8c>}
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>server {
+</span><span style=color:#a3be8c>    listen 443 ssl;
+</span><span style=color:#a3be8c>    server_name aicoder.westus.cloudapp.azure.com;
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>    ssl_certificate /etc/letsencrypt/live/aicoder.westus.cloudapp.azure.com/fullchain.pem;
+</span><span style=color:#a3be8c>    ssl_certificate_key /etc/letsencrypt/live/aicoder.westus.cloudapp.azure.com/privkey.pem;
+</span><span style=color:#a3be8c>    
+</span><span style=color:#a3be8c>    # 认证与实例管理服务
+</span><span style=color:#a3be8c>    location / {
+</span><span style=color:#a3be8c>        proxy_pass http://127.0.0.1:4000;
+</span><span style=color:#a3be8c>        proxy_set_header Host $host;
+</span><span style=color:#a3be8c>        proxy_set_header X-Real-IP $remote_addr;
+</span><span style=color:#a3be8c>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span><span style=color:#a3be8c>        proxy_set_header X-Forwarded-Proto $scheme;
+</span><span style=color:#a3be8c>        proxy_http_version 1.1;
+</span><span style=color:#a3be8c>        proxy_set_header Upgrade $http_upgrade;
+</span><span style=color:#a3be8c>        proxy_set_header Connection "upgrade";
+</span><span style=color:#a3be8c>    }
+</span><span>`;
+</span><span>
+</span><span>    </span><span style=color:#65737e>// 为每个用户添加配置
+</span><span>    </span><span style=color:#ebcb8b>Object</span><span>.</span><span style=color:#96b5b4>keys</span><span>(</span><span style=color:#bf616a>userInstances</span><span>).</span><span style=color:#96b5b4>forEach</span><span>(</span><span style=color:#bf616a>username </span><span style=color:#b48ead>=> </span><span>{
+</span><span>      </span><span style=color:#b48ead>const </span><span style=color:#bf616a>instance </span><span>= </span><span style=color:#bf616a>userInstances</span><span>[</span><span style=color:#bf616a>username</span><span>];
+</span><span>      </span><span style=color:#bf616a>nginxConfig </span><span>+= `
+</span><span style=color:#a3be8c>    # ${</span><span style=color:#bf616a>username</span><span style=color:#a3be8c>}的OpenHands实例
+</span><span style=color:#a3be8c>    location ${</span><span style=color:#bf616a>instance</span><span style=color:#a3be8c>.</span><span style=color:#bf616a>path</span><span style=color:#a3be8c>}/ {
+</span><span style=color:#a3be8c>        proxy_pass http://127.0.0.1:${</span><span style=color:#bf616a>instance</span><span style=color:#a3be8c>.port}/;
+</span><span style=color:#a3be8c>        proxy_set_header Host $host;
+</span><span style=color:#a3be8c>        proxy_set_header X-Real-IP $remote_addr;
+</span><span style=color:#a3be8c>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span><span style=color:#a3be8c>        proxy_set_header X-Forwarded-Proto $scheme;
+</span><span style=color:#a3be8c>        proxy_http_version 1.1;
+</span><span style=color:#a3be8c>        proxy_set_header Upgrade $http_upgrade;
+</span><span style=color:#a3be8c>        proxy_set_header Connection "upgrade";
+</span><span style=color:#a3be8c>        proxy_connect_timeout 60s;
+</span><span style=color:#a3be8c>        proxy_send_timeout 60s;
+</span><span style=color:#a3be8c>        proxy_read_timeout 60s;
+</span><span style=color:#a3be8c>    }
+</span><span>`;
+</span><span>    });
+</span><span>
+</span><span>    </span><span style=color:#bf616a>nginxConfig </span><span>+= `
+</span><span style=color:#a3be8c>}
+</span><span>`;
+</span><span>
+</span><span>    </span><span style=color:#bf616a>fs</span><span>.</span><span style=color:#8fa1b3>writeFile</span><span>('</span><span style=color:#a3be8c>/etc/nginx/sites-available/aicoder</span><span>', </span><span style=color:#bf616a>nginxConfig</span><span>, (</span><span style=color:#bf616a>err</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>      </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>err</span><span>) {
+</span><span>        </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>error</span><span>(`</span><span style=color:#a3be8c>更新Nginx配置失败: ${</span><span style=color:#bf616a>err</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#8fa1b3>reject</span><span>(</span><span style=color:#bf616a>err</span><span>);
+</span><span>      }
+</span><span>      
+</span><span>      </span><span style=color:#65737e>// 重载Nginx配置
+</span><span>      </span><span style=color:#8fa1b3>exec</span><span>('</span><span style=color:#a3be8c>nginx -t && systemctl reload nginx</span><span>', (</span><span style=color:#bf616a>error</span><span>) </span><span style=color:#b48ead>=> </span><span>{
+</span><span>        </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>error</span><span>) {
+</span><span>          </span><span style=color:#ebcb8b>console</span><span>.</span><span style=color:#96b5b4>error</span><span>(`</span><span style=color:#a3be8c>重载Nginx失败: ${</span><span style=color:#bf616a>error</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>          </span><span style=color:#b48ead>return </span><span style=color:#8fa1b3>reject</span><span>(</span><span style=color:#bf616a>error</span><span>);
+</span><span>        }
+</span><span>        </span><span style=color:#8fa1b3>resolve</span><span>();
+</span><span>      });
+</span><span>    });
+</span><span>  });
+</span><span>}
+</span></code></pre><ol start=4><li>创建友好的登录界面 为了提供良好的用户体验，我们需要创建一个直观的登录界面：</ol><pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span>&LT!</span><span style=color:#b48ead>DOCTYPE </span><span style=color:#d08770>html</span><span>>
+</span><span><</span><span style=color:#bf616a>html</span><span>>
+</span><span><</span><span style=color:#bf616a>head</span><span>>
+</span><span>    <</span><span style=color:#bf616a>title</span><span>>OpenHands - 登录&LT/</span><span style=color:#bf616a>title</span><span>>
+</span><span>    <</span><span style=color:#bf616a>style</span><span>>
+</span><span>        </span><span style=color:#bf616a>body </span><span>{
+</span><span>            font-family: </span><span style=color:#a3be8c>Arial</span><span>, sans-serif;
+</span><span>            display: flex;
+</span><span>            justify-content: center;
+</span><span>            align-items: center;
+</span><span>            height: </span><span style=color:#d08770>100vh</span><span>;
+</span><span>            margin: </span><span style=color:#d08770>0</span><span>;
+</span><span>            background-color: </span><span style=color:#96b5b4>#f5f5f5</span><span>;
+</span><span>        }
+</span><span>        </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>login-container </span><span>{
+</span><span>            background: white;
+</span><span>            padding: </span><span style=color:#d08770>2rem</span><span>;
+</span><span>            border-radius: </span><span style=color:#d08770>8px</span><span>;
+</span><span>            box-shadow: </span><span style=color:#d08770>0 4px 6px </span><span style=color:#96b5b4>rgba</span><span>(</span><span style=color:#d08770>0</span><span>,</span><span style=color:#d08770>0</span><span>,</span><span style=color:#d08770>0</span><span>,</span><span style=color:#d08770>0.1</span><span>);
+</span><span>            width: </span><span style=color:#d08770>100%</span><span>;
+</span><span>            max-width: </span><span style=color:#d08770>400px</span><span>;
+</span><span>        }
+</span><span>        </span><span style=color:#65737e>/* 更多样式... */
+</span><span>    &LT/</span><span style=color:#bf616a>style</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>head</span><span>>
+</span><span><</span><span style=color:#bf616a>body</span><span>>
+</span><span>    <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>login-container</span><span>">
+</span><span>        <</span><span style=color:#bf616a>h1</span><span>>欢迎使用 OpenHands&LT/</span><span style=color:#bf616a>h1</span><span>>
+</span><span>        <</span><span style=color:#bf616a>form </span><span style=color:#d08770>action</span><span>="</span><span style=color:#a3be8c>/login</span><span>" </span><span style=color:#d08770>method</span><span>="</span><span style=color:#a3be8c>post</span><span>">
+</span><span>            <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>form-group</span><span>">
+</span><span>                <</span><span style=color:#bf616a>label </span><span style=color:#d08770>for</span><span>="</span><span style=color:#a3be8c>username</span><span>">用户名&LT/</span><span style=color:#bf616a>label</span><span>>
+</span><span>                <</span><span style=color:#bf616a>input </span><span style=color:#d08770>type</span><span>="</span><span style=color:#a3be8c>text</span><span>" </span><span style=color:#8fa1b3>id</span><span>="</span><span style=color:#a3be8c>username</span><span>" </span><span style=color:#d08770>name</span><span>="</span><span style=color:#a3be8c>username</span><span>" </span><span style=color:#d08770>required</span><span>>
+</span><span>            &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>            <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>form-group</span><span>">
+</span><span>                <</span><span style=color:#bf616a>label </span><span style=color:#d08770>for</span><span>="</span><span style=color:#a3be8c>password</span><span>">密码&LT/</span><span style=color:#bf616a>label</span><span>>
+</span><span>                <</span><span style=color:#bf616a>input </span><span style=color:#d08770>type</span><span>="</span><span style=color:#a3be8c>password</span><span>" </span><span style=color:#8fa1b3>id</span><span>="</span><span style=color:#a3be8c>password</span><span>" </span><span style=color:#d08770>name</span><span>="</span><span style=color:#a3be8c>password</span><span>" </span><span style=color:#d08770>required</span><span>>
+</span><span>            &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>            <</span><span style=color:#bf616a>button </span><span style=color:#d08770>type</span><span>="</span><span style=color:#a3be8c>submit</span><span>">登录&LT/</span><span style=color:#bf616a>button</span><span>>
+</span><span>        &LT/</span><span style=color:#bf616a>form</span><span>>
+</span><span>    &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>body</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>html</span><span>>
+</span></code></pre><h2 id=xi-tong-you-shi>系统优势</h2><p>我们的动态实例分配系统具有以下优势：<ol><li>资源利用效率高 - 按需分配资源，避免资源浪费<li>用户隔离 - 每个用户都拥有独立的运行环境，确保安全性和稳定性<li>自动资源回收 - 系统会自动清理长时间不活跃的实例<li>可扩展性 - 基础设施可以根据实际用户需求进行扩展<li>一致的用户体验 - 用户每次登录都可以获得相同的环境配置</ol><h2 id=bu-shu-he-wei-hu-zhu-yi-shi-xiang>部署和维护注意事项</h2><p>在实际部署过程中，需要注意以下几点：<h3 id=zi-yuan-guan-li>资源管理</h3><ul><li>设置服务器资源上限，避免过度分配<li>监控系统资源使用情况，及时扩容</ul><h3 id=shu-ju-chi-jiu-hua>数据持久化</h3><ul><li>确保用户数据正确保存到持久化存储<li>实现定期备份机制，防止数据丢失</ul><h3 id=an-quan-xing>安全性</h3><ul><li>加强用户认证系统，可考虑集成OAuth或其他身份验证方式<li>限制每个实例的权限，避免权限逃逸</ul><h3 id=gao-ke-yong-xing>高可用性</h3><ul><li>考虑实例管理服务的冗余部署<li>实现实例状态监控和自动恢复机制</ul><h2 id=jie-yu>结语</h2><p>通过这种动态实例分配方案，我们可以为每个用户提供独立的OpenHands环境，既保证了系统的安全性和稳定性，又实现了资源的高效利用。这种方法特别适合需要为多个用户提供隔离计算环境的场景，如在线编程平台、AI开发环境等。<p>未来，我们可以进一步优化这一系统，例如加入负载均衡机制、跨服务器实例分配等功能，使其更加强大和灵活。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
