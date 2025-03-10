@@ -45,6 +45,10 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 --&gt;
 &lt;h2 id=&quot;yin-yan&quot;&gt;引言&lt;&#x2F;h2&gt;
 &lt;p&gt;随着 AI 在开发工作中的普及，个人化 AI 助手平台 OpenHands 逐渐成为许多开发者的得力工具。然而，由于 OpenHands 基于 Docker 容器环境运行，对非技术人员来说，设置和运行过程可能存在一定门槛。为改善用户体验，我开发了一个 Windows 下的 OpenHands 一键启动工具，实现了环境检测、自动配置和一键部署等功能。本文将详细介绍这个工具的设计思路和实现过程。&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;OpenHands Starter 界面 (点击展开)&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter.png&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gong-neng-xu-qiu-fen-xi&quot;&gt;功能需求分析&lt;&#x2F;h2&gt;
 &lt;p&gt;在开发之前，我首先明确了工具应具备的核心功能：&lt;&#x2F;p&gt;
 &lt;ol&gt;
