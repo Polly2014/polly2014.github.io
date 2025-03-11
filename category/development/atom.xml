@@ -8,7 +8,7 @@
     <updated>2025-03-11T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/category/development/atom.xml</id>
     <entry xml:lang="en">
-        <title>OpenHands Starter V2.0 开发实践</title>
+        <title>OpenHands Starter V2.0 (Windows) 开发实践</title>
         <published>2025-03-11T00:00:00+00:00</published>
         <updated>2025-03-11T00:00:00+00:00</updated>
         <author>
@@ -56,6 +56,10 @@
 &lt;&#x2F;span&gt;&lt;span&gt;└── 主应用界面 (MainWindow)
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;每个模块职责单一，减少耦合性，提高代码可维护性。这种设计能够独立优化各个组件，例如改进Docker命令而不影响UI层。&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;OpenHands Starter v2.0 架构 (点击展开)&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-starter-windows-v2&#x2F;OpenHands_Starter_Architecture.svg&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
 &lt;h2 id=&quot;si-guan-jian-gong-neng-shi-xian&quot;&gt;四、关键功能实现&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;4-1-zhi-neng-xi-tong-jian-ce&quot;&gt;4.1 智能系统检测&lt;&#x2F;h3&gt;
 &lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_run_system_checks&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;):
@@ -74,6 +78,10 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ...更多检查...
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;系统检查是应用最核心的功能之一，通过全面检测用户系统环境，确保满足Docker运行的所有前提条件，为用户提供明确的指导。&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;OpenHands Starter v2.0 检测流程 (点击展开)&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-starter-windows-v2&#x2F;OpenHands_Starter_Workflow.svg&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
 &lt;h3 id=&quot;4-2-dockercao-zuo-feng-zhuang&quot;&gt;4.2 Docker操作封装&lt;&#x2F;h3&gt;
 &lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;start_openhands&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compose_file&lt;&#x2F;span&gt;&lt;span&gt;):
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;启动OpenHands容器&amp;quot;&amp;quot;&amp;quot;
