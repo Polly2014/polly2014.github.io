@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - CodeActAgent</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/codeactagent/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-03-12T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/codeactagent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>深度解析 OpenHands CodeActAgent: 智能代理的核心架构</title>
+        <published>2025-03-12T00:00:00+00:00</published>
+        <updated>2025-03-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-codeactagent-deep-dive/" type="text/html"/>
+        <id>https://polly2014.github.io/openhands-codeactagent-deep-dive/</id>
+        
+        <content type="html">&lt;p&gt;CodeActAgent 是 OpenHands 框架中的核心组件，旨在通过统一的代码操作空间（CodeAct）简化和增强 LLM（大语言模型）代理的功能。本文将详细解析 CodeActAgent 的组成、功能和运作方式，并结合一个具体案例（TODO 应用）展示其工作流程。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;codeactagent-de-he-xin-zu-cheng&quot;&gt;CodeActAgent 的核心组成&lt;&#x2F;h2&gt;
+&lt;p&gt;CodeActAgent 是一个高度模块化的代理，其核心组成部分包括 Profile、Prompt 和 Memory。这些模块共同协作，确保代理能够高效地分解任务、调用工具并与用户交互。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-profile&quot;&gt;1. Profile&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;profile-shi-shi-yao&quot;&gt;Profile 是什么&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Profile&lt;&#x2F;strong&gt; 是 CodeActAgent 的配置文件，定义了代理的行为、工具支持、内存管理等。&lt;&#x2F;li&gt;
+&lt;li&gt;它通过 &lt;code&gt;AgentConfig&lt;&#x2F;code&gt; 类进行配置，包含以下关键参数：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;codeact_enable_browsing&lt;&#x2F;code&gt;：是否启用浏览器工具。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;codeact_enable_jupyter&lt;&#x2F;code&gt;：是否启用 IPython 工具。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;codeact_enable_llm_editor&lt;&#x2F;code&gt;：是否启用基于 LLM 的文件编辑工具。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;condenser&lt;&#x2F;code&gt;：事件压缩器的配置，用于优化内存中的历史记录。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;enable_prompt_extensions&lt;&#x2F;code&gt;：是否启用扩展提示（Prompt）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;profile-de-jie-gou&quot;&gt;Profile 的结构&lt;&#x2F;h4&gt;
+&lt;p&gt;Profile 是一个字典或对象，包含以下关键参数：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;config = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;AgentConfig&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_browsing&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_jupyter&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_llm_editor&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;condenser&lt;&#x2F;span&gt;&lt;span&gt;={&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_events&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;enable_prompt_extensions&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;disabled_microagents&lt;&#x2F;span&gt;&lt;span&gt;=[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;npm&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;github&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;profile-de-zuo-yong&quot;&gt;Profile 的作用&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Profile 决定了 CodeActAgent 的能力范围和行为模式。&lt;&#x2F;li&gt;
+&lt;li&gt;例如：
+&lt;ul&gt;
+&lt;li&gt;如果启用 &lt;code&gt;codeact_enable_browsing&lt;&#x2F;code&gt;，代理可以使用浏览器工具与网页交互。&lt;&#x2F;li&gt;
+&lt;li&gt;如果启用 &lt;code&gt;codeact_enable_jupyter&lt;&#x2F;code&gt;，代理可以运行 Python 代码来完成任务。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h3 id=&quot;2-prompt&quot;&gt;2. Prompt&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;prompt-shi-shi-yao&quot;&gt;Prompt 是什么&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Prompt&lt;&#x2F;strong&gt; 是 CodeActAgent 与 LLM 交互的输入内容，定义了任务的上下文、目标和约束。&lt;&#x2F;li&gt;
+&lt;li&gt;它通过 &lt;code&gt;PromptManager&lt;&#x2F;code&gt; 动态生成，包含以下部分：
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;系统消息&lt;&#x2F;strong&gt;：定义代理的角色和目标。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;用户消息&lt;&#x2F;strong&gt;：用户输入的任务描述。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具调用消息&lt;&#x2F;strong&gt;：代理调用工具的记录。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;观察消息&lt;&#x2F;strong&gt;：工具返回的结果。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;prompt-de-jie-gou&quot;&gt;Prompt 的结构&lt;&#x2F;h4&gt;
+&lt;p&gt;Prompt 是一个消息列表，包含以下类型的消息：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;系统消息&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;plaintext&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-plaintext &quot;&gt;&lt;code class=&quot;language-plaintext&quot; data-lang=&quot;plaintext&quot;&gt;&lt;span&gt;System: You are CodeActAgent, a highly capable assistant designed to perform tasks by executing code and interacting with tools.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;用户消息&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;plaintext&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-plaintext &quot;&gt;&lt;code class=&quot;language-plaintext&quot; data-lang=&quot;plaintext&quot;&gt;&lt;span&gt;User: 创建一个 TODO 应用，支持添加、删除和查看任务。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;工具调用消息&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;plaintext&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-plaintext &quot;&gt;&lt;code class=&quot;language-plaintext&quot; data-lang=&quot;plaintext&quot;&gt;&lt;span&gt;Assistant: Calling tool: execute_ipython_cell
+&lt;&#x2F;span&gt;&lt;span&gt;Tool arguments: {&amp;quot;code&amp;quot;: &amp;quot;tasks = []&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;观察消息&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;plaintext&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-plaintext &quot;&gt;&lt;code class=&quot;language-plaintext&quot; data-lang=&quot;plaintext&quot;&gt;&lt;span&gt;Observation: Tool returned: &amp;quot;Initialized an empty task list.&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;prompt-de-sheng-cheng-luo-ji&quot;&gt;Prompt 的生成逻辑&lt;&#x2F;h4&gt;
+&lt;p&gt;Prompt 的生成是 CodeActAgent 与 LLM 交互的关键步骤，以下是其详细逻辑：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;系统消息初始化&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;CodeActAgent 使用 &lt;code&gt;PromptManager&lt;&#x2F;code&gt; 添加系统消息，定义代理的角色和目标。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;用户消息处理&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户输入的任务描述被添加到消息列表中。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;工具调用与观察消息&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;CodeActAgent 从 &lt;code&gt;ConversationMemory&lt;&#x2F;code&gt; 中提取工具调用记录和观察结果，并将其添加到 Prompt。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;消息增强&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;PromptManager&lt;&#x2F;code&gt; 为用户消息添加上下文信息（如示例或扩展信息）。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h3 id=&quot;3-memory&quot;&gt;3. Memory&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;memory-de-zuo-yong&quot;&gt;Memory 的作用&lt;&#x2F;h4&gt;
+&lt;p&gt;Memory 是 CodeActAgent 的会话内存模块，负责记录代理的对话历史、工具调用记录以及观察结果。它通过 &lt;code&gt;ConversationMemory&lt;&#x2F;code&gt; 和 &lt;code&gt;Condenser&lt;&#x2F;code&gt; 协同工作，确保代理能够在多轮交互中保持上下文一致性。&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;memory-de-jie-gou&quot;&gt;Memory 的结构&lt;&#x2F;h4&gt;
+&lt;p&gt;Memory 包含以下几个关键部分：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;事件历史&lt;&#x2F;strong&gt;：存储所有的动作和观察，完整记录代理的交互过程。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;压缩历史&lt;&#x2F;strong&gt;：通过 &lt;code&gt;Condenser&lt;&#x2F;code&gt; 压缩后的关键事件，优化存储空间并提高检索效率。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;缓存&lt;&#x2F;strong&gt;：用于特定 LLM 的提示缓存，减少重复计算并提高响应速度。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;memory-de-gong-zuo-liu-cheng&quot;&gt;Memory 的工作流程&lt;&#x2F;h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;事件记录&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;每次工具调用或用户交互都会生成一个事件，并存储到事件历史中。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;event = {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_call&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;execute_ipython_cell&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Initialized task list.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;memory.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_event&lt;&#x2F;span&gt;&lt;span&gt;(event)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;事件压缩&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;Condenser&lt;&#x2F;code&gt; 对事件历史进行压缩，提取关键事件以减少冗余。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;condensed_events = memory.condenser.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;condensed_history&lt;&#x2F;span&gt;&lt;span&gt;(state)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;上下文检索&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;在生成 Prompt 时，Memory 提供上下文信息以确保对话的连贯性。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;messages = memory.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;process_events&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;condensed_history&lt;&#x2F;span&gt;&lt;span&gt;=condensed_events)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;zai-todo-ying-yong-zhong-de-zuo-yong&quot;&gt;在 TODO 应用中的作用&lt;&#x2F;h4&gt;
+&lt;p&gt;在实现 TODO 应用时，Memory 的主要作用包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;记录任务分解过程&lt;&#x2F;strong&gt;：存储每个子任务的工具调用记录和结果。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;维护上下文一致性&lt;&#x2F;strong&gt;：确保代理能够根据用户的后续输入调整任务。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;优化交互效率&lt;&#x2F;strong&gt;：通过事件压缩减少冗余信息，提高响应速度。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;memory-shi-shi-yao&quot;&gt;Memory 是什么&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Memory&lt;&#x2F;strong&gt; 是代理的会话内存，用于存储对话历史、工具调用记录和观察结果。&lt;&#x2F;li&gt;
+&lt;li&gt;它通过 &lt;code&gt;ConversationMemory&lt;&#x2F;code&gt; 管理，支持事件压缩和历史记录的动态更新。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;memory-de-jie-gou-1&quot;&gt;Memory 的结构&lt;&#x2F;h4&gt;
+&lt;p&gt;Memory 包含以下部分：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;事件历史&lt;&#x2F;strong&gt;：存储所有的动作和观察。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;压缩历史&lt;&#x2F;strong&gt;：通过 &lt;code&gt;Condenser&lt;&#x2F;code&gt; 压缩后的关键事件。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;缓存&lt;&#x2F;strong&gt;：用于特定 LLM 的提示缓存。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h4 id=&quot;memory-de-zuo-yong-1&quot;&gt;Memory 的作用&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Memory 记录了任务的分解过程和工具调用结果，确保代理能够在多轮对话中保持上下文一致。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jie-he-an-li-shi-xian-yi-ge-todo-ying-yong&quot;&gt;结合案例：实现一个 TODO 应用&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;ren-wu-miao-shu&quot;&gt;任务描述&lt;&#x2F;h3&gt;
+&lt;p&gt;用户输入任务：“创建一个 TODO 应用，支持添加、删除和查看任务。”&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ren-wu-fen-jie&quot;&gt;任务分解&lt;&#x2F;h3&gt;
+&lt;p&gt;CodeActAgent 的任务分解通过与 LLM 的交互实现，以下是具体流程：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;用户输入任务&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户输入任务描述：“创建一个 TODO 应用，支持添加、删除和查看任务。”&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;构建 Prompt&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;CodeActAgent 构建消息列表并发送给 LLM。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;解析 LLM 响应&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;LLM 返回的响应被解析为一系列子任务：
+&lt;ul&gt;
+&lt;li&gt;初始化任务列表。&lt;&#x2F;li&gt;
+&lt;li&gt;实现添加任务功能。&lt;&#x2F;li&gt;
+&lt;li&gt;实现删除任务功能。&lt;&#x2F;li&gt;
+&lt;li&gt;实现查看任务功能。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;zi-ren-wu-fen-fa&quot;&gt;子任务分发&lt;&#x2F;h3&gt;
+&lt;p&gt;CodeActAgent 的子任务分发通过工具调用实现，以下是具体流程：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;工具调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据子任务调用相应的工具（如执行 Python 代码、编辑文件）。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;action = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CmdRunAction&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tasks = []&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;result = action.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;结果存储&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;工具返回的结果被存储为观察消息。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;observation_message = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Message&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;observation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Tool returned: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Initialized an empty task list.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_observation&lt;&#x2F;span&gt;&lt;span&gt;(observation_message)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;反馈给用户&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;CodeActAgent 将工具调用结果反馈给用户。&lt;&#x2F;li&gt;
+&lt;li&gt;示例：&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;final_message = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Message&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;assistant&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;TODO 应用已创建，支持添加、删除和查看任务。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_message&lt;&#x2F;span&gt;&lt;span&gt;(final_message)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wan-zheng-shi-xian-shi-li&quot;&gt;完整实现示例&lt;&#x2F;h2&gt;
+&lt;p&gt;以下是一个完整的实现示例，展示如何使用 CodeActAgent 创建一个 TODO 应用：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openhands.core.config &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;AgentConfig
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openhands.llm.llm &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LLM
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openhands.agenthub.codeact_agent.codeact_agent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;CodeActAgent
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openhands.controller.state.state &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;State
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openhands.core.message &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;Message
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 配置代理
+&lt;&#x2F;span&gt;&lt;span&gt;config = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;AgentConfig&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_browsing&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_jupyter&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;codeact_enable_llm_editor&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;condenser&lt;&#x2F;span&gt;&lt;span&gt;={&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_events&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;enable_prompt_extensions&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;disabled_microagents&lt;&#x2F;span&gt;&lt;span&gt;=[],
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 初始化 LLM 和代理
+&lt;&#x2F;span&gt;&lt;span&gt;llm = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LLM&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model_name&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gpt-4&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;agent = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CodeActAgent&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;llm&lt;&#x2F;span&gt;&lt;span&gt;=llm, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;=config)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创建初始状态
+&lt;&#x2F;span&gt;&lt;span&gt;state = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;State&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 用户输入任务
+&lt;&#x2F;span&gt;&lt;span&gt;user_message = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Message&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;创建一个 TODO 应用，支持添加、删除和查看任务。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_message&lt;&#x2F;span&gt;&lt;span&gt;(user_message)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 构建 Prompt 并与 LLM 交互
+&lt;&#x2F;span&gt;&lt;span&gt;messages = agent.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_get_messages&lt;&#x2F;span&gt;&lt;span&gt;(state)
+&lt;&#x2F;span&gt;&lt;span&gt;response = llm.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;completion&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;=agent.llm.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;format_messages_for_llm&lt;&#x2F;span&gt;&lt;span&gt;(messages))
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 解析 LLM 响应
+&lt;&#x2F;span&gt;&lt;span&gt;actions = agent.tools.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;response_to_actions&lt;&#x2F;span&gt;&lt;span&gt;(response)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 执行子任务
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;action &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;actions:
+&lt;&#x2F;span&gt;&lt;span&gt;    result = action.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    observation_message = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Message&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;observation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Tool returned: &lt;&#x2F;span&gt;&lt;span&gt;{result}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;    state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_observation&lt;&#x2F;span&gt;&lt;span&gt;(observation_message)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 反馈结果
+&lt;&#x2F;span&gt;&lt;span&gt;final_message = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Message&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;assistant&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;TODO 应用已创建，支持添加、删除和查看任务。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_message&lt;&#x2F;span&gt;&lt;span&gt;(final_message)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 输出对话历史
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;msg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;state.history:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;{msg.role}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span&gt;{msg.content}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过上述分析和实现示例，我们可以清晰地了解 CodeActAgent 的 Prompt 和 Profile，以及它们在任务分解和子任务分发中的作用。您可以根据这些信息手动实现一个类似的代理，并根据任务需求动态生成 Prompt 和配置 Profile。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
