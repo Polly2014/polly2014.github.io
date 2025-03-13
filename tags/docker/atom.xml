@@ -134,6 +134,42 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    }
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;12&quot;&gt;
+&lt;li&gt;配置Linux系统服务&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; vim &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl daemon-reload
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 启动服务
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 停止服务
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl stop aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 重启服务
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看服务状态
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl status aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看服务日志
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; journalctl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span&gt; aicoder.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 实时查看日志
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; journalctl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span&gt; aicoder.service&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -f
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;ini&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ini &quot;&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Unit]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Description&lt;&#x2F;span&gt;&lt;span&gt;=AICoder AI Coding Assistant
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;After&lt;&#x2F;span&gt;&lt;span&gt;=network.target
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Service]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Type&lt;&#x2F;span&gt;&lt;span&gt;=simple
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;User&lt;&#x2F;span&gt;&lt;span&gt;=ubuntu
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;WorkingDirectory&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;home&#x2F;ubuntu&#x2F;GitHub_Workspace&#x2F;AICoder
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ExecStart&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;home&#x2F;ubuntu&#x2F;miniforge3&#x2F;envs&#x2F;AICoder&#x2F;bin&#x2F;poetry run uvicorn openhands.server.listen:app --host &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.0.0.0 &lt;&#x2F;span&gt;&lt;span&gt;--port &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3000 &lt;&#x2F;span&gt;&lt;span&gt;--reload-exclude &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;.workspace&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Restart&lt;&#x2F;span&gt;&lt;span&gt;=on-failure
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;RestartSec&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;StandardOutput&lt;&#x2F;span&gt;&lt;span&gt;=journal
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;StandardError&lt;&#x2F;span&gt;&lt;span&gt;=journal
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Environment&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;PATH=home&#x2F;ubuntu&#x2F;miniforge3&#x2F;envs&#x2F;AICoder&#x2F;bin:&#x2F;home&#x2F;ubuntu&#x2F;miniforge3&#x2F;bin:&#x2F;home&#x2F;ubuntu&#x2F;.local&#x2F;bin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;bin:&#x2F;bin&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Install]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;WantedBy&lt;&#x2F;span&gt;&lt;span&gt;=multi-user.target
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;chang-jian-wen-ti-ji-jie-jue-fang-an&quot;&gt;常见问题及解决方案&lt;&#x2F;h2&gt;
 &lt;p&gt;在配置过程中，开发者可能会遇到以下常见问题：&lt;&#x2F;p&gt;
 &lt;ul&gt;
