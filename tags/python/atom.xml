@@ -5,8 +5,158 @@
     <link href="https://polly2014.github.io/tags/python/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-12T00:00:00+00:00</updated>
+    <updated>2025-03-13T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/tags/python/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands 开发环境配置指南</title>
+        <published>2025-03-13T00:00:00+00:00</published>
+        <updated>2025-03-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-development-guidance/" type="text/html"/>
+        <id>https://polly2014.github.io/openhands-development-guidance/</id>
+        
+        <content type="html">&lt;ol&gt;
+&lt;li&gt;安装 Docker&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; apt-transport-https ca-certificates curl software-properties-common
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -fsSL&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu&#x2F;gpg | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; gpg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --dearmor -o&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;docker-archive-keyring.gpg
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deb [arch=&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dpkg --print-architecture&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;) signed-by=&#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;docker-archive-keyring.gpg] https:&#x2F;&#x2F;download.docker.com&#x2F;linux&#x2F;ubuntu &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lsb_release -cs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;) stable&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;apt&#x2F;sources.list.d&#x2F;docker.list &amp;gt; &#x2F;dev&#x2F;null
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; docker-ce docker-ce-cli containerd.io
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;安装 Docker Compose&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; curl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -L &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;docker&#x2F;compose&#x2F;releases&#x2F;download&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; https:&#x2F;&#x2F;api.github.com&#x2F;repos&#x2F;docker&#x2F;compose&#x2F;releases&#x2F;latest &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep -oP &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;tag_name&amp;quot;: &amp;quot;\K[^&amp;quot;]+&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&#x2F;docker-compose-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;usr&#x2F;local&#x2F;bin&#x2F;docker-compose
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; chmod +x &#x2F;usr&#x2F;local&#x2F;bin&#x2F;docker-compose
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;验证安装：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker --version
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-compose --version
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;(Optional) 创建 docker 用户组并加入当前用户，上一步验证失败时运行&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; usermod&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -aG&lt;&#x2F;span&gt;&lt;span&gt; docker $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USER
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;newgrp&lt;&#x2F;span&gt;&lt;span&gt; docker
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart docker
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;安装miniforge3 (python环境)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;wget &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;conda-forge&#x2F;miniforge&#x2F;releases&#x2F;latest&#x2F;download&#x2F;Miniforge3-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;).sh&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bash&lt;&#x2F;span&gt;&lt;span&gt; Miniforge3-$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span&gt;)-$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span&gt;).sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;6&quot;&gt;
+&lt;li&gt;安装NodeJS&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Download and install nvm:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -o-&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;nvm-sh&#x2F;nvm&#x2F;v0.40.1&#x2F;install.sh | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bash
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# in lieu of restarting the shell
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\. &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;HOME&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;.nvm&#x2F;nvm.sh&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Download and install Node.js:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nvm&lt;&#x2F;span&gt;&lt;span&gt; install 22
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Verify the Node.js version:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;node -v &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Should print &amp;quot;v22.14.0&amp;quot;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nvm&lt;&#x2F;span&gt;&lt;span&gt; current &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Should print &amp;quot;v22.14.0&amp;quot;.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Verify npm version:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npm -v &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Should print &amp;quot;10.9.2&amp;quot;.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;7&quot;&gt;
+&lt;li&gt;安装Poetry&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -sSL&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;install.python-poetry.org | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3&lt;&#x2F;span&gt;&lt;span&gt; -
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;8&quot;&gt;
+&lt;li&gt;安装系统依赖&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; build-essential
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;9&quot;&gt;
+&lt;li&gt;非sudo开发配置&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Download and install Mamba (a faster version of conda)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -L -O &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;conda-forge&#x2F;miniforge&#x2F;releases&#x2F;latest&#x2F;download&#x2F;Miniforge3-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)-&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;).sh&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bash&lt;&#x2F;span&gt;&lt;span&gt; Miniforge3-$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span&gt;)-$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uname -m&lt;&#x2F;span&gt;&lt;span&gt;).sh
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Install Python 3.12, nodejs, and poetry
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mamba&lt;&#x2F;span&gt;&lt;span&gt; install python=3.12
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mamba&lt;&#x2F;span&gt;&lt;span&gt; install conda-forge::nodejs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mamba&lt;&#x2F;span&gt;&lt;span&gt; install conda-forge::poetry
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;10&quot;&gt;
+&lt;li&gt;安装nginx与SSL证书&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; nginx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; certbot python3-certbot-nginx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; certbot&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --nginx -d&lt;&#x2F;span&gt;&lt;span&gt; your-domain.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;11&quot;&gt;
+&lt;li&gt;配置nginx&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vim&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;aicoder
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; ln&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -s&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;aicoder &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nginx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart nginx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Nginx配置文件&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nginx&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nginx &quot;&gt;&lt;code class=&quot;language-nginx&quot; data-lang=&quot;nginx&quot;&gt;&lt;span&gt;server {
+&lt;&#x2F;span&gt;&lt;span&gt;    listen 80;
+&lt;&#x2F;span&gt;&lt;span&gt;    server_name localhost;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    # 反向代理到 OpenHands 后端服务
+&lt;&#x2F;span&gt;&lt;span&gt;    location &#x2F; {
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_pass http:&#x2F;&#x2F;127.0.0.1:3000; # OpenHands 后端服务的地址和端口
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header Host $host;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Real-IP $remote_addr;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header X-Forwarded-Proto $scheme;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        # WebSocket 支持配置
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_http_version 1.1;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header Upgrade $http_upgrade;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_set_header Connection &amp;quot;upgrade&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;        proxy_read_timeout 86400; # 保持连接时间更长
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        # 解决 CORS 问题
+&lt;&#x2F;span&gt;&lt;span&gt;        add_header Access-Control-Allow-Origin *;
+&lt;&#x2F;span&gt;&lt;span&gt;        add_header Access-Control-Allow-Methods &amp;#39;GET, POST, OPTIONS&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;        add_header Access-Control-Allow-Headers &amp;#39;Content-Type, Authorization&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;chang-jian-wen-ti-ji-jie-jue-fang-an&quot;&gt;常见问题及解决方案&lt;&#x2F;h2&gt;
+&lt;p&gt;在配置过程中，开发者可能会遇到以下常见问题：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;端口权限问题：非 root 用户无法绑定 1024 以下端口，请使用 Nginx 代理或 setcap 命令解决&lt;&#x2F;li&gt;
+&lt;li&gt;WebSocket 连接失败：确保 Nginx 配置中包含完整的 WebSocket 支持参数&lt;&#x2F;li&gt;
+&lt;li&gt;Python 依赖冲突：使用虚拟环境和 Poetry 进行隔离管理&lt;&#x2F;li&gt;
+&lt;li&gt;Docker 权限问题：将用户添加到 docker 用户组，避免频繁使用 sudo&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;本指南详细介绍了配置 OpenHands 开发环境的完整流程，从基础依赖安装到服务部署和网络配置。通过以上步骤，您可以在本地或服务器上搭建一个完整的 OpenHands 开发环境，为 AI 辅助编程工具的开发和使用提供坚实基础。&lt;&#x2F;p&gt;
+&lt;p&gt;主要配置包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Docker 环境：安装 Docker 和 Docker Compose，为容器化开发和部署提供支持&lt;&#x2F;li&gt;
+&lt;li&gt;Python 环境：使用 Miniforge3 配置 Python 运行环境，支持不同 Python 版本的开发需求&lt;&#x2F;li&gt;
+&lt;li&gt;Node.js 环境：安装 Node.js 以支持前端开发和 JavaScript 工具链&lt;&#x2F;li&gt;
+&lt;li&gt;依赖管理工具：集成 Poetry 实现 Python 依赖的精确管理&lt;&#x2F;li&gt;
+&lt;li&gt;网络服务配置：通过 Nginx 设置反向代理，实现 OpenHands 的 HTTP 和 WebSocket 服务访问&lt;&#x2F;li&gt;
+&lt;li&gt;安全配置：包含 SSL 证书申请和配置，确保服务通信安全&lt;&#x2F;li&gt;
+&lt;li&gt;对于开发者而言，这套配置不仅适用于 OpenHands 项目，也可作为其他 AI 工具和 Web 应用开发环境的参考。随着 AI 编程助手的快速发展，掌握这些环境配置技能将有助于开发者更好地参与到相关项目中，创建和优化自己的 AI 辅助工具。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>深度解析 OpenHands CodeActAgent: 智能代理的核心架构</title>
         <published>2025-03-12T00:00:00+00:00</published>

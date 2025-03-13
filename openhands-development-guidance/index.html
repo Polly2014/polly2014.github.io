@@ -1,0 +1,72 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>OpenHands 开发环境配置指南</h1><div class=content><ol><li>安装 Docker</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> apt-transport-https ca-certificates curl software-properties-common
+</span><span style=color:#bf616a>curl -fsSL</span><span> https://download.docker.com/linux/ubuntu/gpg | </span><span style=color:#bf616a>sudo</span><span> gpg</span><span style=color:#bf616a> --dearmor -o</span><span> /usr/share/keyrings/docker-archive-keyring.gpg
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>deb [arch=</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>dpkg --print-architecture</span><span style=color:#a3be8c>) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu </span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>lsb_release -cs</span><span style=color:#a3be8c>) stable</span><span>" | </span><span style=color:#bf616a>sudo</span><span> tee /etc/apt/sources.list.d/docker.list > /dev/null
+</span><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> docker-ce docker-ce-cli containerd.io
+</span></code></pre><ol start=2><li>安装 Docker Compose</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> curl</span><span style=color:#bf616a> -L </span><span>"</span><span style=color:#a3be8c>https://github.com/docker/compose/releases/download/</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>curl -s</span><span style=color:#a3be8c> https://api.github.com/repos/docker/compose/releases/latest </span><span>| </span><span style=color:#bf616a>grep -oP </span><span>'</span><span style=color:#a3be8c>"tag_name": "\K[^"]+</span><span>'</span><span style=color:#a3be8c>)/docker-compose-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -s</span><span style=color:#a3be8c>)-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -m</span><span style=color:#a3be8c>)</span><span>"</span><span style=color:#bf616a> -o</span><span> /usr/local/bin/docker-compose
+</span><span style=color:#bf616a>sudo</span><span> chmod +x /usr/local/bin/docker-compose
+</span></code></pre><ol start=3><li>验证安装：</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker --version
+</span><span style=color:#bf616a>docker-compose --version
+</span></code></pre><ol start=4><li>(Optional) 创建 docker 用户组并加入当前用户，上一步验证失败时运行</ol><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sudo</span><span> usermod</span><span style=color:#bf616a> -aG</span><span> docker $</span><span style=color:#bf616a>USER
+</span><span style=color:#bf616a>newgrp</span><span> docker
+</span><span style=color:#bf616a>sudo</span><span> systemctl restart docker
+</span></code></pre><ol start=5><li>安装miniforge3 (python环境)</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#bf616a>wget </span><span>"</span><span style=color:#a3be8c>https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname</span><span style=color:#a3be8c>)-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -m</span><span style=color:#a3be8c>).sh</span><span>"
+</span><span style=color:#bf616a>bash</span><span> Miniforge3-$(</span><span style=color:#bf616a>uname</span><span>)-$(</span><span style=color:#bf616a>uname -m</span><span>).sh
+</span></code></pre><ol start=6><li>安装NodeJS</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#65737e># Download and install nvm:
+</span><span style=color:#bf616a>curl -o-</span><span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | </span><span style=color:#bf616a>bash
+</span><span>
+</span><span style=color:#65737e># in lieu of restarting the shell
+</span><span style=color:#96b5b4>\. </span><span>"$</span><span style=color:#bf616a>HOME</span><span style=color:#a3be8c>/.nvm/nvm.sh</span><span>"
+</span><span>
+</span><span style=color:#65737e># Download and install Node.js:
+</span><span style=color:#bf616a>nvm</span><span> install 22
+</span><span>
+</span><span style=color:#65737e># Verify the Node.js version:
+</span><span style=color:#bf616a>node -v </span><span style=color:#65737e># Should print "v22.14.0".
+</span><span style=color:#bf616a>nvm</span><span> current </span><span style=color:#65737e># Should print "v22.14.0".
+</span><span>
+</span><span style=color:#65737e># Verify npm version:
+</span><span style=color:#bf616a>npm -v </span><span style=color:#65737e># Should print "10.9.2".
+</span></code></pre><ol start=7><li>安装Poetry</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#bf616a>curl -sSL</span><span> https://install.python-poetry.org | </span><span style=color:#bf616a>python3</span><span> -
+</span></code></pre><ol start=8><li>安装系统依赖</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#bf616a>sudo</span><span> apt-get install</span><span style=color:#bf616a> -y</span><span> build-essential
+</span></code></pre><ol start=9><li>非sudo开发配置</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#65737e># Download and install Mamba (a faster version of conda)
+</span><span style=color:#bf616a>curl -L -O </span><span>"</span><span style=color:#a3be8c>https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname</span><span style=color:#a3be8c>)-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -m</span><span style=color:#a3be8c>).sh</span><span>"
+</span><span style=color:#bf616a>bash</span><span> Miniforge3-$(</span><span style=color:#bf616a>uname</span><span>)-$(</span><span style=color:#bf616a>uname -m</span><span>).sh
+</span><span>
+</span><span style=color:#65737e># Install Python 3.12, nodejs, and poetry
+</span><span style=color:#bf616a>mamba</span><span> install python=3.12
+</span><span style=color:#bf616a>mamba</span><span> install conda-forge::nodejs
+</span><span style=color:#bf616a>mamba</span><span> install conda-forge::poetry
+</span></code></pre><ol start=10><li>安装nginx与SSL证书</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#bf616a>sudo</span><span> apt-get install</span><span style=color:#bf616a> -y</span><span> nginx
+</span><span style=color:#bf616a>sudo</span><span> apt-get install</span><span style=color:#bf616a> -y</span><span> certbot python3-certbot-nginx
+</span><span style=color:#bf616a>sudo</span><span> certbot</span><span style=color:#bf616a> --nginx -d</span><span> your-domain.com
+</span></code></pre><ol start=11><li>配置nginx</ol><pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#bf616a>vim</span><span> /etc/nginx/sites-available/aicoder
+</span><span style=color:#bf616a>sudo</span><span> ln</span><span style=color:#bf616a> -s</span><span> /etc/nginx/sites-available/aicoder /etc/nginx/sites-enabled/
+</span><span style=color:#bf616a>sudo</span><span> nginx</span><span style=color:#bf616a> -t
+</span><span style=color:#bf616a>sudo</span><span> systemctl restart nginx
+</span></code></pre><p>Nginx配置文件<pre class=language-nginx data-lang=nginx style=background:#2b303b;color:#c0c5ce><code class=language-nginx data-lang=nginx><span>server {
+</span><span>    listen 80;
+</span><span>    server_name localhost;
+</span><span>
+</span><span>    # 反向代理到 OpenHands 后端服务
+</span><span>    location / {
+</span><span>        proxy_pass http://127.0.0.1:3000; # OpenHands 后端服务的地址和端口
+</span><span>        proxy_set_header Host $host;
+</span><span>        proxy_set_header X-Real-IP $remote_addr;
+</span><span>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span><span>        proxy_set_header X-Forwarded-Proto $scheme;
+</span><span>
+</span><span>        # WebSocket 支持配置
+</span><span>        proxy_http_version 1.1;
+</span><span>        proxy_set_header Upgrade $http_upgrade;
+</span><span>        proxy_set_header Connection "upgrade";
+</span><span>        proxy_read_timeout 86400; # 保持连接时间更长
+</span><span>
+</span><span>        # 解决 CORS 问题
+</span><span>        add_header Access-Control-Allow-Origin *;
+</span><span>        add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+</span><span>        add_header Access-Control-Allow-Headers 'Content-Type, Authorization';
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=chang-jian-wen-ti-ji-jie-jue-fang-an>常见问题及解决方案</h2><p>在配置过程中，开发者可能会遇到以下常见问题：<ul><li>端口权限问题：非 root 用户无法绑定 1024 以下端口，请使用 Nginx 代理或 setcap 命令解决<li>WebSocket 连接失败：确保 Nginx 配置中包含完整的 WebSocket 支持参数<li>Python 依赖冲突：使用虚拟环境和 Poetry 进行隔离管理<li>Docker 权限问题：将用户添加到 docker 用户组，避免频繁使用 sudo</ul><h2 id=zong-jie>总结</h2><p>本指南详细介绍了配置 OpenHands 开发环境的完整流程，从基础依赖安装到服务部署和网络配置。通过以上步骤，您可以在本地或服务器上搭建一个完整的 OpenHands 开发环境，为 AI 辅助编程工具的开发和使用提供坚实基础。<p>主要配置包括：<ul><li>Docker 环境：安装 Docker 和 Docker Compose，为容器化开发和部署提供支持<li>Python 环境：使用 Miniforge3 配置 Python 运行环境，支持不同 Python 版本的开发需求<li>Node.js 环境：安装 Node.js 以支持前端开发和 JavaScript 工具链<li>依赖管理工具：集成 Poetry 实现 Python 依赖的精确管理<li>网络服务配置：通过 Nginx 设置反向代理，实现 OpenHands 的 HTTP 和 WebSocket 服务访问<li>安全配置：包含 SSL 证书申请和配置，确保服务通信安全<li>对于开发者而言，这套配置不仅适用于 OpenHands 项目，也可作为其他 AI 工具和 Web 应用开发环境的参考。随着 AI 编程助手的快速发展，掌握这些环境配置技能将有助于开发者更好地参与到相关项目中，创建和优化自己的 AI 辅助工具。</ul></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
