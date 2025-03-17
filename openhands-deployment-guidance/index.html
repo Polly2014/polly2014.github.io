@@ -59,4 +59,130 @@
 </span><span>    </span><span style=color:#bf616a>tty</span><span>: </span><span style=color:#d08770>true
 </span><span>    </span><span style=color:#bf616a>stdin_open</span><span>: </span><span style=color:#d08770>true
 </span><span>    </span><span style=color:#bf616a>restart</span><span>: "</span><span style=color:#a3be8c>no</span><span>"
-</span></code></pre><p>PS：确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。<h2 id=bu-zou-4-pei-zhi-azure-de-llm-api-service-jie-kou>步骤 4: 配置 Azure 的 LLM API Service 接口</h2><p>参考文章：<a href=https://polly2014.github.io/azure-deepseek-service-deployment-guidance/>Azure部署DeepSeek/GPT大模型服务</a><h2 id=bu-zou-5-openhands-zhong-pei-zhi-llm-api-jie-kou>步骤 5: OpenHands 中配置LLM API 接口</h2><ol><li><p>浏览器访问 <code>http://&LTyour-azure-server-ip></code>，打开OpenHands首页 <img alt="OpenHands Homepage" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Homepage.png></p><li><p>点击左下角“设置”按钮，配置LLM API Servie <img alt="OpenHands Configuration" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Configuration.png></p><li><p>开启你的AI Coding旅程 <img alt="OpenHands Coding" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Coding.png></p></ol><h2 id=jie-yu>结语</h2><p>通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4o API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+</span></code></pre><details><summary>OpenHands 一键安装脚本 (点击展开)</summary> <pre class=language-sh data-lang=sh style=background:#2b303b;color:#c0c5ce><code class=language-sh data-lang=sh><span style=color:#65737e>#!/bin/bash
+</span><span style=color:#65737e># filepath: install_openhands.sh
+</span><span>
+</span><span style=color:#65737e># 打印彩色标题
+</span><span style=color:#8fa1b3>print_title</span><span>() {
+</span><span>  </span><span style=color:#96b5b4>echo </span><span style=color:#bf616a>-e </span><span>"</span><span style=color:#a3be8c>\e[1;36m==================================================\e[0m</span><span>"
+</span><span>  </span><span style=color:#96b5b4>echo </span><span style=color:#bf616a>-e </span><span>"</span><span style=color:#a3be8c>\e[1;36m </span><span>$</span><span style=color:#bf616a>1</span><span style=color:#a3be8c> \e[0m</span><span>"
+</span><span>  </span><span style=color:#96b5b4>echo </span><span style=color:#bf616a>-e </span><span>"</span><span style=color:#a3be8c>\e[1;36m==================================================\e[0m</span><span>"
+</span><span>}
+</span><span>
+</span><span style=color:#65737e># 检查脚本是否以root运行
+</span><span style=color:#b48ead>if </span><span style=color:#96b5b4>[ </span><span>"$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>id -u</span><span style=color:#a3be8c>)</span><span>" </span><span style=color:#bf616a>-eq</span><span> 0 </span><span style=color:#96b5b4>]</span><span>; </span><span style=color:#b48ead>then
+</span><span>  </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>警告: 不建议以root用户运行此脚本。请使用普通用户并配合sudo权限。</span><span>"
+</span><span>  </span><span style=color:#96b5b4>read </span><span style=color:#bf616a>-p </span><span>"</span><span style=color:#a3be8c>是否继续? (y/n) </span><span>" </span><span style=color:#bf616a>-n</span><span> 1 </span><span style=color:#bf616a>-r
+</span><span>  </span><span style=color:#96b5b4>echo
+</span><span>  </span><span style=color:#b48ead>if </span><span style=color:#96b5b4>[[ </span><span>! $</span><span style=color:#bf616a>REPLY </span><span>=~ ^</span><span style=color:#b48ead>[</span><span>Yy</span><span style=color:#b48ead>]</span><span>$ </span><span style=color:#96b5b4>]]</span><span>; </span><span style=color:#b48ead>then
+</span><span>    </span><span style=color:#96b5b4>exit</span><span> 1
+</span><span>  </span><span style=color:#b48ead>fi
+</span><span style=color:#b48ead>fi
+</span><span>
+</span><span style=color:#65737e># 1. 安装Docker
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>1. 安装Docker</span><span>"
+</span><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> apt-transport-https ca-certificates curl software-properties-common
+</span><span style=color:#bf616a>curl -fsSL</span><span> https://download.docker.com/linux/ubuntu/gpg | </span><span style=color:#bf616a>sudo</span><span> gpg</span><span style=color:#bf616a> --dearmor -o</span><span> /usr/share/keyrings/docker-archive-keyring.gpg
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>deb [arch=</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>dpkg --print-architecture</span><span style=color:#a3be8c>) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu </span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>lsb_release -cs</span><span style=color:#a3be8c>) stable</span><span>" | </span><span style=color:#bf616a>sudo</span><span> tee /etc/apt/sources.list.d/docker.list > /dev/null
+</span><span style=color:#bf616a>sudo</span><span> apt update
+</span><span style=color:#bf616a>sudo</span><span> apt install</span><span style=color:#bf616a> -y</span><span> docker-ce docker-ce-cli containerd.io
+</span><span>
+</span><span style=color:#65737e># 2. 安装Docker Compose
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>2. 安装Docker Compose</span><span>"
+</span><span style=color:#bf616a>DOCKER_COMPOSE_VERSION</span><span>=$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>curl -s</span><span style=color:#a3be8c> https://api.github.com/repos/docker/compose/releases/latest </span><span>| </span><span style=color:#bf616a>grep -oP </span><span>'</span><span style=color:#a3be8c>"tag_name": "\K[^"]+</span><span>'</span><span style=color:#a3be8c>)
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>安装Docker Compose版本: </span><span>$</span><span style=color:#bf616a>DOCKER_COMPOSE_VERSION</span><span>"
+</span><span style=color:#bf616a>sudo</span><span> curl</span><span style=color:#bf616a> -L </span><span>"</span><span style=color:#a3be8c>https://github.com/docker/compose/releases/download/</span><span>$</span><span style=color:#bf616a>DOCKER_COMPOSE_VERSION</span><span style=color:#a3be8c>/docker-compose-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -s</span><span style=color:#a3be8c>)-</span><span>$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>uname -m</span><span style=color:#a3be8c>)</span><span>"</span><span style=color:#bf616a> -o</span><span> /usr/local/bin/docker-compose
+</span><span style=color:#bf616a>sudo</span><span> chmod +x /usr/local/bin/docker-compose
+</span><span>
+</span><span style=color:#65737e># 3. 将当前用户添加到docker组
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>3. 配置Docker权限</span><span>"
+</span><span style=color:#bf616a>sudo</span><span> usermod</span><span style=color:#bf616a> -aG</span><span> docker $</span><span style=color:#bf616a>USER
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>已将当前用户添加到docker组，这可能需要重新登录才能生效</span><span>"
+</span><span>
+</span><span style=color:#65737e># 即时生效权限的几种方法
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>3.1 使Docker权限即时生效</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>使用newgrp命令获取新的docker组权限</span><span>"
+</span><span style=color:#b48ead>if </span><span style=color:#96b5b4>[ </span><span style=color:#bf616a>-z </span><span>"$</span><span style=color:#bf616a>SUDO_USER</span><span>" </span><span style=color:#96b5b4>]</span><span>; </span><span style=color:#b48ead>then
+</span><span>  </span><span style=color:#65737e># 直接以普通用户运行脚本的情况
+</span><span>  </span><span style=color:#96b5b4>exec</span><span> sg docker -c "</span><span style=color:#a3be8c>bash -c </span><span style=color:#96b5b4>\"
+</span><span style=color:#a3be8c>  echo '✅ 已成功切换到docker组环境';
+</span><span style=color:#a3be8c>  docker --version;
+</span><span style=color:#a3be8c>  </span><span style=color:#96b5b4>\"</span><span>"
+</span><span style=color:#b48ead>else
+</span><span>  </span><span style=color:#65737e># 通过sudo运行脚本的情况
+</span><span>  </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>脚本通过sudo运行，请在脚本完成后重新登录或执行 'newgrp docker' 以应用权限</span><span>"
+</span><span style=color:#b48ead>fi
+</span><span>
+</span><span style=color:#65737e># 4. 验证安装
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>4. 验证Docker安装</span><span>"
+</span><span style=color:#bf616a>docker --version </span><span>|| </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>Docker安装可能有问题，请退出并重新登录后再验证</span><span>"
+</span><span style=color:#bf616a>docker-compose --version </span><span>|| </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>Docker Compose安装可能有问题</span><span>"
+</span><span>
+</span><span style=color:#65737e># 5. 创建工作目录和配置文件
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>5. 设置OpenHands环境</span><span>"
+</span><span>
+</span><span style=color:#65737e># 创建工作目录
+</span><span style=color:#bf616a>HOME_DIR</span><span>=$</span><span style=color:#bf616a>HOME
+</span><span style=color:#bf616a>WORKSPACE_DIR</span><span>="$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c>/AICoder_Workspace</span><span>"
+</span><span style=color:#bf616a>mkdir -p </span><span>"$</span><span style=color:#bf616a>WORKSPACE_DIR</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>工作目录已创建: </span><span>$</span><span style=color:#bf616a>WORKSPACE_DIR</span><span>"
+</span><span>
+</span><span style=color:#65737e># 创建docker-compose.yaml
+</span><span style=color:#bf616a>cat </span><span>> "$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c>/docker-compose.yaml</span><span>" << </span><span style=color:#b48ead>EOL
+</span><span style=color:#a3be8c>services:
+</span><span style=color:#a3be8c>  openhands-app:
+</span><span style=color:#a3be8c>    image: docker.all-hands.dev/all-hands-ai/openhands:latest
+</span><span style=color:#a3be8c>    container_name: openhands-app
+</span><span style=color:#a3be8c>    environment:
+</span><span style=color:#a3be8c>      SANDBOX_RUNTIME_CONTAINER_IMAGE: docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik
+</span><span style=color:#a3be8c>      LOG_ALL_EVENTS: "true"
+</span><span style=color:#a3be8c>      SANDBOX_USER_ID: "polly"
+</span><span style=color:#a3be8c>      WORKSPACE_MOUNT_PATH: /home/openhands/workspace
+</span><span style=color:#a3be8c>    volumes:
+</span><span style=color:#a3be8c>      - /var/run/docker.sock:/var/run/docker.sock
+</span><span style=color:#a3be8c>      - ~/.openhands-state:/.openhands-state
+</span><span style=color:#a3be8c>      - </span><span>$</span><span style=color:#bf616a>WORKSPACE_DIR</span><span style=color:#a3be8c>:/home/openhands/workspace
+</span><span style=color:#a3be8c>    ports:
+</span><span style=color:#a3be8c>      - "80:3000"
+</span><span style=color:#a3be8c>    extra_hosts:
+</span><span style=color:#a3be8c>      - "host.docker.internal:host-gateway"
+</span><span style=color:#a3be8c>    tty: true
+</span><span style=color:#a3be8c>    stdin_open: true
+</span><span style=color:#a3be8c>    restart: unless-stopped
+</span><span style=color:#b48ead>EOL
+</span><span>
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>docker-compose.yaml 已创建: </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c>/docker-compose.yaml</span><span>"
+</span><span>
+</span><span style=color:#65737e># 6. 尝试启动Docker服务
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>6. 启动OpenHands服务</span><span>"
+</span><span style=color:#96b5b4>cd </span><span>"$</span><span style=color:#bf616a>HOME_DIR</span><span>"
+</span><span>
+</span><span style=color:#65737e># 检查用户是否在docker组中
+</span><span style=color:#b48ead>if </span><span style=color:#bf616a>groups </span><span>$</span><span style=color:#bf616a>USER </span><span>| </span><span style=color:#bf616a>grep -q </span><span>'</span><span style=color:#a3be8c>\bdocker\b</span><span>'; </span><span style=color:#b48ead>then
+</span><span>  </span><span style=color:#bf616a>docker-compose</span><span> up</span><span style=color:#bf616a> -d
+</span><span>  </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>OpenHands服务已启动</span><span>"
+</span><span style=color:#b48ead>else
+</span><span>  </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>当前会话中用户不在docker组，尝试使用新组权限启动服务</span><span>"
+</span><span>  </span><span style=color:#65737e># 使用newgrp命令在当前会话中获取docker组权限
+</span><span>  </span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>请在看到此消息后手动执行以下命令:</span><span>"
+</span><span>  </span><span style=color:#96b5b4>echo </span><span style=color:#bf616a>-e </span><span>"</span><span style=color:#a3be8c>\e[1;33mnewgrp docker\e[0m</span><span>"
+</span><span>  </span><span style=color:#96b5b4>echo </span><span style=color:#bf616a>-e </span><span>"</span><span style=color:#a3be8c>\e[1;33mcd </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c> && docker-compose up -d\e[0m</span><span>"
+</span><span style=color:#b48ead>fi
+</span><span>
+</span><span style=color:#65737e># 7. 展示使用信息
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>7. 使用说明</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>OpenHands服务启动成功后，可通过浏览器访问: http://localhost:80</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>""
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>可用命令:</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>启动服务: cd </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c> && docker-compose up -d</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>停止服务: cd </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c> && docker-compose down</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>查看日志: cd </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c> && docker-compose logs -f</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>重启服务: cd </span><span>$</span><span style=color:#bf616a>HOME_DIR</span><span style=color:#a3be8c> && docker-compose restart</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>""
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>工作目录: </span><span>$</span><span style=color:#bf616a>WORKSPACE_DIR</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>该目录已挂载到OpenHands容器内部的/home/openhands/workspace</span><span>"
+</span><span>
+</span><span style=color:#bf616a>print_title </span><span>"</span><span style=color:#a3be8c>安装完成</span><span>"
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>注意：如果出现权限问题，请尝试注销并重新登录，或重启系统</span><span>"
+</span></code></pre></details><p>PS：确保 Azure 网络安全组 (NSG) 中允许 HTTP (80) 流量。<h2 id=bu-zou-4-pei-zhi-azure-de-llm-api-service-jie-kou>步骤 4: 配置 Azure 的 LLM API Service 接口</h2><p>参考文章：<a href=https://polly2014.github.io/azure-deepseek-service-deployment-guidance/>Azure部署DeepSeek/GPT大模型服务</a><h2 id=bu-zou-5-openhands-zhong-pei-zhi-llm-api-jie-kou>步骤 5: OpenHands 中配置LLM API 接口</h2><ol><li><p>浏览器访问 <code>http://&LTyour-azure-server-ip></code>，打开OpenHands首页 <img alt="OpenHands Homepage" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Homepage.png></p><li><p>点击左下角“设置”按钮，配置LLM API Servie <img alt="OpenHands Configuration" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Configuration.png></p><li><p>开启你的AI Coding旅程 <img alt="OpenHands Coding" src=https://polly2014.github.io/openhands-deployment-guidance/OpenHands_Coding.png></p></ol><h2 id=jie-yu>结语</h2><p>通过以上步骤，您已经成功在 Azure 上部署了 OpenHands，并配置了 GPT-4o API 接口。现在，您可以通过外网访问您的服务，并充分利用 OpenHands 的强大功能来提升开发效率。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
