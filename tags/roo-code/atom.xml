@@ -39,7 +39,7 @@
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;自动化任务执行&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;部分支持&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;调试与错误修复&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;开源&#x2F;可定制性&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;集成开发环境&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;插件形式&lt;&#x2F;td&gt;&lt;td&gt;独立IDE&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;CLI&#x2F;Web&lt;&#x2F;td&gt;&lt;td&gt;独立平台&lt;&#x2F;td&gt;&lt;td&gt;终端集成&lt;&#x2F;td&gt;&lt;td&gt;可集成&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;集成开发环境&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;插件形式&lt;&#x2F;td&gt;&lt;td&gt;独立IDE&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;CLI&#x2F;Web&lt;&#x2F;td&gt;&lt;td&gt;独立平台&lt;&#x2F;td&gt;&lt;td&gt;终端&#x2F;VS Code&lt;&#x2F;td&gt;&lt;td&gt;可集成&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;协议支持&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;td&gt;部分MCP&lt;&#x2F;td&gt;&lt;td&gt;自定义协议&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
@@ -50,7 +50,7 @@
 &lt;li&gt;&lt;strong&gt;Claude&lt;&#x2F;strong&gt;：Anthropic自研Claude 3系列，长文本处理能力强，适合文档分析。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;OpenHands&lt;&#x2F;strong&gt;：开源项目，可对接多种模型（如Llama 3、GPT-4），灵活性高。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;Devin&lt;&#x2F;strong&gt;：未公开细节，推测使用多模态模型+强化学习，擅长复杂任务分解。&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;：基于多种开源模型，专为命令行环境优化，支持shell命令生成与解释。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;：基于多种开源模型，支持终端和VS Code双环境集成，专为提升开发者效率而优化。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;Roo Code&lt;&#x2F;strong&gt;：开源框架，可集成多种大语言模型，专注于代码生成质量和准确性。&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;hr &#x2F;&gt;
@@ -61,7 +61,7 @@
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Claude&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;技术文档生成、代码解释&lt;&#x2F;td&gt;&lt;td&gt;代码生成精度较低&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;OpenHands&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;定制化开发流程、研究AI代理行为&lt;&#x2F;td&gt;&lt;td&gt;成熟度低，需手动配置&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Devin&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全栈项目自动化（从需求到部署）&lt;&#x2F;td&gt;&lt;td&gt;封闭测试中，成本未知&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;终端操作、DevOps工作流、服务器管理&lt;&#x2F;td&gt;&lt;td&gt;图形界面应用开发支持有限&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;终端操作、VS Code开发、DevOps工作流&lt;&#x2F;td&gt;&lt;td&gt;依赖大型模型API，离线能力有限&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Roo Code&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;需要本地部署、代码质量要求高的场景&lt;&#x2F;td&gt;&lt;td&gt;配置复杂，资源需求较高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
@@ -72,7 +72,7 @@
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Claude&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;免费可用，长文本处理优秀&lt;&#x2F;td&gt;&lt;td&gt;不专精代码，输出需人工验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;OpenHands&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;开源透明，可扩展性强&lt;&#x2F;td&gt;&lt;td&gt;需技术背景部署，功能不完善&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Devin&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;端到端自动化，减少人工干预&lt;&#x2F;td&gt;&lt;td&gt;尚未开放，可能定价高昂&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;终端原生体验，轻量级，操作便捷&lt;&#x2F;td&gt;&lt;td&gt;功能范围局限于命令行环境&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;CLine&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;双环境集成，轻量级，中英双语优化&lt;&#x2F;td&gt;&lt;td&gt;API依赖较强，功能广度不及专业IDE工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Roo Code&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;完全开源，高度可定制，代码质量高&lt;&#x2F;td&gt;&lt;td&gt;社区较小，文档和支持有限&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
