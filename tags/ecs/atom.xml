@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - ECS</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/ecs/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-03-28T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/ecs/atom.xml</id>
+    <entry xml:lang="en">
+        <title>阿里云ECS翻墙实战指南：从无法安装到全球网络畅通</title>
+        <published>2025-03-28T00:00:00+00:00</published>
+        <updated>2025-03-28T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/vpn-configuration-aliyun-ecs/" type="text/html"/>
+        <id>https://polly2014.github.io/vpn-configuration-aliyun-ecs/</id>
+        
+        <content type="html">&lt;p&gt;最近我在使用阿里云ECS（杭州节点）部署一个AI项目时，遇到了一个令人烦恼的问题：Python依赖安装过程中出现超时错误，导致整个项目无法正常构建。错误信息如下：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;- Installing greenlet (3.0.0): Failed
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;TimeoutError
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;The read operation timed out
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;ReadTimeoutError
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;HTTPSConnectionPool(host=&amp;#39;files.pythonhosted.org&amp;#39;, port=443): Read timed out.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个问题本质上是由于阿里云ECS访问境外资源受限导致的。经过一番研究和实践，我总结了几种解决方案，下面我将详细介绍每种方法的具体操作步骤及其优缺点。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fang-an-dui-bi&quot;&gt;方案对比&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;strong&gt;方案&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;复杂度&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;稳定性&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;持久性&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;性能&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;适用场景&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;SSH隧道代理&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;临时使用，快速解决&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;ECS上安装Clash&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;长期使用，稳定需求&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;国内镜像源替换&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;仅需安装特定软件包&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Privoxy转发&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;需要同时支持多种代理协议&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;fang-an-yi-sshsui-dao-dai-li-zui-jian-dan-kuai-jie&quot;&gt;方案一：SSH隧道代理（最简单快捷）&lt;&#x2F;h2&gt;
+&lt;p&gt;这种方法利用SSH反向隧道，将本地机器上的代理服务（如ClashX）映射到远程ECS服务器。前提是你的本地电脑已经可以正常科学上网。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cao-zuo-bu-zou&quot;&gt;操作步骤：&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;确认本地代理设置&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;首先确认我的ClashX正在运行，并记下代理端口（通常是7890）。在macOS上点击ClashX菜单，查看&amp;quot;端口&amp;quot;信息。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;建立SSH反向隧道&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;在本地终端执行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ssh -R&lt;&#x2F;span&gt;&lt;span&gt; 7890:localhost:7890 root@your-ecs-ip
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个命令的含义是：将远程服务器（ECS）上7890端口的访问转发到本地计算机的7890端口。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;在ECS上配置代理环境变量&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;连接到ECS后，设置环境变量：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;http_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:7890
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;https_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:7890
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;验证代理是否工作&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;执行以下命令测试：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看当前IP（应显示代理服务器的IP）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl&lt;&#x2F;span&gt;&lt;span&gt; ipinfo.io
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 测试访问Google
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -I&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;www.google.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果能够成功获取响应，说明代理已经生效。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;继续安装过程&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;现在可以重新执行之前失败的安装命令：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install greenlet==3.0.0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 或者继续项目的安装流程
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -r&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;you-que-dian&quot;&gt;优缺点：&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;优点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置极为简单，无需在ECS上安装额外软件&lt;&#x2F;li&gt;
+&lt;li&gt;直接利用本地已有的代理服务&lt;&#x2F;li&gt;
+&lt;li&gt;不需要修改ECS上的系统配置&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;依赖SSH连接，断开SSH就会失效&lt;&#x2F;li&gt;
+&lt;li&gt;需要本地电脑一直开着并运行代理服务&lt;&#x2F;li&gt;
+&lt;li&gt;网络延迟较高，速度可能不够理想&lt;&#x2F;li&gt;
+&lt;li&gt;不适合长期使用&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;fang-an-er-zai-ecsshang-pei-zhi-clash-zui-wen-ding-fang-an&quot;&gt;方案二：在ECS上配置Clash（最稳定方案）&lt;&#x2F;h2&gt;
+&lt;p&gt;这种方法通过在ECS上安装Clash客户端，实现服务器自身的科学上网能力。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cao-zuo-bu-zou-1&quot;&gt;操作步骤：&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;先使用方案一建立临时代理&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;按照上述SSH隧道的方法，先建立一个临时代理，方便下载Clash。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 本地执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ssh -R&lt;&#x2F;span&gt;&lt;span&gt; 7890:localhost:7890 root@your-ecs-ip
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ECS上执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;http_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:7890
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;https_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:7890
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;下载Clash到ECS&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创建目录
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkdir -p ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;clash
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;clash
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 下载Clash（以Linux amd64为例）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;wget&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;github.com&#x2F;Dreamacro&#x2F;clash&#x2F;releases&#x2F;download&#x2F;v1.15.1&#x2F;clash-linux-amd64-v1.15.1.gz
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 解压并添加执行权限
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gunzip&lt;&#x2F;span&gt;&lt;span&gt; clash-linux-amd64-v1.15.1.gz
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt; +x clash-linux-amd64-v1.15.1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mv&lt;&#x2F;span&gt;&lt;span&gt; clash-linux-amd64-v1.15.1 clash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配置Clash&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;需要将本地的Clash配置文件传输到ECS上：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在本地新开一个终端执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;scp ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.config&#x2F;clash&#x2F;config.yaml root@your-ecs-ip:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;clash&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果你使用的是订阅地址，也可以直接在ECS上下载配置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在ECS上执行（记得先设置好代理环境变量）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;wget -O ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;clash&#x2F;config.yaml 你的订阅地址
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;运行Clash&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;clash
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 前台运行测试
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.&#x2F;clash -f&lt;&#x2F;span&gt;&lt;span&gt; config.yaml
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 确认工作正常后，可以使用nohup后台运行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nohup&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;clash&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; config.yaml &amp;gt; clash.log &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配置系统代理&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;http_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;127.0.0.1:7890
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;https_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;127.0.0.1:7890
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;设置开机自启&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;创建系统服务文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nano &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;clash.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;填入以下内容：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;[Unit]
+&lt;&#x2F;span&gt;&lt;span&gt;Description=Clash Daemon
+&lt;&#x2F;span&gt;&lt;span&gt;After=network.target
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[Service]
+&lt;&#x2F;span&gt;&lt;span&gt;Type=simple
+&lt;&#x2F;span&gt;&lt;span&gt;User=root
+&lt;&#x2F;span&gt;&lt;span&gt;ExecStart=&#x2F;root&#x2F;clash&#x2F;clash -f &#x2F;root&#x2F;clash&#x2F;config.yaml
+&lt;&#x2F;span&gt;&lt;span&gt;Restart=on-failure
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[Install]
+&lt;&#x2F;span&gt;&lt;span&gt;WantedBy=multi-user.target
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;启用服务：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl enable clash
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start clash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;持久化环境变量&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;编辑&lt;code&gt;~&#x2F;.bashrc&lt;&#x2F;code&gt;文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;export http_proxy=http:&#x2F;&#x2F;127.0.0.1:7890&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;export https_proxy=http:&#x2F;&#x2F;127.0.0.1:7890&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;you-que-dian-1&quot;&gt;优缺点：&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;优点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;服务器独立实现科学上网，不依赖本地代理&lt;&#x2F;li&gt;
+&lt;li&gt;可以设置为开机自启，长期稳定运行&lt;&#x2F;li&gt;
+&lt;li&gt;配置灵活，可以针对不同需求调整规则&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置相对复杂&lt;&#x2F;li&gt;
+&lt;li&gt;需要有可用的配置文件或订阅链接&lt;&#x2F;li&gt;
+&lt;li&gt;占用服务器资源（虽然很少）&lt;&#x2F;li&gt;
+&lt;li&gt;需要定期更新配置以保持可用性&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;fang-an-san-shi-yong-guo-nei-jing-xiang-yuan-zui-jian-dan-dan-you-xian&quot;&gt;方案三：使用国内镜像源（最简单但有限）&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你只是需要安装Python包，最简单的方法是使用国内的PyPI镜像。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cao-zuo-bu-zou-2&quot;&gt;操作步骤：&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;针对单次安装使用镜像源&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install greenlet==3.0.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -i&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;pypi&#x2F;simple&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --trusted-host&lt;&#x2F;span&gt;&lt;span&gt; mirrors.aliyun.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;针对项目批量安装&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -r&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -i&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;pypi&#x2F;simple&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --trusted-host&lt;&#x2F;span&gt;&lt;span&gt; mirrors.aliyun.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;永久配置镜像源&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;创建或编辑&lt;code&gt;~&#x2F;.pip&#x2F;pip.conf&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkdir -p ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.pip
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nano ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.pip&#x2F;pip.conf
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;添加以下内容：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;[global]
+&lt;&#x2F;span&gt;&lt;span&gt;index-url = https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;pypi&#x2F;simple&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;[install]
+&lt;&#x2F;span&gt;&lt;span&gt;trusted-host = mirrors.aliyun.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样就不需要每次都指定镜像源了。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;you-que-dian-2&quot;&gt;优缺点：&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;优点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置极为简单&lt;&#x2F;li&gt;
+&lt;li&gt;不需要科学上网即可高速下载包&lt;&#x2F;li&gt;
+&lt;li&gt;对于大多数Python包都有效&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;仅适用于PyPI包安装&lt;&#x2F;li&gt;
+&lt;li&gt;部分较新或冷门的包可能没有同步到镜像&lt;&#x2F;li&gt;
+&lt;li&gt;无法解决访问其他国外资源的问题&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;fang-an-si-shi-yong-privoxyzhuan-fa-socks5dai-li&quot;&gt;方案四：使用Privoxy转发SOCKS5代理&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你有SOCKS5代理但需要HTTP代理，或者需要在不同协议间转换，可以使用Privoxy。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cao-zuo-bu-zou-3&quot;&gt;操作步骤：&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;安装Privoxy&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Debian&#x2F;Ubuntu
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt update
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install privoxy
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# CentOS&#x2F;RHEL
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; yum install epel-release
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; yum install privoxy
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配置Privoxy&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;编辑配置文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nano &#x2F;etc&#x2F;privoxy&#x2F;config
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;添加以下内容（假设你的SOCKS5代理在本地7891端口）：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;# SOCKS5代理转发
+&lt;&#x2F;span&gt;&lt;span&gt;forward-socks5 &#x2F; localhost:7891 .
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;# 监听地址
+&lt;&#x2F;span&gt;&lt;span&gt;listen-address 127.0.0.1:8118
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;启动Privoxy服务&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl restart privoxy
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl enable privoxy
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;设置环境变量&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;http_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:8118
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;https_proxy&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:8118
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;持久化配置&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;export http_proxy=http:&#x2F;&#x2F;localhost:8118&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;export https_proxy=http:&#x2F;&#x2F;localhost:8118&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.bashrc
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;you-que-dian-3&quot;&gt;优缺点：&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;优点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以在不同代理协议间转换&lt;&#x2F;li&gt;
+&lt;li&gt;支持更多自定义过滤规则&lt;&#x2F;li&gt;
+&lt;li&gt;可与各种代理服务配合使用&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;配置相对复杂&lt;&#x2F;li&gt;
+&lt;li&gt;增加了一层代理转发，可能影响速度&lt;&#x2F;li&gt;
+&lt;li&gt;需要维护额外的服务&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;pai-cha-chang-jian-wen-ti&quot;&gt;排查常见问题&lt;&#x2F;h2&gt;
+&lt;p&gt;在配置过程中，你可能会遇到一些问题，下面是常见问题的解决方法：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-dai-li-she-zhi-hou-reng-ran-wu-fa-fang-wen-wai-wang&quot;&gt;1. 代理设置后仍然无法访问外网&lt;&#x2F;h3&gt;
+&lt;p&gt;检查以下几点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;确认代理服务是否正常运行&lt;&#x2F;li&gt;
+&lt;li&gt;验证代理端口是否正确&lt;&#x2F;li&gt;
+&lt;li&gt;测试代理是否工作：&lt;code&gt;curl -v https:&#x2F;&#x2F;www.google.com&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;检查防火墙设置：&lt;code&gt;sudo iptables -L&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-sshsui-dao-duan-kai-lian-jie&quot;&gt;2. SSH隧道断开连接&lt;&#x2F;h3&gt;
+&lt;p&gt;使用以下方法保持SSH连接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在本地~&#x2F;.ssh&#x2F;config中添加
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Host&lt;&#x2F;span&gt;&lt;span&gt; your-ecs-alias
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;HostName&lt;&#x2F;span&gt;&lt;span&gt; your-ecs-ip
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;User&lt;&#x2F;span&gt;&lt;span&gt; root
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ServerAliveInterval&lt;&#x2F;span&gt;&lt;span&gt; 60
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ServerAliveCountMax&lt;&#x2F;span&gt;&lt;span&gt; 3
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-clashpei-zhi-wen-jian-wen-ti&quot;&gt;3. Clash配置文件问题&lt;&#x2F;h3&gt;
+&lt;p&gt;如果Clash启动失败，检查配置文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 验证配置文件格式
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.&#x2F;clash -t -f&lt;&#x2F;span&gt;&lt;span&gt; config.yaml
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看详细日志
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.&#x2F;clash -d&lt;&#x2F;span&gt;&lt;span&gt; .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; config.yaml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;4-an-quan-xing-kao-lu&quot;&gt;4. 安全性考虑&lt;&#x2F;h3&gt;
+&lt;p&gt;为了保障服务器安全：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要将代理端口暴露到公网&lt;&#x2F;li&gt;
+&lt;li&gt;定期更新Clash和配置文件&lt;&#x2F;li&gt;
+&lt;li&gt;考虑使用防火墙限制访问：&lt;code&gt;ufw allow from 192.168.1.0&#x2F;24 to any port 7890&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie-yu-jian-yi&quot;&gt;总结与建议&lt;&#x2F;h2&gt;
+&lt;p&gt;经过实践，我发现不同场景适合不同的方案：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;临时使用&lt;&#x2F;strong&gt;：SSH隧道是最便捷的选择&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;长期稳定&lt;&#x2F;strong&gt;：在ECS上安装Clash是最佳方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;仅安装Python包&lt;&#x2F;strong&gt;：使用国内镜像源足够&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;复杂网络环境&lt;&#x2F;strong&gt;：Privoxy提供了更灵活的代理转发&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。&lt;&#x2F;p&gt;
+&lt;p&gt;希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;声明&lt;&#x2F;strong&gt;：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。### 4. 安全性考虑&lt;&#x2F;p&gt;
+&lt;p&gt;为了保障服务器安全：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要将代理端口暴露到公网&lt;&#x2F;li&gt;
+&lt;li&gt;定期更新Clash和配置文件&lt;&#x2F;li&gt;
+&lt;li&gt;考虑使用防火墙限制访问：&lt;code&gt;ufw allow from 192.168.1.0&#x2F;24 to any port 7890&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie-yu-jian-yi-1&quot;&gt;总结与建议&lt;&#x2F;h2&gt;
+&lt;p&gt;经过实践，我发现不同场景适合不同的方案：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;临时使用&lt;&#x2F;strong&gt;：SSH隧道是最便捷的选择&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;长期稳定&lt;&#x2F;strong&gt;：在ECS上安装Clash是最佳方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;仅安装Python包&lt;&#x2F;strong&gt;：使用国内镜像源足够&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;复杂网络环境&lt;&#x2F;strong&gt;：Privoxy提供了更灵活的代理转发&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。&lt;&#x2F;p&gt;
+&lt;p&gt;希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;声明&lt;&#x2F;strong&gt;：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
