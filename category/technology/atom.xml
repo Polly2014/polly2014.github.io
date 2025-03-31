@@ -5,8 +5,264 @@
     <link href="https://polly2014.github.io/category/technology/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly2014.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-29T00:00:00+00:00</updated>
+    <updated>2025-03-31T00:00:00+00:00</updated>
     <id>https://polly2014.github.io/category/technology/atom.xml</id>
+    <entry xml:lang="en">
+        <title>使用GitHub Actions自动部署AI助手：无需人工干预的持续部署方案</title>
+        <published>2025-03-31T00:00:00+00:00</published>
+        <updated>2025-03-31T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/github-actions-auto-deploy-openhands/" type="text/html"/>
+        <id>https://polly2014.github.io/github-actions-auto-deploy-openhands/</id>
+        
+        <content type="html">&lt;p&gt;在运维AI应用时，我们经常需要不断更新代码并重新部署。每次手动SSH登录服务器、拉取代码、编译并重启服务不仅繁琐，还容易出错。本文将分享如何利用GitHub Actions实现OpenHands（一个私有的AI编程助手）的全自动部署流程，让代码一旦推送到GitHub仓库就能自动部署到生产服务器，无需任何人工干预。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xian-zhuang-wen-ti&quot;&gt;现状问题&lt;&#x2F;h2&gt;
+&lt;p&gt;目前，我们的部署流程相当繁琐：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;1. ssh登录服务器
+&lt;&#x2F;span&gt;&lt;span&gt;2. tmux a -t DaTou进入会话
+&lt;&#x2F;span&gt;&lt;span&gt;3. Ctrl+C终止当前运行的程序
+&lt;&#x2F;span&gt;&lt;span&gt;4. git pull拉取最新代码
+&lt;&#x2F;span&gt;&lt;span&gt;5. make build编译代码
+&lt;&#x2F;span&gt;&lt;span&gt;6. authbind --deep make run启动服务
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个过程完全是手动的，既浪费时间又容易因操作失误导致服务异常。如何实现全自动化呢？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jie-jue-fang-an-dui-bi&quot;&gt;解决方案对比&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;strong&gt;方案&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;复杂度&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;实时性&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;可观测性&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;适用场景&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Cron定时检查&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;简单项目、低频更新&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Webhook触发部署&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;中型项目、需要即时部署&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;GitHub Actions&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;各种规模项目、需要完整部署流程&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;专业CI&#x2F;CD平台&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;企业级应用、复杂部署需求&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;经过对比，GitHub Actions显然是最适合我们需求的解决方案：它能提供即时部署、完整记录，且与GitHub仓库无缝集成。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-shi-fang-an-shi-yong-github-actionszi-dong-bu-shu&quot;&gt;实施方案：使用GitHub Actions自动部署&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-bu-zhun-bei-fu-wu-qi-huan-jing&quot;&gt;第一步：准备服务器环境&lt;&#x2F;h3&gt;
+&lt;p&gt;首先，需要在服务器上设置SSH密钥，使GitHub Actions能够安全地连接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在服务器上生成SSH密钥对
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ssh-keygen -t&lt;&#x2F;span&gt;&lt;span&gt; ed25519&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -C &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;github-actions-deploy&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 一路回车即可，不要设置密码
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 将公钥添加到authorized_keys
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cat ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.ssh&#x2F;id_ed25519.pub &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.ssh&#x2F;authorized_keys
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-er-bu-chuang-jian-bu-shu-jiao-ben&quot;&gt;第二步：创建部署脚本&lt;&#x2F;h3&gt;
+&lt;p&gt;在服务器上创建一个脚本来处理代码拉取、编译和重启服务的过程：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创建部署脚本
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nano ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;deploy_openhands.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;填入以下内容：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#!&#x2F;bin&#x2F;bash
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 设置工作目录和日志文件
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REPO_DIR&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;your&#x2F;openhands&#x2F;repo&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG_FILE&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;deploy_logs.log&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 记录日志函数
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;date &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;+%Y-%m-%d %H:%M:%S&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)] &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tee -a &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG_FILE&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 切换到仓库目录
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REPO_DIR&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; || { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Failed to cd to &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REPO_DIR&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt; 1; }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Starting deployment process&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 拉取最新代码
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Pulling latest code from repository&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; pull
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 编译代码
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Building application&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;make&lt;&#x2F;span&gt;&lt;span&gt; build
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;? -ne&lt;&#x2F;span&gt;&lt;span&gt; 0 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;then
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Build failed&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt; 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fi
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 确保tmux会话存在
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;! &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tmux&lt;&#x2F;span&gt;&lt;span&gt; has-session&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; DaTou &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&#x2F;dev&#x2F;null; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;then
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Creating new tmux session: DaTou&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tmux&lt;&#x2F;span&gt;&lt;span&gt; new-session&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -d -s&lt;&#x2F;span&gt;&lt;span&gt; DaTou
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 停止当前运行的程序
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Stopping current application in tmux session&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tmux&lt;&#x2F;span&gt;&lt;span&gt; send-keys&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; DaTou C-c
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 等待程序优雅退出
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sleep&lt;&#x2F;span&gt;&lt;span&gt; 5
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fi
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 启动应用程序
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Starting application&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tmux&lt;&#x2F;span&gt;&lt;span&gt; send-keys&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; DaTou &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REPO_DIR&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; &amp;amp;&amp;amp; authbind --deep make run&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; C-m
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Deployment completed successfully&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;别忘了使脚本可执行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt; +x &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;deploy_openhands.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-san-bu-she-zhi-githubcang-ku-mi-yao&quot;&gt;第三步：设置GitHub仓库密钥&lt;&#x2F;h3&gt;
+&lt;p&gt;在GitHub仓库中添加必要的密钥：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;进入GitHub仓库页面&lt;&#x2F;li&gt;
+&lt;li&gt;点击&amp;quot;Settings&amp;quot; &amp;gt; &amp;quot;Secrets and variables&amp;quot; &amp;gt; &amp;quot;Actions&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;点击&amp;quot;New repository secret&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;添加以下密钥：
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SSH_PRIVATE_KEY&lt;&#x2F;code&gt;: 服务器上生成的SSH私钥（&lt;code&gt;cat ~&#x2F;.ssh&#x2F;id_ed25519&lt;&#x2F;code&gt;的内容）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SSH_HOST&lt;&#x2F;code&gt;: 服务器IP或域名&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SSH_USER&lt;&#x2F;code&gt;: 服务器用户名（例如&lt;code&gt;ubuntu&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SSH_PORT&lt;&#x2F;code&gt;: SSH端口（通常为22）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;di-si-bu-chuang-jian-github-actionsgong-zuo-liu&quot;&gt;第四步：创建GitHub Actions工作流&lt;&#x2F;h3&gt;
+&lt;p&gt;在你的仓库中创建一个工作流文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkdir -p&lt;&#x2F;span&gt;&lt;span&gt; .github&#x2F;workflows
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nano&lt;&#x2F;span&gt;&lt;span&gt; .github&#x2F;workflows&#x2F;deploy.yml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;填入以下内容：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Deploy OpenHands
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;branches&lt;&#x2F;span&gt;&lt;span&gt;: [ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;main &lt;&#x2F;span&gt;&lt;span&gt;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 替换为你的主分支名称
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 手动触发选项
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;workflow_dispatch&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jobs&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;deploy&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ubuntu-latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Deploy to server
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;appleboy&#x2F;ssh-action@master
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;with&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;host&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.SSH_HOST }}
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;username&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.SSH_USER }}
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.SSH_PRIVATE_KEY }}
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;port&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.SSH_PORT }}
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;|
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            ~&#x2F;deploy_openhands.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-wu-bu-que-bao-xi-tong-zhong-qi-hou-fu-wu-zi-dong-qi-dong&quot;&gt;第五步：确保系统重启后服务自动启动&lt;&#x2F;h3&gt;
+&lt;p&gt;创建一个systemd服务，确保服务器重启后应用自动启动：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nano &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;openhands.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;添加以下内容：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ini&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ini &quot;&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Unit]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Description&lt;&#x2F;span&gt;&lt;span&gt;=OpenHands AI Assistant Service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;After&lt;&#x2F;span&gt;&lt;span&gt;=network.target
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Service]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Type&lt;&#x2F;span&gt;&lt;span&gt;=oneshot
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;User&lt;&#x2F;span&gt;&lt;span&gt;=ubuntu  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 替换为你的用户名
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ExecStart&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;bin&#x2F;bash -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;tmux has-session -t DaTou || tmux new-session -d -s DaTou&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ExecStart&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;bin&#x2F;bash -c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;tmux send-keys -t DaTou &amp;#39;cd &#x2F;path&#x2F;to&#x2F;your&#x2F;openhands&#x2F;repo &amp;amp;&amp;amp; authbind --deep make run&amp;#39; C-m&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;RemainAfterExit&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;yes
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Install]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;WantedBy&lt;&#x2F;span&gt;&lt;span&gt;=multi-user.target
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;启用服务：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl enable openhands.service
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start openhands.service
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;gong-zuo-yuan-li&quot;&gt;工作原理&lt;&#x2F;h2&gt;
+&lt;p&gt;整个自动部署流程工作流程如下：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;代码推送触发&lt;&#x2F;strong&gt;：当开发者将代码推送到GitHub仓库的主分支时，GitHub Actions自动触发&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;安全连接服务器&lt;&#x2F;strong&gt;：Actions使用SSH密钥安全连接到服务器&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;执行部署脚本&lt;&#x2F;strong&gt;：执行预先定义的部署脚本，完成代码拉取、编译和应用重启&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;日志记录&lt;&#x2F;strong&gt;：整个过程的日志都被记录，方便问题排查&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gao-ji-pei-zhi-yu-you-hua&quot;&gt;高级配置与优化&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;tian-jia-bu-shu-tong-zhi&quot;&gt;添加部署通知&lt;&#x2F;h3&gt;
+&lt;p&gt;在工作流文件中添加部署通知：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ... 其他步骤
+&lt;&#x2F;span&gt;&lt;span&gt;  - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Send deployment notification
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;always()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rtCamp&#x2F;action-slack-notify@v2
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SLACK_WEBHOOK&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ secrets.SLACK_WEBHOOK }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SLACK_COLOR&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${{ job.status }}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SLACK_TITLE&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;OpenHands Deployment
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SLACK_MESSAGE&lt;&#x2F;span&gt;&lt;span&gt;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Deployment ${{ job.status }}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;tian-jia-bu-shu-qian-ce-shi&quot;&gt;添加部署前测试&lt;&#x2F;h3&gt;
+&lt;p&gt;确保代码质量后再部署：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jobs&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;test&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ubuntu-latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;actions&#x2F;checkout@v3
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Run tests
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;make test
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;deploy&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;needs&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;test
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ubuntu-latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ... 部署步骤
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;qu-fen-huan-jing-pei-zhi&quot;&gt;区分环境配置&lt;&#x2F;h3&gt;
+&lt;p&gt;使用不同分支部署到不同环境：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;branches&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;main    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 生产环境
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;staging &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 测试环境
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;chang-jian-wen-ti-yu-jie-jue-fang-an&quot;&gt;常见问题与解决方案&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-sshlian-jie-shi-bai&quot;&gt;1. SSH连接失败&lt;&#x2F;h3&gt;
+&lt;p&gt;检查以下几点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;确保服务器防火墙允许SSH连接&lt;&#x2F;li&gt;
+&lt;li&gt;验证SSH密钥格式是否正确（复制时可能丢失换行）&lt;&#x2F;li&gt;
+&lt;li&gt;检查用户权限是否正确&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;解决方法：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查SSH配置
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; cat &#x2F;etc&#x2F;ssh&#x2F;sshd_config | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt; PubkeyAuthentication
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 确保值为yes
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查authorized_keys权限
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt; 600 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.ssh&#x2F;authorized_keys
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt; 700 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.ssh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;2-bu-shu-jiao-ben-zhi-xing-shi-bai&quot;&gt;2. 部署脚本执行失败&lt;&#x2F;h3&gt;
+&lt;p&gt;常见原因是路径错误或权限问题：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查脚本可执行权限
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt; +x &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;deploy_openhands.sh
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 手动执行脚本并查看错误
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bash -x ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;deploy_openhands.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-ying-yong-qi-dong-dan-wu-fa-fang-wen&quot;&gt;3. 应用启动但无法访问&lt;&#x2F;h3&gt;
+&lt;p&gt;可能是端口绑定问题或防火墙设置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查应用是否正在运行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ps&lt;&#x2F;span&gt;&lt;span&gt; aux | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt; make
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查端口是否被正确监听
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; netstat&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -tulpn &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt; 80
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;shi-yong-ti-yan-yu-xiao-guo&quot;&gt;使用体验与效果&lt;&#x2F;h2&gt;
+&lt;p&gt;实施GitHub Actions自动部署后，我们的开发流程显著改善：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;节省时间&lt;&#x2F;strong&gt;：从手动部署的10分钟减少到完全自动化&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;减少错误&lt;&#x2F;strong&gt;：消除了人工操作可能导致的失误&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;提高可见性&lt;&#x2F;strong&gt;：可以在GitHub界面上清晰看到每次部署的状态和日志&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;团队协作&lt;&#x2F;strong&gt;：团队成员无需了解服务器细节即可完成部署&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;部署频率从原来的每周2-3次增加到每天多次，大大加快了功能迭代和问题修复的速度。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通过GitHub Actions实现自动部署，我们将繁琐的手动部署过程转变为完全自动化的工作流。这不仅提高了开发效率，还增强了系统稳定性。对于任何需要频繁更新的Web应用或AI服务，这种自动部署方案都是极具价值的。&lt;&#x2F;p&gt;
+&lt;p&gt;最重要的是，这套方案易于实施且维护成本低，即使是小型团队也能轻松应用。相比专业CI&#x2F;CD平台，GitHub Actions为我们提供了一个免费且强大的自动化部署解决方案。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你有任何自动部署的经验或其他方案，欢迎在评论区分享！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>阿里云ECS端口绑定权限问题：五种优雅的解决方案</title>
         <published>2025-03-29T00:00:00+00:00</published>
