@@ -17,6 +17,7 @@
 </span><span style=color:#65737e># 设置工作目录和日志文件
 </span><span style=color:#bf616a>REPO_DIR</span><span>="</span><span style=color:#a3be8c>/path/to/your/openhands/repo</span><span>"
 </span><span style=color:#bf616a>LOG_FILE</span><span>="</span><span style=color:#a3be8c>/path/to/deploy_logs.log</span><span>"
+</span><span style=color:#bf616a>CONDA_ENV</span><span>="</span><span style=color:#a3be8c>DaTou</span><span>"
 </span><span>
 </span><span style=color:#65737e># 记录日志函数
 </span><span style=color:#8fa1b3>log</span><span>() {
@@ -31,6 +32,16 @@
 </span><span style=color:#65737e># 拉取最新代码
 </span><span style=color:#bf616a>log </span><span>"</span><span style=color:#a3be8c>Pulling latest code from repository</span><span>"
 </span><span style=color:#bf616a>git</span><span> pull
+</span><span>
+</span><span style=color:#65737e># 初始化conda
+</span><span style=color:#bf616a>log </span><span>"</span><span style=color:#a3be8c>Initializing conda environment</span><span>"
+</span><span style=color:#65737e># 以下行确保conda命令在bash中可用
+</span><span style=color:#96b5b4>source </span><span>$(</span><span style=color:#bf616a>conda</span><span> info</span><span style=color:#bf616a> --base</span><span>)/etc/profile.d/conda.sh
+</span><span>
+</span><span>
+</span><span style=color:#65737e># 激活conda环境
+</span><span style=color:#bf616a>log </span><span>"</span><span style=color:#a3be8c>Activating conda environment: </span><span>$</span><span style=color:#bf616a>CONDA_ENV</span><span>"
+</span><span style=color:#bf616a>conda</span><span> activate $</span><span style=color:#bf616a>CONDA_ENV
 </span><span>
 </span><span style=color:#65737e># 编译代码
 </span><span style=color:#bf616a>log </span><span>"</span><span style=color:#a3be8c>Building application</span><span>"

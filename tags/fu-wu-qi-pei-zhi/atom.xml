@@ -57,6 +57,7 @@
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 设置工作目录和日志文件
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;REPO_DIR&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;your&#x2F;openhands&#x2F;repo&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG_FILE&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;deploy_logs.log&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONDA_ENV&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;DaTou&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 记录日志函数
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span&gt;() {
@@ -71,6 +72,16 @@
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 拉取最新代码
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Pulling latest code from repository&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; pull
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 初始化conda
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Initializing conda environment&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 以下行确保conda命令在bash中可用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;source &lt;&#x2F;span&gt;&lt;span&gt;$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;conda&lt;&#x2F;span&gt;&lt;span&gt; info&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --base&lt;&#x2F;span&gt;&lt;span&gt;)&#x2F;etc&#x2F;profile.d&#x2F;conda.sh
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 激活conda环境
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Activating conda environment: &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONDA_ENV&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;conda&lt;&#x2F;span&gt;&lt;span&gt; activate $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONDA_ENV
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 编译代码
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Building application&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
