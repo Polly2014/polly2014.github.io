@@ -176,7 +176,10 @@
 &lt;li&gt;&lt;strong&gt;执行部署脚本&lt;&#x2F;strong&gt;：执行预先定义的部署脚本，完成代码拉取、编译和应用重启&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;日志记录&lt;&#x2F;strong&gt;：整个过程的日志都被记录，方便问题排查&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
+&lt;details&gt;
+&lt;summary&gt;GitHub Actions自动部署流程图 (点击展开)&lt;&#x2F;summary&gt;
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gao-ji-pei-zhi-yu-you-hua&quot;&gt;高级配置与优化&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;tian-jia-bu-shu-tong-zhi&quot;&gt;添加部署通知&lt;&#x2F;h3&gt;
 &lt;p&gt;在工作流文件中添加部署通知：&lt;&#x2F;p&gt;
