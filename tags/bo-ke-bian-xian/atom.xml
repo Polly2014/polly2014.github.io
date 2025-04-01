@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 博客变现</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/bo-ke-bian-xian/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-04-01T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/bo-ke-bian-xian/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从零开始配置Google AdSense：让你的Zola博客开始赚钱</title>
+        <published>2025-04-01T00:00:00+00:00</published>
+        <updated>2025-04-01T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/integrate-google-adsense-to-zola-blog/" type="text/html"/>
+        <id>https://polly2014.github.io/integrate-google-adsense-to-zola-blog/</id>
+        
+        <content type="html">&lt;p&gt;在经营个人博客多年后，我开始考虑如何通过博客内容获取一些被动收入。作为技术博主，我选择了Google AdSense作为变现方式，这是最受欢迎、最容易集成的广告系统之一。本文将分享我如何一步步在Zola静态博客中配置AdSense，从零开始实现博客变现。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-xuan-ze-google-adsense&quot;&gt;为什么选择Google AdSense？&lt;&#x2F;h2&gt;
+&lt;p&gt;在选择博客变现方式时，我对比了几种常见选项：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;strong&gt;变现方式&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;门槛&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;收入潜力&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;维护成本&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;strong&gt;用户体验影响&lt;&#x2F;strong&gt;&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;直接售卖产品&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;付费会员&lt;&#x2F;td&gt;&lt;td&gt;★★★★★&lt;&#x2F;td&gt;&lt;td&gt;★★★★☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;接商业软文&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Google AdSense&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★★☆☆&lt;&#x2F;td&gt;&lt;td&gt;★☆☆☆☆&lt;&#x2F;td&gt;&lt;td&gt;★★☆☆☆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;对于我这样的个人博客来说，AdSense是最佳选择：门槛低、设置简单、收入相对稳定，还能保持内容的独立性。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qian-ti-tiao-jian&quot;&gt;前提条件&lt;&#x2F;h2&gt;
+&lt;p&gt;在开始前，请确保你已经：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;拥有一个运行中的Zola博客&lt;&#x2F;li&gt;
+&lt;li&gt;已经配置好Google Analytics（推荐但非必须）&lt;&#x2F;li&gt;
+&lt;li&gt;博客有一定的原创内容和访问量&lt;&#x2F;li&gt;
+&lt;li&gt;博客有自己的域名（不是GitHub Pages默认域名）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;我的博客已经运行了一段时间，内容主要关于技术教程和AI应用，每月有几千访问量，使用自己的域名，所以符合AdSense的基本要求。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-bu-shen-qing-google-adsensezhang-hu&quot;&gt;第一步：申请Google AdSense账户&lt;&#x2F;h2&gt;
+&lt;p&gt;申请过程出乎意料地简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;访问&lt;a href=&quot;https:&#x2F;&#x2F;www.google.com&#x2F;adsense&#x2F;&quot;&gt;Google AdSense官网&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;使用我的Google账户登录（与Google Analytics相同账户）&lt;&#x2F;li&gt;
+&lt;li&gt;填写网站URL和联系信息&lt;&#x2F;li&gt;
+&lt;li&gt;选择内容类型和付款首选项&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;提交申请后，Google给了我一段验证代码，要求我将其添加到网站的&lt;code&gt;&amp;lt;head&amp;gt;&lt;&#x2F;code&gt;部分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-bu-zai-zolabo-ke-zhong-tian-jia-yan-zheng-dai-ma&quot;&gt;第二步：在Zola博客中添加验证代码&lt;&#x2F;h2&gt;
+&lt;p&gt;首先，我更新了&lt;code&gt;config.toml&lt;&#x2F;code&gt;文件，添加AdSense ID：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[extra]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 已有配置
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;google_analytics_id &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;G-8JD13N7PHS&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 新增AdSense ID
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;google_adsense_id &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ca-pub-XXXXXXXXXXXXXXXX&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 替换为你的实际ID
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后，在&lt;code&gt;base.html&lt;&#x2F;code&gt;模板文件的&lt;code&gt;&amp;lt;head&amp;gt;&lt;&#x2F;code&gt;部分添加验证代码：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- Google AdSense --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{% if config.extra.google_adsense_id %}
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;async src&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;pagead2.googlesyndication.com&#x2F;pagead&#x2F;js&#x2F;adsbygoogle.js?client={{ config.extra.google_adsense_id }}&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;crossorigin&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;anonymous&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{% endif %}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;添加后重新构建站点并部署，然后在AdSense控制面板点击&amp;quot;验证&amp;quot;按钮。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-bu-deng-dai-zhang-hu-shen-he&quot;&gt;第三步：等待账户审核&lt;&#x2F;h2&gt;
+&lt;p&gt;添加验证代码后，需要等待Google审核我的网站。审核过程大约持续了5天，期间Google检查了我的网站内容是否符合其政策要求。幸运的是，我的博客获得了批准。&lt;&#x2F;p&gt;
+&lt;p&gt;审核通过后，我收到了邮件通知，AdSense账户正式激活。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-si-bu-chuang-jian-yan-gao-dan-yuan&quot;&gt;第四步：创建广告单元&lt;&#x2F;h2&gt;
+&lt;p&gt;账户激活后，我开始创建广告单元。AdSense提供了多种广告格式，我选择了以下几种：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;自动广告&lt;&#x2F;strong&gt;：让Google自动在合适位置放置广告&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;文章内嵌广告&lt;&#x2F;strong&gt;：在文章内容中间穿插&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;侧边栏广告&lt;&#x2F;strong&gt;：放置在博客侧边栏中&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;chuang-jian-wen-zhang-nei-qian-yan-gao-zu-jian&quot;&gt;创建文章内嵌广告组件&lt;&#x2F;h3&gt;
+&lt;p&gt;我创建了一个名为&lt;code&gt;templates&#x2F;components&#x2F;adsense-in-article.html&lt;&#x2F;code&gt;的组件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;adsense-container adsense-in-article&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ins &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;adsbygoogle&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;style&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;display:block; text-align:center;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-layout&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;in-article&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-format&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;fluid&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-client&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{{ config.extra.google_adsense_id }}&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-slot&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1234567890&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ins&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;         (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;adsbygoogle &lt;&#x2F;span&gt;&lt;span&gt;= window.adsbygoogle || []).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;({});
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意：这里的&lt;code&gt;data-ad-slot&lt;&#x2F;code&gt;需要替换为AdSense控制面板中创建广告单元时获得的实际ID。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chuang-jian-ce-bian-lan-yan-gao-zu-jian&quot;&gt;创建侧边栏广告组件&lt;&#x2F;h3&gt;
+&lt;p&gt;类似地，我创建了&lt;code&gt;templates&#x2F;components&#x2F;adsense-sidebar.html&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;adsense-container adsense-sidebar&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ins &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;adsbygoogle&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;style&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;display:block&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-client&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{{ config.extra.google_adsense_id }}&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-slot&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;0987654321&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-ad-format&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;auto&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;data-full-width-responsive&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ins&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;         (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;adsbygoogle &lt;&#x2F;span&gt;&lt;span&gt;= window.adsbygoogle || []).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;({});
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;di-wu-bu-zheng-he-yan-gao-dao-bo-ke-mo-ban&quot;&gt;第五步：整合广告到博客模板&lt;&#x2F;h2&gt;
+&lt;p&gt;接下来，我将广告组件整合到我的博客模板中。首先，我修改博文模板&lt;code&gt;blog.html&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blog-post&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;{{ page.title }}&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 文章前半部分 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    {% if page.content | length &amp;gt; 1500 %}
+&lt;&#x2F;span&gt;&lt;span&gt;        {{ page.content | safe | slice(end=page.content | length &#x2F; 2) | safe }}
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 插入文章内广告 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        {% include &amp;quot;components&#x2F;adsense-in-article.html&amp;quot; %}
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 文章后半部分 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        {{ page.content | safe | slice(start=page.content | length &#x2F; 2) | safe }}
+&lt;&#x2F;span&gt;&lt;span&gt;    {% else %}
+&lt;&#x2F;span&gt;&lt;span&gt;        {{ page.content | safe }}
+&lt;&#x2F;span&gt;&lt;span&gt;    {% endif %}
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段代码确保只有在文章内容足够长时才插入广告，避免短文章中出现过多广告。&lt;&#x2F;p&gt;
+&lt;p&gt;然后，我将侧边栏广告添加到&lt;code&gt;base.html&lt;&#x2F;code&gt;中：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sidebar pure-u-1 pure-u-md-1-5&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 个人介绍等内容 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 添加侧边栏广告 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    {% include &amp;quot;components&#x2F;adsense-sidebar.html&amp;quot; %}
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- 导航链接 --&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;di-liu-bu-tian-jia-yan-gao-yang-shi&quot;&gt;第六步：添加广告样式&lt;&#x2F;h2&gt;
+&lt;p&gt;为了让广告看起来更整洁，我在&lt;code&gt;static&#x2F;css&#x2F;style_new.css&lt;&#x2F;code&gt;中添加了一些样式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 广告容器基本样式 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;adsense-container &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    margin: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2em 0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    text-align: center;
+&lt;&#x2F;span&gt;&lt;span&gt;    overflow: hidden;
+&lt;&#x2F;span&gt;&lt;span&gt;    width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    clear: both;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 文章内嵌广告 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;adsense-in-article &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    padding: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1em 0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    border-top: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1px &lt;&#x2F;span&gt;&lt;span&gt;solid &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#eaeaea&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    border-bottom: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1px &lt;&#x2F;span&gt;&lt;span&gt;solid &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#eaeaea&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    background-color: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;250&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;250&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;250&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.5&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 侧边栏广告 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;adsense-sidebar &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    margin-top: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2em&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 响应式调整 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;@media &lt;&#x2F;span&gt;&lt;span&gt;(max-width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;768px&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;adsense-sidebar &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        margin: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1em 0&lt;&#x2F;span&gt;&lt;span&gt;;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 移动端缩小边距 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;di-qi-bu-you-hua-yan-gao-biao-xian&quot;&gt;第七步：优化广告表现&lt;&#x2F;h2&gt;
+&lt;p&gt;在运行一段时间后，我发现了一些优化广告表现的技巧：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yan-gao-wei-zhi-you-hua&quot;&gt;广告位置优化&lt;&#x2F;h3&gt;
+&lt;p&gt;经过测试，我发现以下位置点击率最高：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;文章开头的第一段后面&lt;&#x2F;li&gt;
+&lt;li&gt;内容中的图片附近&lt;&#x2F;li&gt;
+&lt;li&gt;侧边栏顶部区域&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;ping-heng-yong-hu-ti-yan-yu-shou-yi&quot;&gt;平衡用户体验与收益&lt;&#x2F;h3&gt;
+&lt;p&gt;一开始我放置了较多广告，但发现这影响了用户体验。最终我采取了以下策略：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;每篇文章最多放置2个广告&lt;&#x2F;li&gt;
+&lt;li&gt;确保广告与内容明显分开&lt;&#x2F;li&gt;
+&lt;li&gt;避免在移动设备上显示过多广告&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;a-bce-shi-bu-tong-yan-gao-yang-shi&quot;&gt;A&#x2F;B测试不同广告样式&lt;&#x2F;h3&gt;
+&lt;p&gt;我创建了不同风格的广告单元，并轮换测试它们的表现：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;纯文本广告 vs 显示广告&lt;&#x2F;li&gt;
+&lt;li&gt;横幅广告 vs 信息流广告&lt;&#x2F;li&gt;
+&lt;li&gt;自动调整大小 vs 固定大小&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;xiao-guo-yu-shou-yi-fen-xi&quot;&gt;效果与收益分析&lt;&#x2F;h2&gt;
+&lt;p&gt;实施AdSense大约3个月后，我开始看到稳定的收益。虽然收入不足以让我辞职（哈哈），但足以支付博客的服务器费用和一些咖啡钱。&lt;&#x2F;p&gt;
+&lt;p&gt;我注意到以下有趣现象：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;高质量内容带来更多收益&lt;&#x2F;strong&gt;：解决具体问题的技术文章广告点击率更高&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;季节性波动明显&lt;&#x2F;strong&gt;：假期期间收益会下降&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;特定主题更赚钱&lt;&#x2F;strong&gt;：与AI和云服务相关的文章广告单价更高&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;chang-jian-wen-ti-yu-jie-jue-fang-an&quot;&gt;常见问题与解决方案&lt;&#x2F;h2&gt;
+&lt;p&gt;在配置过程中，我遇到了一些问题，分享解决方案：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-yan-gao-bu-xian-shi&quot;&gt;1. 广告不显示&lt;&#x2F;h3&gt;
+&lt;p&gt;最初我的广告没有显示，原因是JavaScript加载顺序问题。确保AdSense脚本在&lt;code&gt;&amp;lt;head&amp;gt;&lt;&#x2F;code&gt;中加载，而广告单元的激活代码在对应位置。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-yi-dong-duan-xian-shi-yi-chang&quot;&gt;2. 移动端显示异常&lt;&#x2F;h3&gt;
+&lt;p&gt;一些广告在移动设备上显示异常，解决方法是添加响应式CSS并使用&lt;code&gt;data-full-width-responsive=&amp;quot;true&amp;quot;&lt;&#x2F;code&gt;属性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-yan-gao-yu-nei-rong-chong-tu&quot;&gt;3. 广告与内容冲突&lt;&#x2F;h3&gt;
+&lt;p&gt;某些广告与我的内容样式冲突，我通过增加CSS特异性解决了这个问题：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 增加CSS特异性解决样式冲突 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;blog-post &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;adsense-container &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 覆盖样式 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;xu-yao-zhu-yi-de-shi-xiang&quot;&gt;需要注意的事项&lt;&#x2F;h2&gt;
+&lt;p&gt;从我的经验来看，使用AdSense时有几点需特别注意：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;不要点击自己的广告&lt;&#x2F;strong&gt;：这违反AdSense政策且容易被检测到&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;保持内容原创&lt;&#x2F;strong&gt;：抄袭内容会导致帐户被禁&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;广告数量控制&lt;&#x2F;strong&gt;：过多广告会影响用户体验和SEO&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;定期检查政策更新&lt;&#x2F;strong&gt;：Google会不时更新其政策&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;将Google AdSense添加到Zola博客是一个相对简单的过程，但要获得良好收益需要不断优化和测试。最重要的是，保持内容质量和用户体验始终是第一位的，广告只是锦上添花。&lt;&#x2F;p&gt;
+&lt;p&gt;通过本文的步骤，你也可以为自己的博客添加AdSense，开始探索博客变现的道路。记住，内容为王，优质内容才是吸引读者和获得收益的根本。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你有任何关于博客变现的经验或问题，欢迎在评论区分享！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

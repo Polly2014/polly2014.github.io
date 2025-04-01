@@ -1,0 +1,88 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>从零开始配置Google AdSense：让你的Zola博客开始赚钱</h1><div class=content><p>在经营个人博客多年后，我开始考虑如何通过博客内容获取一些被动收入。作为技术博主，我选择了Google AdSense作为变现方式，这是最受欢迎、最容易集成的广告系统之一。本文将分享我如何一步步在Zola静态博客中配置AdSense，从零开始实现博客变现。<h2 id=wei-shi-yao-xuan-ze-google-adsense>为什么选择Google AdSense？</h2><p>在选择博客变现方式时，我对比了几种常见选项：<table><thead><tr><th><strong>变现方式</strong><th><strong>门槛</strong><th><strong>收入潜力</strong><th><strong>维护成本</strong><th><strong>用户体验影响</strong><tbody><tr><td>直接售卖产品<td>★★★★☆<td>★★★★★<td>★★★★☆<td>★☆☆☆☆<tr><td>付费会员<td>★★★★★<td>★★★★☆<td>★★★☆☆<td>★★☆☆☆<tr><td>接商业软文<td>★★★☆☆<td>★★★☆☆<td>★★☆☆☆<td>★★★☆☆<tr><td>Google AdSense<td>★★☆☆☆<td>★★★☆☆<td>★☆☆☆☆<td>★★☆☆☆</table><p>对于我这样的个人博客来说，AdSense是最佳选择：门槛低、设置简单、收入相对稳定，还能保持内容的独立性。<h2 id=qian-ti-tiao-jian>前提条件</h2><p>在开始前，请确保你已经：<ol><li>拥有一个运行中的Zola博客<li>已经配置好Google Analytics（推荐但非必须）<li>博客有一定的原创内容和访问量<li>博客有自己的域名（不是GitHub Pages默认域名）</ol><p>我的博客已经运行了一段时间，内容主要关于技术教程和AI应用，每月有几千访问量，使用自己的域名，所以符合AdSense的基本要求。<h2 id=di-yi-bu-shen-qing-google-adsensezhang-hu>第一步：申请Google AdSense账户</h2><p>申请过程出乎意料地简单：<ol><li>访问<a href=https://www.google.com/adsense/>Google AdSense官网</a><li>使用我的Google账户登录（与Google Analytics相同账户）<li>填写网站URL和联系信息<li>选择内容类型和付款首选项</ol><p>提交申请后，Google给了我一段验证代码，要求我将其添加到网站的<code>&LThead></code>部分。<h2 id=di-er-bu-zai-zolabo-ke-zhong-tian-jia-yan-zheng-dai-ma>第二步：在Zola博客中添加验证代码</h2><p>首先，我更新了<code>config.toml</code>文件，添加AdSense ID：<pre class=language-toml data-lang=toml style=background:#2b303b;color:#c0c5ce><code class=language-toml data-lang=toml><span>[extra]
+</span><span style=color:#65737e># 已有配置
+</span><span style=color:#bf616a>google_analytics_id </span><span>= "</span><span style=color:#a3be8c>G-8JD13N7PHS</span><span>"
+</span><span style=color:#65737e># 新增AdSense ID
+</span><span style=color:#bf616a>google_adsense_id </span><span>= "</span><span style=color:#a3be8c>ca-pub-XXXXXXXXXXXXXXXX</span><span>"  </span><span style=color:#65737e># 替换为你的实际ID
+</span></code></pre><p>然后，在<code>base.html</code>模板文件的<code>&LThead></code>部分添加验证代码：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span style=color:#65737e>&LT!-- Google AdSense -->
+</span><span>{% if config.extra.google_adsense_id %}
+</span><span><</span><span style=color:#bf616a>script </span><span style=color:#d08770>async src</span><span>="</span><span style=color:#a3be8c>https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config.extra.google_adsense_id }}</span><span>" </span><span style=color:#d08770>crossorigin</span><span>="</span><span style=color:#a3be8c>anonymous</span><span>">&LT/</span><span style=color:#bf616a>script</span><span>>
+</span><span>{% endif %}
+</span></code></pre><p>添加后重新构建站点并部署，然后在AdSense控制面板点击"验证"按钮。<h2 id=di-san-bu-deng-dai-zhang-hu-shen-he>第三步：等待账户审核</h2><p>添加验证代码后，需要等待Google审核我的网站。审核过程大约持续了5天，期间Google检查了我的网站内容是否符合其政策要求。幸运的是，我的博客获得了批准。<p>审核通过后，我收到了邮件通知，AdSense账户正式激活。<h2 id=di-si-bu-chuang-jian-yan-gao-dan-yuan>第四步：创建广告单元</h2><p>账户激活后，我开始创建广告单元。AdSense提供了多种广告格式，我选择了以下几种：<ol><li><strong>自动广告</strong>：让Google自动在合适位置放置广告<li><strong>文章内嵌广告</strong>：在文章内容中间穿插<li><strong>侧边栏广告</strong>：放置在博客侧边栏中</ol><h3 id=chuang-jian-wen-zhang-nei-qian-yan-gao-zu-jian>创建文章内嵌广告组件</h3><p>我创建了一个名为<code>templates/components/adsense-in-article.html</code>的组件：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>adsense-container adsense-in-article</span><span>">
+</span><span>    <</span><span style=color:#bf616a>ins </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>adsbygoogle</span><span>"
+</span><span>         </span><span style=color:#d08770>style</span><span>="display:block; text-align:center;"
+</span><span>         </span><span style=color:#d08770>data-ad-layout</span><span>="</span><span style=color:#a3be8c>in-article</span><span>"
+</span><span>         </span><span style=color:#d08770>data-ad-format</span><span>="</span><span style=color:#a3be8c>fluid</span><span>"
+</span><span>         </span><span style=color:#d08770>data-ad-client</span><span>="</span><span style=color:#a3be8c>{{ config.extra.google_adsense_id }}</span><span>"
+</span><span>         </span><span style=color:#d08770>data-ad-slot</span><span>="</span><span style=color:#a3be8c>1234567890</span><span>">&LT/</span><span style=color:#bf616a>ins</span><span>>
+</span><span>    <</span><span style=color:#bf616a>script</span><span>>
+</span><span>         (</span><span style=color:#bf616a>adsbygoogle </span><span>= window.adsbygoogle || []).</span><span style=color:#bf616a>push</span><span>({});
+</span><span>    &LT/</span><span style=color:#bf616a>script</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>div</span><span>>
+</span></code></pre><p>注意：这里的<code>data-ad-slot</code>需要替换为AdSense控制面板中创建广告单元时获得的实际ID。<h3 id=chuang-jian-ce-bian-lan-yan-gao-zu-jian>创建侧边栏广告组件</h3><p>类似地，我创建了<code>templates/components/adsense-sidebar.html</code>：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>adsense-container adsense-sidebar</span><span>">
+</span><span>    <</span><span style=color:#bf616a>ins </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>adsbygoogle</span><span>"
+</span><span>         </span><span style=color:#d08770>style</span><span>="display:block"
+</span><span>         </span><span style=color:#d08770>data-ad-client</span><span>="</span><span style=color:#a3be8c>{{ config.extra.google_adsense_id }}</span><span>"
+</span><span>         </span><span style=color:#d08770>data-ad-slot</span><span>="</span><span style=color:#a3be8c>0987654321</span><span>"
+</span><span>         </span><span style=color:#d08770>data-ad-format</span><span>="</span><span style=color:#a3be8c>auto</span><span>"
+</span><span>         </span><span style=color:#d08770>data-full-width-responsive</span><span>="</span><span style=color:#a3be8c>true</span><span>">&LT/</span><span style=color:#bf616a>ins</span><span>>
+</span><span>    <</span><span style=color:#bf616a>script</span><span>>
+</span><span>         (</span><span style=color:#bf616a>adsbygoogle </span><span>= window.adsbygoogle || []).</span><span style=color:#bf616a>push</span><span>({});
+</span><span>    &LT/</span><span style=color:#bf616a>script</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>div</span><span>>
+</span></code></pre><h2 id=di-wu-bu-zheng-he-yan-gao-dao-bo-ke-mo-ban>第五步：整合广告到博客模板</h2><p>接下来，我将广告组件整合到我的博客模板中。首先，我修改博文模板<code>blog.html</code>：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>blog-post</span><span>">
+</span><span>    <</span><span style=color:#bf616a>h1</span><span>>{{ page.title }}&LT/</span><span style=color:#bf616a>h1</span><span>>
+</span><span>    
+</span><span>    </span><span style=color:#65737e>&LT!-- 文章前半部分 -->
+</span><span>    {% if page.content | length > 1500 %}
+</span><span>        {{ page.content | safe | slice(end=page.content | length / 2) | safe }}
+</span><span>        
+</span><span>        </span><span style=color:#65737e>&LT!-- 插入文章内广告 -->
+</span><span>        {% include "components/adsense-in-article.html" %}
+</span><span>        
+</span><span>        </span><span style=color:#65737e>&LT!-- 文章后半部分 -->
+</span><span>        {{ page.content | safe | slice(start=page.content | length / 2) | safe }}
+</span><span>    {% else %}
+</span><span>        {{ page.content | safe }}
+</span><span>    {% endif %}
+</span><span>&LT/</span><span style=color:#bf616a>div</span><span>>
+</span></code></pre><p>这段代码确保只有在文章内容足够长时才插入广告，避免短文章中出现过多广告。<p>然后，我将侧边栏广告添加到<code>base.html</code>中：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>sidebar pure-u-1 pure-u-md-1-5</span><span>">
+</span><span>    </span><span style=color:#65737e>&LT!-- 个人介绍等内容 -->
+</span><span>    
+</span><span>    </span><span style=color:#65737e>&LT!-- 添加侧边栏广告 -->
+</span><span>    {% include "components/adsense-sidebar.html" %}
+</span><span>    
+</span><span>    </span><span style=color:#65737e>&LT!-- 导航链接 -->
+</span><span>&LT/</span><span style=color:#bf616a>div</span><span>>
+</span></code></pre><h2 id=di-liu-bu-tian-jia-yan-gao-yang-shi>第六步：添加广告样式</h2><p>为了让广告看起来更整洁，我在<code>static/css/style_new.css</code>中添加了一些样式：<pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#65737e>/* 广告容器基本样式 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>adsense-container </span><span>{
+</span><span>    margin: </span><span style=color:#d08770>2em 0</span><span>;
+</span><span>    text-align: center;
+</span><span>    overflow: hidden;
+</span><span>    width: </span><span style=color:#d08770>100%</span><span>;
+</span><span>    clear: both;
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>/* 文章内嵌广告 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>adsense-in-article </span><span>{
+</span><span>    padding: </span><span style=color:#d08770>1em 0</span><span>;
+</span><span>    border-top: </span><span style=color:#d08770>1px </span><span>solid </span><span style=color:#96b5b4>#eaeaea</span><span>;
+</span><span>    border-bottom: </span><span style=color:#d08770>1px </span><span>solid </span><span style=color:#96b5b4>#eaeaea</span><span>;
+</span><span>    background-color: </span><span style=color:#96b5b4>rgba</span><span>(</span><span style=color:#d08770>250</span><span>, </span><span style=color:#d08770>250</span><span>, </span><span style=color:#d08770>250</span><span>, </span><span style=color:#d08770>0.5</span><span>);
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>/* 侧边栏广告 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>adsense-sidebar </span><span>{
+</span><span>    margin-top: </span><span style=color:#d08770>2em</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>/* 响应式调整 */
+</span><span style=color:#b48ead>@media </span><span>(max-width: </span><span style=color:#d08770>768px</span><span>) {
+</span><span>    </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>adsense-sidebar </span><span>{
+</span><span>        margin: </span><span style=color:#d08770>1em 0</span><span>;  </span><span style=color:#65737e>/* 移动端缩小边距 */
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=di-qi-bu-you-hua-yan-gao-biao-xian>第七步：优化广告表现</h2><p>在运行一段时间后，我发现了一些优化广告表现的技巧：<h3 id=yan-gao-wei-zhi-you-hua>广告位置优化</h3><p>经过测试，我发现以下位置点击率最高：<ol><li>文章开头的第一段后面<li>内容中的图片附近<li>侧边栏顶部区域</ol><h3 id=ping-heng-yong-hu-ti-yan-yu-shou-yi>平衡用户体验与收益</h3><p>一开始我放置了较多广告，但发现这影响了用户体验。最终我采取了以下策略：<ul><li>每篇文章最多放置2个广告<li>确保广告与内容明显分开<li>避免在移动设备上显示过多广告</ul><h3 id=a-bce-shi-bu-tong-yan-gao-yang-shi>A/B测试不同广告样式</h3><p>我创建了不同风格的广告单元，并轮换测试它们的表现：<ul><li>纯文本广告 vs 显示广告<li>横幅广告 vs 信息流广告<li>自动调整大小 vs 固定大小</ul><h2 id=xiao-guo-yu-shou-yi-fen-xi>效果与收益分析</h2><p>实施AdSense大约3个月后，我开始看到稳定的收益。虽然收入不足以让我辞职（哈哈），但足以支付博客的服务器费用和一些咖啡钱。<p>我注意到以下有趣现象：<ol><li><strong>高质量内容带来更多收益</strong>：解决具体问题的技术文章广告点击率更高<li><strong>季节性波动明显</strong>：假期期间收益会下降<li><strong>特定主题更赚钱</strong>：与AI和云服务相关的文章广告单价更高</ol><h2 id=chang-jian-wen-ti-yu-jie-jue-fang-an>常见问题与解决方案</h2><p>在配置过程中，我遇到了一些问题，分享解决方案：<h3 id=1-yan-gao-bu-xian-shi>1. 广告不显示</h3><p>最初我的广告没有显示，原因是JavaScript加载顺序问题。确保AdSense脚本在<code>&LThead></code>中加载，而广告单元的激活代码在对应位置。<h3 id=2-yi-dong-duan-xian-shi-yi-chang>2. 移动端显示异常</h3><p>一些广告在移动设备上显示异常，解决方法是添加响应式CSS并使用<code>data-full-width-responsive="true"</code>属性。<h3 id=3-yan-gao-yu-nei-rong-chong-tu>3. 广告与内容冲突</h3><p>某些广告与我的内容样式冲突，我通过增加CSS特异性解决了这个问题：<pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#65737e>/* 增加CSS特异性解决样式冲突 */
+</span><span style=color:#bf616a>body </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>blog-post </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>adsense-container </span><span>{
+</span><span>    </span><span style=color:#65737e>/* 覆盖样式 */
+</span><span>}
+</span></code></pre><h2 id=xu-yao-zhu-yi-de-shi-xiang>需要注意的事项</h2><p>从我的经验来看，使用AdSense时有几点需特别注意：<ol><li><strong>不要点击自己的广告</strong>：这违反AdSense政策且容易被检测到<li><strong>保持内容原创</strong>：抄袭内容会导致帐户被禁<li><strong>广告数量控制</strong>：过多广告会影响用户体验和SEO<li><strong>定期检查政策更新</strong>：Google会不时更新其政策</ol><h2 id=zong-jie>总结</h2><p>将Google AdSense添加到Zola博客是一个相对简单的过程，但要获得良好收益需要不断优化和测试。最重要的是，保持内容质量和用户体验始终是第一位的，广告只是锦上添花。<p>通过本文的步骤，你也可以为自己的博客添加AdSense，开始探索博客变现的道路。记住，内容为王，优质内容才是吸引读者和获得收益的根本。<p>如果你有任何关于博客变现的经验或问题，欢迎在评论区分享！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
