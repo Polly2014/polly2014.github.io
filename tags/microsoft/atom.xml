@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Microsoft</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/microsoft/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-04-02T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/microsoft/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands vs Roo Code: 微软项目开发工具选择指南</title>
+        <published>2025-04-02T00:00:00+00:00</published>
+        <updated>2025-04-02T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-vs-roo-code-ms-projects/" type="text/html"/>
+        <id>https://polly2014.github.io/openhands-vs-roo-code-ms-projects/</id>
+        
+        <content type="html">&lt;h1 id=&quot;openhands-vs-roo-code-wei-ruan-xiang-mu-kai-fa-gong-ju-xuan-ze-zhi-nan&quot;&gt;OpenHands vs Roo Code: 微软项目开发工具选择指南&lt;&#x2F;h1&gt;
+&lt;p&gt;在前一篇&lt;a href=&quot;&#x2F;ai-coding-tools-comparison&quot;&gt;《AI编程助手全面横评：七大工具功能与架构对比》&lt;&#x2F;a&gt;中，我们对七大AI编程工具进行了全面评估。本文将聚焦OpenHands和Roo Code这两款开源工具在微软生态系统内的使用体验，特别是涉及Azure认证的项目场景，帮助开发团队做出明智的工具选择。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;1-gong-ju-gai-lan-dui-bi&quot;&gt;1. 工具概览对比&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Roo Code&lt;&#x2F;th&gt;&lt;th&gt;OpenHands&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;核心定位&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;CLine的进化版，专注代码生成&lt;&#x2F;td&gt;&lt;td&gt;开源AI开发者代理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MCP集成&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;预集成MCP Server&lt;&#x2F;td&gt;&lt;td&gt;需定制开发&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;部署复杂度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;轻量级（Server + VS Code配置）&lt;&#x2F;td&gt;&lt;td&gt;复杂（依赖Docker）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Azure认证支持&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;内置支持&lt;&#x2F;td&gt;&lt;td&gt;需额外开发&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;定制化程度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;td&gt;非常高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;资源需求&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;td&gt;较高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;适用项目类型&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;现有Azure服务项目&lt;&#x2F;td&gt;&lt;td&gt;新开发项目&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;2-zai-azureren-zheng-huan-jing-zhong-de-biao-xian&quot;&gt;2. 在Azure认证环境中的表现&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;roo-codeyou-shi&quot;&gt;Roo Code优势&lt;&#x2F;h3&gt;
+&lt;p&gt;Roo Code在涉及Azure认证的项目（如Kusto、Titan等微软内部服务）中表现出明显优势：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;预集成MCP服务器&lt;&#x2F;strong&gt;：专为Azure认证流程优化&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;无缝连接微软服务&lt;&#x2F;strong&gt;：与Kusto、Titan等系统的直接兼容性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;认证处理简化&lt;&#x2F;strong&gt;：无需复杂的自定义开发&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;部署门槛低&lt;&#x2F;strong&gt;：仅需服务器安装和VS Code配置&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;继承CLine优势&lt;&#x2F;strong&gt;：保留终端能力的同时提升代码生成质量&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;对于已经使用微软认证基础设施的项目，Roo Code提供了立即可用的解决方案，最小化集成挑战，加快价值实现。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;openhandsju-xian&quot;&gt;OpenHands局限&lt;&#x2F;h3&gt;
+&lt;p&gt;OpenHands在Azure认证环境中面临一些挑战：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;需要定制适配&lt;&#x2F;strong&gt;：与Azure服务集成需要额外开发&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;认证流程复杂&lt;&#x2F;strong&gt;：需手动实现OAuth流程&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;部署门槛高&lt;&#x2F;strong&gt;：依赖Docker，配置步骤较多&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;资源需求大&lt;&#x2F;strong&gt;：运行完整功能需较高系统资源&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;3-xin-xiang-mu-kai-fa-zhong-de-biao-xian&quot;&gt;3. 新项目开发中的表现&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;openhandsyou-shi&quot;&gt;OpenHands优势&lt;&#x2F;h3&gt;
+&lt;p&gt;在全新项目开发场景中，特别是没有预设认证需求的情况下，OpenHands展现出独特优势：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CodeAct框架&lt;&#x2F;strong&gt;：提供更强大的自主开发能力&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;高度定制化&lt;&#x2F;strong&gt;：可根据项目需求深度定制&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;灵活模型集成&lt;&#x2F;strong&gt;：支持多种LLM后端&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;开放架构&lt;&#x2F;strong&gt;：为广泛修改和适应而设计&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;强大代理能力&lt;&#x2F;strong&gt;：自动推理和问题解决能力&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;全流程控制&lt;&#x2F;strong&gt;：对整个开发流程的完整掌控&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;roo-codeju-xian&quot;&gt;Roo Code局限&lt;&#x2F;h3&gt;
+&lt;p&gt;在新项目开发中，Roo Code相对OpenHands有一定局限：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;专注代码生成&lt;&#x2F;strong&gt;：而非完整开发流程&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;定制深度有限&lt;&#x2F;strong&gt;：比起OpenHands的全方位定制&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自主性较低&lt;&#x2F;strong&gt;：自动完成复杂任务的能力较弱&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;微软生态倾向&lt;&#x2F;strong&gt;：更适合微软技术栈项目&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;4-mcpzhi-chi-dui-bi&quot;&gt;4. MCP支持对比&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;MCP相关能力&lt;&#x2F;th&gt;&lt;th&gt;Roo Code&lt;&#x2F;th&gt;&lt;th&gt;OpenHands&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MCP兼容性&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;增强MCP兼容&lt;&#x2F;td&gt;&lt;td&gt;自有API&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;预配置服务器&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✓&lt;&#x2F;td&gt;&lt;td&gt;✗&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Azure认证集成&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✓&lt;&#x2F;td&gt;&lt;td&gt;✗&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;工具生态系统&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;微软工具优先&lt;&#x2F;td&gt;&lt;td&gt;通用工具支持&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;未来方向&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;深化微软生态整合&lt;&#x2F;td&gt;&lt;td&gt;可能采用融合路径&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Roo Code继承了CLine的MCP兼容性并进行了增强，为微软服务提供了更好的集成体验。与此同时，OpenHands采用了自有API，虽然灵活性更高，但需要更多工作才能与微软服务集成。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;5-shi-jian-jian-yi&quot;&gt;5. 实践建议&lt;&#x2F;h2&gt;
+&lt;p&gt;根据项目性质和团队需求，我们提供以下实施建议：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;gua-he-xuan-ze-roo-codede-chang-jing&quot;&gt;适合选择Roo Code的场景&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;使用Azure认证服务&lt;&#x2F;strong&gt;的现有项目&lt;&#x2F;li&gt;
+&lt;li&gt;需要立即与&lt;strong&gt;Kusto、Titan&lt;&#x2F;strong&gt;等微软服务集成&lt;&#x2F;li&gt;
+&lt;li&gt;需要&lt;strong&gt;最小配置&lt;&#x2F;strong&gt;即可实现微软生态系统兼容&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;终端重度用户&lt;&#x2F;strong&gt;团队（从CLine升级）&lt;&#x2F;li&gt;
+&lt;li&gt;注重&lt;strong&gt;开发速度&lt;&#x2F;strong&gt;胜过定制深度&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;gua-he-xuan-ze-openhandsde-chang-jing&quot;&gt;适合选择OpenHands的场景&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全新项目&lt;&#x2F;strong&gt;且无预设认证需求&lt;&#x2F;li&gt;
+&lt;li&gt;需要&lt;strong&gt;深度定制&lt;&#x2F;strong&gt;和代理自主能力&lt;&#x2F;li&gt;
+&lt;li&gt;投入&lt;strong&gt;长期灵活架构&lt;&#x2F;strong&gt;的团队&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;开源优先&lt;&#x2F;strong&gt;且资源充足的组织&lt;&#x2F;li&gt;
+&lt;li&gt;需要&lt;strong&gt;高度自主解决问题&lt;&#x2F;strong&gt;能力的复杂项目&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;hun-he-ce-lue&quot;&gt;混合策略&lt;&#x2F;h3&gt;
+&lt;p&gt;一些团队可以考虑采用混合策略：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;在涉及Azure认证的微软服务项目中使用&lt;strong&gt;Roo Code&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;在需要深度定制的新项目中使用&lt;strong&gt;OpenHands&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;长期关注两种工具的&lt;strong&gt;融合可能性&lt;&#x2F;strong&gt;，特别是MCP和CodeAct的结合&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;6-shi-li-chang-jing-fen-xi&quot;&gt;6. 示例场景分析&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;chang-jing-1-azurefen-xi-ping-tai-ji-cheng&quot;&gt;场景1：Azure分析平台集成&lt;&#x2F;h3&gt;
+&lt;p&gt;假设团队需要开发一个与Azure Kusto数据库和Titan搜索服务集成的分析应用：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;使用Roo Code&lt;&#x2F;strong&gt;：几小时内完成认证配置，直接调用相关服务&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;使用OpenHands&lt;&#x2F;strong&gt;：需要数天时间开发认证适配层，实现相同功能&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;chang-jing-2-chuang-xin-aizhu-shou-kai-fa&quot;&gt;场景2：创新AI助手开发&lt;&#x2F;h3&gt;
+&lt;p&gt;团队计划开发一个全新的、高度定制化的开发助手：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;使用OpenHands&lt;&#x2F;strong&gt;：利用CodeAct框架快速构建自主循环，高度定制化&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;使用Roo Code&lt;&#x2F;strong&gt;：功能将受限于其预设能力，难以实现深度定制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jie-lun&quot;&gt;结论&lt;&#x2F;h2&gt;
+&lt;p&gt;对于微软生态系统内的开发团队，Roo Code和OpenHands代表了两种不同但互补的开发工具选择。&lt;strong&gt;对涉及Azure认证的现有系统&lt;&#x2F;strong&gt;，特别是需要连接Kusto或Titan等服务的项目，Roo Code提供了几乎零摩擦的集成体验。而&lt;strong&gt;对于新的开发项目&lt;&#x2F;strong&gt;，尤其是那些重视高度定制和自主性的场景，OpenHands则提供了更大的灵活性和潜力。&lt;&#x2F;p&gt;
+&lt;p&gt;明智的做法是根据具体项目需求选择合适的工具，有时甚至在不同项目中同时使用两者，以充分发挥各自的优势。随着MCP作为行业标准的普及以及CodeAct行为模式的发展，我们可以期待这两种工具在未来可能出现更多融合，为开发者提供兼具标准化和高度自主性的完整解决方案。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果您有使用这些工具的实际经验或见解，欢迎在评论区分享！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
