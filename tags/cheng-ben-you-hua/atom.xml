@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 成本优化</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/cheng-ben-you-hua/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-04-11T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/cheng-ben-you-hua/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Claude 3.7 Sonnet模型使用成本分析：基于OpenHands实际案例</title>
+        <published>2025-04-11T00:00:00+00:00</published>
+        <updated>2025-04-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/claude-37-cost-analysis/" type="text/html"/>
+        <id>https://polly2014.github.io/claude-37-cost-analysis/</id>
+        
+        <content type="html">&lt;h1 id=&quot;claude-3-7-sonnetmo-xing-shi-yong-cheng-ben-fen-xi-ji-yu-openhandsshi-ji-an-li&quot;&gt;Claude 3.7 Sonnet模型使用成本分析：基于OpenHands实际案例&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;yi-yin-yan&quot;&gt;一、引言&lt;&#x2F;h2&gt;
+&lt;p&gt;随着大语言模型(LLM)在生产环境中的广泛应用，其使用成本已成为企业关注的焦点。本文通过分析OpenHands平台的实际使用日志，深入解析Claude 3.7 Sonnet模型的收费模式和成本结构，并提出相应的优化策略。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;er-claude-3-7-sonnetmo-xing-gai-lan&quot;&gt;二、Claude 3.7 Sonnet模型概览&lt;&#x2F;h2&gt;
+&lt;p&gt;从日志中可以看出，Claude 3.7 Sonnet模型具有以下关键参数：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;&amp;quot;key&amp;quot;: &amp;quot;claude-3-7-sonnet-20250219&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;max_tokens&amp;quot;: 128000,
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;max_input_tokens&amp;quot;: 200000,
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;max_output_tokens&amp;quot;: 128000,
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;input_cost_per_token&amp;quot;: 3e-06,  &#x2F;&#x2F; 每输入token $0.000003
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;cache_creation_input_token_cost&amp;quot;: 3.75e-06,  &#x2F;&#x2F; 缓存创建的成本为每token $0.00000375
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;cache_read_input_token_cost&amp;quot;: 3e-07,  &#x2F;&#x2F; 缓存读取的成本为每token $0.0000003
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;output_cost_per_token&amp;quot;: 1.5e-05,  &#x2F;&#x2F; 每输出token $0.000015
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这些参数揭示了Claude 3.7 Sonnet的基础定价结构，输入token比输出token便宜5倍，并且模型支持高达20万输入token的超长上下文。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-shi-ji-ren-wu-zhong-de-cheng-ben-gou-cheng&quot;&gt;三、实际任务中的成本构成&lt;&#x2F;h2&gt;
+&lt;p&gt;我们以一个杭州三天旅游规划任务为例，分析整个过程中的成本构成。此任务需要生成一个基于Flask的旅游规划网页。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-chu-ci-qing-qiu-yu-gui-hua-jie-duan&quot;&gt;1. 初次请求与规划阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: llm.py:561 - Cost: 0.10 USD | Accumulated Cost: 0.10 USD
+&lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 58.893 seconds
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens: 5411 | Output tokens: 4202
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache write): 5407
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;第一次调用是成本最高的，分析如下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入成本：5411 tokens × $0.000003 = $0.0162&lt;&#x2F;li&gt;
+&lt;li&gt;输出成本：4202 tokens × $0.000015 = $0.0630&lt;&#x2F;li&gt;
+&lt;li&gt;缓存写入成本：5407 tokens × $0.00000375 - 5411 tokens × $0.000003 = $0.0001&lt;&#x2F;li&gt;
+&lt;li&gt;总成本：约$0.10&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-wen-jian-chuang-jian-hou-de-zhi-ling-gui-hua&quot;&gt;2. 文件创建后的指令规划&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:40 - openhands:DEBUG: llm.py:561 - Cost: 0.03 USD | Accumulated Cost: 0.13 USD
+&lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 3.062 seconds
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens: 9639 | Output tokens: 102
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache hit): 5407
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache write): 4226
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;第二次调用成本大幅降低：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;缓存命中节省：5407 tokens (使用缓存，成本为 5407 × $0.0000003 = $0.0016，比正常输入节省了97%)&lt;&#x2F;li&gt;
+&lt;li&gt;新增输入成本：4232 tokens × $0.000003 = $0.0127&lt;&#x2F;li&gt;
+&lt;li&gt;输出成本：102 tokens × $0.000015 = $0.0015&lt;&#x2F;li&gt;
+&lt;li&gt;缓存写入成本：4226 tokens × ($0.00000375 - $0.000003) = $0.0003&lt;&#x2F;li&gt;
+&lt;li&gt;总成本：约$0.03&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-yi-lai-an-zhuang-hou-de-zhi-ling-gui-hua&quot;&gt;3. 依赖安装后的指令规划&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:45 - openhands:DEBUG: llm.py:561 - Cost: 0.01 USD | Accumulated Cost: 0.14 USD
+&lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 2.354 seconds
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens: 10457 | Output tokens: 99
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache hit): 9633
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache write): 818
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;第三次调用成本进一步降低：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;缓存命中节省：9633 tokens (缓存成本 $0.0029，比正常输入节省了97%)&lt;&#x2F;li&gt;
+&lt;li&gt;新增输入成本：824 tokens × $0.000003 = $0.0025&lt;&#x2F;li&gt;
+&lt;li&gt;输出成本：99 tokens × $0.000015 = $0.0015&lt;&#x2F;li&gt;
+&lt;li&gt;缓存写入成本：818 tokens × ($0.00000375 - $0.000003) = $0.0001&lt;&#x2F;li&gt;
+&lt;li&gt;总成本：约$0.01&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;4-ying-yong-qi-dong-hou-de-zui-zhong-hui-fu&quot;&gt;4. 应用启动后的最终回复&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:10:24 - openhands:DEBUG: llm.py:561 - Cost: 0.01 USD | Accumulated Cost: 0.15 USD
+&lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 8.065 seconds
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens: 10753 | Output tokens: 419
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache hit): 10451
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache write): 296
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;最终调用：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;缓存命中节省：10451 tokens (缓存成本 $0.0031，比正常输入节省了97%)&lt;&#x2F;li&gt;
+&lt;li&gt;新增输入成本：302 tokens × $0.000003 = $0.0009&lt;&#x2F;li&gt;
+&lt;li&gt;输出成本：419 tokens × $0.000015 = $0.0063&lt;&#x2F;li&gt;
+&lt;li&gt;缓存写入成本：296 tokens × ($0.00000375 - $0.000003) = $0.0000&lt;&#x2F;li&gt;
+&lt;li&gt;总成本：约$0.01&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;5-ren-wu-zong-cheng-ben&quot;&gt;5. 任务总成本&lt;&#x2F;h3&gt;
+&lt;p&gt;整个任务的累计成本为$0.15，共处理了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入tokens：36,260 tokens (含重复)&lt;&#x2F;li&gt;
+&lt;li&gt;缓存命中：25,491 tokens (占70.3%)&lt;&#x2F;li&gt;
+&lt;li&gt;输出tokens：4,822 tokens&lt;&#x2F;li&gt;
+&lt;li&gt;实际编码工作：创建了一个完整的Flask网页应用&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;si-cheng-ben-xiao-lu-fen-xi&quot;&gt;四、成本效率分析&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-huan-cun-ji-zhi-de-xian-zhu-xiao-yi&quot;&gt;1. 缓存机制的显著效益&lt;&#x2F;h3&gt;
+&lt;p&gt;通过对日志的分析，我们发现缓存机制极大地降低了API调用成本：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;调用序号&lt;&#x2F;th&gt;&lt;th&gt;缓存命中率&lt;&#x2F;th&gt;&lt;th&gt;成本降低比例&lt;&#x2F;th&gt;&lt;th&gt;延迟时间&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;58.89秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;56.1%&lt;&#x2F;td&gt;&lt;td&gt;75.4%&lt;&#x2F;td&gt;&lt;td&gt;3.06秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;92.1%&lt;&#x2F;td&gt;&lt;td&gt;92.3%&lt;&#x2F;td&gt;&lt;td&gt;2.35秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;97.2%&lt;&#x2F;td&gt;&lt;td&gt;93.9%&lt;&#x2F;td&gt;&lt;td&gt;8.07秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;随着会话进行，缓存命中率不断提高，第四次API调用的缓存命中率达到了惊人的97.2%，这不仅降低了成本，也显著提高了响应速度。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-ling-ren-zhu-mu-de-cheng-ben-xiao-lu&quot;&gt;2. 令人瞩目的成本效率&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;首次调用成本占总成本的67%&lt;&#x2F;li&gt;
+&lt;li&gt;后续三次调用虽包含大量token，但总共仅占33%的成本&lt;&#x2F;li&gt;
+&lt;li&gt;平均每个输出token的综合成本为$0.000031（考虑输入成本）&lt;&#x2F;li&gt;
+&lt;li&gt;对比未使用缓存的情况，节省了约65%的成本&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-mo-xing-yan-chi-yu-tokenguan-xi&quot;&gt;3. 模型延迟与token关系&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;第一次: 58.9秒处理9,613 tokens，处理速率163 tokens&#x2F;秒
+&lt;&#x2F;span&gt;&lt;span&gt;第二次: 3.1秒处理9,741 tokens，处理速率3,142 tokens&#x2F;秒
+&lt;&#x2F;span&gt;&lt;span&gt;第三次: 2.4秒处理10,556 tokens，处理速率4,398 tokens&#x2F;秒
+&lt;&#x2F;span&gt;&lt;span&gt;第四次: 8.1秒处理11,172 tokens，处理速率1,380 tokens&#x2F;秒
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;从上述数据可以看出，缓存命中显著提高了处理速度，但最终回复较长时可能导致延迟增加。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-cheng-ben-you-hua-ce-lue&quot;&gt;五、成本优化策略&lt;&#x2F;h2&gt;
+&lt;p&gt;基于对Claude 3.7 Sonnet模型使用成本的分析，我们提出以下优化策略：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-chong-fen-li-yong-huan-cun-ji-zhi&quot;&gt;1. 充分利用缓存机制&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;设计对话流程时保持上下文连贯性，增加缓存命中率&lt;&#x2F;li&gt;
+&lt;li&gt;在系统设计中考虑缓存策略，如本例中的&lt;code&gt;caching_prompt=True&lt;&#x2F;code&gt;配置&lt;&#x2F;li&gt;
+&lt;li&gt;监控缓存命中指标，识别优化机会&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-he-li-kong-zhi-shu-chu-tokenshu-liang&quot;&gt;2. 合理控制输出token数量&lt;&#x2F;h3&gt;
+&lt;p&gt;由于输出token的成本是输入token的5倍，控制输出长度尤为重要：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用明确的指令限制回复长度&lt;&#x2F;li&gt;
+&lt;li&gt;对于生成型任务，可以分步骤生成，减少冗余输出&lt;&#x2F;li&gt;
+&lt;li&gt;在适当场景使用temperature=0，减少不必要的创意输出&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-you-hua-shang-xia-wen-chuang-kou-da-xiao&quot;&gt;3. 优化上下文窗口大小&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;定期清理不必要的上下文内容，避免无效信息占用token&lt;&#x2F;li&gt;
+&lt;li&gt;使用总结代替完整历史，在保留关键信息的同时减少token用量&lt;&#x2F;li&gt;
+&lt;li&gt;针对不同任务类型选择合适的上下文管理策略&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;4-mo-xing-xuan-ze-fen-ceng-ce-lue&quot;&gt;4. 模型选择分层策略&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;对于简单任务使用更轻量的模型，如Claude 3 Haiku&lt;&#x2F;li&gt;
+&lt;li&gt;复杂任务才使用Claude 3.7 Sonnet等高级模型&lt;&#x2F;li&gt;
+&lt;li&gt;建立模型使用成本&#x2F;效果评估矩阵，指导选型决策&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;liu-mo-xing-biao-xian-yu-jie-zhi-ping-gu&quot;&gt;六、模型表现与价值评估&lt;&#x2F;h2&gt;
+&lt;p&gt;从日志中可以看出，Claude 3.7 Sonnet在以下方面表现出色：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;技术理解能力&lt;&#x2F;strong&gt;：正确识别了需要使用Flask框架创建网页应用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;编程能力&lt;&#x2F;strong&gt;：生成了可直接运行的代码，包括正确的语法和逻辑&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;依赖推理&lt;&#x2F;strong&gt;：自主判断并安装了必要的依赖包&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;问题解决能力&lt;&#x2F;strong&gt;：完成了从简单指令到实际可用应用的转换&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这些能力在$0.15美元的成本下交付，相比人工开发的时间成本和机会成本，呈现出显著的经济价值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-jie-lun-yu-zhan-wang&quot;&gt;七、结论与展望&lt;&#x2F;h2&gt;
+&lt;p&gt;通过分析Claude 3.7 Sonnet模型在实际应用场景中的成本构成，我们可以得出以下结论：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Claude 3.7 Sonnet的定价结构设计合理，通过缓存机制能够有效降低成本&lt;&#x2F;li&gt;
+&lt;li&gt;连续多轮对话具有明显的成本效率，初次调用后成本显著下降&lt;&#x2F;li&gt;
+&lt;li&gt;通过策略优化，可以在保持或提高模型效用的同时，大幅降低使用成本&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;随着大语言模型技术的不断发展，我们预计未来模型的成本效率将进一步提高，同时性能将持续改善。企业应当关注成本优化策略，在充分利用AI技术的同时控制预算支出，实现最佳投资回报。&lt;&#x2F;p&gt;
+&lt;p&gt;如果您正在使用Claude等大模型进行业务开发，希望本文的数据分析和优化建议能为您提供参考。欢迎在评论区分享您的使用经验和成本优化策略！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
