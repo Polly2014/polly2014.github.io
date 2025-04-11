@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI助手</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/aizhu-shou/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-04-11T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/aizhu-shou/atom.xml</id>
+    <entry xml:lang="en">
+        <title>OpenHands 运行流程分析：杭州三天旅游案例</title>
+        <published>2025-04-11T00:00:00+00:00</published>
+        <updated>2025-04-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/openhands-running-logic-analysis/" type="text/html"/>
+        <id>https://polly2014.github.io/openhands-running-logic-analysis/</id>
+        
+        <content type="html">&lt;h1 id=&quot;openhands-yun-xing-liu-cheng-fen-xi-hang-zhou-san-tian-lu-you-an-li&quot;&gt;OpenHands 运行流程分析：杭州三天旅游案例&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;yi-zheng-ti-jia-gou-gai-shu&quot;&gt;一、整体架构概述&lt;&#x2F;h2&gt;
+&lt;p&gt;OpenHands 是一个基于 Agent Hub 的智能端到端编码平台，通过多个组件的协同工作来完成用户任务。从日志可以看出，系统主要包括以下核心部分：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;会话管理器 (Conversation Manager)&lt;&#x2F;strong&gt;：负责创建、管理和跟踪对话&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;代理控制器 (Agent Controller)&lt;&#x2F;strong&gt;：协调各组件的工作流程&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;大模型组件 (LLM)&lt;&#x2F;strong&gt;：使用 Claude 3.7 Sonnet 进行核心推理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;运行时环境 (Runtime)&lt;&#x2F;strong&gt;：在 Docker 容器中提供安全的执行环境&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Agent工具集 (Agent Tools)&lt;&#x2F;strong&gt;：包括文件操作、命令执行等各种工具&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;事件流系统 (Event Stream)&lt;&#x2F;strong&gt;：所有组件通过事件流进行通信&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;er-gong-zuo-liu-cheng-fen-jie&quot;&gt;二、工作流程分解&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-hui-hua-chu-shi-hua-jie-duan&quot;&gt;1. 会话初始化阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:07 - openhands:INFO: manage_conversations.py:148 - Initializing new conversation
+&lt;&#x2F;span&gt;&lt;span&gt;12:08:07 - openhands:INFO: manage_conversations.py:54 - Creating conversation
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;当用户发起请求时，系统首先初始化一个新的会话，分配一个唯一的会话 ID (&lt;code&gt;740715d40a3c4be385b644a20b0fdfaf&lt;&#x2F;code&gt;)，用于后续所有组件的协调和跟踪。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-pei-zhi-jia-zai-jie-duan&quot;&gt;2. 配置加载阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:07 - openhands:INFO: manage_conversations.py:58 - Loading settings
+&lt;&#x2F;span&gt;&lt;span&gt;12:08:07 - openhands:DEBUG: llm.py:385 - Model info: { &amp;quot;key&amp;quot;: &amp;quot;claude-3-7-sonnet-20250219&amp;quot;, ... }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统加载配置信息，包括语言模型的设置、最大token限制、支持的功能等。此案例使用的是 Anthropic 的 Claude 3.7 Sonnet 模型。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-yun-xing-shi-huan-jing-zhun-bei&quot;&gt;3. 运行时环境准备&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:07 - openhands:DEBUG: agent_session.py:232 - Initializing runtime `docker` now...
+&lt;&#x2F;span&gt;&lt;span&gt;12:08:08 - openhands:INFO: runtime_build.py:182 - Building image: ghcr.io&#x2F;all-hands-ai&#x2F;runtime:oh_v0.29.1...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统启动一个隔离的 Docker 容器作为运行时环境，这样可以安全地执行代码而不影响主系统。容器有特定端口映射（53941、56576）用于网络应用访问。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-gong-ju-jia-zai-jie-duan&quot;&gt;4. 工具加载阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:38 - openhands:DEBUG: codeact_agent.py:75 - TOOLS loaded for CodeActAgent: execute_bash, think, finish, web_read, browser, execute_ipython_cell, str_replace_editor
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统启动 Agent (CodeActAgent) 并为其加载相关工具，让 Agent 能够执行命令、编辑文件等操作。这些工具是 CodeActAgent 与 Runtime 运行时环境交互的接口。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-yong-hu-shu-ru-chu-li&quot;&gt;5. 用户输入处理&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:38 - openhands:DEBUG: agent_controller.py:441 - **MessageAction** (source=EventSource.USER)
+&lt;&#x2F;span&gt;&lt;span&gt;CONTENT: 给我做一个杭州三天春游的规划，给我一个可访问的web让我看规划内容
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统捕获并处理用户输入，识别出这是一个需要创建网页内容的请求。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;6-agent-si-kao-yu-gui-hua-jie-duan&quot;&gt;6. Agent 思考与规划阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:38 - openhands:DEBUG: logger.py:445 - Logging to ...&#x2F;prompt_001.log
+&lt;&#x2F;span&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: logger.py:445 - Logging to ...&#x2F;response_001.log
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Agent 使用大型语言模型 (Claude 3.7) 分析用户请求，并制定执行计划。这个过程大约持续了59秒，系统记录了完整的思考过程。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;7-wen-jian-chuang-jian-cao-zuo&quot;&gt;7. 文件创建操作&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: stream.py:273 - Adding FileEditAction id=6 from AGENT
+&lt;&#x2F;span&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: agent_controller.py:795 - **FileEditAction**
+&lt;&#x2F;span&gt;&lt;span&gt;Path: [&#x2F;tmp&#x2F;hangzhou_trip_planner.py]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Agent Controller 决定创建一个 Flask 网页应用，包含完整的杭州三天春游规划。它使用 &lt;code&gt;str_replace_editor&lt;&#x2F;code&gt; 工具创建文件，并嵌入了 HTML、CSS 和后端逻辑。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;8-yi-lai-an-zhuang-jie-duan&quot;&gt;8. 依赖安装阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:40 - openhands:DEBUG: stream.py:273 - Adding CmdRunAction id=8 from AGENT
+&lt;&#x2F;span&gt;&lt;span&gt;COMMAND: pip install flask flask-cors
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Agent 识别到需要安装依赖库（Flask 和 Flask-CORS），并自动执行安装命令。这显示了 Agent 能够理解和处理依赖关系。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;9-ying-yong-qi-dong-jie-duan&quot;&gt;9. 应用启动阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:45 - openhands:DEBUG: stream.py:273 - Adding CmdRunAction id=10 from AGENT
+&lt;&#x2F;span&gt;&lt;span&gt;COMMAND: python &#x2F;tmp&#x2F;hangzhou_trip_planner.py
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;安装完依赖后，在运行时环境中启动创建的网页应用。应用在端口 53941 上运行，允许用户通过浏览器访问。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;10-jie-guo-cheng-xian-jie-duan&quot;&gt;10. 结果呈现阶段&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:10:24 - openhands:DEBUG: stream.py:273 - Adding MessageAction id=12 from AGENT
+&lt;&#x2F;span&gt;&lt;span&gt;CONTENT: 太好了！网页应用已经成功运行起来了。您现在可以通过以下链接访问杭州三天春游规划：http:&#x2F;&#x2F;localhost:53941
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Agent 返回成功消息，告知用户可以通过指定链接访问旅游规划，并提供内容概览。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-he-xin-zu-jian-xiang-jie&quot;&gt;三、核心组件详解&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-shi-jian-liu-xi-tong&quot;&gt;1. 事件流系统&lt;&#x2F;h3&gt;
+&lt;p&gt;整个系统基于事件流工作：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:38 - openhands:DEBUG: stream.py:273 - Adding MessageAction id=1 from USER
+&lt;&#x2F;span&gt;&lt;span&gt;12:08:38 - openhands:DEBUG: stream.py:273 - Adding RecallAction id=3 from USER
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;所有操作都被封装为事件，由事件流系统处理，确保组件间通信有序可追踪。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-dai-li-zhuang-tai-guan-li&quot;&gt;2. 代理状态管理&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:38 - openhands:INFO: agent_controller.py:520 - Setting agent(CodeActAgent) state from AgentState.LOADING to AgentState.RUNNING
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统维护了代理的状态机，从加载(LOADING)到运行(RUNNING)再到等待用户输入(AWAITING_USER_INPUT)，确保行为的连贯性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-yu-yan-mo-xing-shi-yong&quot;&gt;3. 语言模型使用&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: llm.py:561 - Cost: 0.10 USD | Accumulated Cost: 0.10 USD
+&lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 58.893 seconds
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens: 5411 | Output tokens: 4202
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统对语言模型的使用非常精确，记录每次调用的成本、延迟和token使用情况，并使用缓存优化性能：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Input tokens (cache hit): 9633
+&lt;&#x2F;span&gt;&lt;span&gt;Input tokens (cache write): 818
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;4-dockeryun-xing-shi-huan-jing&quot;&gt;4. Docker运行时环境&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:08:08 - openhands:DEBUG: docker_runtime.py:256 - Mount dir: &#x2F;home&#x2F;ubuntu&#x2F;GitHub_Workspace&#x2F;pro-agent&#x2F;workspace
+&lt;&#x2F;span&gt;&lt;span&gt;12:08:08 - openhands:DEBUG: docker_runtime.py:262 - Sandbox workspace: &#x2F;workspace
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;系统创建隔离的Docker容器作为沙盒环境，并挂载必要的目录以保持文件持久性，同时确保安全执行。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-gong-ju-diao-yong-xi-tong&quot;&gt;5. 工具调用系统&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: conversation_memory.py:207 - Tool calls type: &amp;lt;class &amp;#39;list&amp;#39;&amp;gt;, value: [ChatCompletionMessageToolCall...]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Agent通过结构化格式调用工具，每个工具调用都包含明确的参数和目标。这种方式让AI能以一致的方式使用各种系统功能。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-guan-jian-ji-zhu-liang-dian&quot;&gt;四、关键技术亮点&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;事件驱动架构&lt;&#x2F;strong&gt;：系统通过事件流协调各组件，使复杂流程更容易管理和追踪&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;沙盒安全执行&lt;&#x2F;strong&gt;：使用Docker容器创建安全的执行环境，防止恶意代码影响宿主系统&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;智能工具使用&lt;&#x2F;strong&gt;：AI能够识别任务所需的工具链（如依赖安装、代码执行），并按正确顺序使用&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;清晰的工作流状态&lt;&#x2F;strong&gt;：系统维护代理状态机，确保处理流程的连贯性&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;资源优化&lt;&#x2F;strong&gt;：通过缓存和累计成本跟踪优化语言模型使用&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;多模态输出&lt;&#x2F;strong&gt;：不仅生成文字描述，还能创建完整的网页应用，提供更丰富的用户体验&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;wu-zhi-xing-liu-cheng-tu&quot;&gt;五、执行流程图&lt;&#x2F;h2&gt;
+&lt;details&gt;
+&lt;summary&gt;OpenHands执行流程详细图示 (点击展开)&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-running-logic-analysis&#x2F;openhands_running_logic.svg&quot; alt=&quot;OpenHands执行流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;h2 id=&quot;liu-agent-hubjia-gou-de-you-shi&quot;&gt;六、Agent Hub架构的优势&lt;&#x2F;h2&gt;
+&lt;p&gt;在OpenHands的Agent Hub架构下，各个组件通过事件流系统紧密协作，形成了一个高效的智能编码生态系统：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;组件解耦&lt;&#x2F;strong&gt;：每个组件负责特定功能，可以独立升级和维护&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;流程透明&lt;&#x2F;strong&gt;：完整的日志记录和事件跟踪使得系统行为可预测和可调试&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;扩展性强&lt;&#x2F;strong&gt;：新工具可以轻松集成到现有架构中，无需修改核心逻辑&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;安全可控&lt;&#x2F;strong&gt;：Docker运行时提供了隔离执行环境，同时支持丰富的权限控制&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;快速响应&lt;&#x2F;strong&gt;：事件驱动模式确保系统能够实时响应用户输入和环境变化&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这种架构设计使得OpenHands能够处理从简单的代码生成到复杂的应用开发等多样化任务，同时保持系统的稳定性和安全性。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-shi-ji-ying-yong-chang-jing-fen-xi&quot;&gt;七、实际应用场景分析&lt;&#x2F;h2&gt;
+&lt;p&gt;我们的杭州春游案例展示了OpenHands处理实际问题的能力。值得注意的是，Agent在整个过程中表现出了以下关键能力：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;需求理解&lt;&#x2F;strong&gt;：正确解析了用户想要一个可访问的网页展示旅游规划的需求&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;技术选型&lt;&#x2F;strong&gt;：自主选择了Flask作为网页框架，适合快速构建轻量级应用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;依赖管理&lt;&#x2F;strong&gt;：识别并安装了所需的Python包（flask、flask-cors）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;内容创建&lt;&#x2F;strong&gt;：组织了有价值的旅游信息，包括景点、美食和交通建议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;用户体验设计&lt;&#x2F;strong&gt;：创建了一个包含CSS样式的美观网页，而不是简单的文本输出&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;端口配置&lt;&#x2F;strong&gt;：正确配置了Web服务器端口，确保用户可访问&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这个案例完美展示了OpenHands如何从用户简单的自然语言请求出发，通过一系列复杂但协调一致的步骤，最终交付一个完整可用的解决方案。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
