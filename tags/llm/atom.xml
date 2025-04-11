@@ -30,9 +30,23 @@
 &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;cache_read_input_token_cost&amp;quot;: 3e-07,  &#x2F;&#x2F; 缓存读取的成本为每token $0.0000003
 &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;output_cost_per_token&amp;quot;: 1.5e-05,  &#x2F;&#x2F; 每输出token $0.000015
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;这些参数揭示了Claude 3.7 Sonnet的基础定价结构，输入token比输出token便宜5倍，并且模型支持高达20万输入token的超长上下文。&lt;&#x2F;p&gt;
+&lt;p&gt;这些参数揭示了Claude 3.7 Sonnet的基础定价结构，输入token比输出token便宜5倍，并且模型支持高达20万输入token的超长上下文。此外，模型还支持以下功能：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;视觉能力&lt;&#x2F;strong&gt;: 支持图像输入和处理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具调用&lt;&#x2F;strong&gt;: 支持函数调用和工具选择&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;PDF输入&lt;&#x2F;strong&gt;: 原生支持PDF文档处理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;提示缓存&lt;&#x2F;strong&gt;: 支持提示缓存以优化性能和成本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;响应格式控制&lt;&#x2F;strong&gt;: 支持结构化输出格式控制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;san-shi-ji-ren-wu-zhong-de-cheng-ben-gou-cheng&quot;&gt;三、实际任务中的成本构成&lt;&#x2F;h2&gt;
 &lt;p&gt;我们以一个杭州三天旅游规划任务为例，分析整个过程中的成本构成。此任务需要生成一个基于Flask的旅游规划网页。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;hui-hua-jiao-hu-cheng-ben-wan-zheng-fen-xi-biao&quot;&gt;会话交互成本完整分析表&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;调用序号&lt;&#x2F;th&gt;&lt;th&gt;输入令牌&lt;&#x2F;th&gt;&lt;th&gt;输出令牌&lt;&#x2F;th&gt;&lt;th&gt;缓存命中&lt;&#x2F;th&gt;&lt;th&gt;缓存写入&lt;&#x2F;th&gt;&lt;th&gt;成本(USD)&lt;&#x2F;th&gt;&lt;th&gt;累计成本(USD)&lt;&#x2F;th&gt;&lt;th&gt;响应时间(秒)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;5,411&lt;&#x2F;td&gt;&lt;td&gt;4,202&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;5,407&lt;&#x2F;td&gt;&lt;td&gt;0.10&lt;&#x2F;td&gt;&lt;td&gt;0.10&lt;&#x2F;td&gt;&lt;td&gt;58.89&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;9,639&lt;&#x2F;td&gt;&lt;td&gt;102&lt;&#x2F;td&gt;&lt;td&gt;5,407&lt;&#x2F;td&gt;&lt;td&gt;4,226&lt;&#x2F;td&gt;&lt;td&gt;0.03&lt;&#x2F;td&gt;&lt;td&gt;0.13&lt;&#x2F;td&gt;&lt;td&gt;3.06&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;10,457&lt;&#x2F;td&gt;&lt;td&gt;99&lt;&#x2F;td&gt;&lt;td&gt;9,633&lt;&#x2F;td&gt;&lt;td&gt;818&lt;&#x2F;td&gt;&lt;td&gt;0.01&lt;&#x2F;td&gt;&lt;td&gt;0.14&lt;&#x2F;td&gt;&lt;td&gt;2.35&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;10,753&lt;&#x2F;td&gt;&lt;td&gt;419&lt;&#x2F;td&gt;&lt;td&gt;10,451&lt;&#x2F;td&gt;&lt;td&gt;296&lt;&#x2F;td&gt;&lt;td&gt;0.01&lt;&#x2F;td&gt;&lt;td&gt;0.15&lt;&#x2F;td&gt;&lt;td&gt;8.07&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;h3 id=&quot;1-chu-ci-qing-qiu-yu-gui-hua-jie-duan&quot;&gt;1. 初次请求与规划阶段&lt;&#x2F;h3&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;12:09:37 - openhands:DEBUG: llm.py:561 - Cost: 0.10 USD | Accumulated Cost: 0.10 USD
 &lt;&#x2F;span&gt;&lt;span&gt;Response Latency: 58.893 seconds
@@ -92,21 +106,23 @@
 &lt;li&gt;总成本：约$0.01&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;5-ren-wu-zong-cheng-ben&quot;&gt;5. 任务总成本&lt;&#x2F;h3&gt;
-&lt;p&gt;整个任务的累计成本为$0.15，共处理了：&lt;&#x2F;p&gt;
+&lt;p&gt;整个任务的累计成本为$0.15259，共处理了：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;输入tokens：36,260 tokens (含重复)&lt;&#x2F;li&gt;
 &lt;li&gt;缓存命中：25,491 tokens (占70.3%)&lt;&#x2F;li&gt;
+&lt;li&gt;实际计费输入令牌：10,769 (未命中缓存的部分)&lt;&#x2F;li&gt;
 &lt;li&gt;输出tokens：4,822 tokens&lt;&#x2F;li&gt;
 &lt;li&gt;实际编码工作：创建了一个完整的Flask网页应用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;平均每1000个输出令牌成本&lt;&#x2F;strong&gt;: $0.03164&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;si-cheng-ben-xiao-lu-fen-xi&quot;&gt;四、成本效率分析&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-huan-cun-ji-zhi-de-xian-zhu-xiao-yi&quot;&gt;1. 缓存机制的显著效益&lt;&#x2F;h3&gt;
 &lt;p&gt;通过对日志的分析，我们发现缓存机制极大地降低了API调用成本：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;调用序号&lt;&#x2F;th&gt;&lt;th&gt;缓存命中率&lt;&#x2F;th&gt;&lt;th&gt;成本降低比例&lt;&#x2F;th&gt;&lt;th&gt;延迟时间&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;58.89秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;56.1%&lt;&#x2F;td&gt;&lt;td&gt;75.4%&lt;&#x2F;td&gt;&lt;td&gt;3.06秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;92.1%&lt;&#x2F;td&gt;&lt;td&gt;92.3%&lt;&#x2F;td&gt;&lt;td&gt;2.35秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;97.2%&lt;&#x2F;td&gt;&lt;td&gt;93.9%&lt;&#x2F;td&gt;&lt;td&gt;8.07秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;调用序号&lt;&#x2F;th&gt;&lt;th&gt;缓存命中率&lt;&#x2F;th&gt;&lt;th&gt;成本降低比例&lt;&#x2F;th&gt;&lt;th&gt;延迟时间&lt;&#x2F;th&gt;&lt;th&gt;处理速率(tokens&#x2F;秒)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;58.89秒&lt;&#x2F;td&gt;&lt;td&gt;163&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;56.1%&lt;&#x2F;td&gt;&lt;td&gt;75.4%&lt;&#x2F;td&gt;&lt;td&gt;3.06秒&lt;&#x2F;td&gt;&lt;td&gt;3,142&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;92.1%&lt;&#x2F;td&gt;&lt;td&gt;92.3%&lt;&#x2F;td&gt;&lt;td&gt;2.35秒&lt;&#x2F;td&gt;&lt;td&gt;4,398&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;97.2%&lt;&#x2F;td&gt;&lt;td&gt;93.9%&lt;&#x2F;td&gt;&lt;td&gt;8.07秒&lt;&#x2F;td&gt;&lt;td&gt;1,380&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;p&gt;随着会话进行，缓存命中率不断提高，第四次API调用的缓存命中率达到了惊人的97.2%，这不仅降低了成本，也显著提高了响应速度。&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;2-ling-ren-zhu-mu-de-cheng-ben-xiao-lu&quot;&gt;2. 令人瞩目的成本效率&lt;&#x2F;h3&gt;
@@ -115,14 +131,23 @@
 &lt;li&gt;后续三次调用虽包含大量token，但总共仅占33%的成本&lt;&#x2F;li&gt;
 &lt;li&gt;平均每个输出token的综合成本为$0.000031（考虑输入成本）&lt;&#x2F;li&gt;
 &lt;li&gt;对比未使用缓存的情况，节省了约65%的成本&lt;&#x2F;li&gt;
+&lt;li&gt;平均每次调用成本仅为$0.03814&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
+&lt;p&gt;下图展示了每次调用的成本分布：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;调用成本分布 (总计 $0.15)
+&lt;&#x2F;span&gt;&lt;span&gt;[█████████████████████████████████████] 67% - 首次调用 ($0.10)
+&lt;&#x2F;span&gt;&lt;span&gt;[███████████] 20% - 第二次调用 ($0.03)
+&lt;&#x2F;span&gt;&lt;span&gt;[████] 7% - 第三次调用 ($0.01)
+&lt;&#x2F;span&gt;&lt;span&gt;[████] 7% - 第四次调用 ($0.01)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;3-mo-xing-yan-chi-yu-tokenguan-xi&quot;&gt;3. 模型延迟与token关系&lt;&#x2F;h3&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;第一次: 58.9秒处理9,613 tokens，处理速率163 tokens&#x2F;秒
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;处理速率分析：
+&lt;&#x2F;span&gt;&lt;span&gt;第一次: 58.9秒处理9,613 tokens，处理速率163 tokens&#x2F;秒
 &lt;&#x2F;span&gt;&lt;span&gt;第二次: 3.1秒处理9,741 tokens，处理速率3,142 tokens&#x2F;秒
 &lt;&#x2F;span&gt;&lt;span&gt;第三次: 2.4秒处理10,556 tokens，处理速率4,398 tokens&#x2F;秒
 &lt;&#x2F;span&gt;&lt;span&gt;第四次: 8.1秒处理11,172 tokens，处理速率1,380 tokens&#x2F;秒
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;从上述数据可以看出，缓存命中显著提高了处理速度，但最终回复较长时可能导致延迟增加。&lt;&#x2F;p&gt;
+&lt;p&gt;从上述数据可以看出，缓存命中显著提高了处理速度，但最终回复较长时可能导致延迟增加。值得注意的是，当缓存命中率提高时，处理速率可以提升到初次请求的27倍之多。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;wu-cheng-ben-you-hua-ce-lue&quot;&gt;五、成本优化策略&lt;&#x2F;h2&gt;
 &lt;p&gt;基于对Claude 3.7 Sonnet模型使用成本的分析，我们提出以下优化策略：&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;1-chong-fen-li-yong-huan-cun-ji-zhi&quot;&gt;1. 充分利用缓存机制&lt;&#x2F;h3&gt;
@@ -130,6 +155,7 @@
 &lt;li&gt;设计对话流程时保持上下文连贯性，增加缓存命中率&lt;&#x2F;li&gt;
 &lt;li&gt;在系统设计中考虑缓存策略，如本例中的&lt;code&gt;caching_prompt=True&lt;&#x2F;code&gt;配置&lt;&#x2F;li&gt;
 &lt;li&gt;监控缓存命中指标，识别优化机会&lt;&#x2F;li&gt;
+&lt;li&gt;构建缓存预热机制，对于常见问题提前构建缓存&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;2-he-li-kong-zhi-shu-chu-tokenshu-liang&quot;&gt;2. 合理控制输出token数量&lt;&#x2F;h3&gt;
 &lt;p&gt;由于输出token的成本是输入token的5倍，控制输出长度尤为重要：&lt;&#x2F;p&gt;
@@ -137,18 +163,21 @@
 &lt;li&gt;使用明确的指令限制回复长度&lt;&#x2F;li&gt;
 &lt;li&gt;对于生成型任务，可以分步骤生成，减少冗余输出&lt;&#x2F;li&gt;
 &lt;li&gt;在适当场景使用temperature=0，减少不必要的创意输出&lt;&#x2F;li&gt;
+&lt;li&gt;针对特定场景使用&lt;code&gt;response_format&lt;&#x2F;code&gt;参数限制输出格式&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;3-you-hua-shang-xia-wen-chuang-kou-da-xiao&quot;&gt;3. 优化上下文窗口大小&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;定期清理不必要的上下文内容，避免无效信息占用token&lt;&#x2F;li&gt;
 &lt;li&gt;使用总结代替完整历史，在保留关键信息的同时减少token用量&lt;&#x2F;li&gt;
 &lt;li&gt;针对不同任务类型选择合适的上下文管理策略&lt;&#x2F;li&gt;
+&lt;li&gt;实现智能上下文裁剪算法，优先保留重要内容&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;4-mo-xing-xuan-ze-fen-ceng-ce-lue&quot;&gt;4. 模型选择分层策略&lt;&#x2F;h3&gt;
 &lt;ul&gt;
 &lt;li&gt;对于简单任务使用更轻量的模型，如Claude 3 Haiku&lt;&#x2F;li&gt;
 &lt;li&gt;复杂任务才使用Claude 3.7 Sonnet等高级模型&lt;&#x2F;li&gt;
 &lt;li&gt;建立模型使用成本&#x2F;效果评估矩阵，指导选型决策&lt;&#x2F;li&gt;
+&lt;li&gt;实现级联调用架构，由简单模型决定是否需要调用高级模型&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;liu-mo-xing-biao-xian-yu-jie-zhi-ping-gu&quot;&gt;六、模型表现与价值评估&lt;&#x2F;h2&gt;
 &lt;p&gt;从日志中可以看出，Claude 3.7 Sonnet在以下方面表现出色：&lt;&#x2F;p&gt;
@@ -159,14 +188,31 @@
 &lt;li&gt;&lt;strong&gt;问题解决能力&lt;&#x2F;strong&gt;：完成了从简单指令到实际可用应用的转换&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;这些能力在$0.15美元的成本下交付，相比人工开发的时间成本和机会成本，呈现出显著的经济价值。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cheng-ben-yu-xiao-yi-dui-bi-fen-xi&quot;&gt;成本与效益对比分析&lt;&#x2F;h3&gt;
+&lt;p&gt;如果由人类开发者完成同样的任务：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;资源类型&lt;&#x2F;th&gt;&lt;th&gt;人工开发&lt;&#x2F;th&gt;&lt;th&gt;Claude 3.7 Sonnet&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;开发时间&lt;&#x2F;td&gt;&lt;td&gt;1-2小时&lt;&#x2F;td&gt;&lt;td&gt;2分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;成本&lt;&#x2F;td&gt;&lt;td&gt;$50-$200&lt;&#x2F;td&gt;&lt;td&gt;$0.15&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;迭代周期&lt;&#x2F;td&gt;&lt;td&gt;长&lt;&#x2F;td&gt;&lt;td&gt;即时&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;可扩展性&lt;&#x2F;td&gt;&lt;td&gt;需要更多人力&lt;&#x2F;td&gt;&lt;td&gt;可无限扩展&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;从这个对比可以看出，即使考虑到人工复核和调整的时间，使用Claude 3.7 Sonnet进行开发仍然具有显著的成本优势。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;qi-jie-lun-yu-zhan-wang&quot;&gt;七、结论与展望&lt;&#x2F;h2&gt;
 &lt;p&gt;通过分析Claude 3.7 Sonnet模型在实际应用场景中的成本构成，我们可以得出以下结论：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;Claude 3.7 Sonnet的定价结构设计合理，通过缓存机制能够有效降低成本&lt;&#x2F;li&gt;
 &lt;li&gt;连续多轮对话具有明显的成本效率，初次调用后成本显著下降&lt;&#x2F;li&gt;
 &lt;li&gt;通过策略优化，可以在保持或提高模型效用的同时，大幅降低使用成本&lt;&#x2F;li&gt;
+&lt;li&gt;模型性能表现良好：除首次调用外，其他响应时间均较短，用户体验良好&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;随着大语言模型技术的不断发展，我们预计未来模型的成本效率将进一步提高，同时性能将持续改善。企业应当关注成本优化策略，在充分利用AI技术的同时控制预算支出，实现最佳投资回报。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wei-lai-qu-shi-yu-ce&quot;&gt;未来趋势预测&lt;&#x2F;h3&gt;
+&lt;p&gt;随着大语言模型技术的不断发展，我们预计将看到以下趋势：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;定价结构更加精细化&lt;&#x2F;strong&gt;：根据不同类型的操作和任务调整价格&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;缓存技术进一步增强&lt;&#x2F;strong&gt;：更智能的缓存策略将进一步降低运行成本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多层级模型架构普及&lt;&#x2F;strong&gt;：根据任务复杂度自动选择适当的模型层级&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;本地与云混合部署&lt;&#x2F;strong&gt;：结合本地运行和云服务的优势，进一步优化成本结构&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
 &lt;p&gt;如果您正在使用Claude等大模型进行业务开发，希望本文的数据分析和优化建议能为您提供参考。欢迎在评论区分享您的使用经验和成本优化策略！&lt;&#x2F;p&gt;
 </content>
         
