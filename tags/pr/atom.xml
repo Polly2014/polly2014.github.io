@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - PR</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/pr/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-05-10T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/pr/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Remarkable Day! 拥抱开源，从OpenHands第一个PR开始</title>
+        <published>2025-05-10T00:00:00+00:00</published>
+        <updated>2025-05-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/first-pr-openhands/" type="text/html"/>
+        <id>https://polly2014.github.io/first-pr-openhands/</id>
+        
+        <content type="html">&lt;h2 id=&quot;kai-yuan-zhi-lu-de-qi-dian&quot;&gt;开源之旅的起点&lt;&#x2F;h2&gt;
+&lt;p&gt;AI Coding的浪潮汹涌不止，OpenHands最是让我爱不释手，虽不及Copilot, Cursor知名，但技术含量感觉只高不低，给玩家了太多想象空间。OpenHands为AI应用构建提供了出色的框架，特别是在LLM调用和Agent开发上极为便捷。昨晚与一朋友Debug个问题到深夜，一筹莫展之际偶然发现了一个关于&lt;code&gt;max_output_tokens&lt;&#x2F;code&gt;参数的bug，借此良机完成了第一个PR。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wen-ti-fa-xian-yu-fu-xian&quot;&gt;问题发现与复现&lt;&#x2F;h2&gt;
+&lt;p&gt;在尝试通过OpenHands调用&lt;code&gt;openrouter&#x2F;anthropic&#x2F;claude-3.7-sonnet&lt;&#x2F;code&gt;模型时，我发现当设置&lt;code&gt;max_output_tokens&lt;&#x2F;code&gt;参数且需要生成较长响应（&amp;gt;4096 tokens）时，系统会陷入死循环。通过日志分析，错误表现为&lt;code&gt;file_text error&lt;&#x2F;code&gt;，导致Agent无法正常完成响应生成。&lt;&#x2F;p&gt;
+&lt;img src=&quot;Loop_Stuck.png&quot; alt=&quot;Loop Stuck&quot; style=&quot;width:30%;&quot;&gt;
+&lt;p&gt;日志片段：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;LLMSummarizingCondenserConfig(type=&amp;#39;llm&amp;#39;, llm_config=LLMConfig(model=&amp;#39;openrouter&#x2F;anthropic&#x2F;claude-3.7-sonnet&amp;#39;, 
+&lt;&#x2F;span&gt;&lt;span&gt;api_key=&amp;#39;******&amp;#39;, base_url=&amp;#39;&amp;#39;, api_version=None, ... max_output_tokens=8192, ... reasoning_effort=&amp;#39;high&amp;#39;, seed=None), 
+&lt;&#x2F;span&gt;&lt;span&gt;keep_first=4, max_size=80, max_event_length=10000)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;问题链接: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;All-Hands-AI&#x2F;OpenHands&#x2F;issues&#x2F;8413&quot;&gt;GitHub - OpenHands Issue #8413&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-fen-xi-yu-jie-jue-fang-an&quot;&gt;技术分析与解决方案&lt;&#x2F;h2&gt;
+&lt;p&gt;深入源码后，定位到问题出在&lt;code&gt;llm.py&lt;&#x2F;code&gt;文件的第406-421行。OpenHands对&lt;code&gt;max_output_tokens&lt;&#x2F;code&gt;参数有特殊处理逻辑，但这个逻辑只考虑了官方API提供的&lt;code&gt;claude-3-7-sonnet&lt;&#x2F;code&gt;模型，而没有考虑OpenRouter提供的&lt;code&gt;claude-3.7-sonnet&lt;&#x2F;code&gt;模型（注意命名差异）。&lt;&#x2F;p&gt;
+&lt;p&gt;问题代码段：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-3-7-sonnet&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.model:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.max_output_tokens = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;64000  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# litellm set max to 128k, but that requires a header to be set
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;修复过程：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;分析了参数传递路径，确认问题在模型名称匹配逻辑&lt;&#x2F;li&gt;
+&lt;li&gt;发现通过OpenRouter使用的模型命名与官方API不同（使用&lt;code&gt;.&lt;&#x2F;code&gt;而非&lt;code&gt;-&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;扩展了条件判断，同时处理两种命名格式&lt;&#x2F;li&gt;
+&lt;li&gt;编写测试用例验证修复在不同提供商情况下都能正确工作&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;PR中的修复代码：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;any&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    model in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.model
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;model &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-3-7-sonnet&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-3.7-sonnet&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;]
+&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.max_output_tokens = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;64000  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# litellm set max to 128k, but that requires a header to be set
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;PR链接: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;All-Hands-AI&#x2F;OpenHands&#x2F;pull&#x2F;8415&quot;&gt;GitHub - OpenHands Pull Request #8415&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;
+&lt;p&gt;看到PR被Approved, Merged还是让人难掩兴奋的哈哈，尤其OpenHands社区响应迅速，并提供了有建设性的反馈，无怪乎OpenHands能更新迭代如此迅速。也特别欣赏项目维护者对代码质量的高要求和对细节的关注 - 即使是看似简单的一行修改，也经过了严格的审查流程（顺便学习了下Lint代码语法检测的使用哈哈）。&lt;&#x2F;p&gt;
+&lt;p&gt;Remarkable Day, Help Yourself is Help Others, 未来可期！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
