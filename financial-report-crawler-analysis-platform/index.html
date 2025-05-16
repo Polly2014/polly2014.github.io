@@ -1,0 +1,255 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly2014.github.io/images/polly.ico type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=icon type=image/x-icon><link href=https://polly2014.github.io/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly2014.github.io/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly2014.github.io/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly2014.github.io> <img class="avatar pure-img-responsive" src=https://polly2014.github.io/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly2014.github.io><i class="fas fa-home"></i>Home</a><li><a href=https://polly2014.github.io/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly2014.github.io/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly2014.github.io/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly2014.github.io/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly2014.github.io/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly2014.github.io/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>基于OpenHands辅助的财报数据爬取与分析平台开发实践</h1><div class=content><h2 id=yi-xiang-mu-bei-jing-yu-yi-yi>一、项目背景与意义</h2><p>财务报告是了解企业经营状况的重要窗口，但获取和分析财报数据对普通投资者而言颇具挑战性。用户需要熟悉各大交易所网站结构、数据格式及财务分析方法，这无疑提高了入门门槛。为解决这一痛点，我们开发了基于FastAPI的财报数据爬取与分析平台，旨在用图形化界面封装复杂的数据获取和分析流程，使不具备专业背景的用户也能轻松获取和理解企业财务数据。<h2 id=er-ji-zhu-zhan-xuan-ze>二、技术栈选择</h2><p>在技术选型上，考虑了开发效率、性能和用户体验：<ol><li><strong>Python</strong> - 作为主要开发语言，兼具开发效率和强大的数据处理能力<li><strong>FastAPI</strong> - 高性能的Web框架，提供异步支持和自动API文档<li><strong>Jinja2</strong> - 灵活的模板引擎，用于前端页面渲染<li><strong>Bootstrap</strong> - 响应式前端框架，确保良好的跨设备体验<li><strong>Requests & BeautifulSoup</strong> - 强大的网络请求和HTML解析库<li><strong>PDFPlumber</strong> - PDF文档解析工具，用于提取财报文本<li><strong>LiteLLM</strong> - 大语言模型接口封装，用于智能财报分析<li><strong>Docker</strong> - 容器化部署，确保环境一致性</ol><h2 id=san-jia-gou-she-ji>三、架构设计</h2><p>应用采用分层架构，明确职责分离：<pre style=background:#2b303b;color:#c0c5ce><code><span>Financial Platform
+</span><span>├── 数据模型层 (Models)
+</span><span>├── 路由控制层 (Routers)
+</span><span>├── 服务逻辑层 (Services)
+</span><span>│   ├── 爬虫服务 (CrawlerService)
+</span><span>│   ├── 分析服务 (AnalysisService)
+</span><span>│   └── LLM分析服务 (LLMAnalysisService)
+</span><span>├── 模板视图层 (Templates)
+</span><span>└── 静态资源层 (Static)
+</span></code></pre><p>每个模块职责单一，减少耦合性，提高代码可维护性。这种设计能够独立优化各个组件，例如改进爬虫算法而不影响分析逻辑。<h2 id=si-guan-jian-gong-neng-shi-xian>四、关键功能实现</h2><h3 id=4-1-zhi-neng-cai-bao-pa-chong>4.1 智能财报爬虫</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>crawl_annual_report_from_cninfo</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>stock_code</span><span>: str, </span><span style=color:#bf616a>year</span><span>: int, </span><span style=color:#bf616a>report_type</span><span>: str = "</span><span style=color:#a3be8c>年度报告</span><span>") -> Dict[str, Any]:
+</span><span>    </span><span style=color:#65737e>"""从巨潮资讯网爬取财务报告"""
+</span><span>    logger.</span><span style=color:#bf616a>info</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>开始爬取 </span><span>{stock_code} {year}</span><span style=color:#a3be8c>年 </span><span>{report_type}")
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 构建搜索关键词
+</span><span>    search_key = </span><span style=color:#b48ead>f</span><span>"{stock_code} {year}</span><span style=color:#a3be8c>年</span><span>{report_type}"
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 构造巨潮资讯网搜索URL和参数
+</span><span>    base_url = "</span><span style=color:#a3be8c>http://www.cninfo.com.cn/new/fulltextSearch/full</span><span>"
+</span><span>    params = {
+</span><span>        "</span><span style=color:#a3be8c>searchkey</span><span>": search_key,
+</span><span>        "</span><span style=color:#a3be8c>sdate</span><span>": "",
+</span><span>        "</span><span style=color:#a3be8c>edate</span><span>": "",
+</span><span>        "</span><span style=color:#a3be8c>isfulltext</span><span>": "</span><span style=color:#a3be8c>false</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>sortName</span><span>": "</span><span style=color:#a3be8c>pubdate</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>sortType</span><span>": "</span><span style=color:#a3be8c>desc</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>pageNum</span><span>": </span><span style=color:#d08770>1</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>pageSize</span><span>": </span><span style=color:#d08770>10
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#65737e># 增加随机延迟，避免反爬
+</span><span>        delay = random.</span><span style=color:#bf616a>uniform</span><span>(</span><span style=color:#d08770>2</span><span>, </span><span style=color:#d08770>5</span><span>)
+</span><span>        logger.</span><span style=color:#bf616a>info</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>等待 </span><span>{delay</span><span style=color:#d08770>:.2f</span><span>}</span><span style=color:#a3be8c> 秒后发送请求</span><span>")
+</span><span>        time.</span><span style=color:#bf616a>sleep</span><span>(delay)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 发送请求
+</span><span>        response = requests.</span><span style=color:#bf616a>post</span><span>(base_url, </span><span style=color:#bf616a>headers</span><span>=</span><span style=color:#bf616a>self</span><span>.headers, </span><span style=color:#bf616a>data</span><span>=params, </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>30</span><span>)
+</span><span>        response.</span><span style=color:#bf616a>raise_for_status</span><span>()
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 解析JSON响应
+</span><span>        result = response.</span><span style=color:#bf616a>json</span><span>()
+</span><span>        
+</span><span>        </span><span style=color:#65737e># ... 处理响应数据 ...
+</span></code></pre><p>爬虫服务是应用的核心功能之一，通过智能解析各大财经网站结构，自动获取财报PDF文件并提取文本内容，为后续分析提供数据基础。<h3 id=4-2-cai-bao-shu-ju-fen-xi>4.2 财报数据分析</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>extract_financial_indicators</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>report_content</span><span>: str) -> Dict[str, Any]:
+</span><span>    </span><span style=color:#65737e>"""从财报内容中提取关键财务指标"""
+</span><span>    indicators = {
+</span><span>        "</span><span style=color:#a3be8c>revenue</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>net_profit</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>total_assets</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>total_liabilities</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>equity</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>cash_flow_from_operations</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>eps</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>roe</span><span>": </span><span style=color:#d08770>None</span><span>,
+</span><span>        </span><span style=color:#65737e># ... 更多指标 ...
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 使用正则表达式提取数据
+</span><span>    revenue_pattern = </span><span style=color:#b48ead>r</span><span>"</span><span style=color:#a3be8c>营业收入</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>\d]</span><span>+</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[\d,</span><span style=color:#96b5b4>\.</span><span style=color:#d08770>]</span><span>+</span><span style=color:#a3be8c>)</span><span>"
+</span><span>    revenue_match = re.</span><span style=color:#bf616a>search</span><span>(revenue_pattern, report_content)
+</span><span>    </span><span style=color:#b48ead>if </span><span>revenue_match:
+</span><span>        indicators["</span><span style=color:#a3be8c>revenue</span><span>"] = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_convert_to_number</span><span>(revenue_match.</span><span style=color:#bf616a>group</span><span>(</span><span style=color:#d08770>1</span><span>))
+</span><span>    
+</span><span>    </span><span style=color:#65737e># ... 提取更多指标 ...
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>return </span><span>indicators
+</span></code></pre><p>分析服务负责从财报文本中提取关键财务指标，并计算重要财务比率，为用户提供直观的财务状况概览。<h3 id=4-3-llmzhi-neng-fen-xi>4.3 LLM智能分析</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>analyze_financial_report</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>report_content</span><span>: str, </span><span style=color:#bf616a>company_info</span><span>: Dict[str, str]) -> Dict[str, Any]:
+</span><span>    </span><span style=color:#65737e>"""使用LLM分析财报内容"""
+</span><span>    </span><span style=color:#b48ead>if </span><span>not </span><span style=color:#bf616a>self</span><span>.api_key:
+</span><span>        logger.</span><span style=color:#bf616a>warning</span><span>("</span><span style=color:#a3be8c>未提供API密钥，使用模拟数据</span><span>")
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_get_mock_analysis_result</span><span>(company_info)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 构建提示词
+</span><span>    prompt = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_build_analysis_prompt</span><span>(report_content, company_info)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#65737e># 使用litellm调用LLM API
+</span><span>        response = litellm.</span><span style=color:#bf616a>completion</span><span>(
+</span><span>            </span><span style=color:#bf616a>model</span><span>=</span><span style=color:#bf616a>self</span><span>.model_name,
+</span><span>            </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": prompt}],
+</span><span>            </span><span style=color:#bf616a>temperature</span><span>=</span><span style=color:#d08770>0.2</span><span>,
+</span><span>            </span><span style=color:#bf616a>max_tokens</span><span>=</span><span style=color:#d08770>2000
+</span><span>        )
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 解析响应
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_parse_llm_response</span><span>(response)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        logger.</span><span style=color:#bf616a>error</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>LLM API调用失败: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}")
+</span><span>        </span><span style=color:#b48ead>return </span><span>{
+</span><span>            "</span><span style=color:#a3be8c>status</span><span>": "</span><span style=color:#a3be8c>error</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>message</span><span>": </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>分析失败: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}"
+</span><span>        }
+</span></code></pre><p>LLM分析服务是平台的创新亮点，通过集成大语言模型，提供专业级的财报解读和投资建议，大幅降低了财报分析的专业门槛。<h3 id=4-4-yong-hu-you-hao-de-webjie-mian>4.4 用户友好的Web界面</h3><pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>container mt-4</span><span>">
+</span><span>    <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>row</span><span>">
+</span><span>        <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>col-md-6</span><span>">
+</span><span>            <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>card</span><span>">
+</span><span>                <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>card-header bg-primary text-white</span><span>">
+</span><span>                    <</span><span style=color:#bf616a>h5 </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>card-title mb-0</span><span>">财报获取&LT/</span><span style=color:#bf616a>h5</span><span>>
+</span><span>                &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>                <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>card-body</span><span>">
+</span><span>                    <</span><span style=color:#bf616a>form </span><span style=color:#8fa1b3>id</span><span>="</span><span style=color:#a3be8c>crawlerForm</span><span>">
+</span><span>                        <</span><span style=color:#bf616a>div </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>mb-3</span><span>">
+</span><span>                            <</span><span style=color:#bf616a>label </span><span style=color:#d08770>for</span><span>="</span><span style=color:#a3be8c>stockCode</span><span>" </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>form-label</span><span>">股票代码&LT/</span><span style=color:#bf616a>label</span><span>>
+</span><span>                            <</span><span style=color:#bf616a>input </span><span style=color:#d08770>type</span><span>="</span><span style=color:#a3be8c>text</span><span>" </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>form-control</span><span>" </span><span style=color:#8fa1b3>id</span><span>="</span><span style=color:#a3be8c>stockCode</span><span>" </span><span style=color:#d08770>name</span><span>="</span><span style=color:#a3be8c>stock_code</span><span>" </span><span style=color:#d08770>required</span><span>>
+</span><span>                        &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>                        </span><span style=color:#65737e>&LT!-- ... 更多表单字段 ... -->
+</span><span>                        <</span><span style=color:#bf616a>button </span><span style=color:#d08770>type</span><span>="</span><span style=color:#a3be8c>submit</span><span>" </span><span style=color:#d08770>class</span><span>="</span><span style=color:#a3be8c>btn btn-primary</span><span>">获取财报&LT/</span><span style=color:#bf616a>button</span><span>>
+</span><span>                    &LT/</span><span style=color:#bf616a>form</span><span>>
+</span><span>                &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>            &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>        &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>        </span><span style=color:#65737e>&LT!-- ... 更多卡片 ... -->
+</span><span>    &LT/</span><span style=color:#bf616a>div</span><span>>
+</span><span>&LT/</span><span style=color:#bf616a>div</span><span>>
+</span></code></pre><p>Web界面采用直观的卡片式布局，将复杂的功能模块化展示，用户可以轻松完成从财报获取到智能分析的全流程操作。<h2 id=wu-jie-jue-de-ji-zhu-nan-ti>五、解决的技术难题</h2><h3 id=5-1-fan-pa-ji-zhi-ying-dui>5.1 反爬机制应对</h3><p>在开发过程中，发现巨潮资讯网等网站有较为严格的反爬机制，直接请求容易被封禁IP。<p><strong>解决方案</strong>：实现了智能请求策略，包括随机延时、User-Agent轮换和指数退避重试：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_make_request_with_retry</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>url</span><span>, </span><span style=color:#bf616a>method</span><span>="</span><span style=color:#a3be8c>GET</span><span>", </span><span style=color:#bf616a>data</span><span>=</span><span style=color:#d08770>None</span><span>, </span><span style=color:#bf616a>max_retries</span><span>=</span><span style=color:#d08770>3</span><span>):
+</span><span>    </span><span style=color:#65737e>"""带重试机制的请求方法"""
+</span><span>    headers_list = [
+</span><span>        {"</span><span style=color:#a3be8c>User-Agent</span><span>": "</span><span style=color:#a3be8c>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36</span><span>"},
+</span><span>        {"</span><span style=color:#a3be8c>User-Agent</span><span>": "</span><span style=color:#a3be8c>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15</span><span>"},
+</span><span>        {"</span><span style=color:#a3be8c>User-Agent</span><span>": "</span><span style=color:#a3be8c>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36</span><span>"}
+</span><span>    ]
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>for </span><span>attempt </span><span style=color:#b48ead>in </span><span style=color:#96b5b4>range</span><span>(max_retries):
+</span><span>        </span><span style=color:#b48ead>try</span><span>:
+</span><span>            </span><span style=color:#65737e># 随机延时
+</span><span>            time.</span><span style=color:#bf616a>sleep</span><span>(random.</span><span style=color:#bf616a>uniform</span><span>(</span><span style=color:#d08770>2</span><span>, </span><span style=color:#d08770>5</span><span>))
+</span><span>            
+</span><span>            </span><span style=color:#65737e># 随机选择User-Agent
+</span><span>            headers = random.</span><span style=color:#bf616a>choice</span><span>(headers_list)
+</span><span>            headers.</span><span style=color:#bf616a>update</span><span>(</span><span style=color:#bf616a>self</span><span>.base_headers)
+</span><span>            
+</span><span>            </span><span style=color:#b48ead>if </span><span>method.</span><span style=color:#bf616a>upper</span><span>() == "</span><span style=color:#a3be8c>GET</span><span>":
+</span><span>                response = requests.</span><span style=color:#bf616a>get</span><span>(url, </span><span style=color:#bf616a>headers</span><span>=headers, </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>30</span><span>)
+</span><span>            </span><span style=color:#b48ead>else</span><span>:
+</span><span>                response = requests.</span><span style=color:#bf616a>post</span><span>(url, </span><span style=color:#bf616a>headers</span><span>=headers, </span><span style=color:#bf616a>data</span><span>=data, </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>30</span><span>)
+</span><span>                
+</span><span>            response.</span><span style=color:#bf616a>raise_for_status</span><span>()
+</span><span>            </span><span style=color:#b48ead>return </span><span>response
+</span><span>            
+</span><span>        </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>            logger.</span><span style=color:#bf616a>warning</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>请求失败 (尝试 </span><span>{attempt+</span><span style=color:#d08770>1</span><span>}</span><span style=color:#a3be8c>/</span><span>{max_retries}</span><span style=color:#a3be8c>): </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}")
+</span><span>            </span><span style=color:#65737e># 指数退避
+</span><span>            time.</span><span style=color:#bf616a>sleep</span><span>((</span><span style=color:#d08770>2 </span><span>** attempt) + random.</span><span style=color:#bf616a>random</span><span>())
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>raise </span><span style=color:#bf616a>Exception</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>请求失败，已达到最大重试次数: </span><span>{max_retries}")
+</span></code></pre><h3 id=5-2-pdfwen-ben-ti-qu-you-hua>5.2 PDF文本提取优化</h3><p>财报PDF格式复杂多样，直接提取文本常出现格式混乱、表格数据丢失等问题。<p><strong>解决方案</strong>：开发了专用的PDF处理流程，结合页面布局分析和表格识别：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>extract_text_from_pdf</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>pdf_path</span><span>: Path, </span><span style=color:#bf616a>save_text</span><span>: bool = </span><span style=color:#d08770>True</span><span>) -> Optional[str]:
+</span><span>    </span><span style=color:#65737e>"""从PDF提取文本内容"""
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        logger.</span><span style=color:#bf616a>info</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>开始从PDF提取文本: </span><span>{pdf_path}")
+</span><span>        text_content = []
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>with </span><span>pdfplumber.</span><span style=color:#bf616a>open</span><span>(pdf_path) </span><span style=color:#b48ead>as </span><span>pdf:
+</span><span>            </span><span style=color:#b48ead>for </span><span>page </span><span style=color:#b48ead>in </span><span>pdf.pages:
+</span><span>                </span><span style=color:#65737e># 提取表格
+</span><span>                tables = page.</span><span style=color:#bf616a>extract_tables</span><span>()
+</span><span>                </span><span style=color:#b48ead>if </span><span>tables:
+</span><span>                    </span><span style=color:#b48ead>for </span><span>table </span><span style=color:#b48ead>in </span><span>tables:
+</span><span>                        </span><span style=color:#65737e># 将表格转换为文本格式
+</span><span>                        table_text = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_format_table</span><span>(table)
+</span><span>                        text_content.</span><span style=color:#bf616a>append</span><span>(table_text)
+</span><span>                
+</span><span>                </span><span style=color:#65737e># 提取正文文本
+</span><span>                text = page.</span><span style=color:#bf616a>extract_text</span><span>() or ""
+</span><span>                text_content.</span><span style=color:#bf616a>append</span><span>(text)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 后处理：清理多余空白、合并段落等
+</span><span>        full_text = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_post_process_text</span><span>("</span><span style=color:#96b5b4>\n\n</span><span>".</span><span style=color:#bf616a>join</span><span>(text_content))
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>if </span><span>save_text:
+</span><span>            text_path = pdf_path.</span><span style=color:#bf616a>with_suffix</span><span>('</span><span style=color:#a3be8c>.txt</span><span>')
+</span><span>            </span><span style=color:#b48ead>with </span><span style=color:#96b5b4>open</span><span>(text_path, '</span><span style=color:#a3be8c>w</span><span>', </span><span style=color:#bf616a>encoding</span><span>='</span><span style=color:#a3be8c>utf-8</span><span>') </span><span style=color:#b48ead>as </span><span>f:
+</span><span>                f.</span><span style=color:#bf616a>write</span><span>(full_text)
+</span><span>            logger.</span><span style=color:#bf616a>info</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>文本内容已保存至: </span><span>{text_path}")
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>full_text
+</span><span>        
+</span><span>    </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        logger.</span><span style=color:#bf616a>error</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>提取PDF文本时出错: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}")
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#d08770>None
+</span></code></pre><h3 id=5-3-llmxiang-ying-jie-xi>5.3 LLM响应解析</h3><p>LLM返回的分析结果格式不统一，需要智能解析以提取结构化数据。<p><strong>解决方案</strong>：实现了基于模式识别的响应解析器：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_parse_llm_response</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>response</span><span>) -> Dict[str, Any]:
+</span><span>    </span><span style=color:#65737e>"""解析LLM响应"""
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#65737e># 从litellm响应中提取内容
+</span><span>        </span><span style=color:#b48ead>if </span><span style=color:#96b5b4>hasattr</span><span>(response, '</span><span style=color:#a3be8c>choices</span><span>') and response.choices:
+</span><span>            content = response.choices[</span><span style=color:#d08770>0</span><span>].message.content
+</span><span>        </span><span style=color:#b48ead>else</span><span>:
+</span><span>            </span><span style=color:#65737e># 兼容不同的响应格式
+</span><span>            content = response.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>choices</span><span>', [{}])[</span><span style=color:#d08770>0</span><span>].</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>message</span><span>', {}).</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>content</span><span>', '')
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 尝试提取JSON部分
+</span><span>        json_match = re.</span><span style=color:#bf616a>search</span><span>(</span><span style=color:#b48ead>r</span><span>'</span><span style=color:#a3be8c>```json</span><span style=color:#d08770>\s</span><span>*</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[\s\S]</span><span>*?</span><span style=color:#a3be8c>)</span><span style=color:#d08770>\s</span><span>*</span><span style=color:#a3be8c>```</span><span>', content)
+</span><span>        </span><span style=color:#b48ead>if </span><span>json_match:
+</span><span>            json_str = json_match.</span><span style=color:#bf616a>group</span><span>(</span><span style=color:#d08770>1</span><span>)
+</span><span>            </span><span style=color:#b48ead>try</span><span>:
+</span><span>                </span><span style=color:#b48ead>return </span><span>json.</span><span style=color:#bf616a>loads</span><span>(json_str)
+</span><span>            </span><span style=color:#b48ead>except</span><span>:
+</span><span>                </span><span style=color:#b48ead>pass
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 如果没有JSON格式，尝试解析结构化文本
+</span><span>        result = {
+</span><span>            "</span><span style=color:#a3be8c>status</span><span>": "</span><span style=color:#a3be8c>success</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>analysis</span><span>": {},
+</span><span>            "</span><span style=color:#a3be8c>summary</span><span>": "",
+</span><span>            "</span><span style=color:#a3be8c>recommendations</span><span>": []
+</span><span>        }
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 提取摘要部分
+</span><span>        summary_match = re.</span><span style=color:#bf616a>search</span><span>(</span><span style=color:#b48ead>r</span><span>'</span><span style=color:#a3be8c>摘要</span><span style=color:#d08770>[:：]</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[\s\S]</span><span>*?</span><span style=color:#a3be8c>)(</span><span style=color:#d08770>?=</span><span style=color:#96b5b4>\n\n</span><span>|</span><span style=color:#b48ead>$</span><span style=color:#a3be8c>)</span><span>', content)
+</span><span>        </span><span style=color:#b48ead>if </span><span>summary_match:
+</span><span>            result["</span><span style=color:#a3be8c>summary</span><span>"] = summary_match.</span><span style=color:#bf616a>group</span><span>(</span><span style=color:#d08770>1</span><span>).</span><span style=color:#bf616a>strip</span><span>()
+</span><span>        
+</span><span>        </span><span style=color:#65737e># ... 提取更多结构化内容 ...
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>result
+</span><span>        
+</span><span>    </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        logger.</span><span style=color:#bf616a>error</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>解析LLM响应时出错: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}")
+</span><span>        </span><span style=color:#b48ead>return </span><span>{
+</span><span>            "</span><span style=color:#a3be8c>status</span><span>": "</span><span style=color:#a3be8c>error</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>message</span><span>": </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>解析响应失败: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}"
+</span><span>        }
+</span></code></pre><h2 id=liu-bu-shu-yu-yun-xing>六、部署与运行</h2><p>应用支持多种部署方式，包括Docker容器化部署和传统服务器部署：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e>#!/bin/bash
+</span><span style=color:#65737e># run.sh - 应用启动脚本
+</span><span>
+</span><span style=color:#65737e># 设置环境变量
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>PORT</span><span>=</span><span style=color:#a3be8c>12001
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>OPENAI_API_KEY</span><span>="</span><span style=color:#a3be8c>your-api-key-here</span><span>"
+</span><span>
+</span><span style=color:#65737e># 安装依赖
+</span><span style=color:#bf616a>pip</span><span> install</span><span style=color:#bf616a> -r</span><span> requirements.txt
+</span><span>
+</span><span style=color:#65737e># 启动应用
+</span><span style=color:#bf616a>uvicorn</span><span> main:app</span><span style=color:#bf616a> --host</span><span> 0.0.0.0</span><span style=color:#bf616a> --port </span><span>$</span><span style=color:#bf616a>PORT --reload
+</span></code></pre><p>Docker部署更加简便，只需一行命令即可启动完整环境：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>docker</span><span> build</span><span style=color:#bf616a> -t</span><span> financial-platform . && </span><span style=color:#bf616a>docker</span><span> run</span><span style=color:#bf616a> -p</span><span> 12001:12001</span><span style=color:#bf616a> -e</span><span> OPENAI_API_KEY="</span><span style=color:#a3be8c>your-api-key</span><span>" financial-platform
+</span></code></pre><h2 id=qi-xiang-mu-zong-jie-yu-zhan-wang>七、项目总结与展望</h2><p>基于FastAPI的财报数据爬取与分析平台的开发是一次将复杂金融数据处理流程简化为用户友好界面的尝试。通过精心的架构设计和UI优化，成功降低了财报获取和分析的门槛，实现了预期目标。<p>在未来版本中，计划进一步优化：<ol><li>扩展数据源，支持更多交易所和财经网站<li>增强数据可视化能力，提供交互式图表<li>实现财报数据的历史对比和行业对标分析<li>优化LLM分析能力，提供更专业的投资建议<li>添加用户账户系统，支持个性化设置和收藏</ol><p><strong>源码地址</strong>：<a href=https://github.com/Polly2014/Financial_Platform>GitHub - Financial Platform</a><h2 id=ba-kai-fa-guo-cheng-zhong-de-dui-hua-ji-lu>八、开发过程中的对话记录</h2><p>以下是与AI助手的部分关键对话，展示了项目的构思和实现过程：<h3 id=chu-shi-xu-qiu-miao-shu>初始需求描述</h3><blockquote><p><strong>用户</strong>：你是一个专业的财报数据爬虫助手，专注于从各种公开渠道获取企业财务报告原始文件。帮我构建一个基于fastapi的Web站点，实现上述功能（用户输入或选择公司名称、股票代码等信息）后台调用爬虫获取数据，前端可以展示和下载。同时首页预留出"财报分析"的功能</blockquote><h3 id=pa-chong-fu-wu-shi-xian>爬虫服务实现</h3><blockquote><p><strong>AI助手</strong>：我将为您构建一个基于FastAPI的财报数据爬虫Web应用。首先，让我们设计项目结构：<pre style=background:#2b303b;color:#c0c5ce><code><span>financial_crawler/
+</span><span>├── app/
+</span><span>│   ├── models/
+</span><span>│   ├── routers/
+</span><span>│   └── services/
+</span><span>├── static/
+</span><span>├── templates/
+</span><span>├── main.py
+</span><span>└── requirements.txt
+</span></code></pre><p>接下来，我们需要实现爬虫服务，它将负责从巨潮资讯网等渠道获取财报数据...</blockquote><h3 id=llmfen-xi-gong-neng-ji-cheng>LLM分析功能集成</h3><blockquote><p><strong>用户</strong>：现在我想增加一个基于LLM的财报智能分析功能，可以自动解读财报并给出投资建议<p><strong>AI助手</strong>：这是一个很好的想法！我们可以集成OpenAI的GPT或其他LLM模型来实现财报智能分析。我将创建一个新的LLMAnalysisService类和相应的路由...<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>LLMAnalysisService</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#65737e>"""LLM财报分析服务"""
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>api_key</span><span>: str = "", </span><span style=color:#bf616a>model_name</span><span>: str = "</span><span style=color:#a3be8c>gpt-3.5-turbo</span><span>"):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.api_key = api_key
+</span><span>        </span><span style=color:#bf616a>self</span><span>.model_name = model_name
+</span><span>        
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>analyze_financial_report</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>report_content</span><span>: str, </span><span style=color:#bf616a>company_info</span><span>: Dict[str, str]) -> Dict[str, Any]:
+</span><span>        </span><span style=color:#65737e>"""使用LLM分析财报内容"""
+</span><span>        </span><span style=color:#65737e># 实现代码...
+</span></code></pre></blockquote><h3 id=bu-shu-yu-you-hua>部署与优化</h3><blockquote><p><strong>用户</strong>：我们需要确保应用在生产环境中稳定运行，有什么建议？<p><strong>AI助手</strong>：为了确保应用在生产环境中稳定运行，我建议以下几点：<ol><li>使用Docker容器化部署，确保环境一致性<li>实现健壮的错误处理和日志记录<li>添加请求限流和缓存机制<li>使用环境变量管理敏感配置<li>实现定时任务，自动更新财报数据</ol><p>我将为您创建Dockerfile和部署脚本...</blockquote><h2 id=jiu-jie-yu>九、结语</h2><p>财报数据爬取与分析平台的开发过程展示了如何将复杂的金融数据处理流程转化为易用的Web应用。通过合理的架构设计、先进的技术选型和用户体验优化，我们成功构建了一个功能完备的财报分析工具，为投资者提供了便捷的数据获取和智能分析服务。<p>希望本文的开发经验能为类似项目提供有价值的参考，也欢迎社区贡献代码，共同完善这一平台。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
