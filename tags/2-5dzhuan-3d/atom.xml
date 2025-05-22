@@ -32,7 +32,7 @@
 &lt;li&gt;建筑细节（东巴符号、倾斜黑瓦屋顶）&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;下面是DALL-E生成的设计图：&lt;&#x2F;p&gt;
-&lt;img src=&quot;Guesthouse_Design_2D.png&quot; alt=&quot;Guesthouse Design&quot; width=&quot;50%&quot; &#x2F;&gt;
+&lt;img src=&quot;Guesthouse_Design_2D.png&quot; alt=&quot;Guesthouse Design&quot; width=&quot;40%&quot; &#x2F;&gt;
 &lt;p&gt;从图中可以看到，AI成功捕捉了纳西族传统建筑的精髓，包括经典的院落布局、中心水池和特色屋顶。虽然作为2.5D图像，它提供了良好的视觉效果，但要进行3D打印，我们需要将其转换为真正的3D模型。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;cong-2-5ddao-3d-shi-yong-trellisji-zhu-jin-xing-zhuan-huan&quot;&gt;从2.5D到3D：使用TRELLIS技术进行转换&lt;&#x2F;h2&gt;
 &lt;p&gt;拥有了2.5D设计图后，下一步是将其转换为可打印的3D模型。这里我使用了微软的TRELLIS项目，这是一个专门用于将2D&#x2F;2.5D图像转换为3D模型的开源工具。&lt;&#x2F;p&gt;
@@ -45,7 +45,9 @@
 &lt;li&gt;输出GLB格式的3D模型文件&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;以下是转换过程的视频展示：&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;video controls src=&quot;guesthouse_design_3D.mp4&quot; title=&quot;TRELLIS 3D&quot;&gt;&lt;&#x2F;video&gt;&lt;&#x2F;p&gt;
+&lt;div style=&quot;position: relative; width: 100%; max-width: 720px; margin: 0 auto;&quot;&gt;
+    &lt;video controls style=&quot;width: 100%; height: auto;&quot; src=&quot;guesthouse_design_3D.mp4&quot; title=&quot;TRELLIS 3D&quot;&gt;&lt;&#x2F;video&gt;
+&lt;&#x2F;div&gt;
 &lt;p&gt;视频中可以看到，TRELLIS成功识别了建筑的主要结构，包括院落布局、屋顶形状和围墙。转换后的3D模型保留了原始设计的建筑特色，同时增加了立体感和空间维度。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;cong-shu-zi-dao-shi-ti-3dmo-xing-de-da-yin-guo-cheng&quot;&gt;从数字到实体：3D模型的打印过程&lt;&#x2F;h2&gt;
 &lt;p&gt;有了GLB格式的3D模型，最后一步是将其转换为3D打印机可识别的STL格式并进行打印。为此，我使用了在线工具 &lt;a href=&quot;https:&#x2F;&#x2F;imagetostl.com&#x2F;cn&#x2F;convert&#x2F;file&#x2F;glb&#x2F;to&#x2F;stl#convert&quot;&gt;glb2stl&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
