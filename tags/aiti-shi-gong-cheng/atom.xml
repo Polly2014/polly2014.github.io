@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI提示工程</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly2014.github.io/tags/aiti-shi-gong-cheng/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly2014.github.io"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-05-23T00:00:00+00:00</updated>
+    <id>https://polly2014.github.io/tags/aiti-shi-gong-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>AI与3D打印的完美结合：微软Garage活动中为舅舅的丽江客栈设计实例</title>
+        <published>2025-05-23T00:00:00+00:00</published>
+        <updated>2025-05-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly2014.github.io/ai-3d-printing-lijiang-guesthouse-design/" type="text/html"/>
+        <id>https://polly2014.github.io/ai-3d-printing-lijiang-guesthouse-design/</id>
+        
+        <content type="html">&lt;p&gt;作为一名AI工程师，我总是在寻找将AI技术应用于实际生活的机会。今天有幸参加了公司（微软）的Garage 3D打印活动，我决定把这个机会用来帮助我舅舅正在进行的丽江客栈重建项目。通过结合AI生成技术和3D打印，我成功地将概念设计转变为实体模型，为远在丽江的舅舅提供了直观的设计参考。下面我将分享整个过程，从AI生成设计图到最终3D打印成品。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-chuang-yi-dao-she-ji-li-yong-dall-esheng-cheng-ke-zhan-she-ji-tu&quot;&gt;从创意到设计：利用DALL-E生成客栈设计图&lt;&#x2F;h2&gt;
+&lt;p&gt;我首先需要的是一个优质的客栈设计图。考虑到纳西族传统建筑的独特风格，普通的3D模型库很难找到合适的素材。于是，我转向了AI生成技术——DALL-E。&lt;&#x2F;p&gt;
+&lt;p&gt;要使用DALL-E生成理想的丽江客栈设计图，提示词（Prompt）的质量至关重要。经过多次调整和实验，我最终使用了以下提示词：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Top-down aerial 3D rendering of a traditional Naxi courtyard inn in Lijiang, with clean white background. Detailed architectural model showing three-section courtyard layout, central reflecting pool, wooden structural elements, sloping black tile roofs, and intricate Dongba symbols on beams. Include clear delineation of stone pathways, courtyard boundaries, and building footprints. Render in technical architectural style with sharp details, clean lines, and proper scale representation. The model should appear isolated against white background for easy extraction and 3D printing. Photorealistic textures showing material differences between wood, stone, and tile elements.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段提示词专门针对3D打印需求设计，我特别强调了以下几点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;俯视角度（便于打印和整体把握）&lt;&#x2F;li&gt;
+&lt;li&gt;清晰的背景（便于后期处理）&lt;&#x2F;li&gt;
+&lt;li&gt;传统纳西院落布局（三坊一照壁）&lt;&#x2F;li&gt;
+&lt;li&gt;材质区分（木材、石材、瓦片）&lt;&#x2F;li&gt;
+&lt;li&gt;建筑细节（东巴符号、倾斜黑瓦屋顶）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;下面是DALL-E生成的设计图：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;ai-3d-printing-lijiang-guesthouse-design&#x2F;Guesthouse_Design_2D.png&quot; alt=&quot;Guesthouse Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;从图中可以看到，AI成功捕捉了纳西族传统建筑的精髓，包括经典的院落布局、中心水池和特色屋顶。虽然作为2.5D图像，它提供了良好的视觉效果，但要进行3D打印，我们需要将其转换为真正的3D模型。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-2-5ddao-3d-shi-yong-trellisji-zhu-jin-xing-zhuan-huan&quot;&gt;从2.5D到3D：使用TRELLIS技术进行转换&lt;&#x2F;h2&gt;
+&lt;p&gt;拥有了2.5D设计图后，下一步是将其转换为可打印的3D模型。这里我使用了微软的TRELLIS项目，这是一个专门用于将2D&#x2F;2.5D图像转换为3D模型的开源工具。&lt;&#x2F;p&gt;
+&lt;p&gt;TRELLIS (https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;TRELLIS) 利用先进的AI算法分析图像中的深度信息和结构特征，生成具有合理几何形状的3D模型。这个过程包括：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;输入DALL-E生成的2.5D设计图&lt;&#x2F;li&gt;
+&lt;li&gt;TRELLIS分析图像中的深度和结构信息&lt;&#x2F;li&gt;
+&lt;li&gt;生成初步3D网格模型&lt;&#x2F;li&gt;
+&lt;li&gt;优化模型拓扑结构和表面细节&lt;&#x2F;li&gt;
+&lt;li&gt;输出GLB格式的3D模型文件&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;以下是转换过程的视频展示：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;video controls src=&quot;guesthouse_design_3D.mp4&quot; title=&quot;TRELLIS 3D&quot;&gt;&lt;&#x2F;video&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;视频中可以看到，TRELLIS成功识别了建筑的主要结构，包括院落布局、屋顶形状和围墙。转换后的3D模型保留了原始设计的建筑特色，同时增加了立体感和空间维度。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-shu-zi-dao-shi-ti-3dmo-xing-de-da-yin-guo-cheng&quot;&gt;从数字到实体：3D模型的打印过程&lt;&#x2F;h2&gt;
+&lt;p&gt;有了GLB格式的3D模型，最后一步是将其转换为3D打印机可识别的STL格式并进行打印。为此，我使用了在线工具glb2stl (https:&#x2F;&#x2F;imagetostl.com&#x2F;cn&#x2F;convert&#x2F;file&#x2F;glb&#x2F;to&#x2F;stl#convert)。&lt;&#x2F;p&gt;
+&lt;p&gt;转换过程相对简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;上传GLB文件到转换工具&lt;&#x2F;li&gt;
+&lt;li&gt;调整模型尺寸和方向&lt;&#x2F;li&gt;
+&lt;li&gt;生成并下载STL文件&lt;&#x2F;li&gt;
+&lt;li&gt;将STL文件导入3D打印机软件&lt;&#x2F;li&gt;
+&lt;li&gt;设置打印参数（填充密度、支撑结构等）&lt;&#x2F;li&gt;
+&lt;li&gt;开始打印&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;在微软Garage的3D打印机上，整个打印过程耗时约3小时。打印完成后，我还进行了简单的后期处理，包括去除支撑结构和轻微的打磨。&lt;&#x2F;p&gt;
+&lt;p&gt;最终成品如下：&lt;&#x2F;p&gt;
+&lt;p&gt;[此处插入3D打印成品照片]&lt;&#x2F;p&gt;
+&lt;p&gt;这个实体模型直观地展示了客栈的空间布局和结构特点，比平面图纸或屏幕上的3D模型更容易理解和评估。我已经将照片发给了舅舅，他非常惊喜，表示这对他与设计师的沟通会有极大帮助。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-yu-chuan-tong-de-wan-mei-rong-he-fan-si-yu-jing-yan-fen-xiang&quot;&gt;技术与传统的完美融合：反思与经验分享&lt;&#x2F;h2&gt;
+&lt;p&gt;通过这次尝试，我对AI生成技术和3D打印在传统建筑设计中的应用有了更深的理解：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;提示词工程的重要性&lt;&#x2F;strong&gt;：为DALL-E编写精确的提示词是成功的关键。我发现，具体的建筑术语（如&amp;quot;三坊一照壁&amp;quot;）和明确的技术要求（如&amp;quot;clean white background&amp;quot;）能显著提高生成结果的质量和可用性。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;AI与专业知识的结合&lt;&#x2F;strong&gt;：虽然AI能生成令人印象深刻的设计，但在传统建筑领域，人类的专业知识仍然不可或缺。我多次调整提示词，添加了更多纳西族建筑的特点，才得到满意的结果。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;技术链路的完整性&lt;&#x2F;strong&gt;：从AI生成到最终打印的过程中，每个环节都很重要。DALL-E生成的图像质量直接影响TRELLIS的转换效果，而转换模型的精度又影响最终打印成品。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;远程协作的新可能&lt;&#x2F;strong&gt;：这个过程展示了如何利用AI和3D打印技术跨越地理限制，为远程项目提供实质性帮助。我在北京使用最新技术，为远在丽江的舅舅提供了实体模型参考。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;xia-yi-bu-ji-hua&quot;&gt;下一步计划&lt;&#x2F;h2&gt;
+&lt;p&gt;这次尝试的成功激发了我更多的想法：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;优化模型细节，特别是东巴符号和木结构的精细表现&lt;&#x2F;li&gt;
+&lt;li&gt;尝试打印更大尺寸的模型，可能分区域打印后组装&lt;&#x2F;li&gt;
+&lt;li&gt;探索添加简单的内部结构，以便更好地规划室内空间&lt;&#x2F;li&gt;
+&lt;li&gt;利用AR技术，将3D模型与实际建筑环境结合起来&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;我计划在舅舅的客栈重建项目进行到室内设计阶段时，再次使用这套技术流程，帮助可视化室内布局和装饰方案。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;这次微软Garage 3D打印活动让我有机会将AI生成技术和3D打印应用于实际项目。通过DALL-E生成设计图，TRELLIS转换3D模型，以及最终的3D打印，我成功地为舅舅的丽江客栈项目创建了实体模型参考。&lt;&#x2F;p&gt;
+&lt;p&gt;这个过程不仅展示了AI和3D打印技术在传统建筑设计中的潜力，也为我们提供了一种新的远程协作方式。技术与传统的融合，为古老的纳西族建筑注入了新的活力和可能性。&lt;&#x2F;p&gt;
+&lt;!--
+
+**额外建议：**
+
+1. 在&quot;DALL-E生成的设计图&quot;部分，添加2-3张不同角度或方案的生成图片，展示AI的多样性
+
+2. 在TRELLIS转换过程中，建议添加几个关键帧截图，以便读者即使不看视频也能理解转换过程
+
+3. 对于最终3D打印的照片，建议从多角度拍摄，并放置一些参照物（如硬币）以展示实际尺寸
+
+4. 考虑添加一张您与舅舅视频通话讨论模型的截图，增强故事性和个人联系
+
+--&gt;</content>
+        
+    </entry>
+</feed>
