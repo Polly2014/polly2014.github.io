@@ -17,7 +17,7 @@
         <link rel="alternate" href="https://polly2014.github.io/ai-3d-printing-lijiang-guesthouse-design/" type="text/html"/>
         <id>https://polly2014.github.io/ai-3d-printing-lijiang-guesthouse-design/</id>
         
-        <content type="html">&lt;p&gt;作为一名AI工程师，我总是在寻找将AI技术应用于实际生活的机会。今天有幸参加了公司（微软）的Garage 3D打印活动，我决定把这个机会用来帮助我舅舅正在进行的丽江客栈重建项目。通过结合AI生成技术和3D打印，我成功地将概念设计转变为实体模型，为远在丽江的舅舅提供了直观的设计参考。下面我将分享整个过程，从AI生成设计图到最终3D打印成品。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;作为一名 AI 工程师，我总是在寻找将AI技术应用于实际生活的机会。恰逢今天参加了我司的 Garage 3D 打印活动，我决定把这个机会用来帮助我舅舅正在进行的丽江客栈重建项目。通过结合AI生成技术和3D打印，我成功地将概念设计转变为实体模型，为远在丽江的舅舅提供了直观的设计参考。下面我将分享整个过程，从AI生成设计图到最终3D打印成品。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;cong-chuang-yi-dao-she-ji-li-yong-dall-esheng-cheng-ke-zhan-she-ji-tu&quot;&gt;从创意到设计：利用DALL-E生成客栈设计图&lt;&#x2F;h2&gt;
 &lt;p&gt;我首先需要的是一个优质的客栈设计图。考虑到纳西族传统建筑的独特风格，普通的3D模型库很难找到合适的素材。于是，我转向了AI生成技术——DALL-E。&lt;&#x2F;p&gt;
 &lt;p&gt;要使用DALL-E生成理想的丽江客栈设计图，提示词（Prompt）的质量至关重要。经过多次调整和实验，我最终使用了以下提示词：&lt;&#x2F;p&gt;
@@ -32,11 +32,11 @@
 &lt;li&gt;建筑细节（东巴符号、倾斜黑瓦屋顶）&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;下面是DALL-E生成的设计图：&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;ai-3d-printing-lijiang-guesthouse-design&#x2F;Guesthouse_Design_2D.png&quot; alt=&quot;Guesthouse Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;Guesthouse_Design_2D.png&quot; alt=&quot;Guesthouse Design&quot; width=&quot;50%&quot; &#x2F;&gt;
 &lt;p&gt;从图中可以看到，AI成功捕捉了纳西族传统建筑的精髓，包括经典的院落布局、中心水池和特色屋顶。虽然作为2.5D图像，它提供了良好的视觉效果，但要进行3D打印，我们需要将其转换为真正的3D模型。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;cong-2-5ddao-3d-shi-yong-trellisji-zhu-jin-xing-zhuan-huan&quot;&gt;从2.5D到3D：使用TRELLIS技术进行转换&lt;&#x2F;h2&gt;
 &lt;p&gt;拥有了2.5D设计图后，下一步是将其转换为可打印的3D模型。这里我使用了微软的TRELLIS项目，这是一个专门用于将2D&#x2F;2.5D图像转换为3D模型的开源工具。&lt;&#x2F;p&gt;
-&lt;p&gt;TRELLIS (https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;TRELLIS) 利用先进的AI算法分析图像中的深度信息和结构特征，生成具有合理几何形状的3D模型。这个过程包括：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;microsoft&#x2F;TRELLIS&quot;&gt;TRELLIS&lt;&#x2F;a&gt; 利用先进的AI算法分析图像中的深度信息和结构特征，生成具有合理几何形状的3D模型。这个过程包括：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;输入DALL-E生成的2.5D设计图&lt;&#x2F;li&gt;
 &lt;li&gt;TRELLIS分析图像中的深度和结构信息&lt;&#x2F;li&gt;
@@ -48,7 +48,7 @@
 &lt;p&gt;&lt;video controls src=&quot;guesthouse_design_3D.mp4&quot; title=&quot;TRELLIS 3D&quot;&gt;&lt;&#x2F;video&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;视频中可以看到，TRELLIS成功识别了建筑的主要结构，包括院落布局、屋顶形状和围墙。转换后的3D模型保留了原始设计的建筑特色，同时增加了立体感和空间维度。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;cong-shu-zi-dao-shi-ti-3dmo-xing-de-da-yin-guo-cheng&quot;&gt;从数字到实体：3D模型的打印过程&lt;&#x2F;h2&gt;
-&lt;p&gt;有了GLB格式的3D模型，最后一步是将其转换为3D打印机可识别的STL格式并进行打印。为此，我使用了在线工具glb2stl (https:&#x2F;&#x2F;imagetostl.com&#x2F;cn&#x2F;convert&#x2F;file&#x2F;glb&#x2F;to&#x2F;stl#convert)。&lt;&#x2F;p&gt;
+&lt;p&gt;有了GLB格式的3D模型，最后一步是将其转换为3D打印机可识别的STL格式并进行打印。为此，我使用了在线工具 &lt;a href=&quot;https:&#x2F;&#x2F;imagetostl.com&#x2F;cn&#x2F;convert&#x2F;file&#x2F;glb&#x2F;to&#x2F;stl#convert&quot;&gt;glb2stl&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;转换过程相对简单：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;上传GLB文件到转换工具&lt;&#x2F;li&gt;
@@ -58,7 +58,7 @@
 &lt;li&gt;设置打印参数（填充密度、支撑结构等）&lt;&#x2F;li&gt;
 &lt;li&gt;开始打印&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;在微软Garage的3D打印机上，整个打印过程耗时约3小时。打印完成后，我还进行了简单的后期处理，包括去除支撑结构和轻微的打磨。&lt;&#x2F;p&gt;
+&lt;p&gt;在微软Garage的3D打印机上，整个打印过程耗时约9小时。打印完成后，我还进行了简单的后期处理，包括去除支撑结构和轻微的打磨。&lt;&#x2F;p&gt;
 &lt;p&gt;最终成品如下：&lt;&#x2F;p&gt;
 &lt;p&gt;[此处插入3D打印成品照片]&lt;&#x2F;p&gt;
 &lt;p&gt;这个实体模型直观地展示了客栈的空间布局和结构特点，比平面图纸或屏幕上的3D模型更容易理解和评估。我已经将照片发给了舅舅，他非常惊喜，表示这对他与设计师的沟通会有极大帮助。&lt;&#x2F;p&gt;
