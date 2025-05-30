@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - Windows</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/windows/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/windows/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-10T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/windows/atom.xml</id>
+    <id>https://polly.wang/tags/windows/atom.xml</id>
     <entry xml:lang="en">
         <title>OpenHands Starter (Windows) 一键启动工具设计与实现</title>
         <published>2025-03-10T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-auto-starter-windows/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-auto-starter-windows/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-auto-starter-windows/" type="text/html"/>
+        <id>https://polly.wang/openhands-auto-starter-windows/</id>
         
         <content type="html">&lt;!--
 
@@ -47,7 +47,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;p&gt;随着 AI 在开发工作中的普及，个人化 AI 助手平台 OpenHands 逐渐成为许多开发者的得力工具。然而，由于 OpenHands 基于 Docker 容器环境运行，对非技术人员来说，设置和运行过程可能存在一定门槛。为改善用户体验，我开发了一个 Windows 下的 OpenHands 一键启动工具，实现了环境检测、自动配置和一键部署等功能。本文将详细介绍这个工具的设计思路和实现过程。&lt;&#x2F;p&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands Starter 界面 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter.png&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter.png&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gong-neng-xu-qiu-fen-xi&quot;&gt;功能需求分析&lt;&#x2F;h2&gt;
 &lt;p&gt;在开发之前，我首先明确了工具应具备的核心功能：&lt;&#x2F;p&gt;
@@ -77,7 +77,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;h3 id=&quot;zheng-ti-jia-gou&quot;&gt;整体架构&lt;&#x2F;h3&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands Starter 架构图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter_Architecture.png&quot; alt=&quot;OpenHands Starter 架构图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter_Architecture.png&quot; alt=&quot;OpenHands Starter 架构图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;p&gt;该工具采用简单的分层架构：&lt;&#x2F;p&gt;
 &lt;ol&gt;
@@ -97,7 +97,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;&#x2F;ul&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands 状态流转图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_State_Flow.svg&quot; alt=&quot;OpenHands State Flow&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_State_Flow.svg&quot; alt=&quot;OpenHands State Flow&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;dai-ma-shi-xian&quot;&gt;代码实现&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-fu-wu-ceng-shi-xian-dockerservice-lei&quot;&gt;1. 服务层实现 - DockerService 类&lt;&#x2F;h3&gt;

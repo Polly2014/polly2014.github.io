@@ -1,0 +1,122 @@
+## Variables
+{PR} = "https://msasg.visualstudio.com/ContentServices/_git/msnews-experiences/pullrequest/12345"
+## PROMPT
+As an experienced TypeScript developer and web component specialist, please review this PR: {PR} systematically following these steps:
+1. PR Overview Analysis:
+   - What is the core purpose of these changes? (feature, bug fix, refactoring, performance improvement)
+   - Which architectural layers are affected? (Experiences/Web Components/Core Libraries/Configs)
+   - Is there an associated work item or specification?
+   - Does the PR title follow the required format? (fix:, feat:, chore:, test:, doc:, build:, loc:)
+   - Does the PR title contains the product name (prong1, prong2, anaheim, winHP, msnHP)
+
+2. Code Implementation Review:
+   - TypeScript Considerations:
+     - Does the code follow TypeScript best practices and strong typing?
+     - Are interfaces, types, and classes properly defined and used?
+     - Are variable namings consistent with the codebase and meaningful in American English?
+     - Is error handling comprehensive with appropriate logging via diagnostics?
+     - Are there any breaking changes in public APIs or experiences?
+     - For new features, are they properly feature-flagged?
+   
+   - Web Component & UI Considerations:
+     - For web components, are they properly registered with standardized naming conventions?
+     - Are components properly modularized and reusable?
+     - Is component styling implemented correctly using design system tokens?
+     - Does the code have good browser compatibility?
+     - For React components, do they follow React best practices and TypeScript type safety?
+   
+   - Performance Considerations:
+     - Are images optimized for size and format?
+     - Are resources lazy-loaded appropriately?
+     - Are components designed with rendering performance in mind?
+     - For web components, is the shadow DOM used effectively?
+     - Do components minimize render blocking operations?
+
+    - Code Quality:
+     - Is the code maintainable and following established patterns?
+     - Are there any syntax errors or typos?
+     - Are there any logic or semantic errors (e.g., using "<" when ">" is expected)?
+     - Does the code follow consistent style guidelines (proper spacing, indentation)?
+     - Have all unused imports and dead code been removed?
+
+3. Testing Coverage:
+   - Unit Tests:
+     - Are there comprehensive unit tests using Jest?
+     - Do web component tests include proper shadow DOM testing?
+     - Are there proper mocks and test data?
+     - If the unit tests meet the unit test coverage?
+   - Visual Parity Tests:
+     - Are visual parity tests added or updated if applicable?
+     - Are baseline screenshots updated or new ones added?
+
+4. Security:
+   - Is data handling secure and properly validated?
+   - Are there any new external dependencies that need security review?
+   - Is user input properly sanitized before use?
+
+5. Telemetry and Instrumentation:
+   - Is proper telemetry implemented for new or modified components?
+   - Are component interaction events properly tracked?
+   - Are errors and exceptions properly logged using diagnostics?
+   - Are performance marks and measures added for critical paths?
+   - Is telemetry validation passing without new errors?
+
+6. Documentation:
+   - Code Documentation:
+     - Are code changes well-documented with clear, descriptive comments?
+     - Do comments explain "why" rather than just "what" for complex logic?
+     - Are all comments written in proper American English?
+   - Component Documentation:
+     - Is there a README.md for new components or experiences?
+     - Does the README include usage examples and API documentation?
+     - Are exported API methods and components well-documented with JSDoc?
+   
+7. Final Validation:
+   - Is the commit message clear and linked to work items?
+   - Do the automated tests pass in the pipeline?
+   - Has the code been reviewed by relevant stakeholders?
+
+## Output
+
+Please structure your review into following sections and output the review according to `Example Output`:
+
+### By Section Analyze
+Please output the review in a markdown table format with the following columns:
+| Step | Review Result | Comments |
+|-------|---------------|----------|
+Each row of the table corresponds to a step listed above. In each row's {Review Result}, please rate the each bullet points by score 0~1 with 0 as totally missed the point and 1 as completely satisfies, then drive the score for the whole section by Round(SUM(ScoreOfBulletPoints)/Count(BulletPoints)\*5).
+In each {Comments}, please think step by step to list which part of code looks good or require further improvement in details and what's your suggestion of how to improve it.
+
+### Review Summary
+Please write the summary based on following steps:
+1. output an overall score based on analysis of last section in template `score:{Score}`, and the formula for the {Score} is:
+```markdown
+{Score} = {Count of Satisfied Bullet Points}/{Overall Bullet Points Count}*5, with minimum step of 0.5
+```
+2. Write a line of short summary less than 200 words describe the good or bad aspects of the PR
+
+
+## Example Output
+
+```markdown
+## Overall Score: 3.5
+
+The PR demonstrates well-structured implementation of web components with strong TypeScript typing but has some gaps in telemetry instrumentation. Strong points include comprehensive Jest unit tests, proper shadow DOM handling, and good attention to accessibility/dark mode. Major areas needing improvement include:
+1. Missing telemetry for component interaction events
+2. Inconsistent performance optimization in shadow DOM rendering
+3. Some components missing proper documentation
+4. Incomplete error handling in critical user interactions
+
+## By Section Analysis
+| Step | Review Result | Comments |
+|------|---------------|-----------|
+| PR Overview Analysis | Score: 5 (4/4=5) | 1. Core Purpose: New feature adding weather card web component (1.0)\n2. Architecture: Web Components layer with minor changes to core libraries (1.0)\n3. Work Item: Well-documented with Figma designs and test links provided (1.0)\n4. PR title format: Correctly formatted as "feat: Add weather card component" (1.0) |
+| Code Implementation (TypeScript) | Score: 4 (4/5=4) | 1. TypeScript practices: Strong typing throughout with proper interfaces (1.0)\n2. Error handling: Some edge cases not properly handled in WeatherCardWC.ts (0.7)\n3. Naming: Consistent with codebase standards (1.0)\n4. Feature flags: Properly implemented (1.0)\n5. API consistency: No breaking changes detected (1.0) |
+| Web Component & UI | Score: 4 (4/5=4) | 1. Registration: Components properly registered with standard naming (1.0)\n2. Modularity: Good separation of concerns in template and styles (1.0)\n3. Styling: Consistent use of design tokens (1.0)\n4. Browser compatibility: Works across target browsers (1.0)\n5. Shadow DOM: Inconsistent usage of slots in some components (0.6) |
+| Performance | Score: 3 (3/5=3) | 1. Image optimization: SVG icons properly optimized (1.0)\n2. Lazy loading: Implemented for non-critical elements (1.0)\n3. Render optimization: Some components doing excessive work in connectedCallback (0.5)\n4. Shadow DOM: Inefficient DOM updates in temperature display component (0.5)\n5. Render blocking: Some CSS could be loaded more efficiently (0.6) |
+| Testing Coverage | Score: 4.5 (4.5/5=4.5) | 1. Jest tests: Comprehensive coverage with proper assertions (1.0)\n2. Shadow DOM testing: Well tested (1.0)\n3. Test data: Proper mocks for API responses (1.0)\n4. VP tests: Added with proper baselines (1.0)\n5. Accessibility testing: Some ARIA attributes missing proper tests (0.5) |
+| Security | Score: 5 (3/3=5) | 1. Data validation: Proper input validation for location data (1.0)\n2. Dependencies: No new external dependencies added (1.0)\n3. Input sanitization: User location inputs properly sanitized (1.0) |
+| Telemetry | Score: 2 (2/4=2) | 1. Component telemetry: Basic implementation present (0.6)\n2. Interaction events: Missing tracking for key user interactions (0.3)\n3. Error logging: Present but incomplete for API failure scenarios (0.6)\n4. Performance marks: Not implemented for critical rendering paths (0.5) |
+| Documentation | Score: 3 (2/4=3) | 1. Code comments: Generally good but some complex logic needs better documentation (0.7)\n2. README: Present but missing usage examples (0.6)\n3. API documentation: Exported methods well documented (1.0)\n4. Patterns: Follows established component patterns (0.7) |
+| Final Validation | Score: 5 (3/3=5) | 1. Commit messages: Clear and descriptive with linked work items (1.0)\n2. Pipeline tests: All tests passing (1.0)\n3. Stakeholder review: Approved by design and PM stakeholders (1.0) |
+```

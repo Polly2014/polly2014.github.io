@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - DevOps</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/devops/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/devops/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-31T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/devops/atom.xml</id>
+    <id>https://polly.wang/tags/devops/atom.xml</id>
     <entry xml:lang="en">
         <title>使用GitHub Actions自动部署AI助手：无需人工干预的持续部署方案</title>
         <published>2025-03-31T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/github-actions-auto-deploy-openhands/" type="text/html"/>
-        <id>https://polly2014.github.io/github-actions-auto-deploy-openhands/</id>
+        <link rel="alternate" href="https://polly.wang/github-actions-auto-deploy-openhands/" type="text/html"/>
+        <id>https://polly.wang/github-actions-auto-deploy-openhands/</id>
         
         <content type="html">&lt;p&gt;在运维AI应用时，我们经常需要不断更新代码并重新部署。每次手动SSH登录服务器、拉取代码、编译并重启服务不仅繁琐，还容易出错。本文将分享如何利用GitHub Actions实现OpenHands（一个私有的AI编程助手）的全自动部署流程，让代码一旦推送到GitHub仓库就能自动部署到生产服务器，无需任何人工干预。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;xian-zhuang-wen-ti&quot;&gt;现状问题&lt;&#x2F;h2&gt;
@@ -189,7 +189,7 @@
 &lt;&#x2F;ol&gt;
 &lt;details&gt;
 &lt;summary&gt;GitHub Actions自动部署流程图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gao-ji-pei-zhi-yu-you-hua&quot;&gt;高级配置与优化&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;tian-jia-bu-shu-tong-zhi&quot;&gt;添加部署通知&lt;&#x2F;h3&gt;
@@ -284,8 +284,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-auto-starter-windows/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-auto-starter-windows/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-auto-starter-windows/" type="text/html"/>
+        <id>https://polly.wang/openhands-auto-starter-windows/</id>
         
         <content type="html">&lt;!--
 
@@ -317,7 +317,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;p&gt;随着 AI 在开发工作中的普及，个人化 AI 助手平台 OpenHands 逐渐成为许多开发者的得力工具。然而，由于 OpenHands 基于 Docker 容器环境运行，对非技术人员来说，设置和运行过程可能存在一定门槛。为改善用户体验，我开发了一个 Windows 下的 OpenHands 一键启动工具，实现了环境检测、自动配置和一键部署等功能。本文将详细介绍这个工具的设计思路和实现过程。&lt;&#x2F;p&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands Starter 界面 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter.png&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter.png&quot; alt=&quot;OpenHands Starter&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gong-neng-xu-qiu-fen-xi&quot;&gt;功能需求分析&lt;&#x2F;h2&gt;
 &lt;p&gt;在开发之前，我首先明确了工具应具备的核心功能：&lt;&#x2F;p&gt;
@@ -347,7 +347,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;h3 id=&quot;zheng-ti-jia-gou&quot;&gt;整体架构&lt;&#x2F;h3&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands Starter 架构图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter_Architecture.png&quot; alt=&quot;OpenHands Starter 架构图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_Starter_Architecture.png&quot; alt=&quot;OpenHands Starter 架构图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;p&gt;该工具采用简单的分层架构：&lt;&#x2F;p&gt;
 &lt;ol&gt;
@@ -367,7 +367,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;&#x2F;ul&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands 状态流转图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_State_Flow.svg&quot; alt=&quot;OpenHands State Flow&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-auto-starter-windows&#x2F;OpenHands_State_Flow.svg&quot; alt=&quot;OpenHands State Flow&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;dai-ma-shi-xian&quot;&gt;代码实现&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-fu-wu-ceng-shi-xian-dockerservice-lei&quot;&gt;1. 服务层实现 - DockerService 类&lt;&#x2F;h3&gt;
@@ -627,8 +627,8 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-multi-accounts-frontend-design/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-multi-accounts-frontend-design/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-multi-accounts-frontend-design/" type="text/html"/>
+        <id>https://polly.wang/openhands-multi-accounts-frontend-design/</id>
         
         <content type="html">&lt;p&gt;本文将介绍如何设计和实现一套系统，为每个登录用户自动分配独立的OpenHands实例，确保用户数据和计算资源的隔离。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;bei-jing&quot;&gt;背景&lt;&#x2F;h2&gt;
@@ -640,7 +640,7 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;li&gt;&lt;strong&gt;实例管理服务&lt;&#x2F;strong&gt; - 负责创建和分配OpenHands实例&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;反向代理系统&lt;&#x2F;strong&gt; - 将用户请求路由到其专属实例&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;shi-xian-bu-zou-xiang-jie&quot;&gt;实现步骤详解&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-chuang-jian-shi-li-guan-li-fu-wu&quot;&gt;1. 创建实例管理服务&lt;&#x2F;h3&gt;
 &lt;p&gt;实例管理服务负责处理用户登录请求，为每个用户分配和管理独立的OpenHands实例。&lt;&#x2F;p&gt;
@@ -922,8 +922,8 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/integrate-openhands-issue-resolver-into-github-actions/" type="text/html"/>
-        <id>https://polly2014.github.io/integrate-openhands-issue-resolver-into-github-actions/</id>
+        <link rel="alternate" href="https://polly.wang/integrate-openhands-issue-resolver-into-github-actions/" type="text/html"/>
+        <id>https://polly.wang/integrate-openhands-issue-resolver-into-github-actions/</id>
         
         <content type="html">&lt;p&gt;OpenHands Issue Resolver是一个强大的工具，可以帮助开发者自动化问题的解决过程。通过GitHub Actions的集成，您可以在每次提交代码时自动运行它，从而提高开发效率。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;zhun-bei-gong-zuo&quot;&gt;准备工作&lt;&#x2F;h2&gt;
@@ -996,13 +996,13 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
 &lt;li&gt;使用 &lt;code&gt;fix-me&lt;&#x2F;code&gt; 标签， Agent 会基于所有的留言进行处理。&lt;&#x2F;li&gt;
 &lt;li&gt;使用 &lt;code&gt;@openhands-agent&lt;&#x2F;code&gt;， Agent进针对所处的留言帖子进行处理。&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GtiHub_Issue_Creation.png&quot; alt=&quot;GitHub Issue Creation&quot; &#x2F;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GtiHub_Issue_Creation.png&quot; alt=&quot;GitHub Issue Creation&quot; &#x2F;&gt;
 3. Openhands Agent自动被触发，即可通过 Agent生成的新评论或在 GitHub Repo 的 &amp;quot;Actions&amp;quot; 选项卡中查看工作流的运行状态。
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Actions_001.png&quot; alt=&quot;GitHub Actions&quot; &#x2F;&gt;
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Actions_002.png&quot; alt=&quot;GitHub Actions&quot; &#x2F;&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Actions_001.png&quot; alt=&quot;GitHub Actions&quot; &#x2F;&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Actions_002.png&quot; alt=&quot;GitHub Actions&quot; &#x2F;&gt;
 4. OpenHands完成工作，并生成了新的PR，可人工进行review, merge
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Issue_PR.png&quot; alt=&quot;GitHub Issue PR&quot; &#x2F;&gt;
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Issue_Finished.png&quot; alt=&quot;GitHub Issue Finished&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Issue_PR.png&quot; alt=&quot;GitHub Issue PR&quot; &#x2F;&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;integrate-openhands-issue-resolver-into-github-actions&#x2F;GitHub_Issue_Finished.png&quot; alt=&quot;GitHub Issue Finished&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;然后如果一切正常，您将看到OpenHands Issue Resolver成功运行的日志。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;can-kao-zi-liao&quot;&gt;参考资料&lt;&#x2F;h2&gt;
 &lt;ul&gt;
@@ -1022,8 +1022,8 @@ Polly2014: 我想使用python写一个程序，放在Devbox中运行（是Window
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-backend-setup-deployment-ssl/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-backend-setup-deployment-ssl/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-backend-setup-deployment-ssl/" type="text/html"/>
+        <id>https://polly.wang/openhands-backend-setup-deployment-ssl/</id>
         
         <content type="html">&lt;p&gt;OpenHands 是一个基于 Python 的后端服务，使用 FastAPI 框架构建。本文将详细记录如何从源码独立编译部署 OpenHands 的 Server 端，并为其配置 SSL&#x2F;HTTPS，以实现安全的生产环境服务。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;fastapi-poetry-uvicorn-nginx-he-ssl-de-guan-xi&quot;&gt;FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的关系&lt;&#x2F;h2&gt;

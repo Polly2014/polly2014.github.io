@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - Deployment</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/deployment/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/deployment/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-02-12T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/deployment/atom.xml</id>
+    <id>https://polly.wang/tags/deployment/atom.xml</id>
     <entry xml:lang="en">
         <title>Azure部署OpenHands指南</title>
         <published>2025-02-12T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-deployment-guidance/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-deployment-guidance/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-deployment-guidance/" type="text/html"/>
+        <id>https://polly.wang/openhands-deployment-guidance/</id>
         
         <content type="html">&lt;h2 id=&quot;qian-yan&quot;&gt;前言&lt;&#x2F;h2&gt;
 &lt;p&gt;在现代软件开发中，自动化和智能化工具的使用变得越来越重要。OpenHands 是一个强大的工具，可以帮助开发者快速部署和管理项目。本指南将详细介绍如何在 Azure 上部署 OpenHands，包括安装 Docker 和 Docker Compose，配置 Azure 的 GPT-4o API 接口，并将服务映射到外网的 80 端口。&lt;&#x2F;p&gt;
@@ -269,15 +269,15 @@
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;浏览器访问 &lt;code&gt;http:&#x2F;&#x2F;&amp;lt;your-azure-server-ip&amp;gt;&lt;&#x2F;code&gt;，打开OpenHands首页
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Homepage.png&quot; alt=&quot;OpenHands Homepage&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Homepage.png&quot; alt=&quot;OpenHands Homepage&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;li&gt;
 &lt;li&gt;
 &lt;p&gt;点击左下角“设置”按钮，配置LLM API Servie
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Configuration.png&quot; alt=&quot;OpenHands Configuration&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Configuration.png&quot; alt=&quot;OpenHands Configuration&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;li&gt;
 &lt;li&gt;
 &lt;p&gt;开启你的AI Coding旅程
-&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Coding.png&quot; alt=&quot;OpenHands Coding&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-deployment-guidance&#x2F;OpenHands_Coding.png&quot; alt=&quot;OpenHands Coding&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;

@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - 多账户系统</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/duo-zhang-hu-xi-tong/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/duo-zhang-hu-xi-tong/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-10T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/duo-zhang-hu-xi-tong/atom.xml</id>
+    <id>https://polly.wang/tags/duo-zhang-hu-xi-tong/atom.xml</id>
     <entry xml:lang="en">
         <title>OpenHands 多账户方案（二）: Nginx 反向代理与动态容器管理</title>
         <published>2025-03-10T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-multi-accounts-frontend-design/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-multi-accounts-frontend-design/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-multi-accounts-frontend-design/" type="text/html"/>
+        <id>https://polly.wang/openhands-multi-accounts-frontend-design/</id>
         
         <content type="html">&lt;p&gt;本文将介绍如何设计和实现一套系统，为每个登录用户自动分配独立的OpenHands实例，确保用户数据和计算资源的隔离。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;bei-jing&quot;&gt;背景&lt;&#x2F;h2&gt;
@@ -27,7 +27,7 @@
 &lt;li&gt;&lt;strong&gt;实例管理服务&lt;&#x2F;strong&gt; - 负责创建和分配OpenHands实例&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;反向代理系统&lt;&#x2F;strong&gt; - 将用户请求路由到其专属实例&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;shi-xian-bu-zou-xiang-jie&quot;&gt;实现步骤详解&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-chuang-jian-shi-li-guan-li-fu-wu&quot;&gt;1. 创建实例管理服务&lt;&#x2F;h3&gt;
 &lt;p&gt;实例管理服务负责处理用户登录请求，为每个用户分配和管理独立的OpenHands实例。&lt;&#x2F;p&gt;

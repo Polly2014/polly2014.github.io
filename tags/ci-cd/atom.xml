@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - CI&#x2F;CD</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/ci-cd/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/ci-cd/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-31T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/ci-cd/atom.xml</id>
+    <id>https://polly.wang/tags/ci-cd/atom.xml</id>
     <entry xml:lang="en">
         <title>使用GitHub Actions自动部署AI助手：无需人工干预的持续部署方案</title>
         <published>2025-03-31T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/github-actions-auto-deploy-openhands/" type="text/html"/>
-        <id>https://polly2014.github.io/github-actions-auto-deploy-openhands/</id>
+        <link rel="alternate" href="https://polly.wang/github-actions-auto-deploy-openhands/" type="text/html"/>
+        <id>https://polly.wang/github-actions-auto-deploy-openhands/</id>
         
         <content type="html">&lt;p&gt;在运维AI应用时，我们经常需要不断更新代码并重新部署。每次手动SSH登录服务器、拉取代码、编译并重启服务不仅繁琐，还容易出错。本文将分享如何利用GitHub Actions实现OpenHands（一个私有的AI编程助手）的全自动部署流程，让代码一旦推送到GitHub仓库就能自动部署到生产服务器，无需任何人工干预。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;xian-zhuang-wen-ti&quot;&gt;现状问题&lt;&#x2F;h2&gt;
@@ -189,7 +189,7 @@
 &lt;&#x2F;ol&gt;
 &lt;details&gt;
 &lt;summary&gt;GitHub Actions自动部署流程图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gao-ji-pei-zhi-yu-you-hua&quot;&gt;高级配置与优化&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;tian-jia-bu-shu-tong-zhi&quot;&gt;添加部署通知&lt;&#x2F;h3&gt;
@@ -284,8 +284,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/blog-automation-with-github-actions/" type="text/html"/>
-        <id>https://polly2014.github.io/blog-automation-with-github-actions/</id>
+        <link rel="alternate" href="https://polly.wang/blog-automation-with-github-actions/" type="text/html"/>
+        <id>https://polly.wang/blog-automation-with-github-actions/</id>
         
         <content type="html">&lt;p&gt;管理一个 Zola 博客是一件令人愉快的事情，但手动构建和部署博客的步骤可能会随着时间的推移变得繁琐。在本文中，我们将探讨如何利用 &lt;strong&gt;GitHub Actions&lt;&#x2F;strong&gt; 来完全自动化 Zola 博客的构建和部署过程。这种方法消除了手动干预的需要，使得工作流程更加高效且无错误。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;dang-qian-gong-zuo-liu-cheng-de-tiao-zhan&quot;&gt;当前工作流程的挑战&lt;&#x2F;h2&gt;

@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - Streamlit</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/streamlit/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/streamlit/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-04-02T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/streamlit/atom.xml</id>
+    <id>https://polly.wang/tags/streamlit/atom.xml</id>
     <entry xml:lang="en">
         <title>OpenHands Starter Telemetry Dashboard 实践</title>
         <published>2025-04-02T00:00:00+00:00</published>
@@ -14,13 +14,13 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-telemetry-dashboard/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-telemetry-dashboard/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-telemetry-dashboard/" type="text/html"/>
+        <id>https://polly.wang/openhands-telemetry-dashboard/</id>
         
         <content type="html">&lt;h2 id=&quot;yi-xiang-mu-bei-jing-yu-yi-yi&quot;&gt;一、项目背景与意义&lt;&#x2F;h2&gt;
 &lt;p&gt;OpenHands Starter是一个帮助用户快速部署AI开发平台的工具，为了更好地了解用户安装体验和潜在问题，我们需要收集关键遥测数据。然而，原始数据难以直观理解，团队迫切需要一个可视化仪表板，将这些数据转化为有价值的见解。&lt;&#x2F;p&gt;
 &lt;p&gt;基于此需求，我们设计并实现了OpenHands Starter遥测仪表板，它能够展示关键安装指标、操作系统分布、安装步骤成功率，并提供详细的会话分析功能，帮助开发团队不断优化产品体验。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-telemetry-dashboard&#x2F;DashBoard_Preview.png&quot; alt=&quot;Dashboard Preview&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-telemetry-dashboard&#x2F;DashBoard_Preview.png&quot; alt=&quot;Dashboard Preview&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;er-ji-zhu-zhan-xuan-ze&quot;&gt;二、技术栈选择&lt;&#x2F;h2&gt;
 &lt;p&gt;在技术选型上，我们考虑了开发效率、性能和用户体验，最终选定：&lt;&#x2F;p&gt;
 &lt;ol&gt;
@@ -47,7 +47,7 @@
 &lt;p&gt;整体架构如下：&lt;&#x2F;p&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands Telemetry架构 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-telemetry-dashboard&#x2F;OpenHands_Starter_Telemetry_Architecture.png&quot; alt=&quot;OpenHands_Starter_Telemetry_Architecture&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-telemetry-dashboard&#x2F;OpenHands_Starter_Telemetry_Architecture.png&quot; alt=&quot;OpenHands_Starter_Telemetry_Architecture&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;si-xi-tong-shi-xian-xiang-jie&quot;&gt;四、系统实现详解&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;4-1-xiang-mu-jie-gou-she-zhi&quot;&gt;4.1 项目结构设置&lt;&#x2F;h3&gt;

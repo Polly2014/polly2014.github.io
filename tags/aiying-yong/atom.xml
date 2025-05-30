@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI应用</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/aiying-yong/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/aiying-yong/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-04-11T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/aiying-yong/atom.xml</id>
+    <id>https://polly.wang/tags/aiying-yong/atom.xml</id>
     <entry xml:lang="en">
         <title>Claude 3.7 Sonnet模型使用成本分析：基于OpenHands实际案例</title>
         <published>2025-04-11T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/claude-37-cost-analysis/" type="text/html"/>
-        <id>https://polly2014.github.io/claude-37-cost-analysis/</id>
+        <link rel="alternate" href="https://polly.wang/claude-37-cost-analysis/" type="text/html"/>
+        <id>https://polly.wang/claude-37-cost-analysis/</id>
         
         <content type="html">&lt;h2 id=&quot;yi-yin-yan&quot;&gt;一、引言&lt;&#x2F;h2&gt;
 &lt;p&gt;随着大语言模型(LLM)在生产环境中的广泛应用，其使用成本已成为企业关注的焦点。本文通过分析OpenHands平台的实际使用日志，深入解析Claude 3.7 Sonnet模型的收费模式和成本结构，并提出相应的优化策略。&lt;&#x2F;p&gt;
@@ -224,8 +224,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-running-logic-analysis/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-running-logic-analysis/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-running-logic-analysis/" type="text/html"/>
+        <id>https://polly.wang/openhands-running-logic-analysis/</id>
         
         <content type="html">&lt;h2 id=&quot;yi-zheng-ti-jia-gou-gai-shu&quot;&gt;一、整体架构概述&lt;&#x2F;h2&gt;
 &lt;p&gt;OpenHands 是一个基于 Agent Hub 的智能端到端编码平台，通过多个组件的协同工作来完成用户任务。从日志可以看出，系统主要包括以下核心部分：&lt;&#x2F;p&gt;
@@ -700,7 +700,7 @@ CONTENT: 太好了！网页应用已经成功运行起来了。您现在可以�
 &lt;h2 id=&quot;wu-zhi-xing-liu-cheng-tu&quot;&gt;五、执行流程图&lt;&#x2F;h2&gt;
 &lt;details&gt;
 &lt;summary&gt;OpenHands执行流程详细图示 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-running-logic-analysis&#x2F;openhands_running_logic.svg&quot; alt=&quot;OpenHands执行流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-running-logic-analysis&#x2F;openhands_running_logic.svg&quot; alt=&quot;OpenHands执行流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;liu-agent-hubjia-gou-de-you-shi&quot;&gt;六、Agent Hub架构的优势&lt;&#x2F;h2&gt;
 &lt;p&gt;在OpenHands的Agent Hub架构下，各个组件通过事件流系统紧密协作，形成了一个高效的智能编码生态系统：&lt;&#x2F;p&gt;
@@ -733,8 +733,8 @@ CONTENT: 太好了！网页应用已经成功运行起来了。您现在可以�
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/github-actions-auto-deploy-openhands/" type="text/html"/>
-        <id>https://polly2014.github.io/github-actions-auto-deploy-openhands/</id>
+        <link rel="alternate" href="https://polly.wang/github-actions-auto-deploy-openhands/" type="text/html"/>
+        <id>https://polly.wang/github-actions-auto-deploy-openhands/</id>
         
         <content type="html">&lt;p&gt;在运维AI应用时，我们经常需要不断更新代码并重新部署。每次手动SSH登录服务器、拉取代码、编译并重启服务不仅繁琐，还容易出错。本文将分享如何利用GitHub Actions实现OpenHands（一个私有的AI编程助手）的全自动部署流程，让代码一旦推送到GitHub仓库就能自动部署到生产服务器，无需任何人工干预。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;xian-zhuang-wen-ti&quot;&gt;现状问题&lt;&#x2F;h2&gt;
@@ -908,7 +908,7 @@ CONTENT: 太好了！网页应用已经成功运行起来了。您现在可以�
 &lt;&#x2F;ol&gt;
 &lt;details&gt;
 &lt;summary&gt;GitHub Actions自动部署流程图 (点击展开)&lt;&#x2F;summary&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;github-actions-auto-deploy-openhands&#x2F;GitHub_Action_Auto_Deployment.svg&quot; alt=&quot;GitHub Actions自动部署流程图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;details&gt;
 &lt;h2 id=&quot;gao-ji-pei-zhi-yu-you-hua&quot;&gt;高级配置与优化&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;tian-jia-bu-shu-tong-zhi&quot;&gt;添加部署通知&lt;&#x2F;h3&gt;

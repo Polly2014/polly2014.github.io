@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - Automation</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/automation/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/automation/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-04T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/automation/atom.xml</id>
+    <id>https://polly.wang/tags/automation/atom.xml</id>
     <entry xml:lang="en">
         <title>GitHub Actions: 实现Zola博客的自动化部署</title>
         <published>2025-03-04T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/blog-automation-with-github-actions/" type="text/html"/>
-        <id>https://polly2014.github.io/blog-automation-with-github-actions/</id>
+        <link rel="alternate" href="https://polly.wang/blog-automation-with-github-actions/" type="text/html"/>
+        <id>https://polly.wang/blog-automation-with-github-actions/</id>
         
         <content type="html">&lt;p&gt;管理一个 Zola 博客是一件令人愉快的事情，但手动构建和部署博客的步骤可能会随着时间的推移变得繁琐。在本文中，我们将探讨如何利用 &lt;strong&gt;GitHub Actions&lt;&#x2F;strong&gt; 来完全自动化 Zola 博客的构建和部署过程。这种方法消除了手动干预的需要，使得工作流程更加高效且无错误。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;dang-qian-gong-zuo-liu-cheng-de-tiao-zhan&quot;&gt;当前工作流程的挑战&lt;&#x2F;h2&gt;

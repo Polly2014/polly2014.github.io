@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title>Polly Blog - AI Assistant, Tutorials, and Insights - Nginx</title>
     <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
-    <link href="https://polly2014.github.io/tags/nginx/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://polly2014.github.io"/>
+    <link href="https://polly.wang/tags/nginx/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2025-03-29T00:00:00+00:00</updated>
-    <id>https://polly2014.github.io/tags/nginx/atom.xml</id>
+    <id>https://polly.wang/tags/nginx/atom.xml</id>
     <entry xml:lang="en">
         <title>阿里云ECS端口绑定权限问题：五种优雅的解决方案</title>
         <published>2025-03-29T00:00:00+00:00</published>
@@ -14,8 +14,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/resolve-80-port-bind-problem-aliyun-ecs/" type="text/html"/>
-        <id>https://polly2014.github.io/resolve-80-port-bind-problem-aliyun-ecs/</id>
+        <link rel="alternate" href="https://polly.wang/resolve-80-port-bind-problem-aliyun-ecs/" type="text/html"/>
+        <id>https://polly.wang/resolve-80-port-bind-problem-aliyun-ecs/</id>
         
         <content type="html">&lt;p&gt;最近在阿里云ECS上部署OpenHands项目（一个AI编程助手）时，遇到了一个常见但令人恼火的问题：应用程序无法绑定80端口。运行&lt;code&gt;make run&lt;&#x2F;code&gt;命令后，得到以下错误：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;INFO:     Started server process [93385]
@@ -378,8 +378,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-multi-accounts-frontend-design/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-multi-accounts-frontend-design/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-multi-accounts-frontend-design/" type="text/html"/>
+        <id>https://polly.wang/openhands-multi-accounts-frontend-design/</id>
         
         <content type="html">&lt;p&gt;本文将介绍如何设计和实现一套系统，为每个登录用户自动分配独立的OpenHands实例，确保用户数据和计算资源的隔离。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;bei-jing&quot;&gt;背景&lt;&#x2F;h2&gt;
@@ -391,7 +391,7 @@
 &lt;li&gt;&lt;strong&gt;实例管理服务&lt;&#x2F;strong&gt; - 负责创建和分配OpenHands实例&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;反向代理系统&lt;&#x2F;strong&gt; - 将用户请求路由到其专属实例&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly2014.github.io&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-multi-accounts-frontend-design&#x2F;Multi-Tenant-Frontend-Design.png&quot; alt=&quot;Multi Tenant Frontend Design&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;shi-xian-bu-zou-xiang-jie&quot;&gt;实现步骤详解&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;1-chuang-jian-shi-li-guan-li-fu-wu&quot;&gt;1. 创建实例管理服务&lt;&#x2F;h3&gt;
 &lt;p&gt;实例管理服务负责处理用户登录请求，为每个用户分配和管理独立的OpenHands实例。&lt;&#x2F;p&gt;
@@ -673,8 +673,8 @@
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly2014.github.io/openhands-backend-setup-deployment-ssl/" type="text/html"/>
-        <id>https://polly2014.github.io/openhands-backend-setup-deployment-ssl/</id>
+        <link rel="alternate" href="https://polly.wang/openhands-backend-setup-deployment-ssl/" type="text/html"/>
+        <id>https://polly.wang/openhands-backend-setup-deployment-ssl/</id>
         
         <content type="html">&lt;p&gt;OpenHands 是一个基于 Python 的后端服务，使用 FastAPI 框架构建。本文将详细记录如何从源码独立编译部署 OpenHands 的 Server 端，并为其配置 SSL&#x2F;HTTPS，以实现安全的生产环境服务。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;fastapi-poetry-uvicorn-nginx-he-ssl-de-guan-xi&quot;&gt;FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的关系&lt;&#x2F;h2&gt;
