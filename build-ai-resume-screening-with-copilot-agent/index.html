@@ -1,0 +1,162 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>使用GitHub Copilot Agent构建一句话AI智能简历筛选系统</h1><div class=content><p>最近GitHub Copilot推出了Agent模式，这个功能与OpenHands有着异曲同工之妙，彻底改变了我的开发方式。与传统的代码补全不同，Agent模式更像是一个真正的编程伙伴，能够理解项目全貌、协助架构设计，甚至帮助解决复杂的工程问题。<p>今天分享一个完整的实战案例：如何使用GitHub Copilot Agent从零开始构建一个AI驱动的一句话智能简历筛选系统。这个项目不仅展示了Agent模式的强大能力，也体现了现代AI辅助开发的最佳实践。<p><img alt="HR Copilot" src=https://polly.wang/build-ai-resume-screening-with-copilot-agent/HR_Copilot.png><h2 id=xiang-mu-gou-si-cong-xu-qiu-dao-jia-gou>项目构思：从需求到架构</h2><h3 id=ming-que-xiang-mu-mu-biao>明确项目目标</h3><p>HR专员每天都要处理大量简历，传统的手工筛选效率低下。我想构建一个AI助手来解决这个痛点，核心功能包括：<ul><li>批量上传和解析简历<li>智能信息提取和结构化存储<li>基于规则和AI的双重筛选<li>候选人状态跟踪管理</ul><h3 id=agentmo-shi-de-di-yi-ci-dui-hua>Agent模式的第一次对话</h3><p>我首先向Copilot Agent描述了完整的项目愿景：<pre style=background:#2b303b;color:#c0c5ce><code><span># AI-Powered Resume Screening System Development
+</span><span>
+</span><span>## Project Goal
+</span><span>Build an AI-powered HR resume screening assistant system to help HR specialists streamline daily recruitment tasks, improve resume processing efficiency and screening quality.
+</span><span>
+</span><span>## Core Features
+</span><span>### 1. User Management
+</span><span>- No login required, multi-user support
+</span><span>- Session-based user isolation
+</span><span>
+</span><span>### 2. Resume Processing
+</span><span>- **Batch Upload**: Support PDF and Word document formats
+</span><span>- **Information Extraction**: 
+</span><span>  - Rule-based extraction for structured data
+</span><span>  - LLM-powered extraction for complex information
+</span><span>  - Auto-update candidate profiles in talent pool
+</span><span>
+</span><span>### 3. Talent Pool Management
+</span><span>- **View**: Browse all candidates in talent pool
+</span><span>- **Operations**: Upload, view, and manage resumes
+</span><span>- **Status Tracking**: Mark candidate status (e.g., interviewed, rejected, pending)
+</span><span>
+</span><span>### 4. Intelligent Filtering
+</span><span>- **Rule-based Filtering**: Traditional keyword and criteria matching
+</span><span>- **AI-powered Filtering**: 
+</span><span>  - Natural language filter conditions
+</span><span>  - LLM optimization for filter criteria
+</span><span>  - Smart recommendations based on job requirements
+</span><span>
+</span><span>## Technical Requirements
+</span><span>### Backend Architecture
+</span><span>- **Framework**: FastAPI (Python)
+</span><span>- **Package Manager**: Poetry
+</span><span>- **LLM Integration**: litellm + OpenRouter + Claude 3.5 Sonnet
+</span><span>- **Database**: SQLite for candidate data
+</span><span>- **File Storage**: Local for resume files
+</span><span>
+</span><span>### Frontend Design
+</span><span>- **Style**: Clean, minimalist design
+</span><span>- **Color Scheme**: White and gray as primary colors
+</span><span>- **UI Framework**: React/Vue.js with Ant Design or Material-UI
+</span><span>- **Responsive**: Mobile-friendly interface
+</span></code></pre><p>这个详细的Prompt成为了整个项目的"宪法"，Agent基于这个描述为我生成了完整的项目架构。<h2 id=agentqu-dong-de-kai-fa-liu-cheng>Agent驱动的开发流程</h2><h3 id=1-xiang-mu-jie-gou-da-jian>1. 项目结构搭建</h3><p>Agent首先帮我设计了清晰的项目结构：<pre style=background:#2b303b;color:#c0c5ce><code><span>Hr_Copilot_v2/
+</span><span>├── backend/
+</span><span>│   ├── app/
+</span><span>│   │   ├── api/
+</span><span>│   │   ├── models/
+</span><span>│   │   ├── services/
+</span><span>│   │   └── utils/
+</span><span>│   ├── pyproject.toml
+</span><span>│   └── main.py
+</span><span>├── frontend/
+</span><span>│   ├── src/
+</span><span>│   │   ├── components/
+</span><span>│   │   ├── pages/
+</span><span>│   │   ├── services/
+</span><span>│   │   └── utils/
+</span><span>│   └── package.json
+</span><span>└── docker-compose.yml
+</span></code></pre><h3 id=2-hou-duan-he-xin-jia-gou>2. 后端核心架构</h3><p>Agent帮我设计了基于FastAPI的RESTful API架构，包含以下核心模块：<ul><li><strong>数据模型层</strong>：使用SQLAlchemy定义候选人、简历等实体<li><strong>服务层</strong>：封装业务逻辑，包括文件解析、LLM调用<li><strong>API层</strong>：提供标准化的REST接口<li><strong>工具层</strong>：文件处理、数据验证等辅助功能</ul><h3 id=3-qian-duan-jie-mian-she-ji>3. 前端界面设计</h3><p>对于前端，我更倾向于简洁的设计风格。Agent理解了我的需求，生成了基于React + Ant Design的界面框架：<ul><li>简洁的白灰色主题<li>响应式布局设计<li>直观的操作流程<li>清晰的数据展示</ul><h2 id=guan-jian-ji-zhu-xi-jie-de-die-dai-you-hua>关键技术细节的迭代优化</h2><h3 id=llmji-cheng-de-tiao-zhan>LLM集成的挑战</h3><p>在实现AI简历解析功能时，我遇到了一些技术细节问题。通过与Agent的多轮对话，我们逐步优化了：<p><strong>问题1：如何设计高效的prompt来提取简历信息？</strong><p>Agent帮我设计了结构化的prompt模板，确保提取结果的一致性和准确性。<p><strong>问题2：如何处理不同格式的文件上传？</strong><p>Agent建议使用python-docx处理Word文档，PyPDF2处理PDF文件，并提供了完整的错误处理机制。<p><strong>问题3：前后端接口如何设计更合理？</strong><p>我们一起设计了RESTful风格的API接口，确保前后端的无缝对接。<h3 id=sou-suo-he-shai-xuan-gong-neng-de-shi-xian>搜索和筛选功能的实现</h3><p>这是项目中最复杂的部分，需要结合传统的关键词匹配和AI驱动的语义搜索：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 示例：智能筛选服务
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>FilterService</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.llm_client = </span><span style=color:#bf616a>get_llm_client</span><span>()
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>optimize_filter_criteria</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>user_input</span><span>: str):
+</span><span>        </span><span style=color:#65737e>"""使用LLM优化用户的筛选条件"""
+</span><span>        prompt = </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>将以下自然语言描述转换为结构化的筛选条件: </span><span>{user_input}"
+</span><span>        response = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.llm_client.</span><span style=color:#bf616a>complete</span><span>(prompt)
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>parse_filter_response</span><span>(response)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>apply_filters</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>candidates</span><span>, </span><span style=color:#bf616a>filters</span><span>):
+</span><span>        </span><span style=color:#65737e>"""应用筛选条件到候选人列表"""
+</span><span>        </span><span style=color:#65737e># 实现复合筛选逻辑
+</span><span>        </span><span style=color:#b48ead>pass
+</span></code></pre><h3 id=ui-uxde-chi-xu-da-mo>UI/UX的持续打磨</h3><p>Agent在UI设计方面也提供了很多有价值的建议：<ul><li>文件上传的拖拽体验<li>筛选结果的实时预览<li>候选人状态的可视化标记<li>响应式设计的细节优化</ul><h3 id=yi-ju-hua-shai-xuan-aiqu-dong-de-zi-ran-yu-yan-sou-suo>"一句话筛选"：AI驱动的自然语言搜索</h3><p>这个项目最让我兴奋的功能就是<strong>一句话智能筛选</strong>。传统的简历筛选需要设置复杂的条件组合，而我们的系统可以直接理解自然语言描述。<p>比如，HR只需要输入：<ul><li>"找个做AI安全的"<li>"要有5年以上Python经验的全栈工程师"<li>"英语流利，有海外工作经验的产品经理"</ul><p>系统会自动将这些自然语言转换为精确的搜索条件，并从简历内容中进行语义匹配。<h4 id=shi-xian-yuan-li>实现原理</h4><p>Agent帮我设计了一个两阶段的智能筛选架构：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>SmartFilterService</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.llm_client = </span><span style=color:#bf616a>get_llm_client</span><span>()
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>natural_language_search</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>query</span><span>: str, </span><span style=color:#bf616a>candidates</span><span>: List[Candidate]):
+</span><span>        </span><span style=color:#65737e>"""一句话智能搜索候选人"""
+</span><span>        </span><span style=color:#65737e># 第一阶段：理解用户意图
+</span><span>        intent_prompt = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>        解析以下招聘需求，提取关键筛选条件：
+</span><span style=color:#a3be8c>        用户输入：</span><span>{query}
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        请提取：
+</span><span style=color:#a3be8c>        1. 技能要求（如：Python, AI, 安全等）
+</span><span style=color:#a3be8c>        2. 经验要求（如：年限、领域经验）
+</span><span style=color:#a3be8c>        3. 其他条件（如：语言能力、地理位置等）
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        以JSON格式返回结构化条件。
+</span><span style=color:#a3be8c>        </span><span>"""
+</span><span>        
+</span><span>        criteria = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.llm_client.</span><span style=color:#bf616a>complete</span><span>(intent_prompt)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 第二阶段：语义匹配和评分
+</span><span>        scored_candidates = []
+</span><span>        </span><span style=color:#b48ead>for </span><span>candidate </span><span style=color:#b48ead>in </span><span>candidates:
+</span><span>            score = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>calculate_match_score</span><span>(candidate, criteria, query)
+</span><span>            </span><span style=color:#b48ead>if </span><span>score > </span><span style=color:#d08770>0.6</span><span>:  </span><span style=color:#65737e># 设置匹配阈值
+</span><span>                scored_candidates.</span><span style=color:#bf616a>append</span><span>((candidate, score))
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 按匹配度排序返回
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#96b5b4>sorted</span><span>(scored_candidates, </span><span style=color:#bf616a>key</span><span>=</span><span style=color:#b48ead>lambda </span><span style=color:#bf616a>x</span><span>: x[</span><span style=color:#d08770>1</span><span>], </span><span style=color:#bf616a>reverse</span><span>=</span><span style=color:#d08770>True</span><span>)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>calculate_match_score</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>candidate</span><span>: Candidate, </span><span style=color:#bf616a>criteria</span><span>: dict, </span><span style=color:#bf616a>original_query</span><span>: str):
+</span><span>        </span><span style=color:#65737e>"""计算候选人与需求的匹配度"""
+</span><span>        match_prompt = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>        评估候选人与招聘需求的匹配度：
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        招聘需求：</span><span>{original_query}
+</span><span style=color:#a3be8c>        结构化条件：</span><span>{criteria}
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        候选人信息：
+</span><span style=color:#a3be8c>        - 技能：</span><span>{candidate.skills}
+</span><span style=color:#a3be8c>        - 经验：</span><span>{candidate.experience}
+</span><span style=color:#a3be8c>        - 教育：</span><span>{candidate.education}
+</span><span style=color:#a3be8c>        - 简历摘要：</span><span>{candidate.summary}
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        请给出0-1之间的匹配分数，并说明理由。
+</span><span style=color:#a3be8c>        </span><span>"""
+</span><span>        
+</span><span>        response = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.llm_client.</span><span style=color:#bf616a>complete</span><span>(match_prompt)
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>parse_match_score</span><span>(response)
+</span></code></pre><h4 id=yong-hu-ti-yan-she-ji>用户体验设计</h4><p>在前端界面上，我设计了一个简洁的搜索框：<pre class=language-jsx data-lang=jsx style=background:#2b303b;color:#c0c5ce><code class=language-jsx data-lang=jsx><span>const SmartSearch = () => {
+</span><span>  const [query, setQuery] = useState('');
+</span><span>  const [results, setResults] = useState([]);
+</span><span>  const [loading, setLoading] = useState(false);
+</span><span>
+</span><span>  const handleSearch = async () => {
+</span><span>    setLoading(true);
+</span><span>    try {
+</span><span>      const response = await api.post('/search/natural-language', { query });
+</span><span>      setResults(response.data.candidates);
+</span><span>    } catch (error) {
+</span><span>      message.error('搜索失败，请重试');
+</span><span>    } finally {
+</span><span>      setLoading(false);
+</span><span>    }
+</span><span>  };
+</span><span>
+</span><span>  return (
+</span><span>    &LTdiv className="smart-search">
+</span><span>      &LTInput.Search
+</span><span>        placeholder="试试说：找个做AI安全的，或者：要有5年Python经验的后端工程师"
+</span><span>        size="large"
+</span><span>        onSearch={handleSearch}
+</span><span>        loading={loading}
+</span><span>        style={{ marginBottom: 16 }}
+</span><span>      />
+</span><span>      
+</span><span>      {results.map(([candidate, score]) => (
+</span><span>        &LTCandidateCard 
+</span><span>          key={candidate.id} 
+</span><span>          candidate={candidate} 
+</span><span>          matchScore={score}
+</span><span>        />
+</span><span>      ))}
+</span><span>    &LT/div>
+</span><span>  );
+</span><span>};
+</span></code></pre><h4 id=shi-ji-shi-yong-xiao-guo>实际使用效果</h4><p>在测试中，这个功能表现出了惊人的智能程度：<p><img alt=HR_Resume_Filter src=https://polly.wang/build-ai-resume-screening-with-copilot-agent/HR_Resume_Filter.png><h2 id=agentmo-shi-de-du-te-jie-zhi>Agent模式的独特价值</h2><p>在这个项目中，我深刻体会到了Agent模式相比传统代码补全的优势：<h3 id=1-quan-ju-shi-jiao>1. 全局视角</h3><p>Agent能够理解整个项目的架构和上下文，提供的建议都是基于项目全貌的，而不是局部的代码片段。<h3 id=2-jia-gou-zhi-dao>2. 架构指导</h3><p>当我面临技术选型或架构设计问题时，Agent能够基于最佳实践提供建议，帮我避免了很多潜在的坑。<h3 id=3-wen-ti-jie-jue>3. 问题解决</h3><p>遇到复杂的技术问题时，Agent不只是提供代码，更重要的是提供解决思路和完整的实现方案。<h3 id=4-die-dai-you-hua>4. 迭代优化</h3><p>Agent能够记住我们之前的对话，在后续的优化中保持一致性，这在长期项目开发中非常有价值。<h2 id=xiang-mu-cheng-guo-yu-bu-shu>项目成果与部署</h2><p>经过几周的开发和迭代，最终完成了一个功能完整的AI简历筛选系统：<ul><li><strong>后端</strong>：基于FastAPI的高性能API服务<li><strong>前端</strong>：简洁美观的React应用<li><strong>AI功能</strong>：集成Claude 3.5 Sonnet的智能解析和筛选<li><strong>部署方案</strong>：提供了完整的Docker配置</ul><p>Agent还帮我生成了详细的部署文档和使用说明，让其他开发者可以快速上手。<h2 id=fan-si-yu-zhan-wang>反思与展望</h2><h3 id=kai-fa-xiao-lu-de-xian-zhu-ti-sheng>开发效率的显著提升</h3><p>使用Agent模式开发这个项目，我的效率至少提升了3倍：<ul><li><strong>减少了查资料的时间</strong>：Agent提供的建议都是基于最佳实践的<li><strong>避免了很多低级错误</strong>：Agent的代码质量很高，bug很少<li><strong>加速了学习过程</strong>：通过与Agent的对话，我学到了很多新的技术和方法</ul><h3 id=agentmo-shi-de-zui-jia-shi-jian>Agent模式的最佳实践</h3><p>通过这个项目，我总结了几个使用Agent模式的最佳实践：<ol><li><strong>详细的初始描述</strong>：项目开始时提供完整、详细的需求描述<li><strong>迭代式对话</strong>：将复杂问题分解为小的、具体的问题<li><strong>保持上下文</strong>：充分利用Agent的上下文记忆能力<li><strong>验证和测试</strong>：Agent提供的代码仍需要人工验证和测试</ol><h3 id=wei-lai-de-fa-zhan-fang-xiang>未来的发展方向</h3><p>这个项目只是一个开始，我计划继续扩展以下功能：<ul><li>更智能的候选人匹配算法<li>多语言简历支持<li>更丰富的数据分析功能<li>企业级的部署和扩展方案</ul><h2 id=jie-yu>结语</h2><p>GitHub Copilot的Agent模式真正改变了我的开发方式。它不仅仅是一个代码生成工具，更像是一个经验丰富的编程伙伴，能够从项目架构到实现细节提供全方位的支持。<p>对于那些还在犹豫是否使用AI辅助开发的朋友，我的建议是：大胆尝试，但要保持思考。AI可以大大提升我们的开发效率，但核心的设计思维和问题解决能力仍然需要我们自己培养。<p>如果你对这个项目感兴趣，欢迎访问GitHub仓库，也欢迎和我交流使用Agent模式开发的心得体会。让我们一起拥抱AI时代的编程新模式！<hr><p><strong>项目地址</strong>：<a href=https://github.com/Polly2014/AI_Resume_Screening>AI_Resume_Screening</a></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
