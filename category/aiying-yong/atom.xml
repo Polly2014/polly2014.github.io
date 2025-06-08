@@ -5,8 +5,338 @@
     <link href="https://polly.wang/category/aiying-yong/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-05-23T00:00:00+00:00</updated>
+    <updated>2025-06-07T00:00:00+00:00</updated>
     <id>https://polly.wang/category/aiying-yong/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从零构建AI驱动的PPT评分系统：为对外经贸大学打造的智能评估平台</title>
+        <published>2025-06-07T00:00:00+00:00</published>
+        <updated>2025-06-07T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/ai-ppt-scoring-system-for-uibe/" type="text/html"/>
+        <id>https://polly.wang/ai-ppt-scoring-system-for-uibe/</id>
+        
+        <content type="html">&lt;p&gt;最近完成了一个特别有意思的项目——为对外经贸大学信息学院开发了一套AI驱动的PPT智能评分系统。这个项目让我深度思考了如何将AI技术与教育场景结合，创造真正有价值的应用。今天想和大家分享这个从零到一的完整开发历程。&lt;&#x2F;p&gt;
+&lt;img src=&quot;Thanks_Letter.png&quot; alt=&quot;Thanks Letter&quot; style=&quot;width: 50%;&quot;&gt;
+&lt;h2 id=&quot;xiang-mu-bei-jing-jie-jue-zhen-shi-de-jiao-yu-tong-dian&quot;&gt;项目背景：解决真实的教育痛点&lt;&#x2F;h2&gt;
+&lt;p&gt;在高校信息学院，学生们经常需要进行各种PPT答辩和项目展示。传统的人工评分方式存在几个明显痛点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;评分标准不统一&lt;&#x2F;strong&gt;：不同评委对同一份PPT的评价可能差异很大&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;评分效率低下&lt;&#x2F;strong&gt;：大量PPT需要逐一人工审阅，耗时耗力&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;反馈不够详细&lt;&#x2F;strong&gt;：往往只给出总分，缺乏具体的改进建议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;历史数据难以利用&lt;&#x2F;strong&gt;：过往的评分数据无法有效积累和分析&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;正是基于这些实际需求，我开始构思一个能够提供标准化、智能化评分的系统。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-jia-gou-she-ji-xian-dai-hua-de-quan-zhan-fang-an&quot;&gt;技术架构设计：现代化的全栈方案&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;hou-duan-ji-zhu-xuan-xing&quot;&gt;后端技术选型&lt;&#x2F;h3&gt;
+&lt;p&gt;我选择了&lt;strong&gt;FastAPI&lt;&#x2F;strong&gt;作为后端框架，主要考虑：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;天然的异步支持，适合处理文件上传和AI推理&lt;&#x2F;li&gt;
+&lt;li&gt;自动生成API文档，便于前端对接&lt;&#x2F;li&gt;
+&lt;li&gt;出色的性能表现&lt;&#x2F;li&gt;
+&lt;li&gt;类型安全和现代Python特性支持&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;数据库选择了&lt;strong&gt;SQLite&lt;&#x2F;strong&gt;，虽然简单但完全能满足单机部署的需求，同时便于数据迁移和备份。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 核心的评分引擎架构
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;PPTScorer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;PPT评分核心引擎&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;__init__&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api_key&lt;&#x2F;span&gt;&lt;span&gt;: str = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;: str = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.api_key = api_key
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model = model or &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;anthropic&#x2F;claude-3-haiku-20240307&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;score_presentation&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;slides&lt;&#x2F;span&gt;&lt;span&gt;: List) -&amp;gt; Dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;执行PPT评分的主要方法&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.api_key:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_score_with_llm&lt;&#x2F;span&gt;&lt;span&gt;(content, slides)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_score_with_rules&lt;&#x2F;span&gt;&lt;span&gt;(content, slides)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;qian-duan-shi-xian-chun-jing-de-yuan-sheng-webji-zhu&quot;&gt;前端实现：纯净的原生Web技术&lt;&#x2F;h3&gt;
+&lt;p&gt;考虑到部署简便性和维护成本，我没有选择复杂的前端框架，而是采用了&lt;strong&gt;原生HTML&#x2F;CSS&#x2F;JavaScript&lt;&#x2F;strong&gt;的方案。这样做的好处是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;零构建依赖，部署即用&lt;&#x2F;li&gt;
+&lt;li&gt;加载速度快，用户体验好&lt;&#x2F;li&gt;
+&lt;li&gt;维护成本低，便于后续迭代&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;前端采用了现代的CSS Grid和Flexbox布局，配合ECharts图表库实现数据可视化。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;aiji-cheng-shuang-mo-shi-ping-fen-ce-lue&quot;&gt;AI集成：双模式评分策略&lt;&#x2F;h3&gt;
+&lt;p&gt;系统支持两种评分模式：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 基于规则的评分（Rule-based Scoring）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_score_with_rules&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;slides&lt;&#x2F;span&gt;&lt;span&gt;: List) -&amp;gt; Dict:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;基于规则的评分算法&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创新性评分：关键词匹配 + 技术深度分析
+&lt;&#x2F;span&gt;&lt;span&gt;    innovation_score = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_analyze_innovation&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 可行性评分：实现方案 + 资源评估
+&lt;&#x2F;span&gt;&lt;span&gt;    feasibility_score = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_analyze_feasibility&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 社会效益评分：影响范围 + 价值创造
+&lt;&#x2F;span&gt;&lt;span&gt;    social_impact_score = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_analyze_social_impact&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 演示质量评分：结构完整性 + 内容组织
+&lt;&#x2F;span&gt;&lt;span&gt;    presentation_quality = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_analyze_presentation_quality&lt;&#x2F;span&gt;&lt;span&gt;(slides)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_generate_score_report&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;        innovation_score, feasibility_score, 
+&lt;&#x2F;span&gt;&lt;span&gt;        social_impact_score, presentation_quality
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;2. 基于LLM的智能评分（LLM-based Scoring）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_score_with_llm&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;slides&lt;&#x2F;span&gt;&lt;span&gt;: List) -&amp;gt; Dict:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;基于大语言模型的智能评分&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    prompt = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_create_scoring_prompt&lt;&#x2F;span&gt;&lt;span&gt;(content, slides)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        response = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.llm_client.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;complete&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.model,
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;=[{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: prompt}]
+&lt;&#x2F;span&gt;&lt;span&gt;        )
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_parse_llm_response&lt;&#x2F;span&gt;&lt;span&gt;(response.content)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;Exception &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 降级到规则评分
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_score_with_rules&lt;&#x2F;span&gt;&lt;span&gt;(content, slides)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;he-xin-gong-neng-shi-xian&quot;&gt;核心功能实现&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;duo-ge-shi-wen-jian-chu-li&quot;&gt;多格式文件处理&lt;&#x2F;h3&gt;
+&lt;p&gt;系统支持PPT、PPTX、PDF三种主流格式，这是实现的关键挑战之一：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;ContentExtractor&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;内容提取器&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;extract_content&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;file_path&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; Dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;根据文件类型选择相应的提取策略&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        file_extension = file_path.suffix.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lower&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;file_extension in [&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.ppt&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.pptx&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;]:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_extract_from_ppt&lt;&#x2F;span&gt;&lt;span&gt;(file_path)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span&gt;file_extension == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.pdf&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_extract_from_pdf&lt;&#x2F;span&gt;&lt;span&gt;(file_path)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;raise &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;UnsupportedFileTypeError&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;不支持的文件类型: &lt;&#x2F;span&gt;&lt;span&gt;{file_extension}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_extract_from_ppt&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;file_path&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; Dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;从PPT文件提取内容&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        presentation = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Presentation&lt;&#x2F;span&gt;&lt;span&gt;(file_path)
+&lt;&#x2F;span&gt;&lt;span&gt;        slides_content = []
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;slide &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;presentation.slides:
+&lt;&#x2F;span&gt;&lt;span&gt;            slide_text = []
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;shape &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;slide.shapes:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;hasattr&lt;&#x2F;span&gt;&lt;span&gt;(shape, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;):
+&lt;&#x2F;span&gt;&lt;span&gt;                    slide_text.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(shape.text)
+&lt;&#x2F;span&gt;&lt;span&gt;            
+&lt;&#x2F;span&gt;&lt;span&gt;            slides_content.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(slide_text),
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;slide_number&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(slides_content) + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;span&gt;            })
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;slides&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: slides_content,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;slide_count&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(slides_content),
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;total_text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;([slide[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;slide &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;slides_content])
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;zhi-neng-ping-fen-suan-fa&quot;&gt;智能评分算法&lt;&#x2F;h3&gt;
+&lt;p&gt;评分系统的核心是五个维度的综合评估：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;产品创新性&lt;&#x2F;strong&gt; (10分)：技术新颖程度、差异化价值&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;产品可行性&lt;&#x2F;strong&gt; (10分)：技术实现可能性、资源可达性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;社会效益&lt;&#x2F;strong&gt; (10分)：对社会、行业的正面影响&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;演示文稿质量&lt;&#x2F;strong&gt; (10分)：逻辑结构、视觉设计&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;现场答辩表现&lt;&#x2F;strong&gt; (10分)：支持人工录入的动态评分&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_generate_overall_comment&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;scores&lt;&#x2F;span&gt;&lt;span&gt;: Dict) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;生成综合评价&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    total_score = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;sum&lt;&#x2F;span&gt;&lt;span&gt;(scores.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;values&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;    total_percentage = (total_score &#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;40&lt;&#x2F;span&gt;&lt;span&gt;) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 前四项满分40分
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;total_percentage &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;90&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        grade = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;优秀&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        description = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;项目整体表现卓越，具有很强的竞争力和实用价值。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span&gt;total_percentage &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;80&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        grade = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;良好&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;  
+&lt;&#x2F;span&gt;&lt;span&gt;        description = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;项目表现良好，有一定的亮点和优势，具备实施潜力。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ... 更多等级判定
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 找出最强和最弱的维度
+&lt;&#x2F;span&gt;&lt;span&gt;    best_dimension = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;max&lt;&#x2F;span&gt;&lt;span&gt;(scores, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span&gt;=scores.get)
+&lt;&#x2F;span&gt;&lt;span&gt;    worst_dimension = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;min&lt;&#x2F;span&gt;&lt;span&gt;(scores, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span&gt;=scores.get)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 生成具体改进建议
+&lt;&#x2F;span&gt;&lt;span&gt;    suggestions = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_generate_improvement_suggestions&lt;&#x2F;span&gt;&lt;span&gt;(scores)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_format_evaluation_report&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;        grade, description, best_dimension, worst_dimension, suggestions
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;pi-liang-dui-bi-fen-xi&quot;&gt;批量对比分析&lt;&#x2F;h3&gt;
+&lt;p&gt;系统支持多个PPT文件的对比分析，这对于竞赛评选特别有用：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;compare&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;compare_presentations&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ids&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;PPT对比分析接口&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    presentation_ids = [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;()) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;ids.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    comparison_data = []
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;presentation_id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;presentation_ids:
+&lt;&#x2F;span&gt;&lt;span&gt;        presentation = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get_presentation_by_id&lt;&#x2F;span&gt;&lt;span&gt;(presentation_id)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;presentation:
+&lt;&#x2F;span&gt;&lt;span&gt;            comparison_data.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.id,
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;filename&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.filename,
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;scores&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: {
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;innovation&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.innovation_score,
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;feasibility&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.feasibility_score,
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;social_impact&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.social_impact_score,
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;presentation_quality&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.presentation_quality_score,
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;defense_performance&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.defense_performance_score,
+&lt;&#x2F;span&gt;&lt;span&gt;                    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;total&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.total_score
+&lt;&#x2F;span&gt;&lt;span&gt;                },
+&lt;&#x2F;span&gt;&lt;span&gt;                &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;slide_count&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: presentation.slide_count
+&lt;&#x2F;span&gt;&lt;span&gt;            })
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;comparison&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: comparison_data}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bu-shu-yu-yun-wei-rong-qi-hua-de-xian-dai-bu-shu-fang-an&quot;&gt;部署与运维：容器化的现代部署方案&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;dockerrong-qi-hua&quot;&gt;Docker容器化&lt;&#x2F;h3&gt;
+&lt;p&gt;为了简化部署和确保环境一致性，我将整个系统容器化：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;dockerfile&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-dockerfile &quot;&gt;&lt;code class=&quot;language-dockerfile&quot; data-lang=&quot;dockerfile&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 支持多平台构建
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; --platform=linux&#x2F;amd64 registry.cn-hangzhou.aliyuncs.com&#x2F;library&#x2F;python:3.11-slim
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装系统依赖
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt-get update &amp;amp;&amp;amp; apt-get install -y \
+&lt;&#x2F;span&gt;&lt;span&gt;    poppler-utils \
+&lt;&#x2F;span&gt;&lt;span&gt;    tesseract-ocr \
+&lt;&#x2F;span&gt;&lt;span&gt;    tesseract-ocr-chi-sim \
+&lt;&#x2F;span&gt;&lt;span&gt;    tesseract-ocr-eng \
+&lt;&#x2F;span&gt;&lt;span&gt;    libreoffice \
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;amp;&amp;amp; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创建非root用户，提高安全性
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;groupadd -r appuser &amp;amp;&amp;amp; useradd -r -g appuser appuser
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;WORKDIR &lt;&#x2F;span&gt;&lt;span&gt;&#x2F;app
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;pip install --no-cache-dir -r requirements.txt
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; . .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;mkdir -p uploads static &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    chown -R appuser:appuser &#x2F;app
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;USER &lt;&#x2F;span&gt;&lt;span&gt;appuser
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;EXPOSE &lt;&#x2F;span&gt;&lt;span&gt;8000
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;CMD [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;main.py&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;m1-mackua-ping-tai-gou-jian&quot;&gt;M1 Mac跨平台构建&lt;&#x2F;h3&gt;
+&lt;p&gt;由于我使用M1 Mac开发，但部署目标是Linux服务器，需要处理跨平台构建：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#!&#x2F;bin&#x2F;bash
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# build.sh - M1 Mac跨平台构建脚本
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;🚀 PPT评分系统 - M1 Mac 跨平台构建&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 创建多平台构建器
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; buildx create&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --name&lt;&#x2F;span&gt;&lt;span&gt; multiplatform&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&#x2F;dev&#x2F;null || &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; buildx use multiplatform
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 构建AMD64平台镜像
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; buildx build \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --platform&lt;&#x2F;span&gt;&lt;span&gt; linux&#x2F;amd64 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --tag&lt;&#x2F;span&gt;&lt;span&gt; ppt-scorer:latest \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --load&lt;&#x2F;span&gt;&lt;span&gt; .
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;✅ 跨平台构建完成！&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;huan-jing-pei-zhi-guan-li&quot;&gt;环境配置管理&lt;&#x2F;h3&gt;
+&lt;p&gt;系统支持灵活的环境配置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# .env 配置文件
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SCORING_METHOD&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;llm_based
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;OPENROUTER_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;your_api_key_here
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;OPENROUTER_MODEL&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;anthropic&#x2F;claude-3-haiku-20240307
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DATABASE_URL&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sqlite:&#x2F;&#x2F;&#x2F;.&#x2F;ppt_scores.db
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_FILE_SIZE_MB&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;50
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DEBUG&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;false
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;shi-ji-ying-yong-xiao-guo-yu-fan-kui&quot;&gt;实际应用效果与反馈&lt;&#x2F;h2&gt;
+&lt;p&gt;系统上线后在对外经贸大学信息学院得到了积极反馈：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;xiao-lu-ti-sheng-xian-zhu&quot;&gt;效率提升显著&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;单个PPT评分时间从30分钟降低到3分钟&lt;&#x2F;li&gt;
+&lt;li&gt;支持批量处理，大幅提高评分效率&lt;&#x2F;li&gt;
+&lt;li&gt;24&#x2F;7可用，不受时间限制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;ping-fen-biao-zhun-hua&quot;&gt;评分标准化&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;统一的评分维度和标准&lt;&#x2F;li&gt;
+&lt;li&gt;详细的评分说明和改进建议&lt;&#x2F;li&gt;
+&lt;li&gt;历史数据积累便于趋势分析&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;yong-hu-ti-yan-you-hua&quot;&gt;用户体验优化&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;直观的Web界面，无需安装客户端&lt;&#x2F;li&gt;
+&lt;li&gt;支持拖拽上传，操作简便&lt;&#x2F;li&gt;
+&lt;li&gt;实时进度显示，用户体验流畅&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;ji-zhu-nan-dian-yu-jie-jue-fang-an&quot;&gt;技术难点与解决方案&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;wen-jian-ge-shi-jian-rong-xing&quot;&gt;文件格式兼容性&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;挑战&lt;&#x2F;strong&gt;：不同版本的PPT文件格式差异很大，PDF提取更加复杂。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用python-pptx处理新版PPTX文件&lt;&#x2F;li&gt;
+&lt;li&gt;结合LibreOffice转换处理老版本PPT&lt;&#x2F;li&gt;
+&lt;li&gt;利用poppler-utils和tesseract-ocr处理PDF的OCR需求&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;aiping-fen-de-wen-ding-xing&quot;&gt;AI评分的稳定性&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;挑战&lt;&#x2F;strong&gt;：LLM服务可能不稳定，响应时间不可控。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;实现双模式评分策略，LLM失败时自动降级到规则评分&lt;&#x2F;li&gt;
+&lt;li&gt;添加请求重试机制和超时控制&lt;&#x2F;li&gt;
+&lt;li&gt;本地缓存评分结果，避免重复计算&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;xing-neng-you-hua&quot;&gt;性能优化&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;挑战&lt;&#x2F;strong&gt;：大文件处理和AI推理可能导致响应慢。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;异步文件处理，避免阻塞用户界面&lt;&#x2F;li&gt;
+&lt;li&gt;实现进度条显示，改善用户体验&lt;&#x2F;li&gt;
+&lt;li&gt;文件大小限制和格式验证，防止系统过载&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;hou-xu-you-hua-fang-xiang&quot;&gt;后续优化方向&lt;&#x2F;h2&gt;
+&lt;p&gt;这个项目还有很多可以改进的地方：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ji-zhu-ceng-mian&quot;&gt;技术层面&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;引入向量数据库&lt;&#x2F;strong&gt;：支持语义相似度分析，提高评分准确性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;增加图像识别&lt;&#x2F;strong&gt;：分析PPT中的图表、图片质量&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实时协作评分&lt;&#x2F;strong&gt;：支持多位评委同时评分&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;移动端适配&lt;&#x2F;strong&gt;：开发移动App或响应式界面&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;gong-neng-kuo-zhan&quot;&gt;功能扩展&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;模板推荐&lt;&#x2F;strong&gt;：基于高分PPT生成模板建议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;抄袭检测&lt;&#x2F;strong&gt;：检查内容原创性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;演讲辅导&lt;&#x2F;strong&gt;：结合语音识别提供演讲建议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;数据分析仪表板&lt;&#x2F;strong&gt;：为教师提供班级整体分析&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;zong-jie-yu-si-kao&quot;&gt;总结与思考&lt;&#x2F;h2&gt;
+&lt;p&gt;这次为对外经贸大学开发PPT评分系统的经历让我深刻体会到，&lt;strong&gt;真正有价值的AI应用不是炫技，而是解决实际问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;从技术角度，这个项目涵盖了现代Web开发的多个方面：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;后端API设计&lt;&#x2F;strong&gt;：RESTful接口、异步处理、错误处理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;文件处理&lt;&#x2F;strong&gt;：多格式支持、内容提取、OCR识别&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;AI集成&lt;&#x2F;strong&gt;：LLM调用、Prompt工程、降级策略&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前端交互&lt;&#x2F;strong&gt;：现代CSS、JavaScript、数据可视化&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;部署运维&lt;&#x2F;strong&gt;：Docker容器化、跨平台构建、环境管理&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;更重要的是，这个项目让我思考了AI技术在教育领域的应用前景。我相信随着技术的发展，我们会看到更多这样的智能化教育工具，它们不会取代教师，而是成为教师的得力助手。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你也在考虑开发类似的教育科技产品，我的建议是：&lt;strong&gt;从用户的真实需求出发，用技术去解决具体问题，而不是为了技术而技术&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;最后，这个项目的完整代码已经整理好，如果你对某个技术细节感兴趣，欢迎与我交流讨论！&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;项目地址&lt;&#x2F;strong&gt;：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;PPT_Scorer&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;PPT_Scorer&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这个PPT评分系统目前已在对外经贸大学信息学院稳定运行，为师生的教学活动提供了有力支持。希望这个项目的经验分享能对正在进行类似开发的朋友们有所帮助。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>AI与3D打印的完美结合：微软Garage活动中为舅舅的丽江客栈设计实例</title>
         <published>2025-05-23T00:00:00+00:00</published>
