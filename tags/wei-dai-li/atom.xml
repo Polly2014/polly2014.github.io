@@ -17,9 +17,10 @@
         <link rel="alternate" href="https://polly.wang/openhands-mcp-workflow-analysis/" type="text/html"/>
         <id>https://polly.wang/openhands-mcp-workflow-analysis/</id>
         
-        <content type="html">&lt;p&gt;最近我深入研究了OpenHands的最新版本，发现它已经集成了MCP(Model Context Protocol)工具系统，这个变化让我非常兴奋。通过分析一个简单的Todo应用开发过程，我发现了许多令人惊喜的新特性和架构改进。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;最近深入研究了OpenHands的最新版本，发现它已经集成了MCP(Model Context Protocol)工具系统，这个变化让我非常兴奋。通过分析一个简单的Todo应用开发过程，我发现了许多令人惊喜的新特性和架构改进。&lt;&#x2F;p&gt;
 &lt;p&gt;今天分享这次实际操作的完整分析，让我们一起看看OpenHands是如何通过MCP工具集成实现更强大的开发能力的。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;di-yi-jie-duan-xi-tong-chu-shi-hua-yu-jia-gou-sheng-ji-10-41-02-10-41-51&quot;&gt;第一阶段：系统初始化与架构升级（10:41:02-10:41:51）&lt;&#x2F;h2&gt;
+&lt;img src=&quot;Core_Component.png&quot; alt=&quot;Core Component&quot; style=&quot;width: 50%;&quot;&gt;
 &lt;h3 id=&quot;hui-hua-guan-li-de-jin-hua&quot;&gt;会话管理的进化&lt;&#x2F;h3&gt;
 &lt;p&gt;从日志的开始部分，我看到了会话管理系统的显著改进：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;10:41:02 - openhands:INFO: conversation_service.py:44 - Creating conversation
@@ -66,6 +67,7 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;&lt;code&gt;0.41-nikolaik&lt;&#x2F;code&gt;版本提供了更好的稳定性和功能支持，并集成了三个核心插件。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;di-er-jie-duan-zhi-neng-kai-fa-liu-cheng-10-42-09-10-42-45&quot;&gt;第二阶段：智能开发流程（10:42:09-10:42:45）&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openhands-mcp-workflow-analysis&#x2F;OH_Flow_Description.png&quot; alt=&quot;OH Flow Description&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;xu-qiu-li-jie-yu-ren-wu-fen-jie&quot;&gt;需求理解与任务分解&lt;&#x2F;h3&gt;
 &lt;p&gt;当我输入&amp;quot;创建一个todo app并运行&amp;quot;后，Agent展现了出色的理解能力：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;10:42:09 - openhands:DEBUG: agent_controller.py:513 - **MessageAction** (source=EventSource.USER)
