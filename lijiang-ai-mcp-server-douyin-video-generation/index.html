@@ -1,0 +1,251 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>从传统到智能：构建丽江客栈抖音视频生成MCP服务器的完整实践</h1><div class=content><h1 id=cong-chuan-tong-dao-zhi-neng-gou-jian-li-jiang-ke-zhan-dou-yin-shi-pin-sheng-cheng-mcpfu-wu-qi-de-wan-zheng-shi-jian>从传统到智能：构建丽江客栈抖音视频生成MCP服务器的完整实践</h1><p>作为一名AI工程师，我最近为家里的丽江客栈项目开发了一套完整的抖音视频生成系统。这个项目不仅让我深度体验了从传统工具到AI智能化的技术演进，更让我见证了MCP（Model Context Protocol）服务器在实际场景中的强大能力。<p>今天想和大家分享这个完整的技术实践过程，从最初的需求分析到最终的智能化解决方案，以及其中踩过的坑和收获的经验。<h2 id=xiang-mu-bei-jing-wei-shi-yao-yao-zuo-zhe-ge-xi-tong>项目背景：为什么要做这个系统？</h2><p>故事要从我舅舅的丽江客栈说起。作为一个传统的纳西族建筑改造项目，客栈需要通过短视频来展示其独特的文化魅力和现代化改造过程。但问题来了：<ol><li><strong>内容创作效率低</strong>：手工制作分镜脚本耗时且专业要求高<li><strong>视觉一致性难保证</strong>：多个分镜的视觉风格容易不统一<li><strong>技术门槛高</strong>：传统视频制作需要专业技能<li><strong>远程协作困难</strong>：我在北京，舅舅在丽江，沟通成本高</ol><p>作为一个技术人，我的第一反应是：<strong>这些问题都可以用AI来解决</strong>。<h2 id=xi-tong-jia-gou-yan-jin-cong-1-0dao-3-0de-kua-yue>系统架构演进：从1.0到3.0的跨越</h2><h3 id=1-0ban-ben-chuan-tong-zheng-ze-jie-xi-shi-dai>1.0版本：传统正则解析时代</h3><p>最初的想法很简单：写一个脚本来解析Markdown博文中的分镜表格，然后调用DALL-E生成对应的图片。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 传统的正则表达式解析
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_scene_table_regex</span><span>(</span><span style=color:#bf616a>content</span><span>: str) -> List[Dict]:
+</span><span>    table_pattern = </span><span style=color:#b48ead>r</span><span>'</span><span style=color:#96b5b4>\|</span><span style=color:#d08770>\s</span><span>*</span><span style=color:#96b5b4>\*\*</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[A-F]</span><span style=color:#a3be8c>-</span><span style=color:#d08770>\d</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\*\*</span><span style=color:#d08770>\s</span><span>*</span><span style=color:#96b5b4>\|</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>|]</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\|</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>|]</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\|</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>|]</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\|</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>|]</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\|</span><span style=color:#a3be8c>(</span><span style=color:#d08770>[</span><span>^</span><span style=color:#d08770>|]</span><span>+</span><span style=color:#a3be8c>)</span><span style=color:#96b5b4>\|</span><span>'
+</span><span>    matches = re.</span><span style=color:#bf616a>findall</span><span>(table_pattern, content, re.</span><span style=color:#bf616a>MULTILINE</span><span>)
+</span><span>    </span><span style=color:#65737e># ... 复杂的正则处理逻辑
+</span></code></pre><p>这个版本的问题很快就暴露出来了：<ul><li><strong>解析成功率只有60-70%</strong>：表格格式稍有变化就失效<li><strong>扩展性差</strong>：添加新的分镜格式需要重写正则<li><strong>错误处理复杂</strong>：很难定位解析失败的具体原因</ul><h3 id=2-0ban-ben-aizhi-neng-jie-xi-de-jue-xing>2.0版本：AI智能解析的觉醒</h3><p>认识到正则表达式的局限性后，我开始思考：既然AI能理解自然语言，为什么不让它来理解分镜表格呢？<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>SmartBlogParser</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.client = </span><span style=color:#bf616a>OpenAI</span><span>(
+</span><span>            </span><span style=color:#bf616a>api_key</span><span>=os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>DEEPSEEK_API_KEY</span><span>"),
+</span><span>            </span><span style=color:#bf616a>base_url</span><span>="</span><span style=color:#a3be8c>https://api.deepseek.com</span><span>"
+</span><span>        )
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_with_ai</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>content</span><span>: str) -> List[SceneData]:
+</span><span>        prompt = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_generate_scene_analysis_prompt</span><span>(</span><span style=color:#bf616a>has_table</span><span>=</span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_detect_table</span><span>(content))
+</span><span>        response = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_call_deepseek_api</span><span>(prompt.</span><span style=color:#bf616a>format</span><span>(</span><span style=color:#bf616a>content</span><span>=content))
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_parse_ai_response</span><span>(response)
+</span></code></pre><p>关键的突破在于设计了<strong>自适应的Prompt模板</strong>：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_generate_scene_analysis_prompt</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>has_table</span><span>: bool) -> str:
+</span><span>    </span><span style=color:#b48ead>if </span><span>has_table:
+</span><span>        </span><span style=color:#b48ead>return </span><span>"""</span><span style=color:#a3be8c># 分镜表格提取专家
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>你是一个专业的视频分镜表格解析专家。请精确提取博文中的分镜表格信息。
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>## 输出格式
+</span><span style=color:#a3be8c>请严格按照以下JSON格式输出：
+</span><span style=color:#a3be8c>{
+</span><span style=color:#a3be8c>  "extraction_method": "table_parsing",
+</span><span style=color:#a3be8c>  "scenes": [...]
+</span><span style=color:#a3be8c>}
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>## 博文内容
+</span><span style=color:#d08770>{content}</span><span>"""
+</span><span>    </span><span style=color:#b48ead>else</span><span>:
+</span><span>        </span><span style=color:#b48ead>return </span><span>"""</span><span style=color:#a3be8c># 智能分镜生成专家
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>你是一个专业的视频分镜创作专家。请根据博文内容智能生成8-12个分镜脚本。
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>## 分镜设计原则
+</span><span style=color:#a3be8c>- 开头：引人注目的开场（1-2个分镜）
+</span><span style=color:#a3be8c>- 主体：内容展开和重点阐述（6-8个分镜）
+</span><span style=color:#a3be8c>- 结尾：总结或行动号召（1-2个分镜）
+</span><span style=color:#a3be8c>
+</span><span style=color:#d08770>{content}</span><span>"""
+</span></code></pre><p>这个版本的提升非常显著：<ul><li><strong>解析成功率提升到95-99%</strong><li><strong>支持内容生成</strong>：不仅能解析现有表格，还能基于内容创建新分镜<li><strong>智能化程度高</strong>：能理解上下文，生成更合理的分镜序列</ul><h3 id=3-0ban-ben-mcpfu-wu-qi-de-ge-ming-xing-sheng-ji>3.0版本：MCP服务器的革命性升级</h3><p>虽然2.0版本已经很强大，但我发现了一个更有趣的可能性：<strong>如果能让Claude Desktop直接调用这些功能，岂不是能创造出更好的用户体验？</strong><p>这就是MCP（Model Context Protocol）服务器的用武之地。MCP是Anthropic推出的协议，允许AI助手与外部工具无缝集成。<h2 id=mcpfu-wu-qi-shi-xian-shuang-xie-yi-jia-gou>MCP服务器实现：双协议架构</h2><p>我设计了一个支持双协议的MCP服务器架构：<h3 id=stdio-mcpfu-wu-qi-claude-desktopji-cheng>STDIO MCP服务器（Claude Desktop集成）</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>fastmcp </span><span style=color:#b48ead>import </span><span>FastMCP
+</span><span>
+</span><span>mcp = </span><span style=color:#bf616a>FastMCP</span><span>("</span><span style=color:#a3be8c>Douyin Scene Generator</span><span>")
+</span><span>
+</span><span>@mcp.</span><span style=color:#bf616a>tool</span><span>()
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_scenes_with_ai</span><span>(</span><span style=color:#bf616a>blog_path</span><span>: str, </span><span style=color:#bf616a>parser_type</span><span>: str = "</span><span style=color:#a3be8c>hybrid</span><span>") -> Dict[str, Any]:
+</span><span>    </span><span style=color:#65737e>"""使用AI智能解析博文中的分镜表格信息"""
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#b48ead>if </span><span>parser_type == "</span><span style=color:#a3be8c>smart</span><span>":
+</span><span>            parser = </span><span style=color:#bf616a>SmartBlogParser</span><span>()
+</span><span>        </span><span style=color:#b48ead>elif </span><span>parser_type == "</span><span style=color:#a3be8c>hybrid</span><span>":
+</span><span>            parser = </span><span style=color:#bf616a>HybridBlogParser</span><span>(</span><span style=color:#bf616a>use_ai_fallback</span><span>=</span><span style=color:#d08770>True</span><span>, </span><span style=color:#bf616a>use_ai_enhancement</span><span>=</span><span style=color:#d08770>True</span><span>)
+</span><span>        </span><span style=color:#b48ead>else</span><span>:
+</span><span>            parser = </span><span style=color:#bf616a>BlogParser</span><span>()
+</span><span>        
+</span><span>        metadata, scenes = parser.</span><span style=color:#bf616a>parse_blog_post</span><span>(blog_path)
+</span><span>        </span><span style=color:#65737e># ... 处理逻辑
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>{
+</span><span>            "</span><span style=color:#a3be8c>success</span><span>": </span><span style=color:#d08770>True</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>total_scenes</span><span>": </span><span style=color:#96b5b4>len</span><span>(scene_list),
+</span><span>            "</span><span style=color:#a3be8c>scenes</span><span>": scene_list,
+</span><span>            "</span><span style=color:#a3be8c>parser_used</span><span>": parser_type
+</span><span>        }
+</span><span>    </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>success</span><span>": </span><span style=color:#d08770>False</span><span>, "</span><span style=color:#a3be8c>error</span><span>": </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>AI解析分镜失败: </span><span>{</span><span style=color:#bf616a>str</span><span>(e)}"}
+</span></code></pre><h3 id=http-mcpfu-wu-qi-web-apiji-cheng>HTTP MCP服务器（Web API集成）</h3><p>为了提供更好的扩展性，我还实现了HTTP版本：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>fastapi </span><span style=color:#b48ead>import </span><span>FastAPI, HTTPException
+</span><span style=color:#b48ead>from </span><span>fastapi.responses </span><span style=color:#b48ead>import </span><span>StreamingResponse
+</span><span>
+</span><span>app = </span><span style=color:#bf616a>FastAPI</span><span>(</span><span style=color:#bf616a>title</span><span>="</span><span style=color:#a3be8c>Douyin Scene Generator MCP Server</span><span>")
+</span><span>
+</span><span>@app.</span><span style=color:#bf616a>post</span><span>("</span><span style=color:#a3be8c>/tools/call</span><span>")
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>call_tool</span><span>(</span><span style=color:#bf616a>request</span><span>: ToolCallRequest):
+</span><span>    </span><span style=color:#65737e>"""统一的工具调用接口"""
+</span><span>    tool_name = request.tool_name
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>if </span><span>tool_name == "</span><span style=color:#a3be8c>parse_scenes_with_ai</span><span>":
+</span><span>        </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>_parse_scenes_with_ai</span><span>(**request.parameters)
+</span><span>    </span><span style=color:#b48ead>elif </span><span>tool_name == "</span><span style=color:#a3be8c>generate_scene_images</span><span>":
+</span><span>        </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>_generate_scene_images</span><span>(**request.parameters)
+</span><span>    </span><span style=color:#65737e># ... 其他工具
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>raise </span><span style=color:#bf616a>HTTPException</span><span>(</span><span style=color:#bf616a>status_code</span><span>=</span><span style=color:#d08770>404</span><span>, </span><span style=color:#bf616a>detail</span><span>=</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>工具 </span><span>{tool_name}</span><span style=color:#a3be8c> 不存在</span><span>")
+</span><span>
+</span><span>@app.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>/tools/batch_process/stream</span><span>")
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>batch_process_stream</span><span>(</span><span style=color:#bf616a>blog_dir</span><span>: str, </span><span style=color:#bf616a>pattern</span><span>: str = "</span><span style=color:#a3be8c>**/*index.md</span><span>"):
+</span><span>    </span><span style=color:#65737e>"""流式批量处理接口"""
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>StreamingResponse</span><span>(
+</span><span>        </span><span style=color:#bf616a>_batch_process_blogs_stream</span><span>(blog_dir, pattern),
+</span><span>        </span><span style=color:#bf616a>media_type</span><span>="</span><span style=color:#a3be8c>text/event-stream</span><span>"
+</span><span>    )
+</span></code></pre><h2 id=he-xin-gong-neng-mo-kuai-she-ji>核心功能模块设计</h2><h3 id=1-zhi-neng-nei-rong-ti-qu-qi>1. 智能内容提取器</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>OptimizedContentExtractor</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>extract_content_for_ai_analysis</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>blog_path</span><span>: str) -> Dict[str, Any]:
+</span><span>        </span><span style=color:#65737e>"""为AI分析提取和预处理博文内容"""
+</span><span>        content = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_read_blog_file</span><span>(blog_path)
+</span><span>        metadata = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_extract_metadata</span><span>(content)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 智能检测内容类型
+</span><span>        has_scene_table = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_detect_scene_table</span><span>(content)
+</span><span>        content_type = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_analyze_content_type</span><span>(content, metadata)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 生成适配的Prompt模板
+</span><span>        prompt_template = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_generate_scene_analysis_prompt</span><span>(has_scene_table)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>{
+</span><span>            "</span><span style=color:#a3be8c>success</span><span>": </span><span style=color:#d08770>True</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>content</span><span>": </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_clean_content_for_ai</span><span>(content),
+</span><span>            "</span><span style=color:#a3be8c>metadata</span><span>": metadata,
+</span><span>            "</span><span style=color:#a3be8c>has_scene_table</span><span>": has_scene_table,
+</span><span>            "</span><span style=color:#a3be8c>content_type</span><span>": content_type,
+</span><span>            "</span><span style=color:#a3be8c>recommended_prompt</span><span>": prompt_template,
+</span><span>            "</span><span style=color:#a3be8c>analysis_suggestions</span><span>": </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_generate_analysis_suggestions</span><span>(content_type)
+</span><span>        }
+</span></code></pre><h3 id=2-duo-mo-shi-jie-xi-qi>2. 多模式解析器</h3><p>系统支持三种解析模式：<ul><li><strong>Regex模式</strong>：传统正则表达式，适用于格式严格的表格<li><strong>Smart模式</strong>：纯AI解析，适用于复杂或非标准格式<li><strong>Hybrid模式</strong>：智能混合，先正则后AI，兼顾效率和准确性</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>HybridBlogParser</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>use_ai_fallback</span><span>=</span><span style=color:#d08770>True</span><span>, </span><span style=color:#bf616a>use_ai_enhancement</span><span>=</span><span style=color:#d08770>True</span><span>):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.regex_parser = </span><span style=color:#bf616a>BlogParser</span><span>()
+</span><span>        </span><span style=color:#bf616a>self</span><span>.smart_parser = </span><span style=color:#bf616a>SmartBlogParser</span><span>()
+</span><span>        </span><span style=color:#bf616a>self</span><span>.use_ai_fallback = use_ai_fallback
+</span><span>        </span><span style=color:#bf616a>self</span><span>.use_ai_enhancement = use_ai_enhancement
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_blog_post</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>blog_path</span><span>: str) -> Tuple[Dict, List[SceneData]]:
+</span><span>        </span><span style=color:#65737e># 先尝试正则解析
+</span><span>        metadata, scenes = </span><span style=color:#bf616a>self</span><span>.regex_parser.</span><span style=color:#bf616a>parse_blog_post</span><span>(blog_path)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 如果失败或结果不理想，使用AI增强
+</span><span>        </span><span style=color:#b48ead>if </span><span>not scenes and </span><span style=color:#bf616a>self</span><span>.use_ai_fallback:
+</span><span>            </span><span style=color:#bf616a>_</span><span>, scenes = </span><span style=color:#bf616a>self</span><span>.smart_parser.</span><span style=color:#bf616a>parse_blog_post</span><span>(blog_path)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>if </span><span>scenes and </span><span style=color:#bf616a>self</span><span>.use_ai_enhancement:
+</span><span>            scenes = </span><span style=color:#bf616a>self</span><span>.smart_parser.</span><span style=color:#bf616a>enhance_scenes_with_ai</span><span>(scenes)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>metadata, scenes
+</span></code></pre><h3 id=3-tu-pian-sheng-cheng-guan-li-qi>3. 图片生成管理器</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>ImageManager</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>generate_scene_image</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>scene</span><span>: SceneData, </span><span style=color:#bf616a>blog_metadata</span><span>: Dict) -> Optional[str]:
+</span><span>        </span><span style=color:#65737e>"""为单个分镜生成图片"""
+</span><span>        prompt = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_build_image_prompt</span><span>(scene, blog_metadata)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>try</span><span>:
+</span><span>            response = </span><span style=color:#bf616a>self</span><span>.client.images.</span><span style=color:#bf616a>generate</span><span>(
+</span><span>                </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>dall-e-3</span><span>",
+</span><span>                </span><span style=color:#bf616a>prompt</span><span>=prompt,
+</span><span>                </span><span style=color:#bf616a>size</span><span>=</span><span style=color:#bf616a>self</span><span>.config.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>size</span><span>", "</span><span style=color:#a3be8c>1024x1024</span><span>"),
+</span><span>                </span><span style=color:#bf616a>quality</span><span>=</span><span style=color:#bf616a>self</span><span>.config.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>quality</span><span>", "</span><span style=color:#a3be8c>standard</span><span>"),
+</span><span>                </span><span style=color:#bf616a>n</span><span>=</span><span style=color:#d08770>1
+</span><span>            )
+</span><span>            
+</span><span>            image_url = response.data[</span><span style=color:#d08770>0</span><span>].url
+</span><span>            local_path = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_download_and_save_image</span><span>(image_url, scene.scene_id, blog_metadata)
+</span><span>            
+</span><span>            </span><span style=color:#b48ead>return </span><span>local_path
+</span><span>        </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>            logger.</span><span style=color:#bf616a>error</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>生成图片失败 (场景 </span><span>{scene.scene_id}</span><span style=color:#a3be8c>): </span><span>{e}")
+</span><span>            </span><span style=color:#b48ead>return </span><span style=color:#d08770>None
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_build_image_prompt</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>scene</span><span>: SceneData, </span><span style=color:#bf616a>metadata</span><span>: Dict) -> str:
+</span><span>        </span><span style=color:#65737e>"""构建图片生成的提示词"""
+</span><span>        base_prompt = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>        场景内容：</span><span>{scene.content}
+</span><span style=color:#a3be8c>        拍摄要点：</span><span>{scene.shooting_tips}
+</span><span style=color:#a3be8c>        视觉效果：</span><span>{scene.visual_effects}
+</span><span style=color:#a3be8c>        
+</span><span style=color:#a3be8c>        风格要求：
+</span><span style=color:#a3be8c>        - 纳西族传统建筑风格
+</span><span style=color:#a3be8c>        - 现代化改造元素
+</span><span style=color:#a3be8c>        - 温暖的人文气息
+</span><span style=color:#a3be8c>        - 高质量摄影风格
+</span><span style=color:#a3be8c>        </span><span>"""
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_refine_prompt_for_dalle</span><span>(base_prompt)
+</span></code></pre><h2 id=xiang-mu-guan-li-poetrytong-yi-hua>项目管理：Poetry统一化</h2><p>为了简化项目管理，我创建了一个Poetry管理器：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>PoetryManager</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.project_root = </span><span style=color:#bf616a>Path</span><span>(__file__).parent
+</span><span>        </span><span style=color:#bf616a>self</span><span>.tools_dir = </span><span style=color:#bf616a>self</span><span>.project_root
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>start_stdio_server</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>        </span><span style=color:#65737e>"""启动STDIO MCP服务器"""
+</span><span>        </span><span style=color:#96b5b4>print</span><span>("</span><span style=color:#a3be8c>🚀 启动STDIO MCP服务器...</span><span>")
+</span><span>        subprocess.</span><span style=color:#bf616a>run</span><span>([
+</span><span>            "</span><span style=color:#a3be8c>poetry</span><span>", "</span><span style=color:#a3be8c>run</span><span>", "</span><span style=color:#a3be8c>python</span><span>", "</span><span style=color:#a3be8c>-m</span><span>", "</span><span style=color:#a3be8c>douyin_generator.cli</span><span>", "</span><span style=color:#a3be8c>--mcp-server</span><span>"
+</span><span>        ], </span><span style=color:#bf616a>cwd</span><span>=</span><span style=color:#bf616a>self</span><span>.tools_dir)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>start_http_server</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>port</span><span>=</span><span style=color:#d08770>8000</span><span>):
+</span><span>        </span><span style=color:#65737e>"""启动HTTP MCP服务器"""
+</span><span>        </span><span style=color:#96b5b4>print</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>🌐 启动HTTP MCP服务器 (端口 </span><span>{port}</span><span style=color:#a3be8c>)...</span><span>")
+</span><span>        subprocess.</span><span style=color:#bf616a>run</span><span>([
+</span><span>            "</span><span style=color:#a3be8c>poetry</span><span>", "</span><span style=color:#a3be8c>run</span><span>", "</span><span style=color:#a3be8c>uvicorn</span><span>", "</span><span style=color:#a3be8c>mcp_server.http_server:app</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>--host</span><span>", "</span><span style=color:#a3be8c>0.0.0.0</span><span>", "</span><span style=color:#a3be8c>--port</span><span>", </span><span style=color:#bf616a>str</span><span>(port), "</span><span style=color:#a3be8c>--reload</span><span>"
+</span><span>        ], </span><span style=color:#bf616a>cwd</span><span>=</span><span style=color:#bf616a>self</span><span>.tools_dir)
+</span></code></pre><h2 id=shi-ji-shi-yong-ti-yan>实际使用体验</h2><h3 id=claude-desktopji-cheng>Claude Desktop集成</h3><p>配置文件 <code>claude_desktop_config.json</code>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>mcpServers</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>douyin-scene-generator</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>command</span><span>": "</span><span style=color:#a3be8c>/Users/polly/Downloads/Sublime_Workspace/Zola_Workspace/www.polly.com/tools/mcp_server/start_server.sh</span><span>"
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre><p>使用时只需在Claude中说：<blockquote><p>"帮我解析这个博文的分镜表格：/path/to/blog.md，使用智能模式"</blockquote><p>Claude会自动调用相应的MCP工具，返回解析结果。<h3 id=http-apidiao-yong>HTTP API调用</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 健康检查
+</span><span style=color:#bf616a>curl</span><span> http://localhost:8000/health
+</span><span>
+</span><span style=color:#65737e># 获取工具列表
+</span><span style=color:#bf616a>curl</span><span> http://localhost:8000/tools
+</span><span>
+</span><span style=color:#65737e># AI解析博文
+</span><span style=color:#bf616a>curl -X</span><span> POST http://localhost:8000/tools/call \
+</span><span style=color:#bf616a>  -H </span><span>"</span><span style=color:#a3be8c>Content-Type: application/json</span><span>" \
+</span><span style=color:#bf616a>  -d </span><span>'</span><span style=color:#a3be8c>{
+</span><span style=color:#a3be8c>    "tool_name": "parse_scenes_with_ai",
+</span><span style=color:#a3be8c>    "parameters": {
+</span><span style=color:#a3be8c>      "blog_path": "/path/to/blog.md",
+</span><span style=color:#a3be8c>      "parser_type": "hybrid"
+</span><span style=color:#a3be8c>    }
+</span><span style=color:#a3be8c>  }</span><span>'
+</span></code></pre><h2 id=xing-neng-you-hua-yu-jia-gou-si-kao>性能优化与架构思考</h2><h3 id=jie-xi-xing-neng-dui-bi>解析性能对比</h3><p>经过实际测试，不同解析模式的性能表现：<table><thead><tr><th>解析模式<th>成功率<th>平均耗时<th>适用场景<tbody><tr><td>Regex<td>60-70%<td>0.1s<td>标准格式表格<tr><td>Smart<td>95-99%<td>2-5s<td>复杂格式、内容生成<tr><td>Hybrid<td>90-95%<td>0.5-3s<td>平衡效率与准确性</table><h3 id=jia-gou-you-hua-fang-xiang>架构优化方向</h3><p>在开发过程中，我思考了一个重要的架构问题：<strong>是否应该将所有AI推理都交给Claude客户端，而让MCP服务器专注于数据处理？</strong><p>当前架构：<pre style=background:#2b303b;color:#c0c5ce><code><span>Claude Client -> Claude Desktop -> MCP Server -> SmartBlogParser -> DeepSeek API
+</span></code></pre><p>优化后架构：<pre style=background:#2b303b;color:#c0c5ce><code><span>Claude Client -> 统一LLM推理 -> Claude Desktop -> MCP Server (纯数据处理)
+</span></code></pre><p>这个优化的核心思想是<strong>回归MCP协议的本质</strong>：让AI负责推理，让工具负责数据处理。具体实施方案包括：<ol><li><strong>Prompt工程统一化</strong>：将AI推理能力从MCP Server剥离<li><strong>工具职责重新设计</strong>：专注于内容提取、格式转换、数据验证<li><strong>统一的错误处理</strong>：简化调试和维护流程</ol><h2 id=cai-guo-de-keng-yu-jie-jue-fang-an>踩过的坑与解决方案</h2><h3 id=1-poetryhuan-jing-guan-li>1. Poetry环境管理</h3><p><strong>问题</strong>：Claude Desktop找不到poetry命令<pre style=background:#2b303b;color:#c0c5ce><code><span>spawn poetry ENOENT
+</span></code></pre><p><strong>解决方案</strong>：使用绝对路径和启动脚本<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e>#!/bin/bash
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>PATH</span><span>="</span><span style=color:#a3be8c>/Users/polly/.local/bin:</span><span>$</span><span style=color:#bf616a>PATH</span><span>"
+</span><span style=color:#96b5b4>cd </span><span>"</span><span style=color:#a3be8c>/path/to/project/tools</span><span>"
+</span><span style=color:#bf616a>poetry</span><span> install</span><span style=color:#bf616a> --no-dev
+</span><span style=color:#96b5b4>exec</span><span> poetry run python -m mcp_server.server
+</span></code></pre><h3 id=2-ai-apidiao-yong-you-hua>2. AI API调用优化</h3><p><strong>问题</strong>：DeepSeek API调用偶尔超时或返回格式不正确<p><strong>解决方案</strong>：增加重试机制和响应验证<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_call_deepseek_api_with_retry</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>prompt</span><span>: str, </span><span style=color:#bf616a>max_retries</span><span>=</span><span style=color:#d08770>3</span><span>) -> str:
+</span><span>    </span><span style=color:#b48ead>for </span><span>attempt </span><span style=color:#b48ead>in </span><span style=color:#96b5b4>range</span><span>(max_retries):
+</span><span>        </span><span style=color:#b48ead>try</span><span>:
+</span><span>            response = </span><span style=color:#bf616a>self</span><span>.client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>                </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>deepseek-chat</span><span>",
+</span><span>                </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": prompt}],
+</span><span>                </span><span style=color:#bf616a>temperature</span><span>=</span><span style=color:#d08770>0.1</span><span>,
+</span><span>                </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>30
+</span><span>            )
+</span><span>            
+</span><span>            result = response.choices[</span><span style=color:#d08770>0</span><span>].message.content
+</span><span>            </span><span style=color:#65737e># 验证JSON格式
+</span><span>            json.</span><span style=color:#bf616a>loads</span><span>(result)
+</span><span>            </span><span style=color:#b48ead>return </span><span>result
+</span><span>            
+</span><span>        </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>            </span><span style=color:#b48ead>if </span><span>attempt == max_retries - </span><span style=color:#d08770>1</span><span>:
+</span><span>                </span><span style=color:#b48ead>raise </span><span>e
+</span><span>            time.</span><span style=color:#bf616a>sleep</span><span>(</span><span style=color:#d08770>2 </span><span>** attempt)  </span><span style=color:#65737e># 指数退避
+</span></code></pre><h3 id=3-kua-ping-tai-jian-rong-xing>3. 跨平台兼容性</h3><p><strong>问题</strong>：macOS和Linux的路径处理差异<p><strong>解决方案</strong>：使用pathlib统一路径处理<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>pathlib </span><span style=color:#b48ead>import </span><span>Path
+</span><span>
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>get_project_root</span><span>() -> Path:
+</span><span>    </span><span style=color:#65737e>"""获取项目根目录，跨平台兼容"""
+</span><span>    current_file = </span><span style=color:#bf616a>Path</span><span>(__file__).</span><span style=color:#bf616a>resolve</span><span>()
+</span><span>    </span><span style=color:#65737e># 向上查找包含pyproject.toml的目录
+</span><span>    </span><span style=color:#b48ead>for </span><span>parent </span><span style=color:#b48ead>in </span><span>current_file.parents:
+</span><span>        </span><span style=color:#b48ead>if </span><span>(parent / "</span><span style=color:#a3be8c>pyproject.toml</span><span>").</span><span style=color:#bf616a>exists</span><span>():
+</span><span>            </span><span style=color:#b48ead>return </span><span>parent
+</span><span>    </span><span style=color:#b48ead>return </span><span>current_file.parent
+</span></code></pre><h2 id=xiang-mu-cheng-guo-yu-jie-zhi-ti-xian>项目成果与价值体现</h2><h3 id=ding-liang-zhi-biao>定量指标</h3><ul><li><strong>开发效率提升</strong>：分镜制作时间从2-3小时缩短到10-15分钟<li><strong>解析准确率</strong>：从60%提升到95%以上<li><strong>功能丰富度</strong>：从单一解析扩展到解析+生成+增强的完整工具链<li><strong>用户体验</strong>：从命令行工具升级到自然语言交互</ul><h3 id=ji-zhu-jie-zhi>技术价值</h3><ol><li><strong>MCP协议实践</strong>：深度体验了MCP服务器的开发和部署<li><strong>AI工程应用</strong>：将大模型能力有效集成到实际业务场景<li><strong>架构设计思考</strong>：从单体应用到分布式服务的演进思路<li><strong>跨平台兼容</strong>：Poetry + Docker的现代化Python项目管理</ol><h3 id=ye-wu-jie-zhi>业务价值</h3><ol><li><strong>降低门槛</strong>：非技术人员也能快速生成专业的视频内容<li><strong>保证质量</strong>：AI确保了视觉风格的一致性和专业性<li><strong>提升效率</strong>：自动化工作流大幅提升内容创作效率<li><strong>文化传承</strong>：通过技术手段更好地展示传统纳西族建筑文化</ol><h2 id=wei-lai-zhan-wang-yu-chi-xu-you-hua>未来展望与持续优化</h2><h3 id=duan-qi-ji-hua>短期计划</h3><ol><li><strong>多媒体支持</strong>：扩展到音频生成和视频剪辑<li><strong>模板系统</strong>：为不同类型的内容提供预设模板<li><strong>批量处理优化</strong>：支持大规模并行处理<li><strong>用户界面</strong>：开发Web界面，降低使用门槛</ol><h3 id=chang-qi-yuan-jing>长期愿景</h3><ol><li><strong>智能化升级</strong>：集成更多AI能力，如语音合成、视频剪辑<li><strong>平台扩展</strong>：支持更多短视频平台的特定需求<li><strong>生态建设</strong>：开源项目，建立开发者社区<li><strong>商业化探索</strong>：为类似需求的企业提供SaaS服务</ol><h2 id=zong-jie-fan-si>总结反思</h2><p>这个项目让我深刻体会到了AI技术在实际应用中的巨大潜力。从最初的简单需求到最终的完整解决方案，每一步都充满了挑战和惊喜。<p><strong>技术层面</strong>，我学会了如何设计一个真正实用的AI工具：不是简单地调用API，而是要深入理解业务需求，设计合适的架构，优化用户体验。<p><strong>业务层面</strong>，这个项目展示了技术如何真正赋能传统行业：通过AI让复杂的视频制作变得简单，让专业的内容创作变得普及。<p><strong>个人成长</strong>，这次实践让我对MCP协议、AI工程、项目管理都有了更深的理解。更重要的是，我学会了如何将技术与人文关怀结合，用代码传递温暖。<p>最后想说的是，技术的价值不在于它有多么复杂，而在于它能解决多少实际问题，能为多少人带来便利。这个丽江客栈的抖音视频生成系统，或许就是一个小小的例子，展示了AI如何让生活变得更美好。<p>如果你也在思考如何将AI技术应用到实际场景中，希望这个项目的经验能给你一些启发。记住，最好的技术，是那些让人忘记技术存在的技术。<hr><p><em>项目源码已开源，欢迎Star和Fork：<a href=https://github.com/polly/lijiang-ai-mcp-server>https://github.com/polly/lijiang-ai-mcp-server</a></em><p><em>如果你对MCP服务器开发或AI工程实践有兴趣，欢迎在评论区交流讨论！</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
