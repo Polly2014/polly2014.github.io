@@ -5,8 +5,366 @@
     <link href="https://polly.wang/tags/mcp/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-06-08T00:00:00+00:00</updated>
+    <updated>2025-06-16T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/mcp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>MCP Tool vs LLM Function Call：AI智能体的两种执行模式深度对比</title>
+        <published>2025-06-16T00:00:00+00:00</published>
+        <updated>2025-06-16T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/mcp-tool-vs-llm-function-call/" type="text/html"/>
+        <id>https://polly.wang/mcp-tool-vs-llm-function-call/</id>
+        
+        <content type="html">&lt;p&gt;最近在开发AI驱动的项目管理工具时，我遇到了一个有趣的技术选型问题：当我说&amp;quot;生成一个DALL-E图片并保存到项目目录&amp;quot;时，AI助手是如何知道该调用哪个工具的？这背后涉及到两种不同的AI执行机制：&lt;strong&gt;MCP Tool&lt;&#x2F;strong&gt;和&lt;strong&gt;LLM Function Call&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;经过深入研究和实践，我发现这两种机制各有千秋，理解它们的差异对于构建高效的AI工作流至关重要。今天我想分享一下我的发现和思考。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;brain-cong-yi-ge-shi-ji-wen-ti-shuo-qi&quot;&gt;🧠 从一个实际问题说起&lt;&#x2F;h2&gt;
+&lt;p&gt;在我的丽江客栈重建项目中，我需要AI助手完成这样一个复杂任务：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;根据分镜脚本生成DALL-E图片&lt;&#x2F;li&gt;
+&lt;li&gt;下载图片到本地项目目录&lt;&#x2F;li&gt;
+&lt;li&gt;更新&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;mcp-tool-vs-llm-function-call&#x2F;.gitignore&quot;&gt;&lt;code&gt;.gitignore&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;文件忽略生成的图片&lt;&#x2F;li&gt;
+&lt;li&gt;创建HTML预览页面&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这个任务涉及到云端API调用、本地文件操作、系统配置修改等多种能力。AI助手是如何智能地选择合适的执行方式的呢？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mag-mcpji-zhi-zhi-neng-gong-ju-shi-bie-de-ao-mi&quot;&gt;🔍 MCP机制：智能工具识别的奥秘&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;yu-yi-fen-xi-yu-yi-tu-shi-bie&quot;&gt;语义分析与意图识别&lt;&#x2F;h3&gt;
+&lt;p&gt;MCP (Model Context Protocol) 首先会对我的自然语言进行深度分析：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# MCP的语义分析过程
+&lt;&#x2F;span&gt;&lt;span&gt;user_request = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;生成一个Python脚本来创建DALL-E图片&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;semantic_analysis = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;keywords&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;生成&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Python脚本&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;创建&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;DALL-E&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;图片&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;intent&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;文件创建 + 代码生成 + 图片生成&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;博客项目 + AI内容创作&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;gong-ju-miao-shu-pi-pei-suan-fa&quot;&gt;工具描述匹配算法&lt;&#x2F;h3&gt;
+&lt;p&gt;每个MCP工具都有详细的描述和参数定义，系统通过语义相似度进行匹配：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;create_file&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;创建新文件并写入指定内容&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;keywords&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;创建&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;文件&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;写入&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;新建&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;match_score&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.95
+&lt;&#x2F;span&gt;&lt;span&gt;  },
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;run_in_terminal&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;在终端执行命令&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;keywords&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;运行&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;执行&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;命令&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;脚本&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;match_score&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.87
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;shang-xia-wen-gan-zhi-jue-ce&quot;&gt;上下文感知决策&lt;&#x2F;h3&gt;
+&lt;p&gt;MCP会综合考虑对话历史和当前工作环境：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;项目类型检测&lt;&#x2F;strong&gt;: 识别出这是一个Python+Zola的博客项目&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;历史操作&lt;&#x2F;strong&gt;: 记住之前创建过类似的DALL-E生成脚本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;环境变量&lt;&#x2F;strong&gt;: 检测到Azure OpenAI配置，优先选择相关工具&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;duo-gong-ju-xie-diao-ce-lue&quot;&gt;多工具协调策略&lt;&#x2F;h3&gt;
+&lt;p&gt;当任务需要多个工具协同时，MCP会制定执行序列：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;graph LR
+&lt;&#x2F;span&gt;&lt;span&gt;    A[用户请求] --&amp;gt; B[分析任务]
+&lt;&#x2F;span&gt;&lt;span&gt;    B --&amp;gt; C[工具1: create_file]
+&lt;&#x2F;span&gt;&lt;span&gt;    C --&amp;gt; D[工具2: run_in_terminal]
+&lt;&#x2F;span&gt;&lt;span&gt;    D --&amp;gt; E[工具3: 检查结果]
+&lt;&#x2F;span&gt;&lt;span&gt;    E --&amp;gt; F[完成任务]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这种智能协调让AI助手能够像一个经验丰富的开发者一样，自动规划和执行复杂的多步骤任务。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zap-llm-function-call-jing-que-de-apihan-shu-diao-yong&quot;&gt;⚡ LLM Function Call：精确的API函数调用&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;han-shu-sheng-ming-yu-zhu-ce&quot;&gt;函数声明与注册&lt;&#x2F;h3&gt;
+&lt;p&gt;LLM Function Call需要预先定义可调用的函数：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;functions&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dalle_image_generation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;使用DALL-E 3生成高质量图片&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;parameters&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;object&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;properties&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;          &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;图片生成的详细描述&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;          },
+&lt;&#x2F;span&gt;&lt;span&gt;          &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;size&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;enum&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1024x1024&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1792x1024&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1024x1792&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;          }
+&lt;&#x2F;span&gt;&lt;span&gt;        },
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;required&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;      }
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yi-tu-shi-bie-yu-can-shu-gou-zao&quot;&gt;意图识别与参数构造&lt;&#x2F;h3&gt;
+&lt;p&gt;当我说&amp;quot;生成丽江古城施工场景图片&amp;quot;时，LLM的推理过程：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# LLM的内部推理过程
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;construct_function_call&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    user_intent = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;生成图片&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    target_subject = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;丽江古城施工场景&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 匹配最合适的函数
+&lt;&#x2F;span&gt;&lt;span&gt;    best_function = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dalle_image_generation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 构造参数
+&lt;&#x2F;span&gt;&lt;span&gt;    parameters = {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Traditional Chinese construction site in Lijiang ancient town, workers in traditional Naxi architecture renovation, warm documentary photography style&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;size&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1024x1024&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;function_call&lt;&#x2F;span&gt;&lt;span&gt;(best_function, parameters)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;shang-xia-wen-gan-zhi-de-can-shu-tui-li&quot;&gt;上下文感知的参数推理&lt;&#x2F;h3&gt;
+&lt;p&gt;LLM会综合多种信息源来确定函数参数：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;context_analysis = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;project_type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;丽江客栈重建记录&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;visual_style&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;纪录片风格摄影&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;recent_operations&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;创建了施工分镜脚本&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user_preferences&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;image_quality&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;高质量&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cultural_elements&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;纳西族传统建筑&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;arrows-counterclockwise-he-xin-chai-yi-dui-bi-fen-xi&quot;&gt;🔄 核心差异对比分析&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;ji-zhu-jia-gou-chai-yi&quot;&gt;技术架构差异&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;MCP Tool&lt;&#x2F;th&gt;&lt;th&gt;LLM Function Call&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;执行环境&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;本地系统&lt;&#x2F;td&gt;&lt;td&gt;云端API服务&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;能力范围&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无限制系统操作&lt;&#x2F;td&gt;&lt;td&gt;预定义API功能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;数据传输&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;直接系统调用&lt;&#x2F;td&gt;&lt;td&gt;JSON格式，有大小限制&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;延迟特性&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;低延迟本地执行&lt;&#x2F;td&gt;&lt;td&gt;网络延迟 + 处理时间&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;安全模型&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;本地权限控制&lt;&#x2F;td&gt;&lt;td&gt;API提供商控制&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;成本结构&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;主要是计算资源&lt;&#x2F;td&gt;&lt;td&gt;按调用次数收费&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;shu-ju-liu-xiang-dui-bi&quot;&gt;数据流向对比&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;sequenceDiagram
+&lt;&#x2F;span&gt;&lt;span&gt;    participant U as 用户
+&lt;&#x2F;span&gt;&lt;span&gt;    participant L as LLM
+&lt;&#x2F;span&gt;&lt;span&gt;    participant A as API服务
+&lt;&#x2F;span&gt;&lt;span&gt;    participant S as 本地系统
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    Note over U,S: Function Call流程
+&lt;&#x2F;span&gt;&lt;span&gt;    U-&amp;gt;&amp;gt;L: 请求生成图片
+&lt;&#x2F;span&gt;&lt;span&gt;    L-&amp;gt;&amp;gt;A: function_call(dalle_generate)
+&lt;&#x2F;span&gt;&lt;span&gt;    A-&amp;gt;&amp;gt;A: 云端AI处理
+&lt;&#x2F;span&gt;&lt;span&gt;    A-&amp;gt;&amp;gt;L: 返回图片URL
+&lt;&#x2F;span&gt;&lt;span&gt;    L-&amp;gt;&amp;gt;U: 显示结果
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    Note over U,S: MCP Tool流程  
+&lt;&#x2F;span&gt;&lt;span&gt;    U-&amp;gt;&amp;gt;L: 请求创建文件
+&lt;&#x2F;span&gt;&lt;span&gt;    L-&amp;gt;&amp;gt;S: mcp_tool(create_file)
+&lt;&#x2F;span&gt;&lt;span&gt;    S-&amp;gt;&amp;gt;S: 本地文件操作
+&lt;&#x2F;span&gt;&lt;span&gt;    S-&amp;gt;&amp;gt;L: 返回操作状态
+&lt;&#x2F;span&gt;&lt;span&gt;    L-&amp;gt;&amp;gt;U: 确认完成
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;cuo-wu-chu-li-ce-lue-chai-yi&quot;&gt;错误处理策略差异&lt;&#x2F;h3&gt;
+&lt;p&gt;我在实际开发中遇到的典型场景：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Function Call错误处理&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handle_api_errors&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        result = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_dalle_api&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;RateLimitError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# API限流，只能等待
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;请稍后重试，API调用频率限制&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;ContentPolicyError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 内容违规，需要修改提示词
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;modify_prompt_and_retry&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;NetworkError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 网络问题，无法本地处理
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;API服务暂时不可用&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;MCP Tool错误处理&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handle_local_errors&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        result = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;create_local_file&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;PermissionError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 权限问题，可以尝试其他路径
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;create_in_temp_directory&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;DiskSpaceError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 磁盘空间不足，可以清理临时文件
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cleanup_temp_files&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;retry_creation&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;Exception &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 本地环境，可以详细诊断
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;detailed_system_diagnosis&lt;&#x2F;span&gt;&lt;span&gt;(e)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;dart-shi-ji-ying-yong-chang-jing-fen-xi&quot;&gt;🎯 实际应用场景分析&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;wo-de-bo-ke-xiang-mu-shi-jian&quot;&gt;我的博客项目实践&lt;&#x2F;h3&gt;
+&lt;p&gt;在我的www.polly.com博客项目中，两种机制各司其职：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Function Call适用场景&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用DALL-E生成博客插图&lt;&#x2F;li&gt;
+&lt;li&gt;调用GPT-4润色文章内容&lt;&#x2F;li&gt;
+&lt;li&gt;翻译技术文档到多语言&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;MCP Tool适用场景&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;创建和编辑Markdown博客文件&lt;&#x2F;li&gt;
+&lt;li&gt;运行Zola构建命令&lt;&#x2F;li&gt;
+&lt;li&gt;管理Git版本控制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;hun-he-zhi-xing-de-wei-li&quot;&gt;混合执行的威力&lt;&#x2F;h3&gt;
+&lt;p&gt;最有趣的是两者结合使用的场景。比如生成丽江客栈分镜图片的完整流程：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;hybrid_workflow_example&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. Function Call: 生成图片
+&lt;&#x2F;span&gt;&lt;span&gt;    image_urls = []
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;scene &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;storyboard_scenes:
+&lt;&#x2F;span&gt;&lt;span&gt;        url = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;function_call&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dalle_generate&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: scene.prompt,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;style&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;vivid&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        })
+&lt;&#x2F;span&gt;&lt;span&gt;        image_urls.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(url)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. MCP Tool: 下载并保存
+&lt;&#x2F;span&gt;&lt;span&gt;    local_paths = []
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;i, url &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;enumerate&lt;&#x2F;span&gt;&lt;span&gt;(image_urls):
+&lt;&#x2F;span&gt;&lt;span&gt;        path = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcp_tool&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;download_image&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;url&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: url,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;save_path&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;images&#x2F;scene_&lt;&#x2F;span&gt;&lt;span&gt;{i+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.jpg&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        })
+&lt;&#x2F;span&gt;&lt;span&gt;        local_paths.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(path)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. MCP Tool: 生成HTML预览
+&lt;&#x2F;span&gt;&lt;span&gt;    html_content = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;generate_preview_html&lt;&#x2F;span&gt;&lt;span&gt;(local_paths)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcp_tool&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;create_file&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;preview.html&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: html_content
+&lt;&#x2F;span&gt;&lt;span&gt;    })
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 4. MCP Tool: 更新项目配置
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcp_tool&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;update_gitignore&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;additions&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;*.jpg&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;preview.html&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;    })
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;分镜图片生成完成！&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;rocket-xing-neng-yu-xiao-lu-dui-bi&quot;&gt;🚀 性能与效率对比&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;xiang-ying-shi-jian-fen-xi&quot;&gt;响应时间分析&lt;&#x2F;h3&gt;
+&lt;p&gt;基于我的实际测试数据：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;操作类型&lt;&#x2F;th&gt;&lt;th&gt;MCP Tool&lt;&#x2F;th&gt;&lt;th&gt;Function Call&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;文件创建&lt;&#x2F;td&gt;&lt;td&gt;~50ms&lt;&#x2F;td&gt;&lt;td&gt;N&#x2F;A&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;图片生成&lt;&#x2F;td&gt;&lt;td&gt;N&#x2F;A&lt;&#x2F;td&gt;&lt;td&gt;~15-30s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文本处理&lt;&#x2F;td&gt;&lt;td&gt;本地瞬时&lt;&#x2F;td&gt;&lt;td&gt;~2-5s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;系统命令&lt;&#x2F;td&gt;&lt;td&gt;~100-500ms&lt;&#x2F;td&gt;&lt;td&gt;N&#x2F;A&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;cheng-ben-xiao-yi-fen-xi&quot;&gt;成本效益分析&lt;&#x2F;h3&gt;
+&lt;p&gt;在我的项目中，成本结构对比：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;MCP Tool成本&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;主要是本地计算资源消耗&lt;&#x2F;li&gt;
+&lt;li&gt;一次性硬件投入&lt;&#x2F;li&gt;
+&lt;li&gt;无使用次数限制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Function Call成本&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;按API调用次数付费&lt;&#x2F;li&gt;
+&lt;li&gt;DALL-E 3: ~$0.04&#x2F;张图片&lt;&#x2F;li&gt;
+&lt;li&gt;GPT-4: ~$0.03&#x2F;1K tokens&lt;&#x2F;li&gt;
+&lt;li&gt;随使用量线性增长&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;crystal-ball-ji-zhu-xuan-ze-de-jue-ce-shu&quot;&gt;🔮 技术选择的决策树&lt;&#x2F;h2&gt;
+&lt;p&gt;基于我的实践经验，我总结了这样一个决策框架：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;graph TD
+&lt;&#x2F;span&gt;&lt;span&gt;    A[任务分析] --&amp;gt; B{需要什么能力?}
+&lt;&#x2F;span&gt;&lt;span&gt;    B --&amp;gt; C[专业AI服务]
+&lt;&#x2F;span&gt;&lt;span&gt;    B --&amp;gt; D[系统级操作]
+&lt;&#x2F;span&gt;&lt;span&gt;    B --&amp;gt; E[两者结合]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    C --&amp;gt; F[选择Function Call]
+&lt;&#x2F;span&gt;&lt;span&gt;    D --&amp;gt; G[选择MCP Tool]
+&lt;&#x2F;span&gt;&lt;span&gt;    E --&amp;gt; H[设计混合流程]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    F --&amp;gt; I[&amp;quot;图片&#x2F;音频生成&amp;lt;br&#x2F;&amp;gt;高级文本处理&amp;lt;br&#x2F;&amp;gt;专业API服务&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;    G --&amp;gt; J[&amp;quot;文件系统操作&amp;lt;br&#x2F;&amp;gt;系统命令执行&amp;lt;br&#x2F;&amp;gt;本地配置管理&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;    H --&amp;gt; K[&amp;quot;内容生成+本地保存&amp;lt;br&#x2F;&amp;gt;数据处理+结果存储&amp;lt;br&#x2F;&amp;gt;API调用+系统集成&amp;quot;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bulb-zui-jia-shi-jian-jian-yi&quot;&gt;💡 最佳实践建议&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-ming-que-neng-li-bian-jie&quot;&gt;1. 明确能力边界&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 能力边界清单
+&lt;&#x2F;span&gt;&lt;span&gt;function_call_strengths = [
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;专业AI模型能力&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;云端计算资源&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;标准化API接口&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;内容安全审核&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;mcp_tool_strengths = [
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;完整系统访问权限&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;低延迟本地执行&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无使用限制&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;深度系统集成&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;2-she-ji-rong-cuo-ji-zhi&quot;&gt;2. 设计容错机制&lt;&#x2F;h3&gt;
+&lt;p&gt;在我的项目中，我实现了这样的容错策略：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;resilient_execution&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;task&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 尝试主要方案
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute_primary_approach&lt;&#x2F;span&gt;&lt;span&gt;(task)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;APIError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# API失败，尝试本地替代方案
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute_local_fallback&lt;&#x2F;span&gt;&lt;span&gt;(task)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;SystemError:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 系统错误，尝试API方案
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute_cloud_fallback&lt;&#x2F;span&gt;&lt;span&gt;(task)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;Exception &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 记录错误，人工干预
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;log_error_for_review&lt;&#x2F;span&gt;&lt;span&gt;(e)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;request_manual_intervention&lt;&#x2F;span&gt;&lt;span&gt;(task)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-you-hua-cheng-ben-xiao-lu&quot;&gt;3. 优化成本效率&lt;&#x2F;h3&gt;
+&lt;p&gt;根据我的使用经验：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;高频操作&lt;&#x2F;strong&gt;：优先使用MCP Tool&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;专业能力&lt;&#x2F;strong&gt;：必须使用Function Call&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;混合场景&lt;&#x2F;strong&gt;：设计智能缓存机制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;dart-wei-lai-fa-zhan-zhan-wang&quot;&gt;🎯 未来发展展望&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;ji-zhu-rong-he-qu-shi&quot;&gt;技术融合趋势&lt;&#x2F;h3&gt;
+&lt;p&gt;我观察到几个重要趋势：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;标准化进程&lt;&#x2F;strong&gt;：MCP和Function Call的接口正在趋向统一&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;边缘计算&lt;&#x2F;strong&gt;：更多AI能力将下沉到本地设备&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;智能调度&lt;&#x2F;strong&gt;：AI将更智能地选择执行路径&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;安全增强&lt;&#x2F;strong&gt;：更完善的权限和审计机制&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;jia-gou-yan-jin-fang-xiang&quot;&gt;架构演进方向&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;graph TB
+&lt;&#x2F;span&gt;&lt;span&gt;    A[当前架构] --&amp;gt; B[融合架构]
+&lt;&#x2F;span&gt;&lt;span&gt;    B --&amp;gt; C[智能调度层]
+&lt;&#x2F;span&gt;&lt;span&gt;    C --&amp;gt; D[本地AI引擎]
+&lt;&#x2F;span&gt;&lt;span&gt;    C --&amp;gt; E[云端专业服务]
+&lt;&#x2F;span&gt;&lt;span&gt;    C --&amp;gt; F[混合执行器]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    D --&amp;gt; G[本地模型推理]
+&lt;&#x2F;span&gt;&lt;span&gt;    E --&amp;gt; H[专业API服务]
+&lt;&#x2F;span&gt;&lt;span&gt;    F --&amp;gt; I[最优路径选择]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;memo-zong-jie-yu-si-kao&quot;&gt;📝 总结与思考&lt;&#x2F;h2&gt;
+&lt;p&gt;经过深入的技术对比和实践验证，我得出几个关键结论：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;he-xin-dong-cha&quot;&gt;核心洞察&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;互补而非竞争&lt;&#x2F;strong&gt;：MCP Tool和Function Call是互补关系，各有优势领域&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;场景决定选择&lt;&#x2F;strong&gt;：技术选型应该基于具体应用场景和需求特点&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;混合架构最优&lt;&#x2F;strong&gt;：结合两种机制的混合架构能发挥最大价值&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;智能化趋势&lt;&#x2F;strong&gt;：未来的AI系统将更加智能地协调不同执行机制&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;shi-jian-jian-yi&quot;&gt;实践建议&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;新项目规划&lt;&#x2F;strong&gt;：从架构设计阶段就考虑两种机制的协同&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;现有系统改造&lt;&#x2F;strong&gt;：逐步引入混合执行能力，提升系统灵活性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;团队技能建设&lt;&#x2F;strong&gt;：培养对两种机制的深入理解和实践能力&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;zhan-wang-wei-lai&quot;&gt;展望未来&lt;&#x2F;h3&gt;
+&lt;p&gt;我相信，随着AI技术的持续发展，我们将看到更加智能、高效的执行机制出现。**Function Call的&amp;quot;借用外脑&amp;quot;和MCP Tool的&amp;quot;使用双手&amp;quot;**将更加紧密地结合，为我们构建真正智能的AI助手提供强大支撑。&lt;&#x2F;p&gt;
+&lt;p&gt;作为开发者，理解和掌握这两种机制不仅能帮助我们构建更好的AI应用，更重要的是，它让我们对AI的能力边界和发展方向有了更清晰的认知。在这个AI快速演进的时代，这种理解将是我们最宝贵的资产。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;本文基于我在实际项目中的深度实践和技术探索，如果你对MCP Tool或LLM Function Call有更多见解或疑问，欢迎在评论区交流讨论。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>OpenHands与MCP工具集成：构建Todo应用的完整工作流解析</title>
         <published>2025-06-08T00:00:00+00:00</published>
