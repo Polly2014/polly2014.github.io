@@ -504,7 +504,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;  - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;微服务架构 + 持久化执行
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h4 id=&quot;langgraphde-she-ji-zhe-xue-tu-zhuang-tai-ji-li-lun&quot;&gt;LangGraph的设计哲学：图状态机理论&lt;&#x2F;h4&gt;
-&lt;p&gt;LangGraph基于&lt;strong&gt;有限状态机（FSM）&lt;strong&gt;和&lt;&#x2F;strong&gt;Pregel图计算模型&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;LangGraph基于**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1145&#x2F;321219.321226&quot;&gt;有限状态机（FSM）&lt;&#x2F;a&gt;&lt;strong&gt;和&lt;&#x2F;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1145&#x2F;1807167.1807184&quot;&gt;Pregel图计算模型&lt;&#x2F;a&gt;**：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;状态转换设计&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;每个节点代表一个处理状态&lt;&#x2F;li&gt;
@@ -530,37 +530,37 @@
 &lt;h4 id=&quot;ren-zhi-jia-gou-li-lun-de-bu-tong-ti-xian&quot;&gt;认知架构理论的不同体现&lt;&#x2F;h4&gt;
 &lt;p&gt;&lt;strong&gt;LangChain：管道认知模型&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;基于&lt;strong&gt;信息处理理论&lt;&#x2F;strong&gt;的管道设计&lt;&#x2F;li&gt;
+&lt;li&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1016&#x2F;0364-0213(72)90001-X&quot;&gt;信息处理理论&lt;&#x2F;a&gt;**的管道设计&lt;&#x2F;li&gt;
 &lt;li&gt;组件化认知功能的模块化实现&lt;&#x2F;li&gt;
 &lt;li&gt;支持复杂认知任务的分解和重组&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;LangGraph：状态机认知模型&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;基于&lt;strong&gt;有限状态机理论&lt;&#x2F;strong&gt;的认知状态管理&lt;&#x2F;li&gt;
+&lt;li&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1145&#x2F;321219.321226&quot;&gt;有限状态机理论&lt;&#x2F;a&gt;**的认知状态管理&lt;&#x2F;li&gt;
 &lt;li&gt;实现持久化的认知过程和记忆机制&lt;&#x2F;li&gt;
 &lt;li&gt;支持复杂的条件分支和循环推理&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;AutoGen：社会认知理论&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;体现&lt;strong&gt;Vygotsky社会建构理论&lt;&#x2F;strong&gt;的Agent交互&lt;&#x2F;li&gt;
+&lt;li&gt;体现**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1007&#x2F;978-1-4613-1815-7&quot;&gt;Vygotsky社会建构理论&lt;&#x2F;a&gt;**的Agent交互&lt;&#x2F;li&gt;
 &lt;li&gt;通过对话实现知识的社会性建构&lt;&#x2F;li&gt;
 &lt;li&gt;支持人机协作的认知活动&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;CrewAI：角色认知理论&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;基于&lt;strong&gt;角色理论&lt;&#x2F;strong&gt;的专业化分工&lt;&#x2F;li&gt;
+&lt;li&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1146&#x2F;annurev.so.07.080181.000405&quot;&gt;角色理论&lt;&#x2F;a&gt;**的专业化分工&lt;&#x2F;li&gt;
 &lt;li&gt;实现明确的认知责任边界&lt;&#x2F;li&gt;
 &lt;li&gt;支持专业技能的深度发挥&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;GPT Researcher：探索认知理论&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;基于&lt;strong&gt;探索式学习理论&lt;&#x2F;strong&gt;的信息获取&lt;&#x2F;li&gt;
+&lt;li&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1207&#x2F;s15326985ep4101_2&quot;&gt;探索式学习理论&lt;&#x2F;a&gt;**的信息获取&lt;&#x2F;li&gt;
 &lt;li&gt;实现深度搜索和综合分析&lt;&#x2F;li&gt;
 &lt;li&gt;支持证据驱动的认知过程&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;Semantic Kernel：分布式认知理论&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;基于&lt;strong&gt;分布式认知系统理论&lt;&#x2F;strong&gt;的框架设计&lt;&#x2F;li&gt;
+&lt;li&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;mitpress.mit.edu&#x2F;9780262581462&#x2F;cognition-in-the-wild&#x2F;&quot;&gt;分布式认知系统理论&lt;&#x2F;a&gt;**的框架设计&lt;&#x2F;li&gt;
 &lt;li&gt;跨语言和平台的认知能力分布&lt;&#x2F;li&gt;
 &lt;li&gt;支持企业级的认知资源管理&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
@@ -711,7 +711,7 @@
 &lt;h3 id=&quot;ren-zhi-jia-gou-li-lun-shi-jiao-xia-de-chan-pin-fen-xi&quot;&gt;认知架构理论视角下的产品分析&lt;&#x2F;h3&gt;
 &lt;p&gt;从认知科学的角度来看，这三款AI Agent产品体现了不同的设计哲学和理论基础。我将基于经典的认知架构理论和现代分布式认知理论来分析它们的设计思路。&lt;&#x2F;p&gt;
 &lt;h4 id=&quot;suna-fen-bu-shi-ren-zhi-de-xian-dai-shi-jian&quot;&gt;Suna：分布式认知的现代实践&lt;&#x2F;h4&gt;
-&lt;p&gt;Suna的设计哲学深受&lt;strong&gt;Hutchins（1995）分布式认知理论&lt;&#x2F;strong&gt;的启发，体现了几个核心原则：&lt;&#x2F;p&gt;
+&lt;p&gt;Suna的设计哲学深受**&lt;a href=&quot;https:&#x2F;&#x2F;mitpress.mit.edu&#x2F;9780262581462&#x2F;cognition-in-the-wild&#x2F;&quot;&gt;Hutchins（1995）分布式认知理论&lt;&#x2F;a&gt;**的启发，体现了几个核心原则：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;认知分布原则&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;将复杂任务分解为多个微服务组件&lt;&#x2F;li&gt;
@@ -719,7 +719,7 @@
 &lt;li&gt;通过组件协作实现超越单一系统的集体智能&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;&lt;strong&gt;工具使用理论&lt;&#x2F;strong&gt;：
-基于&lt;strong&gt;Gibson（1979）的工具使用认知理论&lt;&#x2F;strong&gt;，Suna实现了&amp;quot;可负担性&amp;quot;（Affordance）设计：&lt;&#x2F;p&gt;
+基于**&lt;a href=&quot;https:&#x2F;&#x2F;www.routledge.com&#x2F;The-Ecological-Approach-to-Visual-Perception-Classic-Edition&#x2F;Gibson&#x2F;p&#x2F;book&#x2F;9781848725782&quot;&gt;Gibson（1979）的工具使用认知理论&lt;&#x2F;a&gt;**，Suna实现了&amp;quot;可负担性&amp;quot;（Affordance）设计：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;感知直接性&lt;&#x2F;strong&gt;：用户通过自然语言即可识别工具使用时机&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;行动原子性&lt;&#x2F;strong&gt;：每个工具提供明确的功能边界&lt;&#x2F;li&gt;
@@ -733,7 +733,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h4 id=&quot;openhands-soarren-zhi-jia-gou-de-agentshi-xian&quot;&gt;OpenHands：SOAR认知架构的Agent实现&lt;&#x2F;h4&gt;
-&lt;p&gt;OpenHands的设计理念与**SOAR认知架构（Laird et al., 2012）**高度一致：&lt;&#x2F;p&gt;
+&lt;p&gt;OpenHands的设计理念与**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1609&#x2F;aimag.v33i4.2447&quot;&gt;SOAR认知架构（Laird et al., 2012）&lt;&#x2F;a&gt;**高度一致：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;统一认知理论&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;基于目标-操作-状态的工作循环&lt;&#x2F;li&gt;
@@ -752,7 +752,7 @@
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;学习机制&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;MicroAgent&lt;&#x2F;td&gt;&lt;td&gt;经验积累和技能获取&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;h4 id=&quot;swe-agent-bdimo-xing-de-zhuan-ye-hua-ying-yong&quot;&gt;SWE-Agent：BDI模型的专业化应用&lt;&#x2F;h4&gt;
-&lt;p&gt;SWE-Agent体现了**BDI（信念-愿望-意图）模型（Bratman, 1987）**的核心思想：&lt;&#x2F;p&gt;
+&lt;p&gt;SWE-Agent体现了**&lt;a href=&quot;https:&#x2F;&#x2F;www.jstor.org&#x2F;stable&#x2F;2026951&quot;&gt;BDI（信念-愿望-意图）模型（Bratman, 1987）&lt;&#x2F;a&gt;**的核心思想：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;理性Agent架构&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;信念（Beliefs）&lt;&#x2F;strong&gt;：对代码库状态的理解&lt;&#x2F;li&gt;
@@ -766,7 +766,7 @@
 &lt;li&gt;支持多步骤推理和回溯&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;zu-zhi-she-ji-li-lun-de-chan-pin-ying-she&quot;&gt;组织设计理论的产品映射&lt;&#x2F;h3&gt;
-&lt;p&gt;基于&lt;strong&gt;Thompson（1967）组织设计理论&lt;&#x2F;strong&gt;，我们可以分析这三款产品的协作模式：&lt;&#x2F;p&gt;
+&lt;p&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;www.hup.harvard.edu&#x2F;catalog.php?isbn=9780674627345&quot;&gt;Thompson（1967）组织设计理论&lt;&#x2F;a&gt;**，我们可以分析这三款产品的协作模式：&lt;&#x2F;p&gt;
 &lt;h4 id=&quot;yi-lai-guan-xi-fen-xi&quot;&gt;依赖关系分析&lt;&#x2F;h4&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;产品&lt;&#x2F;th&gt;&lt;th&gt;主要依赖类型&lt;&#x2F;th&gt;&lt;th&gt;协调机制&lt;&#x2F;th&gt;&lt;th&gt;适用场景&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Suna&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;池化依赖&lt;&#x2F;td&gt;&lt;td&gt;资源共享协议&lt;&#x2F;td&gt;&lt;td&gt;并行任务处理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -774,7 +774,7 @@
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;SWE-Agent&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;序列依赖&lt;&#x2F;td&gt;&lt;td&gt;问题解决链&lt;&#x2F;td&gt;&lt;td&gt;专业问题诊断&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;h4 id=&quot;jue-ce-li-lun-shi-jiao&quot;&gt;决策理论视角&lt;&#x2F;h4&gt;
-&lt;p&gt;基于&lt;strong&gt;Simon（1960）决策理论&lt;&#x2F;strong&gt;的分类：&lt;&#x2F;p&gt;
+&lt;p&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;www.jstor.org&#x2F;stable&#x2F;j.ctt1bh4c8h&quot;&gt;Simon（1960）决策理论&lt;&#x2F;a&gt;**的分类：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Suna的决策模式&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;半程序化决策&lt;&#x2F;strong&gt;占主导：需要一定判断但有规律可循&lt;&#x2F;li&gt;
@@ -795,7 +795,7 @@
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;gong-ju-xue-xi-li-lun-de-ying-yong-fen-xi&quot;&gt;工具学习理论的应用分析&lt;&#x2F;h3&gt;
 &lt;h4 id=&quot;gong-ju-fen-lei-yu-shi-yong-mo-shi&quot;&gt;工具分类与使用模式&lt;&#x2F;h4&gt;
-&lt;p&gt;基于最新的&lt;strong&gt;Tool Learning研究（Qin et al., 2023）&lt;&#x2F;strong&gt;，我们可以分析三款产品的工具设计：&lt;&#x2F;p&gt;
+&lt;p&gt;基于最新的**&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2304.08354&quot;&gt;Tool Learning研究（Qin et al., 2023）&lt;&#x2F;a&gt;**，我们可以分析三款产品的工具设计：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Suna的工具哲学&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;工具设计原则&lt;&#x2F;span&gt;&lt;span&gt;:
 &lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;认知卸载&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;将复杂认知任务转移给专门工具
@@ -834,7 +834,7 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;ren-ji-xie-zuo-li-lun-de-ti-xian&quot;&gt;人机协作理论的体现&lt;&#x2F;h3&gt;
 &lt;h4 id=&quot;hun-he-zhi-neng-xi-tong-she-ji&quot;&gt;混合智能系统设计&lt;&#x2F;h4&gt;
-&lt;p&gt;基于&lt;strong&gt;Constitutional AI理论（Bai et al., 2022）&lt;strong&gt;和&lt;&#x2F;strong&gt;人机协作研究&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;基于**&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2212.08073&quot;&gt;Constitutional AI理论（Bai et al., 2022）&lt;&#x2F;a&gt;&lt;strong&gt;和&lt;&#x2F;strong&gt;人机协作研究**：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Suna的人机协作模式&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;互补性设计&lt;&#x2F;strong&gt;：AI处理繁琐任务，人类专注创意决策&lt;&#x2F;li&gt;
@@ -855,7 +855,7 @@
 &lt;&#x2F;ul&gt;
 &lt;h3 id=&quot;yong-xian-xing-xing-wei-de-she-ji-kao-liang&quot;&gt;涌现性行为的设计考量&lt;&#x2F;h3&gt;
 &lt;h4 id=&quot;fu-za-xi-tong-li-lun-shi-jiao&quot;&gt;复杂系统理论视角&lt;&#x2F;h4&gt;
-&lt;p&gt;从&lt;strong&gt;复杂系统理论&lt;&#x2F;strong&gt;的角度分析产品的涌现性设计：&lt;&#x2F;p&gt;
+&lt;p&gt;从**&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1126&#x2F;science.284.5411.79&quot;&gt;复杂系统理论&lt;&#x2F;a&gt;**的角度分析产品的涌现性设计：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Suna的涌现性特征&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;自组织能力&lt;&#x2F;strong&gt;：组件间自主协调和适应&lt;&#x2F;li&gt;
@@ -1136,6 +1136,13 @@
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.jstor.org&#x2F;stable&#x2F;2026951&quot;&gt;Bratman, M. (1987). Intention, Plans, and Practical Reason. Harvard University Press&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2210.03629&quot;&gt;Yao, S., et al. (2022). ReAct: Synergizing Reasoning and Acting in Language Models. arXiv&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2304.08354&quot;&gt;Qin, Y., et al. (2023). Tool Learning with Foundation Models. arXiv&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2212.08073&quot;&gt;Bai, Y., et al. (2022). Constitutional AI: Harmlessness from AI Feedback. arXiv&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.jstor.org&#x2F;stable&#x2F;j.ctt1bh4c8h&quot;&gt;Simon, H. A. (1960). The New Science of Management Decision. Harper &amp;amp; Brothers&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1007&#x2F;978-1-4613-1815-7&quot;&gt;Vygotsky, L. S. (1978). Mind in Society: The Development of Higher Psychological Processes. Harvard University Press&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1017&#x2F;CBO9780511816772&quot;&gt;Holyoak, K. J., &amp;amp; Morrison, R. G. (2005). The Cambridge Handbook of Thinking and Reasoning. Cambridge University Press&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1093&#x2F;acprof:oso&#x2F;9780199251483.001.0001&quot;&gt;Malinowski, G. (2007). Many-Valued Logics. Oxford University Press&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1145&#x2F;1807167.1807184&quot;&gt;Pregel: A System for Large-Scale Graph Processing (2010). SIGMOD&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;doi.org&#x2F;10.1145&#x2F;321219.321226&quot;&gt;Hopcroft, J. E., &amp;amp; Ullman, J. D. (1979). Introduction to Automata Theory, Languages, and Computation. Addison-Wesley&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 </content>
         
