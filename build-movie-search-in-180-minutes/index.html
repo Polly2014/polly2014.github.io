@@ -1,0 +1,84 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>180分钟从零到部署：我这样教学生搭建电影搜索网站</h1><div class=content><h2 id=qi-yin-180fen-zhong-de-tiao-zhan>起因：180分钟的挑战</h2><p>近日受邀给外经贸大学的学生上两节Python课，每节90分钟。学生有基础，但缺实战经验。<p>目标很明确：<strong>让每个学生在课程结束时，都能拿出一个可以展示的完整项目</strong>。<p>最初想用Django + 爬虫，但很快放弃了：<ul><li>Django配置太重，两节课讲不完<li>爬虫不稳定，容易翻车<li>技术栈有点老了</ul><p>我需要一个<strong>更简单、更现代、更可靠</strong>的方案。<h2 id=ji-zhu-xuan-xing-fastapi-tmdb>技术选型：FastAPI + TMDB</h2><h3 id=wei-shi-yao-shi-fastapi>为什么是FastAPI？</h3><p>5行代码就能启动一个API：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>fastapi </span><span style=color:#b48ead>import </span><span>FastAPI
+</span><span>
+</span><span>app = </span><span style=color:#bf616a>FastAPI</span><span>()
+</span><span>
+</span><span>@app.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>/</span><span>")
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>read_root</span><span>():
+</span><span>    </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>Hello</span><span>": "</span><span style=color:#a3be8c>World</span><span>"}
+</span></code></pre><p>对比Django需要配置一堆东西，FastAPI的优势太明显：<ul><li>✅ 自动生成API文档（访问 <code>/docs</code> 就能测试）<li>✅ 类型提示（现代Python最佳实践）<li>✅ 性能优秀（比Django快很多）<li>✅ 学习曲线平缓</ul><h3 id=wei-shi-yao-shi-tmdb>为什么是TMDB？</h3><p>豆瓣API早就关了，测试第三方接口也都404。TMDB才是正解：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> curl "</span><span style=color:#a3be8c>https://api.themoviedb.org/3/search/movie?api_key=xxx&query=肖申克&language=zh-CN</span><span>"
+</span></code></pre><ul><li>✅ 官方免费API<li>✅ 支持中文<li>✅ Netflix在用，够稳定<li>✅ 1分钟申请Key</ul><h2 id=shuang-mo-shi-she-ji-jiang-di-men-jian-de-guan-jian>双模式设计：降低门槛的关键</h2><p>课堂上最怕什么？学生环境配不好，API申请不下来。<p>我的解决方案：<strong>模拟数据 + 真实API，双模式切换</strong><h3 id=mo-shi-yi-kai-xiang-ji-yong>模式一：开箱即用</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># .env
+</span><span style=color:#bf616a>USE_MOCK_DATA</span><span>=</span><span style=color:#d08770>True  </span><span style=color:#65737e># 默认模式
+</span><span>
+</span><span style=color:#65737e># 内置模拟数据
+</span><span>mock_movies = [
+</span><span>    {"</span><span style=color:#a3be8c>id</span><span>": </span><span style=color:#d08770>1</span><span>, "</span><span style=color:#a3be8c>title</span><span>": "</span><span style=color:#a3be8c>肖申克的救赎</span><span>", "</span><span style=color:#a3be8c>vote_average</span><span>": </span><span style=color:#d08770>9.3</span><span>},
+</span><span>    {"</span><span style=color:#a3be8c>id</span><span>": </span><span style=color:#d08770>2</span><span>, "</span><span style=color:#a3be8c>title</span><span>": "</span><span style=color:#a3be8c>霸王别姬</span><span>", "</span><span style=color:#a3be8c>vote_average</span><span>": </span><span style=color:#d08770>9.6</span><span>}
+</span><span>]
+</span></code></pre><p>下载代码，直接运行，无需配置。第一节课专注讲概念。<h3 id=mo-shi-er-zhen-shi-ti-yan>模式二：真实体验</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># .env
+</span><span style=color:#bf616a>USE_MOCK_DATA</span><span>=</span><span style=color:#d08770>False
+</span><span style=color:#bf616a>TMDB_API_KEY</span><span>=你的key
+</span><span>
+</span><span style=color:#65737e># 自动检测
+</span><span style=color:#b48ead>if </span><span style=color:#bf616a>USE_MOCK_DATA </span><span>or not </span><span style=color:#bf616a>TMDB_API_KEY</span><span>:
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>mock_data</span><span>()
+</span><span style=color:#b48ead>else</span><span>:
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>call_tmdb_api</span><span>()
+</span></code></pre><p>课后申请Key，改一行配置，立即切换到真实数据。<h2 id=ke-cheng-she-ji-san-bu-zou-zhan-lue>课程设计：三步走战略</h2><h3 id=di-yi-jie-ke-cong-hellodao-api-90fen-zhong>第一节课：从Hello到API（90分钟）</h3><p><strong>Step 1: Hello FastAPI (20分钟)</strong><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>@app.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>/hello/</span><span style=color:#d08770>{name}</span><span>")
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>greet</span><span>(</span><span style=color:#bf616a>name</span><span>: str):
+</span><span>    </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>message</span><span>": </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>Hello, </span><span>{name}</span><span style=color:#a3be8c>!</span><span>"}
+</span></code></pre><p>学会：路由、参数、返回值<p><strong>Step 2: 电影API (20分钟)</strong><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>@app.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>/movies</span><span>")
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>get_movies</span><span>(</span><span style=color:#bf616a>genre</span><span>: str = </span><span style=color:#d08770>None</span><span>):
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>filter_movies</span><span>(genre)
+</span></code></pre><p>学会：RESTful设计、查询参数<p><strong>Step 3: TMDB集成 (30分钟)</strong><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>@app.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>/search</span><span>")
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>search</span><span>(</span><span style=color:#bf616a>q</span><span>: str):
+</span><span>    </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>call_tmdb</span><span>(q)
+</span></code></pre><p>学会：异步编程、API调用、环境变量<h3 id=di-er-jie-ke-wan-zheng-ying-yong-90fen-zhong>第二节课：完整应用（90分钟）</h3><ul><li><strong>前端界面 (25分钟)</strong>：Jinja2、响应式布局<li><strong>功能完善 (30分钟)</strong>：AJAX、收藏、统计<li><strong>部署准备 (20分钟)</strong>：配置管理、GitHub</ul><h2 id=shi-zhan-zhong-de-san-ge-keng>实战中的三个坑</h2><h3 id=1-ye-mian-shan-shuo>1. 页面闪烁</h3><pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// ❌ 问题
+</span><span>document.</span><span style=color:#96b5b4>getElementById</span><span>('</span><span style=color:#a3be8c>list</span><span>').</span><span style=color:#bf616a>innerHTML </span><span>= '</span><span style=color:#a3be8c>加载中...</span><span>';
+</span><span>
+</span><span style=color:#65737e>// ✅ 解决：加状态锁
+</span><span style=color:#b48ead>let </span><span style=color:#bf616a>isLoading </span><span>= </span><span style=color:#d08770>false</span><span>;
+</span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>isLoading</span><span>) </span><span style=color:#b48ead>return</span><span>;
+</span><span style=color:#bf616a>isLoading </span><span>= </span><span style=color:#d08770>true</span><span>;
+</span></code></pre><h3 id=2-zhong-wen-urlbian-ma>2. 中文URL编码</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># ❌ 错误
+</span><span style=color:#bf616a>curl </span><span>'</span><span style=color:#a3be8c>http://localhost:8000/search?q=阿甘正传</span><span>'
+</span><span>
+</span><span style=color:#65737e># ✅ 正确
+</span><span style=color:#bf616a>curl --data-urlencode </span><span>"</span><span style=color:#a3be8c>q=阿甘正传</span><span>"</span><span style=color:#bf616a> -G </span><span>'</span><span style=color:#a3be8c>http://localhost:8000/search</span><span>'
+</span></code></pre><h3 id=3-xu-ni-huan-jing-shi-xiao>3. 虚拟环境失效</h3><p>重命名项目后虚拟环境失效？因为内部保存了绝对路径。<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>rm -rf</span><span> venv
+</span><span style=color:#bf616a>python3 -m</span><span> venv venv
+</span><span style=color:#96b5b4>source</span><span> venv/bin/activate
+</span></code></pre><h2 id=pei-zhi-guan-li-api-keybie-xie-lu>配置管理：API Key别泄露</h2><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># ❌ 危险
+</span><span style=color:#bf616a>TMDB_API_KEY </span><span>= "</span><span style=color:#a3be8c>444d85...</span><span>"  
+</span><span>
+</span><span style=color:#65737e># ✅ 正确
+</span><span style=color:#65737e># .env
+</span><span style=color:#bf616a>TMDB_API_KEY</span><span>=你的key
+</span><span>
+</span><span style=color:#65737e># config.py
+</span><span style=color:#b48ead>from </span><span>dotenv </span><span style=color:#b48ead>import </span><span>load_dotenv
+</span><span style=color:#bf616a>load_dotenv</span><span>()
+</span><span style=color:#bf616a>API_KEY </span><span>= os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>TMDB_API_KEY</span><span>", "")
+</span></code></pre><pre class=language-.gitignore data-lang=.gitignore style=background:#2b303b;color:#c0c5ce><code class=language-.gitignore data-lang=.gitignore><span>.env
+</span><span>*.pyc
+</span><span style=color:#bf616a>__pycache__</span><span>/
+</span><span style=color:#bf616a>venv</span><span>/
+</span></code></pre><h2 id=jiao-xue-she-ji-de-wu-ge-yuan-ze>教学设计的五个原则</h2><h3 id=1-jiang-di-men-jian-ti-gao-tian-hua-ban>1. 降低门槛，提高天花板</h3><ul><li>模拟数据让所有人都能跑起来<li>真实API让高手有进阶空间</ul><h3 id=2-jian-jin-shi-xue-xi>2. 渐进式学习</h3><ul><li>Step 1: Hello World（建立信心）<li>Step 2: 基础API（理解概念）<li>Step 3: 真实集成（接触实战）<li>Lesson 2: 完整应用（综合运用）</ul><h3 id=3-yu-she-wen-ti>3. 预设问题</h3><p>学生肯定会遇到的问题，提前在文档里写好答案：<ul><li>虚拟环境配置<li>API Key申请<li>中文参数编码<li>端口占用</ul><h3 id=4-zhen-shi-dan-bu-fu-za>4. 真实但不复杂</h3><ul><li>✅ 用真实技术栈（FastAPI、TMDB）<li>❌ 不引入数据库、认证、复杂异步<li>✅ 聚焦核心概念</ul><h3 id=5-ti-gong-kuo-zhan-fang-xiang>5. 提供扩展方向</h3><pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3>### 进阶挑战
+</span><span style=color:#bf616a>1. 添加用户登录
+</span><span style=color:#bf616a>2. 数据库持久化
+</span><span style=color:#bf616a>3. 部署到云服务器
+</span><span style=color:#bf616a>4. 实现推荐算法
+</span></code></pre><h2 id=ji-zhu-dui-bi>技术对比</h2><h3 id=fastapi-vs-flask-vs-django>FastAPI vs Flask vs Django</h3><table><thead><tr><th>特性<th>FastAPI<th>Flask<th>Django<tbody><tr><td>学习曲线<td>⭐⭐<td>⭐<td>⭐⭐⭐⭐<tr><td>自动文档<td>✅<td>❌<td>❌<tr><td>适合教学<td>✅<td>△<td>❌</table><p><strong>结论</strong>：两节课教学，FastAPI最优。<h3 id=tmdb-vs-dou-ban>TMDB vs 豆瓣</h3><table><thead><tr><th>API<th>状态<th>推荐度<tbody><tr><td>TMDB<td>稳定免费<td>⭐⭐⭐⭐⭐<tr><td>豆瓣<td>已关闭<td>⭐</table><p><strong>结论</strong>：TMDB是唯一选择。<h2 id=wen-dang-de-li-liang>文档的力量</h2><p>我准备了完整的文档体系：<ul><li><strong>README.md</strong>：项目总览<li><strong>STUDENT_GUIDE.md</strong>：详细教程（含API申请步骤）<li><strong>teaching_guide.md</strong>：90分钟时间表<li><strong>exercises.md</strong>：练习题</ul><p>甚至提供了TMDB申请表的英文模板，学生直接复制粘贴就行。<p><strong>好的文档就是好的设计</strong>。如果你无法用简单语言解释一个设计，说明设计有问题。<h2 id=ce-shi-qing-dan>测试清单</h2><p>虽然是教学项目，但我还是测试了所有功能：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># Lesson 1
+</span><span style=color:#bf616a>✅</span><span> Hello World
+</span><span style=color:#bf616a>✅</span><span> 路径参数
+</span><span style=color:#bf616a>✅</span><span> 查询参数  
+</span><span style=color:#bf616a>✅</span><span> RESTful API
+</span><span style=color:#bf616a>✅</span><span> 模拟数据模式
+</span><span style=color:#bf616a>✅</span><span> 真实API模式
+</span><span>
+</span><span style=color:#65737e># Lesson 2
+</span><span style=color:#bf616a>✅</span><span> 搜索功能
+</span><span style=color:#bf616a>✅</span><span> 热门榜单
+</span><span style=color:#bf616a>✅</span><span> 收藏系统
+</span><span style=color:#bf616a>✅</span><span> 统计分析
+</span><span style=color:#bf616a>✅</span><span> 响应式布局
+</span></code></pre><p>发现并修复了：模拟数据格式错误、404问题、URL编码、页面闪烁等bug。<h2 id=xie-zai-zui-hou>写在最后</h2><p>从想法到实现，这个项目经历了：<ul><li>📊 3次技术栈调整<li>🔧 5次重大重构<li>📝 完整的文档<li>✅ 全面的测试<li>⏰ 20+小时准备</ul><p>但这是值得的。180分钟内，学生能：<ul><li>✨ 体会编程乐趣<li>💡 理解Web核心概念<li>🚀 接触真实开发流程<li>🎯 获得可展示的项目</ul><p>更重要的是，展示了<strong>工程师的思考方式</strong>：<ol><li>理解约束（时间、水平）<li>技术选型（FastAPI + TMDB）<li>设计方案（双模式、渐进式）<li>工程实践（配置、文档、测试）</ol><p>项目已开源：https://github.com/Polly2014/tmdb_movie_sourse<p>欢迎Star、Fork，更欢迎提Issue分享你的想法！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

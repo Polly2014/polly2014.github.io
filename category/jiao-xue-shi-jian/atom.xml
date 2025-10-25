@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 教学实践</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/category/jiao-xue-shi-jian/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-10-26T00:00:00+00:00</updated>
+    <id>https://polly.wang/category/jiao-xue-shi-jian/atom.xml</id>
+    <entry xml:lang="en">
+        <title>180分钟从零到部署：我这样教学生搭建电影搜索网站</title>
+        <published>2025-10-26T00:00:00+00:00</published>
+        <updated>2025-10-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/build-movie-search-in-180-minutes/" type="text/html"/>
+        <id>https://polly.wang/build-movie-search-in-180-minutes/</id>
+        
+        <content type="html">&lt;h2 id=&quot;qi-yin-180fen-zhong-de-tiao-zhan&quot;&gt;起因：180分钟的挑战&lt;&#x2F;h2&gt;
+&lt;p&gt;近日受邀给外经贸大学的学生上两节Python课，每节90分钟。学生有基础，但缺实战经验。&lt;&#x2F;p&gt;
+&lt;p&gt;目标很明确：&lt;strong&gt;让每个学生在课程结束时，都能拿出一个可以展示的完整项目&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;最初想用Django + 爬虫，但很快放弃了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Django配置太重，两节课讲不完&lt;&#x2F;li&gt;
+&lt;li&gt;爬虫不稳定，容易翻车&lt;&#x2F;li&gt;
+&lt;li&gt;技术栈有点老了&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我需要一个&lt;strong&gt;更简单、更现代、更可靠&lt;&#x2F;strong&gt;的方案。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-xuan-xing-fastapi-tmdb&quot;&gt;技术选型：FastAPI + TMDB&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;wei-shi-yao-shi-fastapi&quot;&gt;为什么是FastAPI？&lt;&#x2F;h3&gt;
+&lt;p&gt;5行代码就能启动一个API：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;fastapi &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;FastAPI
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;app = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FastAPI&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;@app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;read_root&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Hello&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;World&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;对比Django需要配置一堆东西，FastAPI的优势太明显：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ 自动生成API文档（访问 &lt;code&gt;&#x2F;docs&lt;&#x2F;code&gt; 就能测试）&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 类型提示（现代Python最佳实践）&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 性能优秀（比Django快很多）&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 学习曲线平缓&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;wei-shi-yao-shi-tmdb&quot;&gt;为什么是TMDB？&lt;&#x2F;h3&gt;
+&lt;p&gt;豆瓣API早就关了，测试第三方接口也都404。TMDB才是正解：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; curl &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;api.themoviedb.org&#x2F;3&#x2F;search&#x2F;movie?api_key=xxx&amp;amp;query=肖申克&amp;amp;language=zh-CN&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ 官方免费API&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 支持中文&lt;&#x2F;li&gt;
+&lt;li&gt;✅ Netflix在用，够稳定&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 1分钟申请Key&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;shuang-mo-shi-she-ji-jiang-di-men-jian-de-guan-jian&quot;&gt;双模式设计：降低门槛的关键&lt;&#x2F;h2&gt;
+&lt;p&gt;课堂上最怕什么？学生环境配不好，API申请不下来。&lt;&#x2F;p&gt;
+&lt;p&gt;我的解决方案：&lt;strong&gt;模拟数据 + 真实API，双模式切换&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;mo-shi-yi-kai-xiang-ji-yong&quot;&gt;模式一：开箱即用&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# .env
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USE_MOCK_DATA&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 默认模式
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 内置模拟数据
+&lt;&#x2F;span&gt;&lt;span&gt;mock_movies = [
+&lt;&#x2F;span&gt;&lt;span&gt;    {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;肖申克的救赎&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;vote_average&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;9.3&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;    {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;霸王别姬&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;vote_average&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;9.6&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;下载代码，直接运行，无需配置。第一节课专注讲概念。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;mo-shi-er-zhen-shi-ti-yan&quot;&gt;模式二：真实体验&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# .env
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USE_MOCK_DATA&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TMDB_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;=你的key
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 自动检测
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USE_MOCK_DATA &lt;&#x2F;span&gt;&lt;span&gt;or not &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TMDB_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mock_data&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_tmdb_api&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;课后申请Key，改一行配置，立即切换到真实数据。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ke-cheng-she-ji-san-bu-zou-zhan-lue&quot;&gt;课程设计：三步走战略&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-jie-ke-cong-hellodao-api-90fen-zhong&quot;&gt;第一节课：从Hello到API（90分钟）&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Step 1: Hello FastAPI (20分钟)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;hello&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{name}&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;greet&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Hello, &lt;&#x2F;span&gt;&lt;span&gt;{name}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;!&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;学会：路由、参数、返回值&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Step 2: 电影API (20分钟)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;movies&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_movies&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;genre&lt;&#x2F;span&gt;&lt;span&gt;: str = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;filter_movies&lt;&#x2F;span&gt;&lt;span&gt;(genre)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;学会：RESTful设计、查询参数&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Step 3: TMDB集成 (30分钟)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;search&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;search&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;q&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_tmdb&lt;&#x2F;span&gt;&lt;span&gt;(q)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;学会：异步编程、API调用、环境变量&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-jie-ke-wan-zheng-ying-yong-90fen-zhong&quot;&gt;第二节课：完整应用（90分钟）&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;前端界面 (25分钟)&lt;&#x2F;strong&gt;：Jinja2、响应式布局&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;功能完善 (30分钟)&lt;&#x2F;strong&gt;：AJAX、收藏、统计&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;部署准备 (20分钟)&lt;&#x2F;strong&gt;：配置管理、GitHub&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;shi-zhan-zhong-de-san-ge-keng&quot;&gt;实战中的三个坑&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-ye-mian-shan-shuo&quot;&gt;1. 页面闪烁&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ❌ 问题
+&lt;&#x2F;span&gt;&lt;span&gt;document.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;getElementById&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;list&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;innerHTML &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;加载中...&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ✅ 解决：加状态锁
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isLoading &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isLoading&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isLoading &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;2-zhong-wen-urlbian-ma&quot;&gt;2. 中文URL编码&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ❌ 错误
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:8000&#x2F;search?q=阿甘正传&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ✅ 正确
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl --data-urlencode &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;q=阿甘正传&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -G &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:8000&#x2F;search&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-xu-ni-huan-jing-shi-xiao&quot;&gt;3. 虚拟环境失效&lt;&#x2F;h3&gt;
+&lt;p&gt;重命名项目后虚拟环境失效？因为内部保存了绝对路径。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rm -rf&lt;&#x2F;span&gt;&lt;span&gt; venv
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -m&lt;&#x2F;span&gt;&lt;span&gt; venv venv
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;source&lt;&#x2F;span&gt;&lt;span&gt; venv&#x2F;bin&#x2F;activate
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;pei-zhi-guan-li-api-keybie-xie-lu&quot;&gt;配置管理：API Key别泄露&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ❌ 危险
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TMDB_API_KEY &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;444d85...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;  
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ✅ 正确
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# .env
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TMDB_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;=你的key
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# config.py
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;dotenv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;load_dotenv
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;load_dotenv&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;API_KEY &lt;&#x2F;span&gt;&lt;span&gt;= os.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getenv&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;TMDB_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;.gitignore&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-.gitignore &quot;&gt;&lt;code class=&quot;language-.gitignore&quot; data-lang=&quot;.gitignore&quot;&gt;&lt;span&gt;.env
+&lt;&#x2F;span&gt;&lt;span&gt;*.pyc
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;__pycache__&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;venv&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;jiao-xue-she-ji-de-wu-ge-yuan-ze&quot;&gt;教学设计的五个原则&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-jiang-di-men-jian-ti-gao-tian-hua-ban&quot;&gt;1. 降低门槛，提高天花板&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;模拟数据让所有人都能跑起来&lt;&#x2F;li&gt;
+&lt;li&gt;真实API让高手有进阶空间&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-jian-jin-shi-xue-xi&quot;&gt;2. 渐进式学习&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Step 1: Hello World（建立信心）&lt;&#x2F;li&gt;
+&lt;li&gt;Step 2: 基础API（理解概念）&lt;&#x2F;li&gt;
+&lt;li&gt;Step 3: 真实集成（接触实战）&lt;&#x2F;li&gt;
+&lt;li&gt;Lesson 2: 完整应用（综合运用）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-yu-she-wen-ti&quot;&gt;3. 预设问题&lt;&#x2F;h3&gt;
+&lt;p&gt;学生肯定会遇到的问题，提前在文档里写好答案：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;虚拟环境配置&lt;&#x2F;li&gt;
+&lt;li&gt;API Key申请&lt;&#x2F;li&gt;
+&lt;li&gt;中文参数编码&lt;&#x2F;li&gt;
+&lt;li&gt;端口占用&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;4-zhen-shi-dan-bu-fu-za&quot;&gt;4. 真实但不复杂&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ 用真实技术栈（FastAPI、TMDB）&lt;&#x2F;li&gt;
+&lt;li&gt;❌ 不引入数据库、认证、复杂异步&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 聚焦核心概念&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;5-ti-gong-kuo-zhan-fang-xiang&quot;&gt;5. 提供扩展方向&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### 进阶挑战
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1. 添加用户登录
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;2. 数据库持久化
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;3. 部署到云服务器
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;4. 实现推荐算法
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;ji-zhu-dui-bi&quot;&gt;技术对比&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;fastapi-vs-flask-vs-django&quot;&gt;FastAPI vs Flask vs Django&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;FastAPI&lt;&#x2F;th&gt;&lt;th&gt;Flask&lt;&#x2F;th&gt;&lt;th&gt;Django&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;学习曲线&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;自动文档&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;适合教学&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;△&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;结论&lt;&#x2F;strong&gt;：两节课教学，FastAPI最优。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tmdb-vs-dou-ban&quot;&gt;TMDB vs 豆瓣&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;API&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;th&gt;推荐度&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;TMDB&lt;&#x2F;td&gt;&lt;td&gt;稳定免费&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;豆瓣&lt;&#x2F;td&gt;&lt;td&gt;已关闭&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;结论&lt;&#x2F;strong&gt;：TMDB是唯一选择。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wen-dang-de-li-liang&quot;&gt;文档的力量&lt;&#x2F;h2&gt;
+&lt;p&gt;我准备了完整的文档体系：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;README.md&lt;&#x2F;strong&gt;：项目总览&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;STUDENT_GUIDE.md&lt;&#x2F;strong&gt;：详细教程（含API申请步骤）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;teaching_guide.md&lt;&#x2F;strong&gt;：90分钟时间表&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;exercises.md&lt;&#x2F;strong&gt;：练习题&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;甚至提供了TMDB申请表的英文模板，学生直接复制粘贴就行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;好的文档就是好的设计&lt;&#x2F;strong&gt;。如果你无法用简单语言解释一个设计，说明设计有问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ce-shi-qing-dan&quot;&gt;测试清单&lt;&#x2F;h2&gt;
+&lt;p&gt;虽然是教学项目，但我还是测试了所有功能：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Lesson 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; Hello World
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 路径参数
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 查询参数  
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; RESTful API
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 模拟数据模式
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 真实API模式
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Lesson 2
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 搜索功能
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 热门榜单
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 收藏系统
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 统计分析
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; 响应式布局
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;发现并修复了：模拟数据格式错误、404问题、URL编码、页面闪烁等bug。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;从想法到实现，这个项目经历了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;📊 3次技术栈调整&lt;&#x2F;li&gt;
+&lt;li&gt;🔧 5次重大重构&lt;&#x2F;li&gt;
+&lt;li&gt;📝 完整的文档&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 全面的测试&lt;&#x2F;li&gt;
+&lt;li&gt;⏰ 20+小时准备&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但这是值得的。180分钟内，学生能：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;✨ 体会编程乐趣&lt;&#x2F;li&gt;
+&lt;li&gt;💡 理解Web核心概念&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 接触真实开发流程&lt;&#x2F;li&gt;
+&lt;li&gt;🎯 获得可展示的项目&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;更重要的是，展示了&lt;strong&gt;工程师的思考方式&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;理解约束（时间、水平）&lt;&#x2F;li&gt;
+&lt;li&gt;技术选型（FastAPI + TMDB）&lt;&#x2F;li&gt;
+&lt;li&gt;设计方案（双模式、渐进式）&lt;&#x2F;li&gt;
+&lt;li&gt;工程实践（配置、文档、测试）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;项目已开源：https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;tmdb_movie_sourse&lt;&#x2F;p&gt;
+&lt;p&gt;欢迎Star、Fork，更欢迎提Issue分享你的想法！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
