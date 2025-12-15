@@ -117,4 +117,42 @@
 </span><span>
 </span><span style=color:#65737e># 运行PyInstaller
 </span><span>PyInstaller.__main__.</span><span style=color:#bf616a>run</span><span>(params)
-</span></code></pre><p>为提升专业度，还使用Inno Setup创建了精美的安装向导，让用户获得完整的安装体验。<h2 id=qi-xiang-mu-zong-jie-yu-zhan-wang>七、项目总结与展望</h2><p>OpenHands Starter V2.0的开发是一次将复杂技术流程简化为用户友好界面的尝试。通过精心的架构设计和UI优化，成功降低了OpenHands的使用门槛，实现了预期目标。<p>在未来版本中，计划进一步优化：<ol><li>添加自动更新功能，确保用户始终使用最新版本<li>增强日志分析能力，提供更智能的问题诊断<li>集成OpenHands官方账户系统，实现无缝授权<li>开发macOS和Linux版本，实现完全跨平台支持</ol><p><strong>源码地址</strong>：<a href=https://github.com/Polly2014/OpenHands-Starter>GitHub - OpenHands Starter v2.0</a><p><strong>下载链接</strong>：<a href=https://github.com/Polly2014/OpenHands-Starter/release>OpenHands Starter v2.0 发行版</a></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+</span></code></pre><p>为提升专业度，还使用Inno Setup创建了精美的安装向导，让用户获得完整的安装体验。<h2 id=qi-xiang-mu-zong-jie-yu-zhan-wang>七、项目总结与展望</h2><p>OpenHands Starter V2.0的开发是一次将复杂技术流程简化为用户友好界面的尝试。通过精心的架构设计和UI优化，成功降低了OpenHands的使用门槛，实现了预期目标。<p>在未来版本中，计划进一步优化：<ol><li>添加自动更新功能，确保用户始终使用最新版本<li>增强日志分析能力，提供更智能的问题诊断<li>集成OpenHands官方账户系统，实现无缝授权<li>开发macOS和Linux版本，实现完全跨平台支持</ol><p><strong>源码地址</strong>：<a href=https://github.com/Polly2014/OpenHands-Starter>GitHub - OpenHands Starter v2.0</a><p><strong>下载链接</strong>：<a href=https://github.com/Polly2014/OpenHands-Starter/release>OpenHands Starter v2.0 发行版</a></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#a855f7',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#06b6d4',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#0f0f1a',
+                mainBkg: '#1a1a2e',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#16213e',
+                clusterBorder: '#a855f7',
+                titleColor: '#ec4899',
+                edgeLabelBackground: '#1a1a2e'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

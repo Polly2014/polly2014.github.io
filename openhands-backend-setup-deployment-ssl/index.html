@@ -114,4 +114,42 @@
 </span><span>    ssl_protocols TLSv1.2 TLSv1.3;
 </span><span>    ssl_prefer_server_ciphers off;
 </span><span>}
-</span></code></pre><h2 id=chang-jian-wen-ti-pai-cha>常见问题排查</h2><h3 id=fu-wu-wu-fa-qi-dong>服务无法启动</h3><ul><li>检查端口是否被占用：<code>sudo lsof -i:54013</code><li>检查 Python 环境：<code>python --version</code><li>查看日志：<code>poetry run uvicorn openhands.server.app:app --log-level debug</code></ul><h3 id=ssl-pei-zhi-wen-ti>SSL 配置问题</h3><ul><li>证书路径错误：确认证书文件路径正确<li>Nginx 配置测试：运行 <code>sudo nginx -t</code> 检查配置<li>防火墙设置：确保 80/443 端口已开放 <code>sudo ufw status</code></ul><h3 id=yu-ming-jie-xi-wen-ti>域名解析问题</h3><ul><li>确认 DNS 记录已正确设置：<code>dig your-domain.com</code><li>等待 DNS 缓存更新（可能需要 24-48 小时）</ul><h2 id=zong-jie>总结</h2><p>通过以上步骤，我们成功实现了 OpenHands Server 端的独立编译部署，并为其配置了 SSL/HTTPS。FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的协作确保了服务的高效性和安全性。<p>这种部署架构具有显著的可扩展性优势：<ol><li><p><strong>水平扩展</strong>：当负载增加时，可以轻松添加更多 Uvicorn 工作进程或部署多个服务实例，由 Nginx 进行负载均衡，实现无缝扩容。</p><li><p><strong>技术栈灵活性</strong>：架构的各组件可以单独升级或替换（如 Caddy 替代 Nginx），无需重新设计整个系统。</p><li><p><strong>资源隔离</strong>：使用 Poetry 创建的虚拟环境确保应用依赖独立，便于多个项目在同一服务器上共存。</p><li><p><strong>容器化潜力</strong>：此架构可轻松迁移至 Docker 容器或 Kubernetes 集群，进一步提升部署的一致性和可靠性。</p></ol><p>通过这种方式部署的 OpenHands 后端服务既安全可靠，又具备了应对未来业务增长的技术基础。如果有其他问题或需求，请随时联系！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+</span></code></pre><h2 id=chang-jian-wen-ti-pai-cha>常见问题排查</h2><h3 id=fu-wu-wu-fa-qi-dong>服务无法启动</h3><ul><li>检查端口是否被占用：<code>sudo lsof -i:54013</code><li>检查 Python 环境：<code>python --version</code><li>查看日志：<code>poetry run uvicorn openhands.server.app:app --log-level debug</code></ul><h3 id=ssl-pei-zhi-wen-ti>SSL 配置问题</h3><ul><li>证书路径错误：确认证书文件路径正确<li>Nginx 配置测试：运行 <code>sudo nginx -t</code> 检查配置<li>防火墙设置：确保 80/443 端口已开放 <code>sudo ufw status</code></ul><h3 id=yu-ming-jie-xi-wen-ti>域名解析问题</h3><ul><li>确认 DNS 记录已正确设置：<code>dig your-domain.com</code><li>等待 DNS 缓存更新（可能需要 24-48 小时）</ul><h2 id=zong-jie>总结</h2><p>通过以上步骤，我们成功实现了 OpenHands Server 端的独立编译部署，并为其配置了 SSL/HTTPS。FastAPI、Poetry、Uvicorn、Nginx 和 SSL 的协作确保了服务的高效性和安全性。<p>这种部署架构具有显著的可扩展性优势：<ol><li><p><strong>水平扩展</strong>：当负载增加时，可以轻松添加更多 Uvicorn 工作进程或部署多个服务实例，由 Nginx 进行负载均衡，实现无缝扩容。</p><li><p><strong>技术栈灵活性</strong>：架构的各组件可以单独升级或替换（如 Caddy 替代 Nginx），无需重新设计整个系统。</p><li><p><strong>资源隔离</strong>：使用 Poetry 创建的虚拟环境确保应用依赖独立，便于多个项目在同一服务器上共存。</p><li><p><strong>容器化潜力</strong>：此架构可轻松迁移至 Docker 容器或 Kubernetes 集群，进一步提升部署的一致性和可靠性。</p></ol><p>通过这种方式部署的 OpenHands 后端服务既安全可靠，又具备了应对未来业务增长的技术基础。如果有其他问题或需求，请随时联系！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#a855f7',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#06b6d4',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#0f0f1a',
+                mainBkg: '#1a1a2e',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#16213e',
+                clusterBorder: '#a855f7',
+                titleColor: '#ec4899',
+                edgeLabelBackground: '#1a1a2e'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

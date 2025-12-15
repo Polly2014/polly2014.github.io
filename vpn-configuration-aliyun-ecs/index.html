@@ -106,4 +106,42 @@
 </span><span>
 </span><span style=color:#65737e># 查看详细日志
 </span><span style=color:#bf616a>./clash -d</span><span> .</span><span style=color:#bf616a> -f</span><span> config.yaml
-</span></code></pre><h3 id=4-an-quan-xing-kao-lu>4. 安全性考虑</h3><p>为了保障服务器安全：<ul><li>不要将代理端口暴露到公网<li>定期更新Clash和配置文件<li>考虑使用防火墙限制访问：<code>ufw allow from 192.168.1.0/24 to any port 7890</code></ul><h2 id=zong-jie-yu-jian-yi>总结与建议</h2><p>经过实践，我发现不同场景适合不同的方案：<ul><li><strong>临时使用</strong>：SSH隧道是最便捷的选择<li><strong>长期稳定</strong>：在ECS上安装Clash是最佳方案<li><strong>仅安装Python包</strong>：使用国内镜像源足够<li><strong>复杂网络环境</strong>：Privoxy提供了更灵活的代理转发</ul><p>我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。<p>希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！<hr><p><strong>声明</strong>：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。### 4. 安全性考虑<p>为了保障服务器安全：<ul><li>不要将代理端口暴露到公网<li>定期更新Clash和配置文件<li>考虑使用防火墙限制访问：<code>ufw allow from 192.168.1.0/24 to any port 7890</code></ul><h2 id=zong-jie-yu-jian-yi-1>总结与建议</h2><p>经过实践，我发现不同场景适合不同的方案：<ul><li><strong>临时使用</strong>：SSH隧道是最便捷的选择<li><strong>长期稳定</strong>：在ECS上安装Clash是最佳方案<li><strong>仅安装Python包</strong>：使用国内镜像源足够<li><strong>复杂网络环境</strong>：Privoxy提供了更灵活的代理转发</ul><p>我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。<p>希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！<hr><p><strong>声明</strong>：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+</span></code></pre><h3 id=4-an-quan-xing-kao-lu>4. 安全性考虑</h3><p>为了保障服务器安全：<ul><li>不要将代理端口暴露到公网<li>定期更新Clash和配置文件<li>考虑使用防火墙限制访问：<code>ufw allow from 192.168.1.0/24 to any port 7890</code></ul><h2 id=zong-jie-yu-jian-yi>总结与建议</h2><p>经过实践，我发现不同场景适合不同的方案：<ul><li><strong>临时使用</strong>：SSH隧道是最便捷的选择<li><strong>长期稳定</strong>：在ECS上安装Clash是最佳方案<li><strong>仅安装Python包</strong>：使用国内镜像源足够<li><strong>复杂网络环境</strong>：Privoxy提供了更灵活的代理转发</ul><p>我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。<p>希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！<hr><p><strong>声明</strong>：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。### 4. 安全性考虑<p>为了保障服务器安全：<ul><li>不要将代理端口暴露到公网<li>定期更新Clash和配置文件<li>考虑使用防火墙限制访问：<code>ufw allow from 192.168.1.0/24 to any port 7890</code></ul><h2 id=zong-jie-yu-jian-yi-1>总结与建议</h2><p>经过实践，我发现不同场景适合不同的方案：<ul><li><strong>临时使用</strong>：SSH隧道是最便捷的选择<li><strong>长期稳定</strong>：在ECS上安装Clash是最佳方案<li><strong>仅安装Python包</strong>：使用国内镜像源足够<li><strong>复杂网络环境</strong>：Privoxy提供了更灵活的代理转发</ul><p>我个人的最佳实践是结合使用：平时使用Clash自启动服务实现全局代理，同时配置pip使用国内镜像源来加速Python包安装。这样既能满足日常的外网访问需求，又能保证Python环境的高效配置。<p>希望这篇指南能帮助你解决阿里云ECS上的网络访问问题。如果你有任何疑问或更好的方法，欢迎在评论区分享！<hr><p><strong>声明</strong>：本文仅供技术交流和学习使用，请遵守相关法律法规和服务商的使用条款。在使用代理服务时，应当确保遵循合规原则，不应用于任何非法用途。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#a855f7',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#06b6d4',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#0f0f1a',
+                mainBkg: '#1a1a2e',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#16213e',
+                clusterBorder: '#a855f7',
+                titleColor: '#ec4899',
+                edgeLabelBackground: '#1a1a2e'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

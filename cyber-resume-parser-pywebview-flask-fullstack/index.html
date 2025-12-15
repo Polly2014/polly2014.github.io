@@ -1,0 +1,210 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>从零打造赛博朋克风格的AI简历解析桌面应用：PyWebView + Flask 全栈开发实战</h1><div class=content><h2 id=kai-pian-dang-hr-yu-shang-ai>开篇：当 HR 遇上 AI</h2><p>"团队每天要处理上百份简历，手动录入 Excel 不仅慢，还时不时出错——姓名填错列、电话漏了位、学历写串行... 我既要盯着她们的工作严格把关，忙的时候还得自己上手帮忙录，真的心累。"<p>这是朋友的真实吐槽。作为一名 HR 总监，她管理着一个几人的招聘团队。每到招聘旺季，简历像雪片一样飞来，团队成员机械性地从 PDF 里抠信息、往 Excel 里填数据，效率低不说，错误率还居高不下。她一边要抽查质量，一边还得亲自下场救火，根本腾不出手做更有价值的人才筛选工作。<p>作为程序员的我，本能立刻被激活了——这不就是一个典型的可以用 AI 解决的问题吗？<p>于是，<strong>Cyber Resume Parser</strong> 诞生了。一款融合了赛博朋克美学的 AI 简历解析工具，能够一键将 PDF/Word 简历转换为标准化的 Excel 模板，彻底告别手动录入的时代。本文将完整记录这款应用从零到发布的全过程，包括我踩过的那些坑。<h2 id=ji-zhu-jia-gou-xuan-xing-wei-shi-yao-shi-pywebview-flask>技术架构选型：为什么是 PyWebView + Flask？</h2><p>在开始动手之前，我需要做一个关键决策：用什么技术栈？<h3 id=bei-xuan-fang-an-dui-bi>备选方案对比</h3><table><thead><tr><th>方案<th>优点<th>缺点<tbody><tr><td><strong>Electron</strong><td>生态成熟、跨平台<td>包体积大（100MB+）、内存占用高<tr><td><strong>Tauri</strong><td>轻量、Rust 性能<td>需要学习 Rust、生态较新<tr><td><strong>PyQt/Tkinter</strong><td>纯 Python、原生控件<td>UI 开发繁琐、美观度有限<tr><td><strong>PyWebView + Flask</strong><td>Web 技术做 UI、Python 生态<td>相对小众、文档较少</table><p>最终我选择了 <strong>PyWebView + Flask</strong> 的组合，原因很简单：<ol><li><strong>Python 生态</strong>：AI 解析、PDF 处理、Excel 生成都有成熟的库<li><strong>Web UI 的灵活性</strong>：用 HTML/CSS/JS 可以轻松实现炫酷的赛博朋克界面<li><strong>轻量级</strong>：不需要打包整个 Chromium<li><strong>快速开发</strong>：Flask 提供了熟悉的后端开发体验</ol><h3 id=jia-gou-she-ji>架构设计</h3><pre class=language-mermaid data-lang=mermaid style=background:#2b303b;color:#c0c5ce><code class=language-mermaid data-lang=mermaid><span>graph TB
+</span><span>    subgraph PyWebView["🖥️ PyWebView 窗口"]
+</span><span>        subgraph Frontend["前端层"]
+</span><span>            UI["HTML/CSS/JS&LTbr/>赛博朋克风格 UI"]
+</span><span>        end
+</span><span>        
+</span><span>        UI &LT-->|HTTP| Backend
+</span><span>        
+</span><span>        subgraph Backend["Flask 后端服务"]
+</span><span>            Parser["📄 简历解析&LTbr/>PyMuPDF"]
+</span><span>            Excel["📊 Excel生成&LTbr/>openpyxl"]
+</span><span>            License["🔐 授权管理&LTbr/>Supabase"]
+</span><span>        end
+</span><span>    end
+</span><span>    
+</span><span>    Parser -->|调用| AI["🤖 DeepSeek API"]
+</span><span>    License -->|验证| Cloud["☁️ Supabase 云端"]
+</span><span>    
+</span><span>    style PyWebView fill:#1a1a2e,stroke:#a855f7,stroke-width:2px
+</span><span>    style Frontend fill:#16213e,stroke:#06b6d4
+</span><span>    style Backend fill:#16213e,stroke:#ec4899
+</span><span>    style AI fill:#0f3460,stroke:#a855f7
+</span><span>    style Cloud fill:#0f3460,stroke:#06b6d4
+</span></code></pre><h2 id=he-xin-mo-kuai-shi-xian>核心模块实现</h2><h3 id=1-jian-li-jie-xi-ai-de-mo-fa>1. 简历解析：AI 的魔法</h3><p>简历解析的核心是调用 DeepSeek 大模型，将非结构化的简历文本转换为结构化的 JSON 数据。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_resume_with_llm</span><span>(</span><span style=color:#bf616a>text</span><span>: str) -> dict:
+</span><span>    </span><span style=color:#65737e>"""使用 LLM 解析简历文本"""
+</span><span>    client = </span><span style=color:#bf616a>OpenAI</span><span>(
+</span><span>        </span><span style=color:#bf616a>api_key</span><span>=os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>DEEPSEEK_API_KEY</span><span>"),
+</span><span>        </span><span style=color:#bf616a>base_url</span><span>=os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>DEEPSEEK_BASE_URL</span><span>")
+</span><span>    )
+</span><span>    
+</span><span>    prompt = """</span><span style=color:#a3be8c>请从以下简历中提取信息，返回 JSON 格式：
+</span><span style=color:#a3be8c>    {
+</span><span style=color:#a3be8c>        "name": "姓名",
+</span><span style=color:#a3be8c>        "phone": "电话",
+</span><span style=color:#a3be8c>        "education": [{"school": "学校", "major": "专业", "degree": "学历"}],
+</span><span style=color:#a3be8c>        "work_experience": [{"company": "公司", "position": "职位"}],
+</span><span style=color:#a3be8c>        ...
+</span><span style=color:#a3be8c>    }
+</span><span style=color:#a3be8c>    </span><span>"""
+</span><span>    
+</span><span>    response = client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>        </span><span style=color:#bf616a>model</span><span>=os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>AI_MODEL</span><span>", "</span><span style=color:#a3be8c>deepseek-chat</span><span>"),
+</span><span>        </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": prompt + text}],
+</span><span>        </span><span style=color:#bf616a>response_format</span><span>={"</span><span style=color:#a3be8c>type</span><span>": "</span><span style=color:#a3be8c>json_object</span><span>"}
+</span><span>    )
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>return </span><span>json.</span><span style=color:#bf616a>loads</span><span>(response.choices[</span><span style=color:#d08770>0</span><span>].message.content)
+</span></code></pre><p>这里有个小技巧：使用 <code>response_format={"type": "json_object"}</code> 可以确保模型返回有效的 JSON，避免后续解析错误。<h3 id=2-sai-bo-peng-ke-ui-rang-gong-ju-ye-you-ling-hun>2. 赛博朋克 UI：让工具也有灵魂</h3><p>既然是给朋友做的，那必须得有点仪式感。我选择了赛博朋克风格——深紫色背景、霓虹色渐变、粒子动画。<pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#8fa1b3>:</span><span style=color:#b48ead>root </span><span>{
+</span><span>    --bg-primary: </span><span style=color:#96b5b4>#0f0f1a</span><span>;
+</span><span>    --accent-purple: </span><span style=color:#96b5b4>#a855f7</span><span>;
+</span><span>    --accent-cyan: </span><span style=color:#96b5b4>#06b6d4</span><span>;
+</span><span>    --accent-pink: </span><span style=color:#96b5b4>#ec4899</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>main-title </span><span>{
+</span><span>    background: </span><span style=color:#96b5b4>linear-gradient</span><span>(</span><span style=color:#d08770>90deg</span><span>, var(--accent-purple), </span><span style=color:#96b5b4>var</span><span>(--accent-cyan), </span><span style=color:#96b5b4>var</span><span>(--accent-pink));
+</span><span>    background-size: </span><span style=color:#d08770>200% 100%</span><span>;
+</span><span>    -webkit-background-clip: text;
+</span><span>    -webkit-text-fill-color: transparent;
+</span><span>    animation: gradient-shift </span><span style=color:#d08770>4s </span><span>ease infinite;
+</span><span>}
+</span></code></pre><p>粒子背景用纯 CSS 实现，不需要额外的库：<pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#8fa1b3>.</span><span style=color:#d08770>particle </span><span>{
+</span><span>    position: absolute;
+</span><span>    width: </span><span style=color:#d08770>4px</span><span>;
+</span><span>    height: </span><span style=color:#d08770>4px</span><span>;
+</span><span>    border-radius: </span><span style=color:#d08770>50%</span><span>;
+</span><span>    opacity: </span><span style=color:#d08770>0.5</span><span>;
+</span><span>    animation: float </span><span style=color:#d08770>20s </span><span>infinite linear;
+</span><span>}
+</span><span>
+</span><span style=color:#b48ead>@keyframes </span><span>float {
+</span><span>    </span><span style=color:#d08770>0% </span><span>{ transform: </span><span style=color:#96b5b4>translateY</span><span>(</span><span style=color:#d08770>100vh</span><span>) </span><span style=color:#96b5b4>scale</span><span>(</span><span style=color:#d08770>0</span><span>); opacity: </span><span style=color:#d08770>0</span><span>; }
+</span><span>    </span><span style=color:#d08770>10% </span><span>{ opacity: </span><span style=color:#d08770>0.5</span><span>; transform: </span><span style=color:#96b5b4>scale</span><span>(</span><span style=color:#d08770>1</span><span>); }
+</span><span>    </span><span style=color:#d08770>100% </span><span>{ transform: </span><span style=color:#96b5b4>translateY</span><span>(</span><span style=color:#d08770>-100vh</span><span>) </span><span style=color:#96b5b4>translateX</span><span>(</span><span style=color:#d08770>50px</span><span>) </span><span style=color:#96b5b4>scale</span><span>(</span><span style=color:#d08770>0</span><span>); opacity: </span><span style=color:#d08770>0</span><span>; }
+</span><span>}
+</span></code></pre><h3 id=3-shou-quan-xi-tong-supabase-yun-duan-yan-zheng>3. 授权系统：Supabase 云端验证</h3><p>为了控制使用配额（毕竟 API 调用是有成本的），我集成了 Supabase 作为授权后端。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>LicenseManager</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>validate_license</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>license_code</span><span>: str) -> dict:
+</span><span>        </span><span style=color:#65737e># 查询授权码
+</span><span>        endpoint = </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>licenses?code=eq.</span><span>{license_code}</span><span style=color:#a3be8c>&is_active=eq.true</span><span>"
+</span><span>        result = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_supabase_request</span><span>("</span><span style=color:#a3be8c>GET</span><span>", endpoint)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>if </span><span>not result.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>data</span><span>"):
+</span><span>            </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>valid</span><span>": </span><span style=color:#d08770>False</span><span>, "</span><span style=color:#a3be8c>message</span><span>": "</span><span style=color:#a3be8c>无效的授权码</span><span>"}
+</span><span>        
+</span><span>        license_info = result["</span><span style=color:#a3be8c>data</span><span>"][</span><span style=color:#d08770>0</span><span>]
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 检查配额
+</span><span>        </span><span style=color:#b48ead>if </span><span>not license_info.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>is_unlimited</span><span>"):
+</span><span>            used = license_info.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>used_quota</span><span>", </span><span style=color:#d08770>0</span><span>)
+</span><span>            total = license_info.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>total_quota</span><span>", </span><span style=color:#d08770>0</span><span>)
+</span><span>            </span><span style=color:#b48ead>if </span><span>used >= total:
+</span><span>                </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>valid</span><span>": </span><span style=color:#d08770>False</span><span>, "</span><span style=color:#a3be8c>message</span><span>": </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>配额已用完 (</span><span>{used}</span><span style=color:#a3be8c>/</span><span>{total}</span><span style=color:#a3be8c>)</span><span>"}
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>{"</span><span style=color:#a3be8c>valid</span><span>": </span><span style=color:#d08770>True</span><span>, "</span><span style=color:#a3be8c>license_info</span><span>": license_info}
+</span></code></pre><p>当然，给朋友的授权码是无限配额的 VIP 待遇 😎<h2 id=kua-ping-tai-da-bao-cai-keng-shi-lu>跨平台打包：踩坑实录</h2><p>这部分是整个项目中最"刺激"的环节。PyInstaller 打包看起来简单，实际上每个平台都有自己的坑。<h3 id=keng-1-macos-duan-kou-chong-tu>坑 1：macOS 端口冲突</h3><p>首次运行时，Flask 默认的 5000 端口竟然被占用了。一查才发现是 macOS Monterey 的 <strong>AirPlay Receiver</strong> 占用了这个端口。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 默认端口（5000 被 macOS AirPlay Receiver 占用）
+</span><span style=color:#bf616a>DEFAULT_PORT </span><span>= </span><span style=color:#d08770>5050
+</span></code></pre><h3 id=keng-2-windows-bian-ma-wen-ti>坑 2：Windows 编码问题</h3><p>Windows 控制台默认使用 cp1252 编码，而我的代码里有中文和 emoji...<pre style=background:#2b303b;color:#c0c5ce><code><span>UnicodeEncodeError: 'charmap' codec can't encode characters
+</span></code></pre><p>解决方案：在程序启动时强制设置 UTF-8 编码：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>if </span><span>sys.platform == '</span><span style=color:#a3be8c>win32</span><span>':
+</span><span>    </span><span style=color:#b48ead>if </span><span style=color:#96b5b4>hasattr</span><span>(sys.stdout, '</span><span style=color:#a3be8c>reconfigure</span><span>'):
+</span><span>        sys.stdout.</span><span style=color:#bf616a>reconfigure</span><span>(</span><span style=color:#bf616a>encoding</span><span>='</span><span style=color:#a3be8c>utf-8</span><span>', </span><span style=color:#bf616a>errors</span><span>='</span><span style=color:#a3be8c>replace</span><span>')
+</span><span>    os.environ['</span><span style=color:#a3be8c>PYTHONIOENCODING</span><span>'] = '</span><span style=color:#a3be8c>utf-8</span><span>'
+</span></code></pre><h3 id=keng-3-onefile-vs-onedir-de-jue-ze>坑 3：<code>--onefile</code> vs <code>--onedir</code> 的抉择</h3><p>PyInstaller 提供两种打包模式：<table><thead><tr><th>模式<th>启动速度<th>文件结构<th>稳定性<tbody><tr><td><code>--onefile</code><td>慢（10-20秒解压）<td>单个 exe<td>更稳定<tr><td><code>--onedir</code><td>快（3-5秒）<td>文件夹<td>可能有路径问题</table><p>我原本倾向于 <code>--onedir</code> 以获得更快的启动速度，但在 Windows 上遇到了 pythonnet 加载失败的问题。经过反复测试，最终还是选择了 <code>--onefile</code> 模式——虽然首次启动慢一点，但"丝滑"无报错。<h3 id=keng-4-pywebview-de-gui-hou-duan>坑 4：PyWebView 的 GUI 后端</h3><p>PyWebView 在 Windows 上可以使用多种渲染后端：<ul><li><strong>EdgeChromium</strong>（需要 pythonnet）：现代渲染，效果最好<li><strong>MSHTML</strong>（IE 内核）：兼容性强，但渲染效果一般<li><strong>CEF</strong>：需要额外安装</ul><p>最终配置：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>if </span><span>platform.</span><span style=color:#bf616a>system</span><span>() == '</span><span style=color:#a3be8c>Windows</span><span>':
+</span><span>    webview.</span><span style=color:#bf616a>start</span><span>(</span><span style=color:#bf616a>gui</span><span>='</span><span style=color:#a3be8c>edgechromium</span><span>')  </span><span style=color:#65737e># 使用 Edge 渲染
+</span><span style=color:#b48ead>else</span><span>:
+</span><span>    webview.</span><span style=color:#bf616a>start</span><span>()  </span><span style=color:#65737e># macOS 使用默认的 cocoa
+</span></code></pre><h3 id=github-actions-zi-dong-gou-jian>GitHub Actions 自动构建</h3><p>为了自动化发布流程，我配置了 GitHub Actions：<pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>Build and Release
+</span><span>
+</span><span style=color:#d08770>on</span><span>:
+</span><span>  </span><span style=color:#bf616a>push</span><span>:
+</span><span>    </span><span style=color:#bf616a>tags</span><span>:
+</span><span>      - '</span><span style=color:#a3be8c>v*</span><span>'
+</span><span>
+</span><span style=color:#bf616a>jobs</span><span>:
+</span><span>  </span><span style=color:#bf616a>build-macos</span><span>:
+</span><span>    </span><span style=color:#bf616a>runs-on</span><span>: </span><span style=color:#a3be8c>macos-latest
+</span><span>    </span><span style=color:#bf616a>steps</span><span>:
+</span><span>    - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>Build Desktop
+</span><span>      </span><span style=color:#bf616a>run</span><span>: </span><span style=color:#b48ead>|
+</span><span style=color:#a3be8c>        pyinstaller --name="Cyber Resume Parser" \
+</span><span style=color:#a3be8c>          --onefile \
+</span><span style=color:#a3be8c>          --windowed \
+</span><span style=color:#a3be8c>          --icon=icon.jpg \
+</span><span style=color:#a3be8c>          --add-data="static:static" \
+</span><span style=color:#a3be8c>          desktop_app.py
+</span><span style=color:#a3be8c>
+</span><span>  </span><span style=color:#bf616a>build-windows</span><span>:
+</span><span>    </span><span style=color:#bf616a>runs-on</span><span>: </span><span style=color:#a3be8c>windows-latest
+</span><span>    </span><span style=color:#bf616a>steps</span><span>:
+</span><span>    - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>Install pythonnet
+</span><span>      </span><span style=color:#bf616a>run</span><span>: </span><span style=color:#a3be8c>pip install pythonnet clr-loader
+</span><span>    
+</span><span>    - </span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>Build Desktop
+</span><span>      </span><span style=color:#bf616a>run</span><span>: </span><span style=color:#b48ead>|
+</span><span style=color:#a3be8c>        pyinstaller --name="Cyber Resume Parser" `
+</span><span style=color:#a3be8c>          --onefile `
+</span><span style=color:#a3be8c>          --windowed `
+</span><span style=color:#a3be8c>          --collect-all=pythonnet `
+</span><span style=color:#a3be8c>          --collect-all=webview `
+</span><span style=color:#a3be8c>          desktop_app.py
+</span></code></pre><p>现在只需要推送一个 tag，就能自动构建 macOS 和 Windows 双平台的安装包。<h2 id=bing-xing-chu-li-pi-liang-jie-xi-de-xing-neng-you-hua>并行处理：批量解析的性能优化</h2><p>当朋友告诉我她有时候需要一次性处理几十份简历时，我意识到串行处理是不可接受的。于是引入了并行处理：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>MAX_PARALLEL_WORKERS </span><span>= </span><span style=color:#d08770>3  </span><span style=color:#65737e># 避免 API 限流
+</span><span>
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>process_all_parallel</span><span>():
+</span><span>    </span><span style=color:#b48ead>with </span><span style=color:#bf616a>ThreadPoolExecutor</span><span>(</span><span style=color:#bf616a>max_workers</span><span>=</span><span style=color:#bf616a>MAX_PARALLEL_WORKERS</span><span>) </span><span style=color:#b48ead>as </span><span>executor:
+</span><span>        future_to_task = {
+</span><span>            executor.</span><span style=color:#bf616a>submit</span><span>(process_single_task, task): task 
+</span><span>            </span><span style=color:#b48ead>for </span><span>task </span><span style=color:#b48ead>in </span><span>pending_tasks
+</span><span>        }
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>for </span><span>future </span><span style=color:#b48ead>in </span><span style=color:#bf616a>as_completed</span><span>(future_to_task):
+</span><span>            task = future_to_task[future]
+</span><span>            </span><span style=color:#b48ead>try</span><span>:
+</span><span>                future.</span><span style=color:#bf616a>result</span><span>()
+</span><span>                </span><span style=color:#96b5b4>print</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>[OK] </span><span>{task.filename}</span><span style=color:#a3be8c> done</span><span>")
+</span><span>            </span><span style=color:#b48ead>except </span><span>Exception </span><span style=color:#b48ead>as </span><span>e:
+</span><span>                </span><span style=color:#96b5b4>print</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>[ERR] </span><span>{task.filename}</span><span style=color:#a3be8c> failed: </span><span>{e}")
+</span></code></pre><p>这里有个重要细节：<strong>配额扣减必须在并行处理之前批量完成</strong>，否则多个线程同时扣减会导致 Supabase 连接竞争问题。<h2 id=yun-duan-tong-bu-gou-jian-ren-cai-ku>云端同步：构建人才库</h2><p>既然每份简历都会被解析成结构化数据，为什么不顺便存到云端呢？这样就能逐步构建一个可搜索的人才库。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>log_resume_result</span><span>(</span><span style=color:#bf616a>license_code</span><span>, </span><span style=color:#bf616a>filename</span><span>, </span><span style=color:#bf616a>result_json</span><span>, </span><span style=color:#bf616a>status</span><span>):
+</span><span>    </span><span style=color:#65737e>"""异步上传解析结果到云端"""
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_upload</span><span>():
+</span><span>        log_data = {
+</span><span>            "</span><span style=color:#a3be8c>license_code</span><span>": license_code,
+</span><span>            "</span><span style=color:#a3be8c>filename</span><span>": filename,
+</span><span>            "</span><span style=color:#a3be8c>result_json</span><span>": result_json,  </span><span style=color:#65737e># 完整的解析结果
+</span><span>            "</span><span style=color:#a3be8c>status</span><span>": status,
+</span><span>            "</span><span style=color:#a3be8c>app_version</span><span>": </span><span style=color:#bf616a>APP_VERSION</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>client_info</span><span>": </span><span style=color:#bf616a>_get_client_info</span><span>()
+</span><span>        }
+</span><span>        </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_supabase_request</span><span>("</span><span style=color:#a3be8c>POST</span><span>", "</span><span style=color:#a3be8c>usage_logs</span><span>", log_data)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 后台线程异步上传，不阻塞主流程
+</span><span>    thread = threading.</span><span style=color:#bf616a>Thread</span><span>(</span><span style=color:#bf616a>target</span><span>=_upload, </span><span style=color:#bf616a>daemon</span><span>=</span><span style=color:#d08770>True</span><span>)
+</span><span>    thread.</span><span style=color:#bf616a>start</span><span>()
+</span></code></pre><p>使用 <code>daemon=True</code> 确保上传线程不会阻塞程序退出。<h2 id=zui-zhong-cheng-guo>最终成果</h2><p>经过两天的开发和调试，Cyber Resume Parser v2.0.0 终于发布了：<ul><li>✅ 支持 PDF/Word 简历智能解析<li>✅ 赛博朋克风格炫酷 UI<li>✅ 批量处理 + 并行加速<li>✅ 在线授权 + 配额管理<li>✅ 云端同步构建人才库<li>✅ macOS/Windows 双平台支持<li>✅ GitHub Actions 自动发布</ul><h2 id=zong-jie-yu-fan-si>总结与反思</h2><p>这个项目让我对 Python 桌面应用开发有了更深的理解：<ol><li><p><strong>PyWebView + Flask 是个好选择</strong>：Web 技术做 UI 真的很灵活，Python 生态做后端真的很省心</p><li><p><strong>跨平台打包是个大坑</strong>：每个平台都有自己的"特色"问题，需要耐心调试</p><li><p><strong>用户体验细节很重要</strong>：从启动速度到授权提示，每个细节都影响使用体验</p><li><p><strong>先做 MVP，再迭代优化</strong>：不要一开始就追求完美，先让核心功能跑起来</p></ol><p>如果你也有类似的工具类需求，不妨试试 PyWebView + Flask 的组合。代码已开源在 GitHub，欢迎 Star 和 PR！<hr><p><em>Written in code, meant for you!</em> 💝<p><strong>项目地址</strong>：<a href=https://github.com/Polly2014/Hr_Resume_Translator>https://github.com/Polly2014/Hr_Resume_Translator</a></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#a855f7',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#06b6d4',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#0f0f1a',
+                mainBkg: '#1a1a2e',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#16213e',
+                clusterBorder: '#a855f7',
+                titleColor: '#ec4899',
+                edgeLabelBackground: '#1a1a2e'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

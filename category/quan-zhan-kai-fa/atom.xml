@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 全栈开发</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/category/quan-zhan-kai-fa/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-12-14T00:00:00+00:00</updated>
+    <id>https://polly.wang/category/quan-zhan-kai-fa/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从零打造赛博朋克风格的AI简历解析桌面应用：PyWebView + Flask 全栈开发实战</title>
+        <published>2025-12-14T00:00:00+00:00</published>
+        <updated>2025-12-14T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/cyber-resume-parser-pywebview-flask-fullstack/" type="text/html"/>
+        <id>https://polly.wang/cyber-resume-parser-pywebview-flask-fullstack/</id>
+        
+        <content type="html">&lt;h2 id=&quot;kai-pian-dang-hr-yu-shang-ai&quot;&gt;开篇：当 HR 遇上 AI&lt;&#x2F;h2&gt;
+&lt;p&gt;&amp;quot;团队每天要处理上百份简历，手动录入 Excel 不仅慢，还时不时出错——姓名填错列、电话漏了位、学历写串行... 我既要盯着她们的工作严格把关，忙的时候还得自己上手帮忙录，真的心累。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;这是朋友的真实吐槽。作为一名 HR 总监，她管理着一个几人的招聘团队。每到招聘旺季，简历像雪片一样飞来，团队成员机械性地从 PDF 里抠信息、往 Excel 里填数据，效率低不说，错误率还居高不下。她一边要抽查质量，一边还得亲自下场救火，根本腾不出手做更有价值的人才筛选工作。&lt;&#x2F;p&gt;
+&lt;p&gt;作为程序员的我，本能立刻被激活了——这不就是一个典型的可以用 AI 解决的问题吗？&lt;&#x2F;p&gt;
+&lt;p&gt;于是，&lt;strong&gt;Cyber Resume Parser&lt;&#x2F;strong&gt; 诞生了。一款融合了赛博朋克美学的 AI 简历解析工具，能够一键将 PDF&#x2F;Word 简历转换为标准化的 Excel 模板，彻底告别手动录入的时代。本文将完整记录这款应用从零到发布的全过程，包括我踩过的那些坑。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-jia-gou-xuan-xing-wei-shi-yao-shi-pywebview-flask&quot;&gt;技术架构选型：为什么是 PyWebView + Flask？&lt;&#x2F;h2&gt;
+&lt;p&gt;在开始动手之前，我需要做一个关键决策：用什么技术栈？&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bei-xuan-fang-an-dui-bi&quot;&gt;备选方案对比&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方案&lt;&#x2F;th&gt;&lt;th&gt;优点&lt;&#x2F;th&gt;&lt;th&gt;缺点&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Electron&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;生态成熟、跨平台&lt;&#x2F;td&gt;&lt;td&gt;包体积大（100MB+）、内存占用高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Tauri&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;轻量、Rust 性能&lt;&#x2F;td&gt;&lt;td&gt;需要学习 Rust、生态较新&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;PyQt&#x2F;Tkinter&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;纯 Python、原生控件&lt;&#x2F;td&gt;&lt;td&gt;UI 开发繁琐、美观度有限&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;PyWebView + Flask&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Web 技术做 UI、Python 生态&lt;&#x2F;td&gt;&lt;td&gt;相对小众、文档较少&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最终我选择了 &lt;strong&gt;PyWebView + Flask&lt;&#x2F;strong&gt; 的组合，原因很简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Python 生态&lt;&#x2F;strong&gt;：AI 解析、PDF 处理、Excel 生成都有成熟的库&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Web UI 的灵活性&lt;&#x2F;strong&gt;：用 HTML&#x2F;CSS&#x2F;JS 可以轻松实现炫酷的赛博朋克界面&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;轻量级&lt;&#x2F;strong&gt;：不需要打包整个 Chromium&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;快速开发&lt;&#x2F;strong&gt;：Flask 提供了熟悉的后端开发体验&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;jia-gou-she-ji&quot;&gt;架构设计&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;graph TB
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph PyWebView[&amp;quot;🖥️ PyWebView 窗口&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        subgraph Frontend[&amp;quot;前端层&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;            UI[&amp;quot;HTML&#x2F;CSS&#x2F;JS&amp;lt;br&#x2F;&amp;gt;赛博朋克风格 UI&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        end
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        UI &amp;lt;--&amp;gt;|HTTP| Backend
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        subgraph Backend[&amp;quot;Flask 后端服务&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;            Parser[&amp;quot;📄 简历解析&amp;lt;br&#x2F;&amp;gt;PyMuPDF&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;            Excel[&amp;quot;📊 Excel生成&amp;lt;br&#x2F;&amp;gt;openpyxl&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;            License[&amp;quot;🔐 授权管理&amp;lt;br&#x2F;&amp;gt;Supabase&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        end
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    Parser --&amp;gt;|调用| AI[&amp;quot;🤖 DeepSeek API&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;    License --&amp;gt;|验证| Cloud[&amp;quot;☁️ Supabase 云端&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    style PyWebView fill:#1a1a2e,stroke:#a855f7,stroke-width:2px
+&lt;&#x2F;span&gt;&lt;span&gt;    style Frontend fill:#16213e,stroke:#06b6d4
+&lt;&#x2F;span&gt;&lt;span&gt;    style Backend fill:#16213e,stroke:#ec4899
+&lt;&#x2F;span&gt;&lt;span&gt;    style AI fill:#0f3460,stroke:#a855f7
+&lt;&#x2F;span&gt;&lt;span&gt;    style Cloud fill:#0f3460,stroke:#06b6d4
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;he-xin-mo-kuai-shi-xian&quot;&gt;核心模块实现&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-jian-li-jie-xi-ai-de-mo-fa&quot;&gt;1. 简历解析：AI 的魔法&lt;&#x2F;h3&gt;
+&lt;p&gt;简历解析的核心是调用 DeepSeek 大模型，将非结构化的简历文本转换为结构化的 JSON 数据。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;parse_resume_with_llm&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; dict:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;使用 LLM 解析简历文本&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    client = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;OpenAI&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api_key&lt;&#x2F;span&gt;&lt;span&gt;=os.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getenv&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;DEEPSEEK_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;base_url&lt;&#x2F;span&gt;&lt;span&gt;=os.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getenv&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;DEEPSEEK_BASE_URL&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    prompt = &amp;quot;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;请从以下简历中提取信息，返回 JSON 格式：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    {
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &amp;quot;name&amp;quot;: &amp;quot;姓名&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &amp;quot;phone&amp;quot;: &amp;quot;电话&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &amp;quot;education&amp;quot;: [{&amp;quot;school&amp;quot;: &amp;quot;学校&amp;quot;, &amp;quot;major&amp;quot;: &amp;quot;专业&amp;quot;, &amp;quot;degree&amp;quot;: &amp;quot;学历&amp;quot;}],
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &amp;quot;work_experience&amp;quot;: [{&amp;quot;company&amp;quot;: &amp;quot;公司&amp;quot;, &amp;quot;position&amp;quot;: &amp;quot;职位&amp;quot;}],
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        ...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    }
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    response = client.chat.completions.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;create&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;=os.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getenv&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AI_MODEL&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-chat&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;=[{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: prompt + text}],
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;response_format&lt;&#x2F;span&gt;&lt;span&gt;={&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;json_object&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;json.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;loads&lt;&#x2F;span&gt;&lt;span&gt;(response.choices[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].message.content)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这里有个小技巧：使用 &lt;code&gt;response_format={&amp;quot;type&amp;quot;: &amp;quot;json_object&amp;quot;}&lt;&#x2F;code&gt; 可以确保模型返回有效的 JSON，避免后续解析错误。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-sai-bo-peng-ke-ui-rang-gong-ju-ye-you-ling-hun&quot;&gt;2. 赛博朋克 UI：让工具也有灵魂&lt;&#x2F;h3&gt;
+&lt;p&gt;既然是给朋友做的，那必须得有点仪式感。我选择了赛博朋克风格——深紫色背景、霓虹色渐变、粒子动画。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;root &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    --bg-primary: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#0f0f1a&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    --accent-purple: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#a855f7&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    --accent-cyan: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#06b6d4&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    --accent-pink: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;#ec4899&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;main-title &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    background: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;linear-gradient&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;90deg&lt;&#x2F;span&gt;&lt;span&gt;, var(--accent-purple), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;var&lt;&#x2F;span&gt;&lt;span&gt;(--accent-cyan), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;var&lt;&#x2F;span&gt;&lt;span&gt;(--accent-pink));
+&lt;&#x2F;span&gt;&lt;span&gt;    background-size: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;200% 100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    -webkit-background-clip: text;
+&lt;&#x2F;span&gt;&lt;span&gt;    -webkit-text-fill-color: transparent;
+&lt;&#x2F;span&gt;&lt;span&gt;    animation: gradient-shift &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4s &lt;&#x2F;span&gt;&lt;span&gt;ease infinite;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;粒子背景用纯 CSS 实现，不需要额外的库：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;particle &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    position: absolute;
+&lt;&#x2F;span&gt;&lt;span&gt;    width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4px&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    height: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4px&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    border-radius: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    opacity: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.5&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    animation: float &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;20s &lt;&#x2F;span&gt;&lt;span&gt;infinite linear;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;@keyframes &lt;&#x2F;span&gt;&lt;span&gt;float {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0% &lt;&#x2F;span&gt;&lt;span&gt;{ transform: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;translateY&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100vh&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;scale&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;); opacity: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;10% &lt;&#x2F;span&gt;&lt;span&gt;{ opacity: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.5&lt;&#x2F;span&gt;&lt;span&gt;; transform: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;scale&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;); }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100% &lt;&#x2F;span&gt;&lt;span&gt;{ transform: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;translateY&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;-100vh&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;translateX&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50px&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;scale&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;); opacity: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-shou-quan-xi-tong-supabase-yun-duan-yan-zheng&quot;&gt;3. 授权系统：Supabase 云端验证&lt;&#x2F;h3&gt;
+&lt;p&gt;为了控制使用配额（毕竟 API 调用是有成本的），我集成了 Supabase 作为授权后端。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;LicenseManager&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;validate_license&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;license_code&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查询授权码
+&lt;&#x2F;span&gt;&lt;span&gt;        endpoint = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;licenses?code=eq.&lt;&#x2F;span&gt;&lt;span&gt;{license_code}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;amp;is_active=eq.true&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        result = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_supabase_request&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GET&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, endpoint)
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not result.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;):
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;valid&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无效的授权码&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        license_info = result[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;][&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查配额
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not license_info.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;is_unlimited&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;):
+&lt;&#x2F;span&gt;&lt;span&gt;            used = license_info.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;used_quota&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;            total = license_info.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;total_quota&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;used &amp;gt;= total:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;valid&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;配额已用完 (&lt;&#x2F;span&gt;&lt;span&gt;{used}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;{total}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;valid&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;license_info&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: license_info}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;当然，给朋友的授权码是无限配额的 VIP 待遇 😎&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;kua-ping-tai-da-bao-cai-keng-shi-lu&quot;&gt;跨平台打包：踩坑实录&lt;&#x2F;h2&gt;
+&lt;p&gt;这部分是整个项目中最&amp;quot;刺激&amp;quot;的环节。PyInstaller 打包看起来简单，实际上每个平台都有自己的坑。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;keng-1-macos-duan-kou-chong-tu&quot;&gt;坑 1：macOS 端口冲突&lt;&#x2F;h3&gt;
+&lt;p&gt;首次运行时，Flask 默认的 5000 端口竟然被占用了。一查才发现是 macOS Monterey 的 &lt;strong&gt;AirPlay Receiver&lt;&#x2F;strong&gt; 占用了这个端口。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 默认端口（5000 被 macOS AirPlay Receiver 占用）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DEFAULT_PORT &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5050
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;keng-2-windows-bian-ma-wen-ti&quot;&gt;坑 2：Windows 编码问题&lt;&#x2F;h3&gt;
+&lt;p&gt;Windows 控制台默认使用 cp1252 编码，而我的代码里有中文和 emoji...&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;UnicodeEncodeError: &amp;#39;charmap&amp;#39; codec can&amp;#39;t encode characters
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;解决方案：在程序启动时强制设置 UTF-8 编码：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;sys.platform == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;win32&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;hasattr&lt;&#x2F;span&gt;&lt;span&gt;(sys.stdout, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;reconfigure&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;):
+&lt;&#x2F;span&gt;&lt;span&gt;        sys.stdout.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;reconfigure&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encoding&lt;&#x2F;span&gt;&lt;span&gt;=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;errors&lt;&#x2F;span&gt;&lt;span&gt;=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;    os.environ[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PYTHONIOENCODING&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;] = &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;keng-3-onefile-vs-onedir-de-jue-ze&quot;&gt;坑 3：&lt;code&gt;--onefile&lt;&#x2F;code&gt; vs &lt;code&gt;--onedir&lt;&#x2F;code&gt; 的抉择&lt;&#x2F;h3&gt;
+&lt;p&gt;PyInstaller 提供两种打包模式：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模式&lt;&#x2F;th&gt;&lt;th&gt;启动速度&lt;&#x2F;th&gt;&lt;th&gt;文件结构&lt;&#x2F;th&gt;&lt;th&gt;稳定性&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;--onefile&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;慢（10-20秒解压）&lt;&#x2F;td&gt;&lt;td&gt;单个 exe&lt;&#x2F;td&gt;&lt;td&gt;更稳定&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;--onedir&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;快（3-5秒）&lt;&#x2F;td&gt;&lt;td&gt;文件夹&lt;&#x2F;td&gt;&lt;td&gt;可能有路径问题&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;我原本倾向于 &lt;code&gt;--onedir&lt;&#x2F;code&gt; 以获得更快的启动速度，但在 Windows 上遇到了 pythonnet 加载失败的问题。经过反复测试，最终还是选择了 &lt;code&gt;--onefile&lt;&#x2F;code&gt; 模式——虽然首次启动慢一点，但&amp;quot;丝滑&amp;quot;无报错。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;keng-4-pywebview-de-gui-hou-duan&quot;&gt;坑 4：PyWebView 的 GUI 后端&lt;&#x2F;h3&gt;
+&lt;p&gt;PyWebView 在 Windows 上可以使用多种渲染后端：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;EdgeChromium&lt;&#x2F;strong&gt;（需要 pythonnet）：现代渲染，效果最好&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;MSHTML&lt;&#x2F;strong&gt;（IE 内核）：兼容性强，但渲染效果一般&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CEF&lt;&#x2F;strong&gt;：需要额外安装&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最终配置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;platform.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;() == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Windows&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span&gt;    webview.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;start&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gui&lt;&#x2F;span&gt;&lt;span&gt;=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;edgechromium&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用 Edge 渲染
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    webview.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;start&lt;&#x2F;span&gt;&lt;span&gt;()  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# macOS 使用默认的 cocoa
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;github-actions-zi-dong-gou-jian&quot;&gt;GitHub Actions 自动构建&lt;&#x2F;h3&gt;
+&lt;p&gt;为了自动化发布流程，我配置了 GitHub Actions：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Build and Release
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tags&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;v*&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jobs&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;build-macos&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;macos-latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Build Desktop
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;|
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        pyinstaller --name=&amp;quot;Cyber Resume Parser&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --onefile \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --windowed \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --icon=icon.jpg \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --add-data=&amp;quot;static:static&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          desktop_app.py
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;build-windows&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;windows-latest
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Install pythonnet
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;pip install pythonnet clr-loader
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Build Desktop
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;|
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        pyinstaller --name=&amp;quot;Cyber Resume Parser&amp;quot; `
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --onefile `
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --windowed `
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --collect-all=pythonnet `
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          --collect-all=webview `
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          desktop_app.py
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;现在只需要推送一个 tag，就能自动构建 macOS 和 Windows 双平台的安装包。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bing-xing-chu-li-pi-liang-jie-xi-de-xing-neng-you-hua&quot;&gt;并行处理：批量解析的性能优化&lt;&#x2F;h2&gt;
+&lt;p&gt;当朋友告诉我她有时候需要一次性处理几十份简历时，我意识到串行处理是不可接受的。于是引入了并行处理：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_PARALLEL_WORKERS &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 避免 API 限流
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;process_all_parallel&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ThreadPoolExecutor&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_workers&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_PARALLEL_WORKERS&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;executor:
+&lt;&#x2F;span&gt;&lt;span&gt;        future_to_task = {
+&lt;&#x2F;span&gt;&lt;span&gt;            executor.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;submit&lt;&#x2F;span&gt;&lt;span&gt;(process_single_task, task): task 
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;task &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;pending_tasks
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;future &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;as_completed&lt;&#x2F;span&gt;&lt;span&gt;(future_to_task):
+&lt;&#x2F;span&gt;&lt;span&gt;            task = future_to_task[future]
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;                future.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[OK] &lt;&#x2F;span&gt;&lt;span&gt;{task.filename}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; done&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;Exception &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[ERR] &lt;&#x2F;span&gt;&lt;span&gt;{task.filename}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; failed: &lt;&#x2F;span&gt;&lt;span&gt;{e}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这里有个重要细节：&lt;strong&gt;配额扣减必须在并行处理之前批量完成&lt;&#x2F;strong&gt;，否则多个线程同时扣减会导致 Supabase 连接竞争问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yun-duan-tong-bu-gou-jian-ren-cai-ku&quot;&gt;云端同步：构建人才库&lt;&#x2F;h2&gt;
+&lt;p&gt;既然每份简历都会被解析成结构化数据，为什么不顺便存到云端呢？这样就能逐步构建一个可搜索的人才库。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;log_resume_result&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;license_code&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;filename&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result_json&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;status&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;异步上传解析结果到云端&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_upload&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;        log_data = {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;license_code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: license_code,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;filename&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: filename,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;result_json&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: result_json,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 完整的解析结果
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;status&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: status,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;app_version&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;APP_VERSION&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;client_info&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_get_client_info&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_supabase_request&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;POST&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;usage_logs&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, log_data)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 后台线程异步上传，不阻塞主流程
+&lt;&#x2F;span&gt;&lt;span&gt;    thread = threading.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Thread&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target&lt;&#x2F;span&gt;&lt;span&gt;=_upload, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;daemon&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    thread.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;start&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;使用 &lt;code&gt;daemon=True&lt;&#x2F;code&gt; 确保上传线程不会阻塞程序退出。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-zhong-cheng-guo&quot;&gt;最终成果&lt;&#x2F;h2&gt;
+&lt;p&gt;经过两天的开发和调试，Cyber Resume Parser v2.0.0 终于发布了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ 支持 PDF&#x2F;Word 简历智能解析&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 赛博朋克风格炫酷 UI&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 批量处理 + 并行加速&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 在线授权 + 配额管理&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 云端同步构建人才库&lt;&#x2F;li&gt;
+&lt;li&gt;✅ macOS&#x2F;Windows 双平台支持&lt;&#x2F;li&gt;
+&lt;li&gt;✅ GitHub Actions 自动发布&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zong-jie-yu-fan-si&quot;&gt;总结与反思&lt;&#x2F;h2&gt;
+&lt;p&gt;这个项目让我对 Python 桌面应用开发有了更深的理解：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;PyWebView + Flask 是个好选择&lt;&#x2F;strong&gt;：Web 技术做 UI 真的很灵活，Python 生态做后端真的很省心&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;跨平台打包是个大坑&lt;&#x2F;strong&gt;：每个平台都有自己的&amp;quot;特色&amp;quot;问题，需要耐心调试&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;用户体验细节很重要&lt;&#x2F;strong&gt;：从启动速度到授权提示，每个细节都影响使用体验&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;先做 MVP，再迭代优化&lt;&#x2F;strong&gt;：不要一开始就追求完美，先让核心功能跑起来&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;如果你也有类似的工具类需求，不妨试试 PyWebView + Flask 的组合。代码已开源在 GitHub，欢迎 Star 和 PR！&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;Written in code, meant for you!&lt;&#x2F;em&gt; 💝&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;项目地址&lt;&#x2F;strong&gt;：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Hr_Resume_Translator&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Hr_Resume_Translator&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

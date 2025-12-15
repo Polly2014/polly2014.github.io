@@ -252,4 +252,42 @@
 </span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>analyze_financial_report</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>report_content</span><span>: str, </span><span style=color:#bf616a>company_info</span><span>: Dict[str, str]) -> Dict[str, Any]:
 </span><span>        </span><span style=color:#65737e>"""使用LLM分析财报内容"""
 </span><span>        </span><span style=color:#65737e># 实现代码...
-</span></code></pre></blockquote><h3 id=bu-shu-yu-you-hua>部署与优化</h3><blockquote><p><strong>用户</strong>：我们需要确保应用在生产环境中稳定运行，有什么建议？<p><strong>AI助手</strong>：为了确保应用在生产环境中稳定运行，我建议以下几点：<ol><li>使用Docker容器化部署，确保环境一致性<li>实现健壮的错误处理和日志记录<li>添加请求限流和缓存机制<li>使用环境变量管理敏感配置<li>实现定时任务，自动更新财报数据</ol><p>我将为您创建Dockerfile和部署脚本...</blockquote><h2 id=jiu-jie-yu>九、结语</h2><p>财报数据爬取与分析平台的开发过程展示了如何将复杂的金融数据处理流程转化为易用的Web应用。通过合理的架构设计、先进的技术选型和用户体验优化，我们成功构建了一个功能完备的财报分析工具，为投资者提供了便捷的数据获取和智能分析服务。<p>希望本文的开发经验能为类似项目提供有价值的参考，也欢迎社区贡献代码，共同完善这一平台。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+</span></code></pre></blockquote><h3 id=bu-shu-yu-you-hua>部署与优化</h3><blockquote><p><strong>用户</strong>：我们需要确保应用在生产环境中稳定运行，有什么建议？<p><strong>AI助手</strong>：为了确保应用在生产环境中稳定运行，我建议以下几点：<ol><li>使用Docker容器化部署，确保环境一致性<li>实现健壮的错误处理和日志记录<li>添加请求限流和缓存机制<li>使用环境变量管理敏感配置<li>实现定时任务，自动更新财报数据</ol><p>我将为您创建Dockerfile和部署脚本...</blockquote><h2 id=jiu-jie-yu>九、结语</h2><p>财报数据爬取与分析平台的开发过程展示了如何将复杂的金融数据处理流程转化为易用的Web应用。通过合理的架构设计、先进的技术选型和用户体验优化，我们成功构建了一个功能完备的财报分析工具，为投资者提供了便捷的数据获取和智能分析服务。<p>希望本文的开发经验能为类似项目提供有价值的参考，也欢迎社区贡献代码，共同完善这一平台。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#a855f7',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#a855f7',
+                lineColor: '#06b6d4',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#0f0f1a',
+                mainBkg: '#1a1a2e',
+                nodeBorder: '#a855f7',
+                clusterBkg: '#16213e',
+                clusterBorder: '#a855f7',
+                titleColor: '#ec4899',
+                edgeLabelBackground: '#1a1a2e'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
