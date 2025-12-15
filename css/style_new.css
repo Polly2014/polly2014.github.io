@@ -48,6 +48,15 @@ a:focus {
     background-color: #f2f2f2;  /* 添加背景颜色 */
     color: #333;  /* 添加文字颜色 */
     padding: 2em 2em 0;
+    
+    /* 隐藏滚动条但保留滚动功能 */
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* 隐藏 Webkit 浏览器滚动条 (Chrome, Safari, Edge) */
+.content::-webkit-scrollbar {
+    display: none;
 }
 
 /* Common Styles */
@@ -215,8 +224,8 @@ table td {
 }
 
 .nav .nav-links li a:hover {
-    color: #0077b5;
-    text-decoration: none;  /* 鼠标悬停时的下划线 */
+    color: rgb(61, 146, 201);
+    text-decoration: none;
 }
 
 .nav .nav-links li a i {
@@ -227,9 +236,8 @@ table td {
     display: inline-block;  /* 让图标成为一个内联块级元素 */
 }
 
-.nav .nav-links li a:hover i {  /* 添加这一行 */
-    color: #0077b5;
-    text-decoration: none;  /* 鼠标悬停时的下划线 */
+.nav .nav-links li a:hover i {
+    color: rgb(61, 146, 201);
 }
 
 /* 社交链接部分 */
@@ -258,8 +266,8 @@ table td {
 }
 
 .social .social-links li a:hover,
-.social .social-links li a:hover i {  /* 添加这一行 */
-    color: #0077b5;  /* 鼠标悬停时的颜色 */
+.social .social-links li a:hover i {
+    color: rgb(61, 146, 201);
 }
 
 
