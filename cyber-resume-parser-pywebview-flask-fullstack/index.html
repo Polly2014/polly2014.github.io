@@ -16,11 +16,11 @@
 </span><span>    Parser -->|调用| AI["🤖 DeepSeek API"]
 </span><span>    License -->|验证| Cloud["☁️ Supabase 云端"]
 </span><span>    
-</span><span>    style PyWebView fill:#1a1a2e,stroke:#a855f7,stroke-width:2px
-</span><span>    style Frontend fill:#16213e,stroke:#06b6d4
-</span><span>    style Backend fill:#16213e,stroke:#ec4899
-</span><span>    style AI fill:#0f3460,stroke:#a855f7
-</span><span>    style Cloud fill:#0f3460,stroke:#06b6d4
+</span><span>    style PyWebView fill:#f5f5f5,stroke:#999,stroke-width:2px
+</span><span>    style Frontend fill:#e8e8e8,stroke:#888
+</span><span>    style Backend fill:#e8e8e8,stroke:#888
+</span><span>    style AI fill:#fafafa,stroke:#999
+</span><span>    style Cloud fill:#fafafa,stroke:#999
 </span></code></pre><h2 id=he-xin-mo-kuai-shi-xian>核心模块实现</h2><h3 id=1-jian-li-jie-xi-ai-de-mo-fa>1. 简历解析：AI 的魔法</h3><p>简历解析的核心是调用 DeepSeek 大模型，将非结构化的简历文本转换为结构化的 JSON 数据。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parse_resume_with_llm</span><span>(</span><span style=color:#bf616a>text</span><span>: str) -> dict:
 </span><span>    </span><span style=color:#65737e>"""使用 LLM 解析简历文本"""
 </span><span>    client = </span><span style=color:#bf616a>OpenAI</span><span>(
@@ -174,21 +174,27 @@
         
         mermaid.initialize({
             startOnLoad: false,
-            theme: 'dark',
+            theme: 'base',
             themeVariables: {
-                primaryColor: '#a855f7',
-                primaryTextColor: '#fff',
-                primaryBorderColor: '#a855f7',
-                lineColor: '#06b6d4',
-                secondaryColor: '#16213e',
-                tertiaryColor: '#1a1a2e',
-                background: '#0f0f1a',
-                mainBkg: '#1a1a2e',
-                nodeBorder: '#a855f7',
-                clusterBkg: '#16213e',
-                clusterBorder: '#a855f7',
-                titleColor: '#ec4899',
-                edgeLabelBackground: '#1a1a2e'
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
             },
             flowchart: {
                 useMaxWidth: true,
@@ -207,4 +213,4 @@
 
         // 渲染所有 mermaid 图表
         await mermaid.run();
-    </script><style>.mermaid{background:#1a1a2e;border:1px solid #a855f7;border-radius:8px;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
