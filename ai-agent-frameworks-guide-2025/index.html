@@ -1,0 +1,97 @@
+<!doctype html><html><head><title>Polly Blog - AI Assistant, Tutorials, and Insights</title><meta content="Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology." name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>2025年AI Agent开发框架全景指南：从LangChain到Dify，如何选择适合你的那一款？</h1><div class=content><h2 id=yin-yan-agentshi-dai-yi-jing-dao-lai>引言：Agent时代已经到来</h2><p>最近几个月，我一直在思考一个问题：<strong>如果我现在要从零开始搭建一个AI Agent系统，应该选择哪个框架？</strong><p>这个问题看似简单，但当我真正开始调研时，发现答案远比想象中复杂。2025年的Agent开发生态已经高度繁荣——LangChain、AutoGen、CrewAI、Dify、Google ADK……每个框架都有自己的拥趸，每个都声称是"最佳选择"。<p>作为一个程序员，我决定花时间深入研究这些框架，搞清楚它们的真实能力边界。这篇文章是我调研的总结，希望能帮助同样在选型中纠结的你。</p><span id=continue-reading></span><h2 id=shi-yao-shi-ai-agent-wei-shi-yao-ta-hen-zhong-yao>什么是AI Agent？为什么它很重要？</h2><p>在深入框架对比之前，让我先明确一个概念：<strong>AI Agent不只是一个能聊天的机器人</strong>。<p>传统的LLM应用就像一个"问答机器"——你问它问题，它给你答案。但真正的AI Agent是一个能够<strong>自主规划、执行任务、调用工具、自我迭代</strong>的智能系统。你只需要告诉它目标，它会自己分解任务、编写代码、运行测试、发现问题、修复bug，直到完成整个流程。<p>Andrew Ng在他的Agentic课程中总结了四种Agent设计模式，我认为非常精辟：<ol><li><strong>Reflection（反思）</strong>：让Agent自己检查输出质量<li><strong>Tool Use（工具调用）</strong>：调用外部API和工具<li><strong>Planning（规划）</strong>：自动分解复杂任务<li><strong>Multi-Agent（多智能体）</strong>：多个Agent协作完成任务</ol><p>理解了这些模式，你就能更好地评估各个框架的设计哲学和适用场景。<h2 id=zhu-liu-kuang-jia-shen-du-pou-xi>主流框架深度剖析</h2><h3 id=1-langchain-langgraph-sheng-tai-zui-wan-shan-de-rui-shi-jun-dao>1. LangChain / LangGraph：生态最完善的"瑞士军刀"</h3><p><strong>定位</strong>：从"链"到"图"的演进<p>LangChain可能是大多数人接触Agent开发的第一个框架。它的生态极其完善，文档丰富，社区活跃。但随着Agent应用复杂度的提升，LangChain团队推出了<strong>LangGraph</strong>——用<strong>图结构</strong>代替传统的链式调用。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>langgraph.graph </span><span style=color:#b48ead>import </span><span>StateGraph
+</span><span>
+</span><span style=color:#65737e># LangGraph 用图来建模Agent工作流
+</span><span>workflow = </span><span style=color:#bf616a>StateGraph</span><span>(AgentState)
+</span><span>workflow.</span><span style=color:#bf616a>add_node</span><span>("</span><span style=color:#a3be8c>agent</span><span>", call_model)
+</span><span>workflow.</span><span style=color:#bf616a>add_node</span><span>("</span><span style=color:#a3be8c>tools</span><span>", call_tools)
+</span><span>workflow.</span><span style=color:#bf616a>add_conditional_edges</span><span>("</span><span style=color:#a3be8c>agent</span><span>", should_continue, {</span><span style=color:#d08770>...</span><span>})
+</span></code></pre><p><strong>核心优势</strong>：<ul><li>生态最完善，几乎所有LLM和工具都有官方集成<li>图结构支持循环、分支和并发，适合复杂流程<li>状态管理能力强，适合长时间运行的任务</ul><p><strong>性能表现</strong>：根据最新的benchmark测试，<strong>LangGraph在执行速度上是最快的</strong>，比CrewAI快2.2倍。这得益于其高效的状态处理机制。<p><strong>适用场景</strong>：需要强流程控制的场景，如工单审批、合规检查、复杂的条件分支逻辑。<h3 id=2-autogen-wei-ruan-chu-pin-de-duo-zhi-neng-ti-dui-hua-kuang-jia>2. AutoGen：微软出品的多智能体对话框架</h3><p><strong>定位</strong>：让多个Agent像人类一样对话协作<p>AutoGen是微软推出的多智能体框架，其核心理念是让多个Agent通过<strong>对话</strong>来协作完成任务。想象一下，一个"程序员Agent"和一个"测试工程师Agent"可以互相讨论代码问题，就像两个真实的同事一样。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>autogen </span><span style=color:#b48ead>import </span><span>AssistantAgent, UserProxyAgent
+</span><span>
+</span><span style=color:#65737e># 创建两个可以对话的Agent
+</span><span>assistant = </span><span style=color:#bf616a>AssistantAgent</span><span>("</span><span style=color:#a3be8c>assistant</span><span>", </span><span style=color:#bf616a>llm_config</span><span>=llm_config)
+</span><span>user_proxy = </span><span style=color:#bf616a>UserProxyAgent</span><span>("</span><span style=color:#a3be8c>user_proxy</span><span>", </span><span style=color:#bf616a>human_input_mode</span><span>="</span><span style=color:#a3be8c>NEVER</span><span>")
+</span><span>
+</span><span style=color:#65737e># 它们会自动对话直到任务完成
+</span><span>user_proxy.</span><span style=color:#bf616a>initiate_chat</span><span>(assistant, </span><span style=color:#bf616a>message</span><span>="</span><span style=color:#a3be8c>帮我写一个排序算法</span><span>")
+</span></code></pre><p><strong>核心优势</strong>：<ul><li>多Agent对话协作，模式自然直观<li>支持人机协作模式，可以在关键节点请求人类介入<li>企业级可靠性，错误处理和日志完善</ul><p><strong>性能表现</strong>：AutoGen在token效率上表现中等，与LangChain相比有8-9倍的差异。这主要是因为对话模式本身就需要更多的上下文传递。<p><strong>适用场景</strong>：需要多个AI角色协作的项目，如客服分诊、多角色代码审查。<h3 id=3-crewai-zui-jie-di-qi-de-tuan-dui-mo-ni-kuang-jia>3. CrewAI：最接地气的团队模拟框架</h3><p><strong>定位</strong>：像组建真实团队一样组建Agent团队<p>CrewAI的设计理念让我眼前一亮：<strong>每个Agent都有明确的"职位"和"个性"</strong>，就像真实公司的组织架构。你可以创建CEO、CTO、开发工程师、QA等角色，让它们各司其职。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>crewai </span><span style=color:#b48ead>import </span><span>Agent, Task, Crew
+</span><span>
+</span><span style=color:#65737e># 定义有明确角色的Agent
+</span><span>researcher = </span><span style=color:#bf616a>Agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>role</span><span>="</span><span style=color:#a3be8c>Senior Research Analyst</span><span>",
+</span><span>    </span><span style=color:#bf616a>goal</span><span>="</span><span style=color:#a3be8c>Uncover cutting-edge developments in AI</span><span>",
+</span><span>    </span><span style=color:#bf616a>backstory</span><span>="</span><span style=color:#a3be8c>You are an expert analyst at a tech think tank...</span><span>"
+</span><span>)
+</span><span>
+</span><span style=color:#65737e># 组建团队执行任务
+</span><span>crew = </span><span style=color:#bf616a>Crew</span><span>(</span><span style=color:#bf616a>agents</span><span>=[researcher, writer], </span><span style=color:#bf616a>tasks</span><span>=[research_task, write_task])
+</span></code></pre><p><strong>核心优势</strong>：<ul><li>角色定义清晰，代码可读性强<li>学习曲线最低，新手友好<li>快速原型开发的首选</ul><p><strong>性能表现</strong>：CrewAI在benchmark中执行速度最慢，比LangGraph慢2.2倍。这是因为框架内置了"自主审议"机制——Agent在调用工具前会先"思考"，这增加了延迟但提高了决策质量。<p><strong>适用场景</strong>：模拟复杂业务流程，如虚拟开发团队、内容创作工作流。据悉，Uber有超过21,000名开发者在使用CrewAI构建内部工具。<h3 id=4-dify-di-dai-ma-de-llmopsping-tai>4. Dify：低代码的LLMOps平台</h3><p><strong>定位</strong>：让非技术人员也能构建AI应用<p>如果你不想写太多代码，或者需要让产品、运营同事也能参与AI应用的构建，<strong>Dify</strong>是一个绝佳选择。<p>Dify在GitHub上拥有<strong>超过121,000颗星</strong>，是目前最受欢迎的AI应用开发平台之一。它的名字来源于"Design Intelligence For You"，定位非常明确：<strong>让AI应用开发从"手工作坊"升级为"标准化流水线"</strong>。<p><strong>核心优势</strong>：<ul><li><strong>可视化工作流</strong>：拖拽节点即可构建复杂Agent，1小时内可以上线一个客服机器人<li><strong>RAG内置</strong>：知识库管理、混合检索、Rerank一应俱全<li><strong>模型无关</strong>：一键切换OpenAI、DeepSeek、Claude、讯飞星火等20+模型<li><strong>LLMOps能力</strong>：自动记录对话日志，像"行车记录仪"般追踪AI表现<li><strong>完全开源</strong>：可以Docker自部署，数据完全自主可控</ul><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># Docker一键部署Dify
+</span><span style=color:#bf616a>git</span><span> clone https://github.com/langgenius/dify.git
+</span><span style=color:#96b5b4>cd</span><span> dify/docker
+</span><span style=color:#bf616a>docker-compose</span><span> up</span><span style=color:#bf616a> -d
+</span></code></pre><p><strong>适用场景</strong>：企业级AI应用快速落地、需要非技术人员参与的项目、需要完整LLMOps能力的团队。Dify在日本市场特别火爆，很多企业都用它构建内部AI门户。<h3 id=5-google-adk-code-firstde-guan-fang-chu-pin>5. Google ADK：Code-First的官方出品</h3><p><strong>定位</strong>：Google的Agent开发工具包<p>2025年4月，Google正式推出了<strong>Agent Development Kit (ADK)</strong>。作为Google官方出品，ADK的设计哲学是让Agent开发<strong>更像传统软件开发</strong>。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>google.adk.agents </span><span style=color:#b48ead>import </span><span>Agent
+</span><span>
+</span><span>root_agent = </span><span style=color:#bf616a>Agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>model</span><span>='</span><span style=color:#a3be8c>gemini-2.5-flash</span><span>',
+</span><span>    </span><span style=color:#bf616a>name</span><span>='</span><span style=color:#a3be8c>research_agent</span><span>',
+</span><span>    </span><span style=color:#bf616a>description</span><span>='</span><span style=color:#a3be8c>A helpful research assistant</span><span>',
+</span><span>    </span><span style=color:#bf616a>instruction</span><span>='</span><span style=color:#a3be8c>Help users research topics thoroughly</span><span>',
+</span><span>)
+</span></code></pre><p><strong>核心优势</strong>：<ul><li><strong>Gemini优化</strong>：与Google模型深度集成，性能最佳<li><strong>Vertex AI部署</strong>：一键部署到Google Cloud生产环境<li><strong>多语言支持</strong>：Python、Go、TypeScript都有官方支持<li><strong>MCP原生支持</strong>：Model Context Protocol作为一等公民</ul><p><strong>适用场景</strong>：Google Cloud用户、需要Gemini模型的项目、需要企业级部署能力的团队。<h3 id=6-qi-ta-zhi-de-guan-zhu-de-kuang-jia>6. 其他值得关注的框架</h3><table><thead><tr><th>框架<th>厂商<th>特点<tbody><tr><td><strong>OpenAI Agents SDK</strong><td>OpenAI<td>原Swarm，轻量级多Agent编排<tr><td><strong>Coze/扣子</strong><td>字节跳动<td>可视化Bot构建，有Bot商店<tr><td><strong>Microsoft Semantic Kernel</strong><td>Microsoft<td>企业级，Azure深度集成<tr><td><strong>n8n</strong><td>n8n<td>通用工作流自动化，支持AI节点<tr><td><strong>LlamaIndex</strong><td>LlamaIndex<td>专注数据检索和RAG</table><h2 id=xing-neng-benchmark-shu-ju-shuo-hua>性能Benchmark：数据说话</h2><p>最近的一项benchmark测试对LangGraph、LangChain、AutoGen和CrewAI进行了100次运行的性能对比，结果很有意思：<table><thead><tr><th>框架<th>执行速度<th>Token效率<th>状态处理<tbody><tr><td><strong>LangGraph</strong><td>🥇 最快<td>高<td>最高效<tr><td><strong>LangChain</strong><td>中等<td>较低（重度记忆管理）<td>良好<tr><td><strong>AutoGen</strong><td>中等<td>中等<td>可预测<tr><td><strong>CrewAI</strong><td>🥉 最慢（2.2x差距）<td>中等<td>良好</table><blockquote><p>注意：CrewAI虽然最慢，但这是因为其内置的自主审议机制。在需要高质量决策的场景，这种"慢"是值得的。</blockquote><h2 id=wo-de-xuan-xing-jian-yi>我的选型建议</h2><p>经过这番调研，我总结出一个简单的选型决策树：<pre style=background:#2b303b;color:#c0c5ce><code><span>你的场景是什么？
+</span><span>│
+</span><span>├─ 需要可视化/低代码？
+</span><span>│   ├─ 需要自部署/开源 → Dify
+</span><span>│   └─ 只用云端即可 → Coze/扣子
+</span><span>│
+</span><span>├─ 纯代码开发？
+</span><span>│   ├─ 需要复杂流程控制 → LangGraph
+</span><span>│   ├─ 需要多Agent对话协作 → AutoGen
+</span><span>│   ├─ 需要快速原型/角色模拟 → CrewAI
+</span><span>│   └─ 主要用Gemini模型 → Google ADK
+</span><span>│
+</span><span>└─ 不确定？
+</span><span>    └─ 从LangChain开始，它是最通用的选择
+</span></code></pre><h3 id=wo-de-shi-jian-xin-de>我的实践心得</h3><ol><li><p><strong>不要过度设计</strong>：很多场景其实用单个Agent + 工具调用就够了，不需要多Agent框架</p><li><p><strong>框架可以组合使用</strong>：比如用CrewAI定义多Agent协作流程，每个Agent内部用LangGraph管理状态，再调用LlamaIndex做数据检索</p><li><p><strong>配置驱动优于硬编码</strong>：用YAML/JSON定义工作流，代码只实现执行引擎，这样非技术人员也能调整流程</p><li><p><strong>重视可观测性</strong>：Agent系统的调试比传统软件难得多，选择有良好日志和追踪能力的框架</p></ol><h2 id=zhan-wang-agentkuang-jia-de-wei-lai>展望：Agent框架的未来</h2><p>2025年的Agent框架生态已经相当成熟，但我认为还有几个方向值得关注：<ol><li><p><strong>MCP协议的普及</strong>：Model Context Protocol正在成为Agent工具集成的标准，选择框架时要关注其MCP支持程度</p><li><p><strong>A2A通信协议</strong>：Google提出的Agent-to-Agent协议，可能成为多Agent系统互操作的标准</p><li><p><strong>边缘部署</strong>：随着模型量化技术的进步，Agent在边缘设备上运行将成为可能</p><li><p><strong>安全与合规</strong>：企业级Agent应用需要更完善的权限控制、审计日志和合规能力</p></ol><hr><p>Agent时代已经到来。选择一个合适的框架，是你踏入这个新世界的第一步。<p>希望这篇文章能帮助你做出更明智的选择。如果你有任何问题或想法，欢迎在评论区讨论。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
