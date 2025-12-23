@@ -5,8 +5,202 @@
     <link href="https://polly.wang/category/aigong-cheng/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-06-16T00:00:00+00:00</updated>
+    <updated>2025-12-24T00:00:00+00:00</updated>
     <id>https://polly.wang/category/aigong-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从0到1：我如何用一周时间打造一个专利级长文档翻译系统</title>
+        <published>2025-12-24T00:00:00+00:00</published>
+        <updated>2025-12-24T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/contextweave-mcp-journey/" type="text/html"/>
+        <id>https://polly.wang/contextweave-mcp-journey/</id>
+        
+        <content type="html">&lt;p&gt;今天是圣诞前夜，窗外的城市灯火阑珊，而我刚刚完成了一项让我颇有成就感的工作——将过去一周倾注心血的 &lt;strong&gt;Master-Translator-MCP-Server&lt;&#x2F;strong&gt; 项目整理成形，包括完整的专利申请材料和学术论文初稿。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇博文，我想记录一下这段充实的开发历程。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-dian-yi-ge-bei-hu-shi-de-tong-dian&quot;&gt;起点：一个被忽视的痛点&lt;&#x2F;h2&gt;
+&lt;p&gt;故事要从几个月前说起。当时我需要翻译一本60多万字的英文技术书籍。作为一个 AI 重度用户，我第一反应当然是找 Claude 或 GPT 帮忙。&lt;&#x2F;p&gt;
+&lt;p&gt;结果？&lt;strong&gt;惨不忍睹。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;首先是上下文窗口的硬限制——即使是 Claude 的 200K 上下文，也装不下整本书。我不得不手动分块，复制粘贴，再复制粘贴...&lt;&#x2F;p&gt;
+&lt;p&gt;更糟糕的是，我发现翻译结果存在严重的 &lt;strong&gt;&amp;quot;偷懒&amp;quot;&lt;&#x2F;strong&gt; 现象：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;原文10段，译文只剩7段&lt;&#x2F;li&gt;
+&lt;li&gt;专业术语前后翻译不一致，同一个词在不同章节有3种翻法&lt;&#x2F;li&gt;
+&lt;li&gt;分块边界处语义断裂，&amp;quot;他&amp;quot;指的是谁完全搞不清楚&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这让我意识到：&lt;strong&gt;长文档翻译，现有的 LLM 工具根本没有真正解决。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-da-he-xin-tiao-zhan&quot;&gt;五大核心挑战&lt;&#x2F;h2&gt;
+&lt;p&gt;经过系统分析，我归纳出 LLM 长文档翻译的五个核心技术挑战：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;挑战&lt;&#x2F;th&gt;&lt;th&gt;问题表现&lt;&#x2F;th&gt;&lt;th&gt;影响&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;上下文窗口限制&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;60万字符超出200K tokens&lt;&#x2F;td&gt;&lt;td&gt;必须分块，如何分？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;内容缩水&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;15-30%内容丢失&lt;&#x2F;td&gt;&lt;td&gt;译文不完整&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;术语不一致&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;同词多译&lt;&#x2F;td&gt;&lt;td&gt;专业性下降&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;上下文断裂&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;指代不清、逻辑断层&lt;&#x2F;td&gt;&lt;td&gt;可读性差&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;边界重叠&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;重叠区域内容重复&lt;&#x2F;td&gt;&lt;td&gt;需要智能去重&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;市面上的解决方案要么是简单的固定大小分块（LangChain的text splitters），要么需要人工干预合并结果。没有一个&lt;strong&gt;端到端&lt;&#x2F;strong&gt;的完整方案。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;那，为什么不自己造一个？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-xiang-zhuan-li-ji-chuang-xin&quot;&gt;七项专利级创新&lt;&#x2F;h2&gt;
+&lt;p&gt;带着这个想法，我开始设计 &lt;strong&gt;ContextWeave&lt;&#x2F;strong&gt; 框架。经过多轮迭代，最终形成了七项核心创新：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-zhang-jie-gan-zhi-zhi-neng-fen-kuai&quot;&gt;1. 章节感知智能分块&lt;&#x2F;h3&gt;
+&lt;p&gt;传统分块按字符数切割，可能把一句话切成两半。我的方案不同：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;传统方案：|----3000字---|----3000字---|----3000字---|
+&lt;&#x2F;span&gt;&lt;span&gt;         └─ 可能在句子中间切断
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;我的方案：|--第1章(2800字)--|--第2章(3500字)--|--第3章(2700字)--|
+&lt;&#x2F;span&gt;&lt;span&gt;         └─ 永远在章节边界切分
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;核心思路是&lt;strong&gt;解析文档的标题层级（H1-H6）&lt;&#x2F;strong&gt;，构建章节树，然后按语义单元聚合成块。这样每个分块都是一个完整的语义单元，不会在段落或句子中间断开。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-kua-kuai-shang-xia-wen-bian-zhi&quot;&gt;2. 跨块上下文编织&lt;&#x2F;h3&gt;
+&lt;p&gt;这是我最得意的创新之一。翻译第N块时，我会注入两类信息：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;术语表&lt;&#x2F;strong&gt;：之前所有块中出现的专业术语及其译法&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前文上下文&lt;&#x2F;strong&gt;：上一块最后几个段落的译文&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这样 LLM 在翻译当前块时，既知道术语该怎么译，又能理解前文讲了什么。术语一致性问题，迎刃而解。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-shuang-ceng-zhong-die-jian-ce&quot;&gt;3. 双层重叠检测&lt;&#x2F;h3&gt;
+&lt;p&gt;合并翻译块时，我使用&lt;strong&gt;双层检测策略&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;标题级精确匹配&lt;&#x2F;strong&gt;：检测重复的章节标题&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;段落级相似度检测&lt;&#x2F;strong&gt;：对边界附近段落计算相似度，识别重复内容&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;然后执行智能裁剪，确保合并结果干净无重复。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-fan-yi-wan-zheng-xing-yan-zheng&quot;&gt;4. 翻译完整性验证&lt;&#x2F;h3&gt;
+&lt;p&gt;这是防止 LLM &amp;quot;偷懒&amp;quot; 的关键机制：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;validate_translation&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;translated&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 统计对比
+&lt;&#x2F;span&gt;&lt;span&gt;    orig_paragraphs = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;count_paragraphs&lt;&#x2F;span&gt;&lt;span&gt;(original)
+&lt;&#x2F;span&gt;&lt;span&gt;    trans_paragraphs = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;count_paragraphs&lt;&#x2F;span&gt;&lt;span&gt;(translated)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 段落保持率必须 &amp;gt; 95%
+&lt;&#x2F;span&gt;&lt;span&gt;    retention_rate = trans_paragraphs &#x2F; orig_paragraphs
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;retention_rate &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.95&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;raise &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IntegrityError&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;译文内容可能不完整&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;通过段落数、行数、标题数的多维度对比，强制保证译文不缩水。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-llm-shu-chu-jing-hua&quot;&gt;5. LLM 输出净化&lt;&#x2F;h3&gt;
+&lt;p&gt;你有没有遇到过这种情况——让 LLM 翻译，结果输出里夹杂着 &lt;code&gt;[CONTEXT]&lt;&#x2F;code&gt;、&lt;code&gt;[TERMINOLOGY]&lt;&#x2F;code&gt; 这类标签？&lt;&#x2F;p&gt;
+&lt;p&gt;我的净化模块会自动检测并移除这些污染内容：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prompt 残留标签&lt;&#x2F;li&gt;
+&lt;li&gt;上下文注入标记&lt;&#x2F;li&gt;
+&lt;li&gt;指令性文本&lt;&#x2F;li&gt;
+&lt;li&gt;多余的格式标记&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;6-server-side-llm-diao-yong&quot;&gt;6. Server-Side LLM 调用&lt;&#x2F;h3&gt;
+&lt;p&gt;传统 MCP 服务器只提供工具，实际翻译需要客户端调用 LLM。我的创新是&lt;strong&gt;在服务端完成 LLM 调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 用户只需一行调用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;translate_document&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;document_path&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;book.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_language&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;chinese&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 服务端自动完成：分块 → 翻译 → 验证 → 合并 → 导出
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;真正的端到端自动化，无需人工干预。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;7-mcp-xie-yi-biao-zhun-hua&quot;&gt;7. MCP 协议标准化&lt;&#x2F;h3&gt;
+&lt;p&gt;所有功能都通过 &lt;strong&gt;Model Context Protocol&lt;&#x2F;strong&gt; 标准化暴露：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;12个 Tools&lt;&#x2F;strong&gt;：翻译、分析、验证、导出等&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;3个 Resources&lt;&#x2F;strong&gt;：术语库、任务状态、服务器配置&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;3个 Prompts&lt;&#x2F;strong&gt;：翻译、术语提取、质量检查模板&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这意味着 Claude、VS Code Copilot、Cursor 等任何支持 MCP 的客户端都能直接使用。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-dai-ma-dao-zhuan-li&quot;&gt;从代码到专利&lt;&#x2F;h2&gt;
+&lt;p&gt;当我把这七项创新整理出来后，我意识到：&lt;strong&gt;这些算法具有专利价值&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;于是，我花了一整天时间，完成了两份专利申请材料：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhong-wen-zhuan-li-shen-qing-shu&quot;&gt;中文专利申请书&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 发明名称
+&lt;&#x2F;span&gt;&lt;span&gt;一种基于模型上下文协议的长文档完整性翻译系统及方法
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 摘要
+&lt;&#x2F;span&gt;&lt;span&gt;本发明公开了一种基于模型上下文协议（MCP）的长文档完整性翻译系统，
+&lt;&#x2F;span&gt;&lt;span&gt;包括：章节感知分块模块、跨块上下文编织模块、边界重叠检测模块、
+&lt;&#x2F;span&gt;&lt;span&gt;翻译完整性验证模块、LLM输出净化模块...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;ying-wen-zhuan-li-shen-qing-shu&quot;&gt;英文专利申请书&lt;&#x2F;h3&gt;
+&lt;p&gt;同时准备了 Microsoft 格式的 Invention Disclosure Form，为可能的国际专利申请做准备。&lt;&#x2F;p&gt;
+&lt;p&gt;关键的&lt;strong&gt;权利要求书&lt;&#x2F;strong&gt;涵盖：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;系统权利要求（独立权利要求 + 从属权利要求）&lt;&#x2F;li&gt;
+&lt;li&gt;方法权利要求（步骤流程）&lt;&#x2F;li&gt;
+&lt;li&gt;计算机可读存储介质权利要求&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;cong-dai-ma-dao-lun-wen&quot;&gt;从代码到论文&lt;&#x2F;h2&gt;
+&lt;p&gt;专利之外，我还希望将这项工作发表到学术会议上。于是开始撰写论文初稿。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;lun-wen-biao-ti&quot;&gt;论文标题&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ContextWeave: A Section-Aware Chunking and Context Weaving Framework for Long Document Translation with Large Language Models&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;lun-wen-jie-gou&quot;&gt;论文结构&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Abstract&lt;&#x2F;strong&gt;：250词，涵盖问题、方法、结果、贡献&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Introduction&lt;&#x2F;strong&gt;：五大挑战、我们的方案、主要贡献&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Related Work&lt;&#x2F;strong&gt;：NMT发展史、LLM翻译、分块策略、MCP协议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Methodology&lt;&#x2F;strong&gt;：四个核心算法的伪代码&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Experiments&lt;&#x2F;strong&gt;：数据集、基线、指标、结果&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Conclusion&lt;&#x2F;strong&gt;：总结与展望&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;mu-biao-hui-yi&quot;&gt;目标会议&lt;&#x2F;h3&gt;
+&lt;p&gt;经过调研，我规划了以下投稿时间线：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;会议&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;地点&lt;&#x2F;th&gt;&lt;th&gt;截止日期&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;ACL 2026&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;7月2-7日&lt;&#x2F;td&gt;&lt;td&gt;圣地亚哥&lt;&#x2F;td&gt;&lt;td&gt;~2月15日 ARR&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LREC-COLING 2026&lt;&#x2F;td&gt;&lt;td&gt;5月11-16日&lt;&#x2F;td&gt;&lt;td&gt;西班牙&lt;&#x2F;td&gt;&lt;td&gt;~1-2月&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;AMTA 2026&lt;&#x2F;td&gt;&lt;td&gt;8月31日-9月2日&lt;&#x2F;td&gt;&lt;td&gt;魁北克城&lt;&#x2F;td&gt;&lt;td&gt;~4-5月&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;主攻 &lt;strong&gt;ACL 2026&lt;&#x2F;strong&gt;，备选 AMTA 2026。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-zhan-yi-lan&quot;&gt;技术栈一览&lt;&#x2F;h2&gt;
+&lt;p&gt;整个项目的技术选型：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组件&lt;&#x2F;th&gt;&lt;th&gt;技术&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;协议&lt;&#x2F;td&gt;&lt;td&gt;Model Context Protocol (MCP)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;语言&lt;&#x2F;td&gt;&lt;td&gt;Python 3.11+&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;依赖管理&lt;&#x2F;td&gt;&lt;td&gt;Poetry&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LLM&lt;&#x2F;td&gt;&lt;td&gt;DeepSeek &#x2F; Claude &#x2F; GPT-4o&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文档处理&lt;&#x2F;td&gt;&lt;td&gt;python-docx&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;服务框架&lt;&#x2F;td&gt;&lt;td&gt;FastMCP&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;项目结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Master-Translator-MCP-Server&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── src&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── server.py          # MCP 主入口
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── translator.py      # 翻译编排器
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── chunk_engine.py    # 章节感知分块
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── context_weaver.py  # 上下文编织
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── quality_validator.py  # 完整性验证
+&lt;&#x2F;span&gt;&lt;span&gt;├── Paper&#x2F;                 # 学术论文
+&lt;&#x2F;span&gt;&lt;span&gt;├── Patent&#x2F;                # 专利申请
+&lt;&#x2F;span&gt;&lt;span&gt;└── config.env             # 配置文件
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;xing-neng-zhi-biao&quot;&gt;性能指标&lt;&#x2F;h2&gt;
+&lt;p&gt;目前的测试数据：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;最大文档&lt;&#x2F;td&gt;&lt;td&gt;60万+ 字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;分块大小&lt;&#x2F;td&gt;&lt;td&gt;30,000 字符&#x2F;块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;翻译速度&lt;&#x2F;td&gt;&lt;td&gt;~5分钟&#x2F;7万字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;段落保持率&lt;&#x2F;td&gt;&lt;td&gt;98.5%（vs 固定分块的72.3%）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;术语一致性提升&lt;&#x2F;td&gt;&lt;td&gt;85%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;成本&lt;&#x2F;td&gt;&lt;td&gt;~$0.10&#x2F;7万字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;从发现痛点，到设计方案，到写代码，到整理专利，到撰写论文——这大概是我今年最充实的一周。&lt;&#x2F;p&gt;
+&lt;p&gt;回顾这段经历，我有几点感悟：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;痛点即机会&lt;&#x2F;strong&gt;：当你被一个问题反复困扰时，可能正是创新的起点&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;系统性思考&lt;&#x2F;strong&gt;：把问题拆解成多个子问题，逐个击破&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;标准化很重要&lt;&#x2F;strong&gt;：MCP 协议让我的工具能被整个生态复用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;知识产权意识&lt;&#x2F;strong&gt;：好的创新值得用专利和论文来保护和传播&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;明天就是圣诞节了。送给自己的最好礼物，大概就是一个能真正解决问题的工具，和一份完整的技术文档吧。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;项目地址：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Master-Translator-MCP-Server&quot;&gt;Master-Translator-MCP-Server&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;欢迎 Star 和 Issue！&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Merry Christmas! 🎄&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从传统到智能：构建丽江客栈抖音视频生成MCP服务器的完整实践</title>
         <published>2025-06-16T00:00:00+00:00</published>
@@ -429,200 +623,6 @@
 &lt;hr &#x2F;&gt;
 &lt;p&gt;&lt;em&gt;项目源码已开源，欢迎Star和Fork：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;polly&#x2F;lijiang-ai-mcp-server&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;polly&#x2F;lijiang-ai-mcp-server&lt;&#x2F;a&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;em&gt;如果你对MCP服务器开发或AI工程实践有兴趣，欢迎在评论区交流讨论！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
-</content>
-        
-    </entry>
-    <entry xml:lang="en">
-        <title>从0到1：我如何用一周时间打造一个专利级长文档翻译系统</title>
-        <published>2024-12-24T00:00:00+00:00</published>
-        <updated>2024-12-24T00:00:00+00:00</updated>
-        <author>
-          <name>Unknown</name>
-        </author>
-        <link rel="alternate" href="https://polly.wang/contextweave-mcp-journey/" type="text/html"/>
-        <id>https://polly.wang/contextweave-mcp-journey/</id>
-        
-        <content type="html">&lt;p&gt;今天是圣诞前夜，窗外的城市灯火阑珊，而我刚刚完成了一项让我颇有成就感的工作——将过去一周倾注心血的 &lt;strong&gt;Master-Translator-MCP-Server&lt;&#x2F;strong&gt; 项目整理成形，包括完整的专利申请材料和学术论文初稿。&lt;&#x2F;p&gt;
-&lt;p&gt;这篇博文，我想记录一下这段充实的开发历程。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;qi-dian-yi-ge-bei-hu-shi-de-tong-dian&quot;&gt;起点：一个被忽视的痛点&lt;&#x2F;h2&gt;
-&lt;p&gt;故事要从几个月前说起。当时我需要翻译一本60多万字的英文技术书籍。作为一个 AI 重度用户，我第一反应当然是找 Claude 或 GPT 帮忙。&lt;&#x2F;p&gt;
-&lt;p&gt;结果？&lt;strong&gt;惨不忍睹。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;首先是上下文窗口的硬限制——即使是 Claude 的 200K 上下文，也装不下整本书。我不得不手动分块，复制粘贴，再复制粘贴...&lt;&#x2F;p&gt;
-&lt;p&gt;更糟糕的是，我发现翻译结果存在严重的 &lt;strong&gt;&amp;quot;偷懒&amp;quot;&lt;&#x2F;strong&gt; 现象：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;原文10段，译文只剩7段&lt;&#x2F;li&gt;
-&lt;li&gt;专业术语前后翻译不一致，同一个词在不同章节有3种翻法&lt;&#x2F;li&gt;
-&lt;li&gt;分块边界处语义断裂，&amp;quot;他&amp;quot;指的是谁完全搞不清楚&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;这让我意识到：&lt;strong&gt;长文档翻译，现有的 LLM 工具根本没有真正解决。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;wu-da-he-xin-tiao-zhan&quot;&gt;五大核心挑战&lt;&#x2F;h2&gt;
-&lt;p&gt;经过系统分析，我归纳出 LLM 长文档翻译的五个核心技术挑战：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;挑战&lt;&#x2F;th&gt;&lt;th&gt;问题表现&lt;&#x2F;th&gt;&lt;th&gt;影响&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;上下文窗口限制&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;60万字符超出200K tokens&lt;&#x2F;td&gt;&lt;td&gt;必须分块，如何分？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;内容缩水&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;15-30%内容丢失&lt;&#x2F;td&gt;&lt;td&gt;译文不完整&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;术语不一致&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;同词多译&lt;&#x2F;td&gt;&lt;td&gt;专业性下降&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;上下文断裂&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;指代不清、逻辑断层&lt;&#x2F;td&gt;&lt;td&gt;可读性差&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;边界重叠&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;重叠区域内容重复&lt;&#x2F;td&gt;&lt;td&gt;需要智能去重&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;市面上的解决方案要么是简单的固定大小分块（LangChain的text splitters），要么需要人工干预合并结果。没有一个&lt;strong&gt;端到端&lt;&#x2F;strong&gt;的完整方案。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;那，为什么不自己造一个？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;qi-xiang-zhuan-li-ji-chuang-xin&quot;&gt;七项专利级创新&lt;&#x2F;h2&gt;
-&lt;p&gt;带着这个想法，我开始设计 &lt;strong&gt;ContextWeave&lt;&#x2F;strong&gt; 框架。经过多轮迭代，最终形成了七项核心创新：&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;1-zhang-jie-gan-zhi-zhi-neng-fen-kuai&quot;&gt;1. 章节感知智能分块&lt;&#x2F;h3&gt;
-&lt;p&gt;传统分块按字符数切割，可能把一句话切成两半。我的方案不同：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;传统方案：|----3000字---|----3000字---|----3000字---|
-&lt;&#x2F;span&gt;&lt;span&gt;         └─ 可能在句子中间切断
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;我的方案：|--第1章(2800字)--|--第2章(3500字)--|--第3章(2700字)--|
-&lt;&#x2F;span&gt;&lt;span&gt;         └─ 永远在章节边界切分
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;核心思路是&lt;strong&gt;解析文档的标题层级（H1-H6）&lt;&#x2F;strong&gt;，构建章节树，然后按语义单元聚合成块。这样每个分块都是一个完整的语义单元，不会在段落或句子中间断开。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;2-kua-kuai-shang-xia-wen-bian-zhi&quot;&gt;2. 跨块上下文编织&lt;&#x2F;h3&gt;
-&lt;p&gt;这是我最得意的创新之一。翻译第N块时，我会注入两类信息：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;术语表&lt;&#x2F;strong&gt;：之前所有块中出现的专业术语及其译法&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;前文上下文&lt;&#x2F;strong&gt;：上一块最后几个段落的译文&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;这样 LLM 在翻译当前块时，既知道术语该怎么译，又能理解前文讲了什么。术语一致性问题，迎刃而解。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;3-shuang-ceng-zhong-die-jian-ce&quot;&gt;3. 双层重叠检测&lt;&#x2F;h3&gt;
-&lt;p&gt;合并翻译块时，我使用&lt;strong&gt;双层检测策略&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;标题级精确匹配&lt;&#x2F;strong&gt;：检测重复的章节标题&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;段落级相似度检测&lt;&#x2F;strong&gt;：对边界附近段落计算相似度，识别重复内容&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;p&gt;然后执行智能裁剪，确保合并结果干净无重复。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;4-fan-yi-wan-zheng-xing-yan-zheng&quot;&gt;4. 翻译完整性验证&lt;&#x2F;h3&gt;
-&lt;p&gt;这是防止 LLM &amp;quot;偷懒&amp;quot; 的关键机制：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;validate_translation&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;translated&lt;&#x2F;span&gt;&lt;span&gt;):
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 统计对比
-&lt;&#x2F;span&gt;&lt;span&gt;    orig_paragraphs = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;count_paragraphs&lt;&#x2F;span&gt;&lt;span&gt;(original)
-&lt;&#x2F;span&gt;&lt;span&gt;    trans_paragraphs = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;count_paragraphs&lt;&#x2F;span&gt;&lt;span&gt;(translated)
-&lt;&#x2F;span&gt;&lt;span&gt;    
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 段落保持率必须 &amp;gt; 95%
-&lt;&#x2F;span&gt;&lt;span&gt;    retention_rate = trans_paragraphs &#x2F; orig_paragraphs
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;retention_rate &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.95&lt;&#x2F;span&gt;&lt;span&gt;:
-&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;raise &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IntegrityError&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;译文内容可能不完整&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;通过段落数、行数、标题数的多维度对比，强制保证译文不缩水。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;5-llm-shu-chu-jing-hua&quot;&gt;5. LLM 输出净化&lt;&#x2F;h3&gt;
-&lt;p&gt;你有没有遇到过这种情况——让 LLM 翻译，结果输出里夹杂着 &lt;code&gt;[CONTEXT]&lt;&#x2F;code&gt;、&lt;code&gt;[TERMINOLOGY]&lt;&#x2F;code&gt; 这类标签？&lt;&#x2F;p&gt;
-&lt;p&gt;我的净化模块会自动检测并移除这些污染内容：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;Prompt 残留标签&lt;&#x2F;li&gt;
-&lt;li&gt;上下文注入标记&lt;&#x2F;li&gt;
-&lt;li&gt;指令性文本&lt;&#x2F;li&gt;
-&lt;li&gt;多余的格式标记&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;6-server-side-llm-diao-yong&quot;&gt;6. Server-Side LLM 调用&lt;&#x2F;h3&gt;
-&lt;p&gt;传统 MCP 服务器只提供工具，实际翻译需要客户端调用 LLM。我的创新是&lt;strong&gt;在服务端完成 LLM 调用&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 用户只需一行调用
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;translate_document&lt;&#x2F;span&gt;&lt;span&gt;(
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;document_path&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;book.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_language&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;chinese&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;span&gt;)
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 服务端自动完成：分块 → 翻译 → 验证 → 合并 → 导出
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;真正的端到端自动化，无需人工干预。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;7-mcp-xie-yi-biao-zhun-hua&quot;&gt;7. MCP 协议标准化&lt;&#x2F;h3&gt;
-&lt;p&gt;所有功能都通过 &lt;strong&gt;Model Context Protocol&lt;&#x2F;strong&gt; 标准化暴露：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;12个 Tools&lt;&#x2F;strong&gt;：翻译、分析、验证、导出等&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;3个 Resources&lt;&#x2F;strong&gt;：术语库、任务状态、服务器配置&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;3个 Prompts&lt;&#x2F;strong&gt;：翻译、术语提取、质量检查模板&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;这意味着 Claude、VS Code Copilot、Cursor 等任何支持 MCP 的客户端都能直接使用。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;cong-dai-ma-dao-zhuan-li&quot;&gt;从代码到专利&lt;&#x2F;h2&gt;
-&lt;p&gt;当我把这七项创新整理出来后，我意识到：&lt;strong&gt;这些算法具有专利价值&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
-&lt;p&gt;于是，我花了一整天时间，完成了两份专利申请材料：&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;zhong-wen-zhuan-li-shen-qing-shu&quot;&gt;中文专利申请书&lt;&#x2F;h3&gt;
-&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 发明名称
-&lt;&#x2F;span&gt;&lt;span&gt;一种基于模型上下文协议的长文档完整性翻译系统及方法
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 摘要
-&lt;&#x2F;span&gt;&lt;span&gt;本发明公开了一种基于模型上下文协议（MCP）的长文档完整性翻译系统，
-&lt;&#x2F;span&gt;&lt;span&gt;包括：章节感知分块模块、跨块上下文编织模块、边界重叠检测模块、
-&lt;&#x2F;span&gt;&lt;span&gt;翻译完整性验证模块、LLM输出净化模块...
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h3 id=&quot;ying-wen-zhuan-li-shen-qing-shu&quot;&gt;英文专利申请书&lt;&#x2F;h3&gt;
-&lt;p&gt;同时准备了 Microsoft 格式的 Invention Disclosure Form，为可能的国际专利申请做准备。&lt;&#x2F;p&gt;
-&lt;p&gt;关键的&lt;strong&gt;权利要求书&lt;&#x2F;strong&gt;涵盖：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;系统权利要求（独立权利要求 + 从属权利要求）&lt;&#x2F;li&gt;
-&lt;li&gt;方法权利要求（步骤流程）&lt;&#x2F;li&gt;
-&lt;li&gt;计算机可读存储介质权利要求&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h2 id=&quot;cong-dai-ma-dao-lun-wen&quot;&gt;从代码到论文&lt;&#x2F;h2&gt;
-&lt;p&gt;专利之外，我还希望将这项工作发表到学术会议上。于是开始撰写论文初稿。&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;lun-wen-biao-ti&quot;&gt;论文标题&lt;&#x2F;h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;ContextWeave: A Section-Aware Chunking and Context Weaving Framework for Long Document Translation with Large Language Models&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;&#x2F;blockquote&gt;
-&lt;h3 id=&quot;lun-wen-jie-gou&quot;&gt;论文结构&lt;&#x2F;h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Abstract&lt;&#x2F;strong&gt;：250词，涵盖问题、方法、结果、贡献&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Introduction&lt;&#x2F;strong&gt;：五大挑战、我们的方案、主要贡献&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Related Work&lt;&#x2F;strong&gt;：NMT发展史、LLM翻译、分块策略、MCP协议&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Methodology&lt;&#x2F;strong&gt;：四个核心算法的伪代码&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Experiments&lt;&#x2F;strong&gt;：数据集、基线、指标、结果&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;Conclusion&lt;&#x2F;strong&gt;：总结与展望&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h3 id=&quot;mu-biao-hui-yi&quot;&gt;目标会议&lt;&#x2F;h3&gt;
-&lt;p&gt;经过调研，我规划了以下投稿时间线：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;会议&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;地点&lt;&#x2F;th&gt;&lt;th&gt;截止日期&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;ACL 2026&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;7月2-7日&lt;&#x2F;td&gt;&lt;td&gt;圣地亚哥&lt;&#x2F;td&gt;&lt;td&gt;~2月15日 ARR&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;LREC-COLING 2026&lt;&#x2F;td&gt;&lt;td&gt;5月11-16日&lt;&#x2F;td&gt;&lt;td&gt;西班牙&lt;&#x2F;td&gt;&lt;td&gt;~1-2月&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;AMTA 2026&lt;&#x2F;td&gt;&lt;td&gt;8月31日-9月2日&lt;&#x2F;td&gt;&lt;td&gt;魁北克城&lt;&#x2F;td&gt;&lt;td&gt;~4-5月&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;主攻 &lt;strong&gt;ACL 2026&lt;&#x2F;strong&gt;，备选 AMTA 2026。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;ji-zhu-zhan-yi-lan&quot;&gt;技术栈一览&lt;&#x2F;h2&gt;
-&lt;p&gt;整个项目的技术选型：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组件&lt;&#x2F;th&gt;&lt;th&gt;技术&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;协议&lt;&#x2F;td&gt;&lt;td&gt;Model Context Protocol (MCP)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;语言&lt;&#x2F;td&gt;&lt;td&gt;Python 3.11+&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;依赖管理&lt;&#x2F;td&gt;&lt;td&gt;Poetry&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;LLM&lt;&#x2F;td&gt;&lt;td&gt;DeepSeek &#x2F; Claude &#x2F; GPT-4o&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;文档处理&lt;&#x2F;td&gt;&lt;td&gt;python-docx&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;服务框架&lt;&#x2F;td&gt;&lt;td&gt;FastMCP&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;项目结构：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Master-Translator-MCP-Server&#x2F;
-&lt;&#x2F;span&gt;&lt;span&gt;├── src&#x2F;
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── server.py          # MCP 主入口
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── translator.py      # 翻译编排器
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── chunk_engine.py    # 章节感知分块
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── context_weaver.py  # 上下文编织
-&lt;&#x2F;span&gt;&lt;span&gt;│   └── quality_validator.py  # 完整性验证
-&lt;&#x2F;span&gt;&lt;span&gt;├── Paper&#x2F;                 # 学术论文
-&lt;&#x2F;span&gt;&lt;span&gt;├── Patent&#x2F;                # 专利申请
-&lt;&#x2F;span&gt;&lt;span&gt;└── config.env             # 配置文件
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;h2 id=&quot;xing-neng-zhi-biao&quot;&gt;性能指标&lt;&#x2F;h2&gt;
-&lt;p&gt;目前的测试数据：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;最大文档&lt;&#x2F;td&gt;&lt;td&gt;60万+ 字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;分块大小&lt;&#x2F;td&gt;&lt;td&gt;30,000 字符&#x2F;块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;翻译速度&lt;&#x2F;td&gt;&lt;td&gt;~5分钟&#x2F;7万字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;段落保持率&lt;&#x2F;td&gt;&lt;td&gt;98.5%（vs 固定分块的72.3%）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;术语一致性提升&lt;&#x2F;td&gt;&lt;td&gt;85%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;成本&lt;&#x2F;td&gt;&lt;td&gt;~$0.10&#x2F;7万字符&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
-&lt;p&gt;从发现痛点，到设计方案，到写代码，到整理专利，到撰写论文——这大概是我今年最充实的一周。&lt;&#x2F;p&gt;
-&lt;p&gt;回顾这段经历，我有几点感悟：&lt;&#x2F;p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;痛点即机会&lt;&#x2F;strong&gt;：当你被一个问题反复困扰时，可能正是创新的起点&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;系统性思考&lt;&#x2F;strong&gt;：把问题拆解成多个子问题，逐个击破&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;标准化很重要&lt;&#x2F;strong&gt;：MCP 协议让我的工具能被整个生态复用&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;知识产权意识&lt;&#x2F;strong&gt;：好的创新值得用专利和论文来保护和传播&lt;&#x2F;li&gt;
-&lt;&#x2F;ol&gt;
-&lt;p&gt;明天就是圣诞节了。送给自己的最好礼物，大概就是一个能真正解决问题的工具，和一份完整的技术文档吧。&lt;&#x2F;p&gt;
-&lt;hr &#x2F;&gt;
-&lt;blockquote&gt;
-&lt;p&gt;项目地址：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Master-Translator-MCP-Server&quot;&gt;Master-Translator-MCP-Server&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;欢迎 Star 和 Issue！&lt;&#x2F;p&gt;
-&lt;&#x2F;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Merry Christmas! 🎄&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 </content>
         
     </entry>
