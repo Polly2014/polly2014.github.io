@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - LaTeX公式</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/latexgong-shi/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-12-27T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/latexgong-shi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>2025年PDF转Markdown工具终极指南：MinerU、Marker、Nougat等8款工具深度对比</title>
+        <published>2025-12-27T00:00:00+00:00</published>
+        <updated>2025-12-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/pdf-to-markdown-tools-comparison-2025/" type="text/html"/>
+        <id>https://polly.wang/pdf-to-markdown-tools-comparison-2025/</id>
+        
+        <content type="html">&lt;p&gt;最近在处理一本技术书籍《AV1视频编解码标准：原理与算法实现》的翻译工作时，我需要将PDF转换为Markdown格式。这本书包含大量数学公式、复杂表格和技术图表，普通的&lt;code&gt;pdftotext&lt;&#x2F;code&gt;工具完全无法胜任。于是我花了相当多的时间研究和测试各种PDF转Markdown工具，在这里分享我的发现和实战经验。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-xu-yao-gao-zhi-liang-de-pdfzhuan-markdowngong-ju&quot;&gt;为什么需要高质量的PDF转Markdown工具？&lt;&#x2F;h2&gt;
+&lt;p&gt;在AI时代，文档的结构化处理变得越来越重要。无论是构建RAG（检索增强生成）系统、训练语言模型，还是简单地将技术书籍数字化以便翻译和编辑，我们都需要将PDF转换为机器可读的格式。&lt;&#x2F;p&gt;
+&lt;p&gt;传统工具如&lt;code&gt;pdftotext&lt;&#x2F;code&gt;存在诸多问题：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;公式丢失&lt;&#x2F;strong&gt;：数学公式变成乱码或完全丢失&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;表格崩坏&lt;&#x2F;strong&gt;：精心排版的表格变成一团乱麻&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;图片忽略&lt;&#x2F;strong&gt;：重要的图表完全被跳过&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;换行混乱&lt;&#x2F;strong&gt;：页眉页脚混入正文，段落被随意切割&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;阅读顺序错误&lt;&#x2F;strong&gt;：多栏布局导致文本顺序混乱&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;好消息是，2024-2025年间涌现了一批基于深度学习的PDF解析工具，它们能够很好地解决这些问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ba-kuan-zhu-liu-gong-ju-shen-du-dui-bi&quot;&gt;八款主流工具深度对比&lt;&#x2F;h2&gt;
+&lt;p&gt;经过大量研究和实际测试，我整理了目前最值得关注的8款PDF转Markdown工具：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bar-chart-gong-neng-dui-bi-zong-lan&quot;&gt;📊 功能对比总览&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;公式支持&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;表格支持&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;图片提取&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;中文支持&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;开源&lt;&#x2F;th&gt;&lt;th&gt;适用场景&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MinerU&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;中文技术文档首选&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Marker&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;快速批量处理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Nougat&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;英文学术论文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;olmOCR&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;大规模文档处理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Docling&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;轻量级转换&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;pdf-craft&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;电子书制作&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Mathpix&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;专业级商用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;HunyuanOCR&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;新兴之星&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;1-mineru-zhong-wen-wen-dang-chu-li-de-wang-zhe&quot;&gt;1. MinerU —— 中文文档处理的王者&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;opendatalab&#x2F;MinerU&quot;&gt;opendatalab&#x2F;MinerU&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;最新版本&lt;&#x2F;strong&gt;: v1.3.12 (2025年4月)&lt;&#x2F;p&gt;
+&lt;p&gt;MinerU由上海AI实验室的OpenDataLab团队开发，是目前处理中文技术文档的最佳选择。在OmniDocBench评测中得分&lt;strong&gt;90.67&lt;&#x2F;strong&gt;，布局检测能力更是高达&lt;strong&gt;97.5 mAP&lt;&#x2F;strong&gt;，位列第一。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🏆 &lt;strong&gt;布局检测第一&lt;&#x2F;strong&gt;：准确识别多栏、图文混排等复杂布局&lt;&#x2F;li&gt;
+&lt;li&gt;📐 &lt;strong&gt;公式识别出色&lt;&#x2F;strong&gt;：支持LaTeX格式输出，行内和行间公式都能准确识别&lt;&#x2F;li&gt;
+&lt;li&gt;📊 &lt;strong&gt;表格解析强大&lt;&#x2F;strong&gt;：集成RapidTable，单表解析速度提升10倍&lt;&#x2F;li&gt;
+&lt;li&gt;🇨🇳 &lt;strong&gt;中文支持极佳&lt;&#x2F;strong&gt;：针对中文文档进行了专门优化&lt;&#x2F;li&gt;
+&lt;li&gt;🔄 &lt;strong&gt;持续更新&lt;&#x2F;strong&gt;：团队活跃，问题修复及时&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;安装和使用：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;magic-pdf[full]&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;magic-pdf -p&lt;&#x2F;span&gt;&lt;span&gt; your_document.pdf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; output_dir&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -m&lt;&#x2F;span&gt;&lt;span&gt; auto&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -l&lt;&#x2F;span&gt;&lt;span&gt; ch
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;配置文件&lt;&#x2F;strong&gt; (&lt;code&gt;~&#x2F;magic-pdf.json&lt;&#x2F;code&gt;)：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;device-mode&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mps&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Mac用户使用mps，NVIDIA用户使用cuda
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;table-config&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rapid_table&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;enable&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;  },
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;formula-config&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;enable&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;MinerU还提供了&lt;strong&gt;桌面版应用&lt;&#x2F;strong&gt;，对于不熟悉命令行的用户非常友好。不过在macOS上可能需要在系统设置中授予&amp;quot;完全磁盘访问权限&amp;quot;才能正常使用。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-marker-su-du-yu-zhi-liang-de-ping-heng&quot;&gt;2. Marker —— 速度与质量的平衡&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;VikParuchuri&#x2F;marker&quot;&gt;VikParuchuri&#x2F;marker&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;最新版本&lt;&#x2F;strong&gt;: v1.10.1&lt;&#x2F;p&gt;
+&lt;p&gt;Marker是一个管道式架构的PDF解析工具，基于Surya进行OCR和布局检测。它的特点是速度快、易于集成，适合需要快速处理大量文档的场景。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;⚡ &lt;strong&gt;速度快&lt;&#x2F;strong&gt;：相比端到端模型，管道式架构处理更快&lt;&#x2F;li&gt;
+&lt;li&gt;🧩 &lt;strong&gt;模块化&lt;&#x2F;strong&gt;：各组件可独立替换和升级&lt;&#x2F;li&gt;
+&lt;li&gt;🔧 &lt;strong&gt;易于定制&lt;&#x2F;strong&gt;：支持LLM增强进行结构优化&lt;&#x2F;li&gt;
+&lt;li&gt;💻 &lt;strong&gt;资源友好&lt;&#x2F;strong&gt;：相比大模型方案，硬件要求更低&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Benchmark结果&lt;&#x2F;strong&gt;（arXiv论文数据）：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模型&lt;&#x2F;th&gt;&lt;th&gt;Edit Dist↓&lt;&#x2F;th&gt;&lt;th&gt;BLEU↑&lt;&#x2F;th&gt;&lt;th&gt;F1↑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Nougat-base&lt;&#x2F;td&gt;&lt;td&gt;0.38&lt;&#x2F;td&gt;&lt;td&gt;0.54&lt;&#x2F;td&gt;&lt;td&gt;0.73&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Marker&lt;&#x2F;td&gt;&lt;td&gt;0.45&lt;&#x2F;td&gt;&lt;td&gt;0.44&lt;&#x2F;td&gt;&lt;td&gt;0.62&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install marker-pdf
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;marker&lt;&#x2F;span&gt;&lt;span&gt; your_document.pdf output_dir
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-nougat-xue-zhu-lun-wen-de-zui-jia-ban-lu&quot;&gt;3. Nougat —— 学术论文的最佳伴侣&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;facebookresearch&#x2F;nougat&quot;&gt;facebookresearch&#x2F;nougat&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;开发者&lt;&#x2F;strong&gt;: Meta AI&lt;&#x2F;p&gt;
+&lt;p&gt;Nougat（Neural Optical Understanding for Academic Documents）是Meta推出的端到端文档理解模型，专门针对学术论文优化。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;📄 &lt;strong&gt;学术论文专精&lt;&#x2F;strong&gt;：对arXiv风格的论文处理效果极佳&lt;&#x2F;li&gt;
+&lt;li&gt;🔢 &lt;strong&gt;公式识别顶级&lt;&#x2F;strong&gt;：复杂数学公式也能准确转换为LaTeX&lt;&#x2F;li&gt;
+&lt;li&gt;📋 &lt;strong&gt;表格用LaTeX&lt;&#x2F;strong&gt;：表格以LaTeX格式输出，保持精确性&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;局限性：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;中文支持较弱&lt;&#x2F;li&gt;
+&lt;li&gt;浮动元素（图表）倾向于放在页面末尾&lt;&#x2F;li&gt;
+&lt;li&gt;可能出现幻觉（hallucination）和重复问题&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install nougat-ocr
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nougat&lt;&#x2F;span&gt;&lt;span&gt; your_paper.pdf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; output_dir
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;4-olmocr-da-gui-mo-chu-li-de-li-qi&quot;&gt;4. olmOCR —— 大规模处理的利器&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;allenai&#x2F;olmocr&quot;&gt;allenai&#x2F;olmocr&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;开发者&lt;&#x2F;strong&gt;: Allen Institute for AI&lt;&#x2F;p&gt;
+&lt;p&gt;olmOCR基于Qwen2-VL-7B视觉语言模型微调而成，专注于大规模PDF文档处理。其最大特点是&lt;strong&gt;完全开源&lt;&#x2F;strong&gt;，包括训练数据、代码和方法论。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🎯 &lt;strong&gt;高性价比&lt;&#x2F;strong&gt;：处理成本低于$200&#x2F;百万页&lt;&#x2F;li&gt;
+&lt;li&gt;📝 &lt;strong&gt;手写识别&lt;&#x2F;strong&gt;：支持手写内容识别&lt;&#x2F;li&gt;
+&lt;li&gt;🔄 &lt;strong&gt;自动清理&lt;&#x2F;strong&gt;：自动去除页眉页脚&lt;&#x2F;li&gt;
+&lt;li&gt;📊 &lt;strong&gt;多栏处理&lt;&#x2F;strong&gt;：正确处理复杂的多栏布局&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Benchmark得分&lt;&#x2F;strong&gt;: 在olmOCR-bench上达到&lt;strong&gt;82.4分&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install olmocr
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python -m&lt;&#x2F;span&gt;&lt;span&gt; olmocr.pipeline .&#x2F;workspace&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --markdown --pdfs&lt;&#x2F;span&gt;&lt;span&gt; your_document.pdf
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;5-docling-ibmde-qing-liang-ji-fang-an&quot;&gt;5. Docling —— IBM的轻量级方案&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;DS4SD&#x2F;docling&quot;&gt;DS4SD&#x2F;docling&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;开发者&lt;&#x2F;strong&gt;: IBM&lt;&#x2F;p&gt;
+&lt;p&gt;Docling是IBM推出的轻量级文档解析工具，专注于生成干净、人类可读的Markdown输出。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🪶 &lt;strong&gt;轻量级&lt;&#x2F;strong&gt;：资源占用少，易于部署&lt;&#x2F;li&gt;
+&lt;li&gt;📦 &lt;strong&gt;多格式支持&lt;&#x2F;strong&gt;：PDF、DOCX、PPTX、XLSX、HTML等&lt;&#x2F;li&gt;
+&lt;li&gt;🔗 &lt;strong&gt;框架集成&lt;&#x2F;strong&gt;：与LangChain、LlamaIndex等无缝集成&lt;&#x2F;li&gt;
+&lt;li&gt;📖 &lt;strong&gt;统一表示&lt;&#x2F;strong&gt;：DoclingDocument格式便于下游处理&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;数字原生PDF（非扫描件）&lt;&#x2F;li&gt;
+&lt;li&gt;简单布局的文档&lt;&#x2F;li&gt;
+&lt;li&gt;RAG应用的文档预处理&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install docling
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;from&lt;&#x2F;span&gt;&lt;span&gt; docling.document_converter import DocumentConverter
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;converter&lt;&#x2F;span&gt;&lt;span&gt; = DocumentConverter()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt; = converter.convert(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;your_document.pdf&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(result.document.export_to_markdown())
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;6-pdf-craft-dian-zi-shu-zhi-zuo-shen-qi&quot;&gt;6. pdf-craft —— 电子书制作神器&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;oomol-lab&#x2F;pdf-craft&quot;&gt;oomol-lab&#x2F;pdf-craft&lt;&#x2F;a&gt;&lt;br &#x2F;&gt;
+&lt;strong&gt;最新版本&lt;&#x2F;strong&gt;: v1.0.5&lt;&#x2F;p&gt;
+&lt;p&gt;pdf-craft是一个专注于扫描版书籍处理的工具，基于DeepSeek OCR，可以将PDF转换为Markdown或EPUB格式。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;📚 &lt;strong&gt;书籍专精&lt;&#x2F;strong&gt;：针对扫描版书籍优化&lt;&#x2F;li&gt;
+&lt;li&gt;🚫 &lt;strong&gt;智能过滤&lt;&#x2F;strong&gt;：自动去除页眉、页脚、目录页&lt;&#x2F;li&gt;
+&lt;li&gt;📖 &lt;strong&gt;EPUB输出&lt;&#x2F;strong&gt;：可直接生成电子书格式&lt;&#x2F;li&gt;
+&lt;li&gt;🔢 &lt;strong&gt;脚注处理&lt;&#x2F;strong&gt;：正确处理学术文档中的脚注&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;特色功能：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;pdf_craft &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;PDFPageExtractor, MarkdownWriter
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 表格渲染方式：HTML、图片裁剪
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 公式渲染方式：MathML、SVG、图片裁剪
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;7-mathpix-shang-ye-ji-de-zhong-ji-fang-an&quot;&gt;7. Mathpix —— 商业级的终极方案&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;官网&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;mathpix.com&quot;&gt;mathpix.com&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果预算允许，Mathpix是公式识别领域的绝对王者。它不仅是工具，更是一个完整的API服务。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🏆 &lt;strong&gt;公式识别最强&lt;&#x2F;strong&gt;：业界公认的最高准确率&lt;&#x2F;li&gt;
+&lt;li&gt;📊 &lt;strong&gt;表格处理完美&lt;&#x2F;strong&gt;：支持合并单元格、嵌套表格&lt;&#x2F;li&gt;
+&lt;li&gt;🌍 &lt;strong&gt;多语言支持&lt;&#x2F;strong&gt;：包括中文在内的多种语言&lt;&#x2F;li&gt;
+&lt;li&gt;📤 &lt;strong&gt;多格式输出&lt;&#x2F;strong&gt;：Markdown、LaTeX、DOCX、HTML&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;商业项目，需要最高质量&lt;&#x2F;li&gt;
+&lt;li&gt;大量数学公式的文档&lt;&#x2F;li&gt;
+&lt;li&gt;需要API集成的工作流&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;8-hunyuanocr-teng-xun-de-xin-xing&quot;&gt;8. HunyuanOCR —— 腾讯的新星&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Hugging Face&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;huggingface.co&#x2F;tencent&#x2F;HunyuanOCR&quot;&gt;tencent&#x2F;HunyuanOCR&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;腾讯最新发布的开源OCR模型，仅1B参数却在多个基准测试中超越了DeepSeek-OCR。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心优势：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🎯 &lt;strong&gt;小而精&lt;&#x2F;strong&gt;：1B参数，易于部署&lt;&#x2F;li&gt;
+&lt;li&gt;📊 &lt;strong&gt;Benchmark领先&lt;&#x2F;strong&gt;：OmniDocBench得分94.1&lt;&#x2F;li&gt;
+&lt;li&gt;🌐 &lt;strong&gt;14语言支持&lt;&#x2F;strong&gt;：包括翻译功能&lt;&#x2F;li&gt;
+&lt;li&gt;📋 &lt;strong&gt;结构化输出&lt;&#x2F;strong&gt;：表格和公式输出格式化良好&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;ru-he-xuan-ze-gua-he-ni-de-gong-ju&quot;&gt;如何选择适合你的工具？&lt;&#x2F;h2&gt;
+&lt;p&gt;根据我的实际使用经验，这里给出几个选择建议：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;an-wen-dang-lei-xing-xuan-ze&quot;&gt;按文档类型选择&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文档类型&lt;&#x2F;th&gt;&lt;th&gt;推荐工具&lt;&#x2F;th&gt;&lt;th&gt;原因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;中文技术书籍&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;MinerU&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;中文支持最佳，公式表格都强&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;英文学术论文&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Nougat&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;专为学术论文设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;扫描版老书&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;pdf-craft&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;智能过滤页眉页脚&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;商业级需求&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Mathpix&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;质量最高，API完善&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;快速批量处理&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Marker&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;速度快，资源占用低&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;RAG预处理&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Docling&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;与AI框架集成好&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;an-ying-jian-tiao-jian-xuan-ze&quot;&gt;按硬件条件选择&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;硬件条件&lt;&#x2F;th&gt;&lt;th&gt;推荐工具&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;有NVIDIA GPU&lt;&#x2F;td&gt;&lt;td&gt;MinerU、Nougat、olmOCR&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Apple Silicon Mac&lt;&#x2F;td&gt;&lt;td&gt;MinerU (MPS模式)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;仅有CPU&lt;&#x2F;td&gt;&lt;td&gt;Docling、Marker (慢)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;云端API&lt;&#x2F;td&gt;&lt;td&gt;Mathpix、Mistral OCR&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;an-shi-yong-chang-jing-xuan-ze&quot;&gt;按使用场景选择&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;推荐方案&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;单个文档快速转换&lt;&#x2F;td&gt;&lt;td&gt;MinerU桌面版&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;批量自动化处理&lt;&#x2F;td&gt;&lt;td&gt;Marker + 脚本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;需要人工校对&lt;&#x2F;td&gt;&lt;td&gt;Mathpix（有编辑器）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;大规模数据集构建&lt;&#x2F;td&gt;&lt;td&gt;olmOCR（成本低）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;wo-de-shi-zhan-jing-yan&quot;&gt;我的实战经验&lt;&#x2F;h2&gt;
+&lt;p&gt;回到我最初的需求——处理《AV1视频编解码标准》这本技术书籍。经过测试，我最终选择了&lt;strong&gt;MinerU&lt;&#x2F;strong&gt;，原因如下：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;中文支持&lt;&#x2F;strong&gt;：作为中文技术书籍，MinerU的中文识别率明显更高&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;公式处理&lt;&#x2F;strong&gt;：视频编解码涉及大量数学公式，MinerU能很好地转换为LaTeX&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;表格保持&lt;&#x2F;strong&gt;：书中有大量技术参数表，MinerU的RapidTable效果不错&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;桌面版便捷&lt;&#x2F;strong&gt;：提供GUI界面，不需要每次都敲命令&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;当然，MinerU也不是完美的。在处理过程中我发现：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;某些复杂的行内公式仍需手动修正&lt;&#x2F;li&gt;
+&lt;li&gt;跨页表格可能被拆分&lt;&#x2F;li&gt;
+&lt;li&gt;代码块有时候识别不准确&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些问题可能需要后续人工校对，但整体来说，MinerU已经大大减轻了我的工作量。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-lai-zhan-wang&quot;&gt;未来展望&lt;&#x2F;h2&gt;
+&lt;p&gt;PDF转Markdown领域正在快速发展。2025年值得关注的趋势包括：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;VLM主导&lt;&#x2F;strong&gt;：基于视觉语言模型的端到端方案正在成为主流&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;成本下降&lt;&#x2F;strong&gt;：开源模型的质量提升，商业API不再是唯一选择&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多模态融合&lt;&#x2F;strong&gt;：图文理解能力持续增强&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;专业化细分&lt;&#x2F;strong&gt;：针对特定领域（医学、法律、金融）的专用模型&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;如果你也在寻找PDF转Markdown的解决方案，希望这篇对比能帮助你做出选择。欢迎在评论区分享你的使用经验！&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;相关资源：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;opendatalab&#x2F;MinerU&quot;&gt;MinerU GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;VikParuchuri&#x2F;marker&quot;&gt;Marker GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;facebookresearch&#x2F;nougat&quot;&gt;Nougat GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;allenai&#x2F;olmocr&quot;&gt;olmOCR GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;DS4SD&#x2F;docling&quot;&gt;Docling GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;oomol-lab&#x2F;pdf-craft&quot;&gt;pdf-craft GitHub&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>
