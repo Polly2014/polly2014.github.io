@@ -52,7 +52,7 @@
 &lt;p&gt;在动手之前，我也考虑过现成的工具。但很快意识到它们无法胜任：&lt;&#x2F;p&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;核心问题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Google Translate&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;PDF翻译会破坏所有格式——85张表格会变成乱码，240张图片位置丢失&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;DeepL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;30MB文件限制，更致命的是无法维护术语一致性（&amp;quot;帧内预测&amp;quot;在不同段落可能翻译不同）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;DeepL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;免费版5MB限制（本书PDF 8.2MB直接超限），Pro版20MB限制，更致命的是无法维护术语一致性（&amp;quot;帧内预测&amp;quot;在不同段落可能翻译不同）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;ChatGPT&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;长文档的&amp;quot;道德风险&amp;quot;——它会自作主张地总结而非忠实翻译，44万字需要150+次对话&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;p&gt;这些工具都是为短文本设计的。面对320页的技术书籍，它们要么格式崩溃，要么上下文断裂，要么术语漂移。&lt;&#x2F;p&gt;
