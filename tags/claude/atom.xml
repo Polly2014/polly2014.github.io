@@ -53,7 +53,7 @@
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;核心问题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Google Translate&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;PDF翻译会破坏所有格式——85张表格会变成乱码，240张图片位置丢失&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;DeepL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;30MB文件限制，更致命的是无法维护术语一致性（&amp;quot;帧内预测&amp;quot;在不同段落可能翻译不同）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;ChatGPT&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;长文档的&amp;quot;道德风险&amp;quot;——它会自作主张地总结而非忠实翻译，75万字需要250+次对话&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;ChatGPT&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;长文档的&amp;quot;道德风险&amp;quot;——它会自作主张地总结而非忠实翻译，44万字需要150+次对话&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
 &lt;p&gt;这些工具都是为短文本设计的。面对320页的技术书籍，它们要么格式崩溃，要么上下文断裂，要么术语漂移。&lt;&#x2F;p&gt;
 &lt;p&gt;这正是我开发 Master-Translator 的初衷：&lt;strong&gt;为长文档翻译而生&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
@@ -162,7 +162,7 @@
 &lt;h3 id=&quot;fan-yi-tong-ji&quot;&gt;翻译统计&lt;&#x2F;h3&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;原书页数&lt;&#x2F;td&gt;&lt;td&gt;320页&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;中文原文&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;75万字符&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;中文原文&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;44万字符&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;英文译文&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;13.5万词&lt;&#x2F;strong&gt; &#x2F; 93万字节&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;Markdown行数&lt;&#x2F;td&gt;&lt;td&gt;8,122行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;章节数&lt;&#x2F;td&gt;&lt;td&gt;11章&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -224,7 +224,7 @@
 &lt;p&gt;&lt;strong&gt;&amp;quot;效果很赞&amp;quot;&lt;&#x2F;strong&gt;——这四个字，来自书的作者本人，是对这次翻译最好的认可。&lt;&#x2F;p&gt;
 &lt;p&gt;也许，这不只是一次技术验证，而是一个新故事的开始。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;jie-yu-shen-ye-de-mo-li&quot;&gt;结语：深夜的魔力&lt;&#x2F;h2&gt;
-&lt;p&gt;回顾这个通宵，从凌晨一点的疯狂想法，到下午一点的最终完成——12个小时，320页，75万中文字符翻译为13.5万英文词。&lt;&#x2F;p&gt;
+&lt;p&gt;回顾这个通宵，从凌晨一点的疯狂想法，到下午一点的最终完成——12个小时，320页，44万中文字符翻译为13.5万英文词。&lt;&#x2F;p&gt;
 &lt;p&gt;这不仅仅是一次翻译任务，更是一次&lt;strong&gt;AI能力边界的探索&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;在AI时代，我们能做的事情边界在不断扩展。一个人，一个通宵，一套自研工具，就能完成以前需要专业团队数周才能完成的工作。&lt;&#x2F;p&gt;
 &lt;p&gt;但同时，这也提醒我：&lt;strong&gt;AI是放大器，不是替代者&lt;&#x2F;strong&gt;。真正的价值在于：&lt;&#x2F;p&gt;
