@@ -48,6 +48,15 @@
 &lt;li&gt;📚 48条参考文献&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;这不是一个普通的文档翻译任务，这是一场&lt;strong&gt;技术马拉松&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wei-shi-yao-bu-neng-yong-googlefan-yi-deepl-chatgpt&quot;&gt;为什么不能用Google翻译 &#x2F; DeepL &#x2F; ChatGPT？&lt;&#x2F;h3&gt;
+&lt;p&gt;在动手之前，我也考虑过现成的工具。但很快意识到它们无法胜任：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;核心问题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Google Translate&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;PDF翻译会破坏所有格式——85张表格会变成乱码，240张图片位置丢失&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;DeepL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;30MB文件限制，更致命的是无法维护术语一致性（&amp;quot;帧内预测&amp;quot;在不同段落可能翻译不同）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;ChatGPT&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;长文档的&amp;quot;道德风险&amp;quot;——它会自作主张地总结而非忠实翻译，75万字需要250+次对话&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;这些工具都是为短文本设计的。面对320页的技术书籍，它们要么格式崩溃，要么上下文断裂，要么术语漂移。&lt;&#x2F;p&gt;
+&lt;p&gt;这正是我开发 Master-Translator 的初衷：&lt;strong&gt;为长文档翻译而生&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;part-2-ling-chen-de-fan-yi-zhi-lu&quot;&gt;Part 2: 凌晨的翻译之旅&lt;&#x2F;h2&gt;
 &lt;h3 id=&quot;master-translator-mcp-serverdeng-chang&quot;&gt;Master-Translator-MCP-Server登场&lt;&#x2F;h3&gt;
 &lt;p&gt;凌晨1点30分，我启动了自研的&lt;code&gt;Master-Translator-MCP-Server&lt;&#x2F;code&gt;。这是一个专门为长文档翻译设计的MCP工具集，核心特性包括：&lt;&#x2F;p&gt;
