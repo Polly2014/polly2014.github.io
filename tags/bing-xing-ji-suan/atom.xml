@@ -5,8 +5,188 @@
     <link href="https://polly.wang/tags/bing-xing-ji-suan/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-03-08T00:00:00+00:00</updated>
+    <updated>2025-12-31T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/bing-xing-ji-suan/atom.xml</id>
+    <entry xml:lang="en">
+        <title>跨年夜的技术突破：ContextWeave翻译质量提升33%，速度提升5.5倍</title>
+        <published>2025-12-31T00:00:00+00:00</published>
+        <updated>2025-12-31T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/contextweave-milestone-33-percent-improvement/" type="text/html"/>
+        <id>https://polly.wang/contextweave-milestone-33-percent-improvement/</id>
+        
+        <content type="html">&lt;h2 id=&quot;kua-nian-ye-de-yi-wai-fa-xian&quot;&gt;跨年夜的意外发现&lt;&#x2F;h2&gt;
+&lt;p&gt;2025年12月31日凌晨，当大多数人还在准备跨年倒计时的时候，我正盯着一组让我困惑的数字：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;旧版 COMET-QE: 0.5143
+&lt;&#x2F;span&gt;&lt;span&gt;新版 COMET-QE: 0.4649
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;新版怎么比旧版还差？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;几天前我刚给 Master-Translator-MCP-Server 做了一轮重构，加了术语表支持、优化了分块算法。按理说应该更好才对。但 COMETKiwi 评估结果无情地告诉我：新版翻译质量下降了近5%。&lt;&#x2F;p&gt;
+&lt;p&gt;这不对劲。作为一个追求极致的工程师，我决定彻底搞清楚原因。&lt;&#x2F;p&gt;
+&lt;p&gt;于是，一场深夜 Debug 马拉松开始了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;chou-si-bo-chong-si-ge-yin-cang-de-bug&quot;&gt;抽丝剥茧：四个隐藏的Bug&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;bug-1-prompt-can-liu-wu-ran&quot;&gt;Bug 1: Prompt 残留污染&lt;&#x2F;h3&gt;
+&lt;p&gt;翻开新版翻译的输出文件，我发现了一些不该出现的东西：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span&gt;---BEGIN CONTENT---
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 第一章 人工智能的浪潮
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key_terminology&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- The Coming Wave → 浪潮将至
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;&amp;lt;&#x2F;key_terminology&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这些 &lt;code&gt;---BEGIN CONTENT---&lt;&#x2F;code&gt;、&lt;code&gt;&amp;lt;key_terminology&amp;gt;&lt;&#x2F;code&gt; 是我在 Prompt 中用来标记内容边界的标签。LLM 本应只输出翻译内容，但它&amp;quot;照搬&amp;quot;了部分 Prompt 结构。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;根因&lt;&#x2F;strong&gt;：&lt;code&gt;clean_llm_output()&lt;&#x2F;code&gt; 函数的清理规则不够全面，没有覆盖这些新增的标签模式。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;&#x2F;strong&gt;：增加了15+个正则表达式模式来清理各类 Prompt 残留：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 清理 Prompt 残留的各种标记
+&lt;&#x2F;span&gt;&lt;span&gt;patterns_to_remove = [
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BEGIN&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CONTENT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;END&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CONTENT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;key_terminology&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;key_terminology&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;previous_context&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;previous_context&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ... 更多模式
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bug-2-fen-kuai-bian-jie-zhong-fu&quot;&gt;Bug 2: 分块边界重复&lt;&#x2F;h3&gt;
+&lt;p&gt;对比原文和译文的结构时，我发现一个诡异的现象：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;原文: 107 个标题, 2632 行
+&lt;&#x2F;span&gt;&lt;span&gt;译文: 107 个标题, 但有些章节标题出现了两次！
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;问题出在分块合并时的重叠处理。当两个相邻块的边界恰好在章节标题附近时，&lt;code&gt;remove_overlap()&lt;&#x2F;code&gt; 函数只检测了标题级别的重复，没有正确处理段落级别的重复。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;&#x2F;strong&gt;：重写了 &lt;code&gt;remove_overlap()&lt;&#x2F;code&gt; 函数，改为按段落处理，一旦检测到重复段落，跳过整个段落而非仅删除标题：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;remove_overlap&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;prev_text&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curr_text&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 按段落分割
+&lt;&#x2F;span&gt;&lt;span&gt;    paragraphs = curr_text.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;    result = []
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;para &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;paragraphs:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查是否与前文重复
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;para.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;() and para.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;() in prev_text:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 跳过重复段落
+&lt;&#x2F;span&gt;&lt;span&gt;        result.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(para)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(result)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bug-3-mo-xing-bie-ming-que-shi&quot;&gt;Bug 3: 模型别名缺失&lt;&#x2F;h3&gt;
+&lt;p&gt;查看日志时发现一条警告：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;⚠️ 模型 deepseek 未在配置中找到，使用 deepseek-free
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;原来我在 &lt;code&gt;config.env&lt;&#x2F;code&gt; 中配置的是 &lt;code&gt;MODEL=deepseek&lt;&#x2F;code&gt;，但 &lt;code&gt;llm_provider.py&lt;&#x2F;code&gt; 中只定义了 &lt;code&gt;deepseek-official&lt;&#x2F;code&gt; 和 &lt;code&gt;deepseek-free&lt;&#x2F;code&gt;。于是系统回退到了免费版模型——这可能是质量下降的重要原因之一！&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;&#x2F;strong&gt;：在 MODEL_CONFIGS 中添加 &lt;code&gt;deepseek&lt;&#x2F;code&gt; 作为 &lt;code&gt;deepseek-official&lt;&#x2F;code&gt; 的别名：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MODEL_CONFIGS &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;},          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 别名
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-official&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;}, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 正式名
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-free&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bug-4-zhu-yu-biao-ge-shi-jie-xi-cuo-wu&quot;&gt;Bug 4: 术语表格式解析错误&lt;&#x2F;h3&gt;
+&lt;p&gt;这是一个更隐蔽的问题。术语表有两种格式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 格式1
+&lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;source&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The Coming Wave&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;target&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;浪潮将至&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 格式2  
+&lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;term&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The Coming Wave&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;translation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;浪潮将至&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;代码只正确处理了格式1，对格式2只读取了 &lt;code&gt;term&lt;&#x2F;code&gt; 字段，完全忽略了 &lt;code&gt;translation&lt;&#x2F;code&gt;！这意味着术语表实际上没有生效。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bing-xing-fan-yi-cong-57fen-zhong-dao-10fen-zhong&quot;&gt;并行翻译：从57分钟到10分钟&lt;&#x2F;h2&gt;
+&lt;p&gt;修完这些 Bug 后，我萌生了另一个想法：&lt;strong&gt;能不能让翻译更快？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;当前的串行模式下，60万字符的书需要约57分钟。每个 Chunk 串行处理，等待上一个完成才开始下一个。&lt;&#x2F;p&gt;
+&lt;p&gt;但仔细想想，如果我们有术语表来保证一致性，是否还需要上下文传递？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;并行翻译的核心思想&lt;&#x2F;strong&gt;：让多个 Chunk 同时翻译，依靠术语表（而非前文上下文）来保证术语一致性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shi-xian&quot;&gt;实现&lt;&#x2F;h3&gt;
+&lt;p&gt;使用 Python 的 &lt;code&gt;asyncio&lt;&#x2F;code&gt; 实现并发控制：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;translate_document_parallel&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;document_path&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_language&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 控制并发数，避免 API 限流
+&lt;&#x2F;span&gt;&lt;span&gt;    semaphore = asyncio.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Semaphore&lt;&#x2F;span&gt;&lt;span&gt;(max_concurrent)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;translate_with_limit&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chunk_id&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chunk_content&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;semaphore:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_translate_single_chunk&lt;&#x2F;span&gt;&lt;span&gt;(chunk_id, chunk_content)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 所有 Chunk 并行翻译
+&lt;&#x2F;span&gt;&lt;span&gt;    tasks = [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;translate_with_limit&lt;&#x2F;span&gt;&lt;span&gt;(i, chunk) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;i, chunk &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;enumerate&lt;&#x2F;span&gt;&lt;span&gt;(chunks)]
+&lt;&#x2F;span&gt;&lt;span&gt;    results = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span&gt;asyncio.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gather&lt;&#x2F;span&gt;&lt;span&gt;(*tasks)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;merge_results&lt;&#x2F;span&gt;&lt;span&gt;(results)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;xiao-guo&quot;&gt;效果&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模式&lt;&#x2F;th&gt;&lt;th&gt;翻译时间&lt;&#x2F;th&gt;&lt;th&gt;相对速度&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;串行&lt;&#x2F;td&gt;&lt;td&gt;~57 min&lt;&#x2F;td&gt;&lt;td&gt;1x&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;并行 (5并发)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;10.3 min&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;5.5x&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;速度提升 &lt;strong&gt;5.5 倍&lt;&#x2F;strong&gt;！&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;temperature-de-yi-wai-fa-xian&quot;&gt;Temperature 的意外发现&lt;&#x2F;h2&gt;
+&lt;p&gt;在优化过程中，我还做了一个对照实验：&lt;strong&gt;Temperature 对翻译质量的影响&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;旧版使用 temperature=0.3（更确定性），而 DeepSeek 官方推荐翻译场景使用 temperature=1.3（更多样性）。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;配置&lt;&#x2F;th&gt;&lt;th&gt;COMET-QE&lt;&#x2F;th&gt;&lt;th&gt;结论&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;并行 t=1.3&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;0.5016&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 更好&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;并行 t=0.3&lt;&#x2F;td&gt;&lt;td&gt;0.4983&lt;&#x2F;td&gt;&lt;td&gt;略差&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;意外的是，&lt;strong&gt;高 temperature 反而产生了更好的翻译质量&lt;&#x2F;strong&gt;！&lt;&#x2F;p&gt;
+&lt;p&gt;这可能是因为：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;高 temperature 让模型有更多空间选择自然流畅的表达&lt;&#x2F;li&gt;
+&lt;li&gt;对于翻译任务，&amp;quot;创意&amp;quot;体现在措辞的地道性上&lt;&#x2F;li&gt;
+&lt;li&gt;术语表已经约束了关键词的一致性，无需用低 temperature 来&amp;quot;控制&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;zui-zhong-jie-guo-33-3-zhi-liang-ti-sheng&quot;&gt;最终结果：33.3% 质量提升&lt;&#x2F;h2&gt;
+&lt;p&gt;经过一夜的调试和优化，凌晨2点多，我运行了最终版本的翻译：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🎉&lt;&#x2F;span&gt;&lt;span&gt; 翻译完成！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;模式:&lt;&#x2F;span&gt;&lt;span&gt; parallel
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;并发数:&lt;&#x2F;span&gt;&lt;span&gt; 5
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;总&lt;&#x2F;span&gt;&lt;span&gt; Chunks: 60
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;输入字符:&lt;&#x2F;span&gt;&lt;span&gt; 611,586
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;输出字符:&lt;&#x2F;span&gt;&lt;span&gt; 189,931
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;翻译耗时:&lt;&#x2F;span&gt;&lt;span&gt; 616 秒 (10.3 分钟)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;成本: &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;.85
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后是激动人心的 QE 评估：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;✅ COMETKIWI 系统分: 0.5428
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;0.5428！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;让我整理一下完整的对比：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方法&lt;&#x2F;th&gt;&lt;th&gt;COMET-QE&lt;&#x2F;th&gt;&lt;th&gt;相对 Baseline&lt;&#x2F;th&gt;&lt;th&gt;翻译耗时&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Baseline (overlap_12k)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;0.4071&lt;&#x2F;td&gt;&lt;td&gt;-&lt;&#x2F;td&gt;&lt;td&gt;-&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;旧版 ContextWeave (串行)&lt;&#x2F;td&gt;&lt;td&gt;0.5143&lt;&#x2F;td&gt;&lt;td&gt;+26.3%&lt;&#x2F;td&gt;&lt;td&gt;~57 min&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;新版 ContextWeave (并行)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;0.5428&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;+33.3%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;10.3 min&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;这意味着：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🚀 &lt;strong&gt;质量提升 33.3%&lt;&#x2F;strong&gt;：比 Baseline 提升了三分之一&lt;&#x2F;li&gt;
+&lt;li&gt;⚡ &lt;strong&gt;速度提升 5.5x&lt;&#x2F;strong&gt;：从近1小时缩短到10分钟&lt;&#x2F;li&gt;
+&lt;li&gt;💰 &lt;strong&gt;成本仅 $0.85&lt;&#x2F;strong&gt;：60万字符完整书籍翻译&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;zai-layer-3-de-yan-zheng-chao-yue-ren-gong-fan-yi&quot;&gt;在 Layer 3 的验证：超越人工翻译&lt;&#x2F;h2&gt;
+&lt;p&gt;除了 Mustafa Book (The Coming Wave) 这本书，我还在 FIDIC EPC 工程合同上进行了验证。这是一份专业的法律文档，有严格的术语要求。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方向&lt;&#x2F;th&gt;&lt;th&gt;BLEU&lt;&#x2F;th&gt;&lt;th&gt;COMETKiwi&lt;&#x2F;th&gt;&lt;th&gt;vs 人工翻译&lt;&#x2F;th&gt;&lt;th&gt;术语一致率&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;中→英&lt;&#x2F;td&gt;&lt;td&gt;89.30&lt;&#x2F;td&gt;&lt;td&gt;0.4163&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;+3.7%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;100%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;英→中&lt;&#x2F;td&gt;&lt;td&gt;65.32&lt;&#x2F;td&gt;&lt;td&gt;0.4040&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;+1.4%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;100%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;两个方向都超越了人工翻译！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;更有意思的是，在评估过程中，我还发现了官方中文译本中的一个 OCR 错误——&amp;quot;免除&amp;quot;被误录入为&amp;quot;危险&amp;quot;。而 ContextWeave 的翻译是正确的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-zong-jie&quot;&gt;技术总结&lt;&#x2F;h2&gt;
+&lt;p&gt;这次优化的核心经验：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;不要假设代码正确&lt;&#x2F;strong&gt; - 即使是自己写的代码，也可能有隐藏 Bug&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;评估指标很重要&lt;&#x2F;strong&gt; - 没有 COMET-QE，我可能永远不知道新版更差&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;并行不一定牺牲质量&lt;&#x2F;strong&gt; - 用术语表替代上下文传递，可以兼得速度和一致性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;官方推荐值有道理&lt;&#x2F;strong&gt; - DeepSeek 推荐的 temperature=1.3 确实更适合翻译&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;模型选择很关键&lt;&#x2F;strong&gt; - 回退到免费版模型是质量下降的重要原因&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;kua-nian-gan-yan&quot;&gt;跨年感言&lt;&#x2F;h2&gt;
+&lt;p&gt;写完这篇博文，窗外的天已经亮了。2025年的最后一天，我在键盘前度过。&lt;&#x2F;p&gt;
+&lt;p&gt;有人可能觉得这样过节有点&amp;quot;卷&amp;quot;，但对我来说，解决一个困扰已久的问题、看到评估分数一步步提升，这种成就感比任何跨年烟火都让我兴奋。&lt;&#x2F;p&gt;
+&lt;p&gt;2025年，我从一个 C++ 工程师转型为 AI 工程师，开发了 Master-Translator、参加了 Hackathon、写了专利申请...&lt;&#x2F;p&gt;
+&lt;p&gt;2026年，ACL 论文投稿在即。这个 33.3% 的质量提升，将成为论文中最硬核的实验数据之一。&lt;&#x2F;p&gt;
+&lt;p&gt;新年快乐！🎉&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果你也在做长文档翻译相关的工作，欢迎关注 Master-Translator-MCP-Server 项目。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;祝大家2026年，代码无 Bug，论文全中稿！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>JPEG XS的并行化改造方案与实现</title>
         <published>2025-03-08T00:00:00+00:00</published>
