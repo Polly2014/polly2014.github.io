@@ -1,0 +1,170 @@
+<!doctype html><html><head><title>新年第一天：从 MinerU API 深度 Debug 到完成97页印尼投资指南翻译</title><meta content="2026年新年第一天，挚友转来一份97页的印尼官方投资指南做翻译测试。桌面版工具卡死，我索性调通 MinerU 远程 API，逐页诊断、构建术语表、用 Master-Translator 翻译全文，最后导出格式完美的 Word 文档。这篇博文记录了完整的技术历程和踩过的坑。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/indonesia-investment-guide-translation/ property=og:url><meta content="新年第一天：从 MinerU API 深度 Debug 到完成97页印尼投资指南翻译" property=og:title><meta content="2026年新年第一天，挚友转来一份97页的印尼官方投资指南做翻译测试。桌面版工具卡死，我索性调通 MinerU 远程 API，逐页诊断、构建术语表、用 Master-Translator 翻译全文，最后导出格式完美的 Word 文档。这篇博文记录了完整的技术历程和踩过的坑。" property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/indonesia-investment-guide-translation/ name=twitter:url><meta content="新年第一天：从 MinerU API 深度 Debug 到完成97页印尼投资指南翻译" name=twitter:title><meta content="2026年新年第一天，挚友转来一份97页的印尼官方投资指南做翻译测试。桌面版工具卡死，我索性调通 MinerU 远程 API，逐页诊断、构建术语表、用 Master-Translator 翻译全文，最后导出格式完美的 Word 文档。这篇博文记录了完整的技术历程和踩过的坑。" name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-01-01T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=AI翻译 property=article:tag><meta content="Master Translator" property=article:tag><meta content=MinerU property=article:tag><meta content="MCP Server" property=article:tag><meta content=PDF解析 property=article:tag><meta content=API调试 property=article:tag><meta content=印尼投资 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>新年第一天：从 MinerU API 深度 Debug 到完成97页印尼投资指南翻译</h1><div class=content><h2 id=kai-pian-yi-fen-ce-shi-wen-dang>开篇：一份测试文档</h2><p>2026年1月1日，新年第一天。<p>前几天，一位挚友发来一份文档——<strong>《Indonesia Investment Guidebook》</strong>，印尼投资部的官方投资指南，97页，全是投资政策、税收优惠、经济特区这些硬核内容。<p>她是 Master-Translator 这个项目的灵感来源。最近我们在聊能不能把 AI 翻译这件事进一步技术落地，她从一位律所合伙人那里拿到这份文档，想让我测试一下实际效果。<p>正好。前阵子刚用 Master-Translator 翻译了一本320页的技术书籍，这97页官方文档是个不错的试金石。<p>结果，MinerU 桌面版给我来了个下马威——进度条走到一半就卡死了。没有报错，没有日志，就是不动了。<p>这新年第一天，总不能就这么认输吧？<p>MinerU 不是有远程 API 吗？既然桌面版不行，那就直接调 API。更进一步，能不能逐页诊断，找出到底是哪一页有问题？<p>窗外朋友圈还在刷跨年祝福，我已经打开了 Claude，准备开干。<h2 id=part-1-mineru-api-de-kao-gu-zhi-lu>Part 1: MinerU API 的"考古"之旅</h2><h3 id=cong-guan-fang-wen-dang-dao-github-yuan-ma>从官方文档到 GitHub 源码</h3><p>MinerU 官方提供了 API 服务（mineru.net），但官方文档的 API 版本信息有些混乱。我最初尝试的端点都返回 404：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 官方文档说的 v1 接口 - 404
+</span><span style=color:#bf616a>POST</span><span> https://mineru.net/api/v1/pdf/convert
+</span><span>
+</span><span style=color:#65737e># 我猜测的 v3 接口 - 还是 404  
+</span><span style=color:#bf616a>POST</span><span> https://mineru.net/api/v3/extract
+</span></code></pre><p>这让我意识到：<strong>官方文档可能已经过时</strong>。<p>转机来自 GitHub。在 MinerU 官方仓库中，我找到了一个 MCP Client 示例代码，里面暴露了真正的 API 端点：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 正确的 v4 API 端点
+</span><span style=color:#bf616a>BASE_URL </span><span>= "</span><span style=color:#a3be8c>https://mineru.net</span><span>"
+</span><span style=color:#bf616a>BATCH_URL </span><span>= </span><span style=color:#b48ead>f</span><span>"{</span><span style=color:#bf616a>BASE_URL</span><span>}</span><span style=color:#a3be8c>/api/v4/file-urls/batch</span><span>"
+</span><span style=color:#bf616a>RESULT_URL </span><span>= </span><span style=color:#b48ead>f</span><span>"{</span><span style=color:#bf616a>BASE_URL</span><span>}</span><span style=color:#a3be8c>/api/v4/extract-results/batch/</span><span style=color:#96b5b4>{{</span><span style=color:#a3be8c>batch_id</span><span style=color:#96b5b4>}}</span><span>"
+</span></code></pre><p><strong>教训一：当官方文档过时时，去看官方的 SDK 或 Client 代码。</strong><h3 id=oss-shang-chuan-de-dai-li-xian-jing>OSS 上传的代理陷阱</h3><p>找到正确端点后，新的问题出现了。API 的工作流程是：<ol><li>调用 <code>/api/v4/file-urls/batch</code> 获取 OSS 上传 URL<li>PUT 文件到 OSS URL<li>轮询 <code>/api/v4/extract-results/batch/{batch_id}</code> 获取结果</ol><p>第一步成功了，但第二步——PUT 上传到阿里云 OSS——失败了：<pre style=background:#2b303b;color:#c0c5ce><code><span>SSL: CERTIFICATE_VERIFY_FAILED
+</span></code></pre><p>排查后发现：<strong>我的系统配置了代理，而阿里云 OSS 的 SSL 证书验证在代理环境下出了问题。</strong><p>解决方案出奇的简单：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 创建一个不使用系统代理的 session
+</span><span>session = requests.</span><span style=color:#bf616a>Session</span><span>()
+</span><span>session.trust_env = </span><span style=color:#d08770>False  </span><span style=color:#65737e># 关键！绕过系统代理
+</span><span>
+</span><span style=color:#65737e># 使用这个 session 进行 OSS 上传
+</span><span>session.</span><span style=color:#bf616a>put</span><span>(oss_url, </span><span style=color:#bf616a>data</span><span>=file_data)
+</span></code></pre><p><strong>教训二：当 HTTPS 请求莫名其妙失败时，检查代理配置。</strong><h3 id=content-type-de-wei-miao-chai-yi>Content-Type 的微妙差异</h3><p>还有一个坑：上传到 OSS 时，<strong>不要设置 Content-Type header</strong>。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 错误 ❌
+</span><span>headers = {"</span><span style=color:#a3be8c>Content-Type</span><span>": "</span><span style=color:#a3be8c>application/pdf</span><span>"}
+</span><span>requests.</span><span style=color:#bf616a>put</span><span>(oss_url, </span><span style=color:#bf616a>data</span><span>=data, </span><span style=color:#bf616a>headers</span><span>=headers)
+</span><span>
+</span><span style=color:#65737e># 正确 ✅ - OSS 签名 URL 已包含 Content-Type 信息
+</span><span>requests.</span><span style=color:#bf616a>put</span><span>(oss_url, </span><span style=color:#bf616a>data</span><span>=data)
+</span></code></pre><p>如果自己设置 Content-Type，会与预签名 URL 中的签名不匹配，导致 403 Forbidden。<h2 id=part-2-zhu-ye-zhen-duan-pdf-wen-ti>Part 2: 逐页诊断 PDF 问题</h2><h3 id=wei-shi-yao-zhuo-mian-ban-shi-bai>为什么桌面版失败？</h3><p>MinerU 桌面版处理这份97页 PDF 时失败，但没有给出具体原因。我的假设是：<strong>可能某些页面有特殊格式导致解析失败。</strong><p>为了验证这个假设，我写了一个逐页诊断脚本：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># diagnose_pdf_official.py 核心逻辑
+</span><span style=color:#b48ead>from </span><span>pypdf </span><span style=color:#b48ead>import </span><span>PdfReader, PdfWriter
+</span><span style=color:#b48ead>import </span><span>tempfile
+</span><span>
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>diagnose_pdf</span><span>(</span><span style=color:#bf616a>pdf_path</span><span>, </span><span style=color:#bf616a>start_page</span><span>=</span><span style=color:#d08770>1</span><span>, </span><span style=color:#bf616a>end_page</span><span>=</span><span style=color:#d08770>None</span><span>):
+</span><span>    </span><span style=color:#65737e>"""逐页提取并测试每一页"""
+</span><span>    reader = </span><span style=color:#bf616a>PdfReader</span><span>(pdf_path)
+</span><span>    total_pages = </span><span style=color:#96b5b4>len</span><span>(reader.pages)
+</span><span>    
+</span><span>    results = []
+</span><span>    </span><span style=color:#b48ead>for </span><span>page_num </span><span style=color:#b48ead>in </span><span style=color:#96b5b4>range</span><span>(start_page, </span><span style=color:#96b5b4>min</span><span>(end_page or total_pages, total_pages) + </span><span style=color:#d08770>1</span><span>):
+</span><span>        </span><span style=color:#65737e># 创建单页 PDF
+</span><span>        writer = </span><span style=color:#bf616a>PdfWriter</span><span>()
+</span><span>        writer.</span><span style=color:#bf616a>add_page</span><span>(reader.pages[page_num - </span><span style=color:#d08770>1</span><span>])
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>with </span><span>tempfile.</span><span style=color:#bf616a>NamedTemporaryFile</span><span>(</span><span style=color:#bf616a>suffix</span><span>='</span><span style=color:#a3be8c>.pdf</span><span>') </span><span style=color:#b48ead>as </span><span>tmp:
+</span><span>            writer.</span><span style=color:#bf616a>write</span><span>(tmp.name)
+</span><span>            
+</span><span>            </span><span style=color:#65737e># 调用 API 测试这一页
+</span><span>            result = client.</span><span style=color:#bf616a>extract_file</span><span>(tmp.name)
+</span><span>            results.</span><span style=color:#bf616a>append</span><span>({
+</span><span>                '</span><span style=color:#a3be8c>page</span><span>': page_num,
+</span><span>                '</span><span style=color:#a3be8c>success</span><span>': result.success,
+</span><span>                '</span><span style=color:#a3be8c>error</span><span>': result.error </span><span style=color:#b48ead>if </span><span>not result.success </span><span style=color:#b48ead>else </span><span style=color:#d08770>None
+</span><span>            })
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>return </span><span>results
+</span></code></pre><h3 id=ce-shi-jie-guo-quan-bu-tong-guo>测试结果：全部通过！</h3><p>运行诊断脚本测试前5页：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> diagnose_pdf_official.py "</span><span style=color:#a3be8c>Indonesia_Investment_Guidebook.pdf</span><span>" \
+</span><span style=color:#bf616a>    --start</span><span> 1</span><span style=color:#bf616a> --end</span><span> 5</span><span style=color:#bf616a> --model</span><span> vlm
+</span></code></pre><p>结果出人意料：<pre style=background:#2b303b;color:#c0c5ce><code><span>📊 诊断结果汇总:
+</span><span>================
+</span><span>成功: 5/5 页 (100.00%)
+</span><span>失败: 0 页
+</span><span>
+</span><span>✅ 所有测试页面均处理成功！
+</span></code></pre><p><strong>所有页面都能正常解析！</strong> 这意味着桌面版的失败可能是其他原因（内存、超时、或版本差异）。<p>既然 API 可以正常工作，那就直接用 API 处理整个文档吧。<h2 id=part-3-wan-zheng-jie-xi-yu-fan-yi>Part 3: 完整解析与翻译</h2><h3 id=shi-yong-vlm-mo-xing-jie-xi>使用 VLM 模型解析</h3><p>VLM（Vision Language Model）是 MinerU 提供的高级模型，相比传统 OCR 管道，对表格和复杂布局的处理更好。<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> mineru_client.py "</span><span style=color:#a3be8c>Indonesia_Investment_Guidebook.pdf</span><span>" \
+</span><span style=color:#bf616a>    --model</span><span> vlm \
+</span><span style=color:#bf616a>    --output</span><span> ./output
+</span></code></pre><p>约3分钟后，解析完成：<pre style=background:#2b303b;color:#c0c5ce><code><span>✅ 提取成功!
+</span><span>  批次ID: a5d6e18f-69d6-4428-bd3c-065adeaa2e8d
+</span><span>  ZIP URL: https://cdn.mineru.net/...
+</span><span>  耗时: 188.2 秒
+</span><span>📥 结果已下载到: ./output
+</span><span>  - full.md (168KB)
+</span><span>  - images/ (119张图片)
+</span></code></pre><h3 id=jie-xi-jie-guo-tong-ji>解析结果统计</h3><table><thead><tr><th>指标<th>数值<tbody><tr><td>原 PDF 页数<td>97 页<tr><td>Markdown 行数<td>2,242 行<tr><td>总字符数<td>172,160<tr><td>图片数量<td>119 张<tr><td>HTML 表格数<td>26 个</table><p>表格被完美提取为 HTML 格式，包括复杂的合并单元格：<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>table</span><span>>
+</span><span>  <</span><span style=color:#bf616a>tr</span><span>>
+</span><span>    <</span><span style=color:#bf616a>td </span><span style=color:#d08770>rowspan</span><span>="</span><span style=color:#a3be8c>2</span><span>">Tax Holiday&LT/</span><span style=color:#bf616a>td</span><span>>
+</span><span>    <</span><span style=color:#bf616a>td </span><span style=color:#d08770>colspan</span><span>="</span><span style=color:#a3be8c>4</span><span>">Applying general provisions...&LT/</span><span style=color:#bf616a>td</span><span>>
+</span><span>    <</span><span style=color:#bf616a>td</span><span>>TH is applicable&LT/</span><span style=color:#bf616a>td</span><span>>
+</span><span>  &LT/</span><span style=color:#bf616a>tr</span><span>>
+</span><span>  ...
+</span><span>&LT/</span><span style=color:#bf616a>table</span><span>>
+</span></code></pre><h3 id=gou-jian-zhu-yu-biao>构建术语表</h3><p>投资类文档最怕的就是术语翻译不一致——同一个机构名，前面叫"投资协调委员会"，后面又变成"投资管理局"，读者会懵。<p>所以在翻译之前，我先让 Claude 基于文档内容构建了一个72条术语的专业术语表：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>[
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>FDI</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>外国直接投资</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>Foreign Direct Investment</span><span>"},
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>BKPM</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>印尼投资协调委员会</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>Badan Koordinasi Penanaman Modal</span><span>"},
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>OSS RBA</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>在线单一提交系统（风险评估版）</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>Online Single Submission Risk Based Approach</span><span>"},
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>Job Creation Law</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>创造就业法</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>2020年第11号法律</span><span>"},
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>SEZ</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>经济特区</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>Special Economic Zone</span><span>"},
+</span><span>  {"</span><span style=color:#a3be8c>term</span><span>": "</span><span style=color:#a3be8c>Tax Holiday</span><span>", "</span><span style=color:#a3be8c>translation</span><span>": "</span><span style=color:#a3be8c>税收假期</span><span>", "</span><span style=color:#a3be8c>note</span><span>": "</span><span style=color:#a3be8c>对先驱产业的企业所得税减免</span><span>"},
+</span><span>  </span><span style=color:#65737e>// ... 还有66条
+</span><span>]
+</span></code></pre><p>这个术语表里有机构名称、法律法规、税收政策术语，还有印尼特有的一些制度名词。有了它，Master-Translator 在翻译时就能保证全文术语一致。<p>这也是为朋友做事的态度吧——要么不做，要做就认真做。<h3 id=shi-yong-master-translator-fan-yi>使用 Master-Translator 翻译</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>mcp_master-</span><span style=color:#bf616a>transl_translate_document</span><span>(
+</span><span>    </span><span style=color:#bf616a>document_path</span><span>="</span><span style=color:#a3be8c>/path/to/output/full.md</span><span>",
+</span><span>    </span><span style=color:#bf616a>target_language</span><span>="</span><span style=color:#a3be8c>chinese</span><span>",
+</span><span>    </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>deepseek-official</span><span>"
+</span><span>)
+</span></code></pre><p>翻译统计：<table><thead><tr><th>指标<th>数值<tbody><tr><td>翻译模式<td>并行 (5 并发)<tr><td>分块数<td>16 块<tr><td>失败数<td>0<tr><td>输入字符<td>172,033<tr><td>输出字符<td>66,432<tr><td>耗时<td>248 秒 (~4分钟)<tr><td>估算成本<td>$0.25</table><p>使用 DeepSeek V3 官方 API，4分钟完成17万字符的翻译，成本不到2元人民币。<h2 id=part-4-fan-yi-zhi-liang-yan-zheng>Part 4: 翻译质量验证</h2><p>翻译完成后，我对中英文版本进行了详细对比：<h3 id=jie-gou-wan-zheng-xing-jian-cha>结构完整性检查</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 图片引用数量
+</span><span style=color:#bf616a>grep -c </span><span>'</span><span style=color:#a3be8c>!\[</span><span>' full.md full_chinese.md
+</span><span style=color:#65737e># full.md: 90
+</span><span style=color:#65737e># full_chinese.md: 90 ✅
+</span><span>
+</span><span style=color:#65737e># 表格数量
+</span><span style=color:#bf616a>grep -c </span><span>'</span><span style=color:#a3be8c>&LTtable></span><span>' full.md full_chinese.md
+</span><span style=color:#65737e># full.md: 26
+</span><span style=color:#65737e># full_chinese.md: 26 ✅
+</span></code></pre><h3 id=fa-xian-bing-xiu-fu-de-wen-ti>发现并修复的问题</h3><p>在 Pandoc 转换 Word 时，发现一个警告：<pre style=background:#2b303b;color:#c0c5ce><code><span>[WARNING] Could not fetch resource images/a935da19...0836c026f68.jpg
+</span></code></pre><p>排查后发现：<strong>翻译过程中，图片路径中的一个字符被错误修改</strong>。<pre style=background:#2b303b;color:#c0c5ce><code><span>原文: ...281d083f6c026f68.jpg  (f)
+</span><span>译文: ...281d0836c026f68.jpg   (6) ← 错误！
+</span></code></pre><p>这是一个罕见的 edge case——长 hash 字符串在 LLM 处理时偶尔会出现字符替换。用 sed 快速修复：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>sed -i </span><span>'' '</span><span style=color:#a3be8c>s/281d0836c026f68/281d083f6c026f68/g</span><span>' full_chinese.md
+</span></code></pre><h3 id=fan-yi-zhi-liang-ping-gu>翻译质量评估</h3><table><thead><tr><th>维度<th>评分<th>说明<tbody><tr><td>完整性<td>⭐⭐⭐⭐⭐<td>所有内容均已翻译，无遗漏章节<tr><td>准确性<td>⭐⭐⭐⭐⭐<td>专业术语翻译准确一致<tr><td>格式保留<td>⭐⭐⭐⭐⭐<td>表格、图片、公式完整保留<tr><td>流畅度<td>⭐⭐⭐⭐☆<td>语句通顺，偶有直译痕迹</table><p>示例对比：<p><strong>原文：</strong><blockquote><p>The Job Creation Law, a comprehensive law that governs and amends many provisions in various sectors, was signed by President Joko Widodo on 2 November 2020.</blockquote><p><strong>译文：</strong><blockquote><p>《创造就业法》是一部综合性法律，旨在进行结构性改革并加速经济转型，于2020年11月2日由佐科·维多多总统签署，该法管辖并修订了多个领域的许多规定。</blockquote><p>术语一致性示例：<ul><li><code>Ministry of Investment/BKPM</code> → <code>投资部/印度尼西亚投资协调委员会（BKPM）</code> ✅<li><code>OSS RBA</code> → <code>在线单一提交系统（OSS RBA）</code> ✅<li><code>Tax Holiday</code> → <code>税收假期</code> ✅</ul><h2 id=part-5-word-dao-chu-de-liang-tiao-zhuan-huan>Part 5: Word 导出的两跳转换</h2><p>翻译完成后，需要导出为 Word 文档。这里有个技巧：<h3 id=zhi-jie-zhuan-huan-de-wen-ti>直接转换的问题</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 直接 MD → DOCX：表格格式丢失
+</span><span style=color:#bf616a>pandoc</span><span> full_chinese.md</span><span style=color:#bf616a> -o</span><span> full_chinese.docx
+</span></code></pre><p>Pandoc 直接转换时，HTML 表格（尤其是带 colspan/rowspan 的）会变成纯文本。<h3 id=liang-tiao-zhuan-huan-fang-an>两跳转换方案</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 步骤1: Markdown → HTML（嵌入所有资源）
+</span><span style=color:#bf616a>pandoc</span><span> full_chinese.md</span><span style=color:#bf616a> -o</span><span> full_chinese.html \
+</span><span style=color:#bf616a>    --embed-resources --standalone --mathjax
+</span><span>
+</span><span style=color:#65737e># 步骤2: HTML → Word
+</span><span style=color:#bf616a>pandoc</span><span> full_chinese.html</span><span style=color:#bf616a> -o</span><span> full_chinese.docx
+</span></code></pre><p>这个方案的原理：<ol><li>Pandoc 的 HTML 输出器完美保留 HTML 表格<li>Pandoc 的 HTML→DOCX 转换器能正确解析已渲染的 HTML</ol><p>最终生成了 <strong>9.3MB</strong> 的完整 Word 文档：<ul><li>✅ 119 张图片完整嵌入<li>✅ 26 个表格正确渲染（包括合并单元格）<li>✅ 数学公式通过 MathJax 完美呈现</ul><h2 id=ji-zhu-fu-pan>技术复盘</h2><p>既然博文都写到这里了，不如把整个工具链和踩过的坑也记录一下，方便日后参考。<h3 id=gong-ju-lian-zong-jie>工具链总结</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>PDF 文档
+</span><span>    ↓ (MinerU VLM API)
+</span><span>Markdown + Images
+</span><span>    ↓ (术语表构建)
+</span><span>terminology.json
+</span><span>    ↓ (Master-Translator + DeepSeek)
+</span><span>中文 Markdown
+</span><span>    ↓ (Pandoc 两跳转换)
+</span><span>Word 文档
+</span></code></pre><h3 id=cai-keng-qing-dan>踩坑清单</h3><table><thead><tr><th>问题<th>解决方案<tbody><tr><td>API 端点 404<td>查看官方 SDK 源码找到 v4 端点<tr><td>OSS 上传 SSL 错误<td>设置 <code>trust_env=False</code> 绕过代理<tr><td>OSS 上传 403 错误<td>不要手动设置 Content-Type<tr><td>图片路径字符被改<td>用 sed 修复，并对比检查<tr><td>表格格式丢失<td>使用 MD→HTML→DOCX 两跳转换<tr><td>LaTeX 公式显示异常<td>清理 OCR 产生的无效公式标记</table><h3 id=shi-jian-xian>时间线</h3><table><thead><tr><th>时间<th>工作内容<tbody><tr><td>下午 2:00<td>开始研究 MinerU API<tr><td>下午 3:00<td>调通 API 端点，解决代理问题<tr><td>下午 4:00<td>完成逐页诊断脚本<tr><td>下午 5:00<td>全文解析完成，开始构建术语表<tr><td>下午 6:00<td>翻译完成，开始质量检查<tr><td>晚上 7:00<td>修复图片路径问题，完成 Word 导出<tr><td>晚上 8:00<td><strong>项目完成</strong> 🎉</table><h2 id=cai-dan-ocr-de-huan-jue>彩蛋：OCR 的"幻觉"</h2><p>最后说个好玩的事。<p>在质量检查时，我发现 Word 文档中有些地方显示着奇怪的 <code>\( xxx \)</code> 符号。追查发现，MinerU 的 VLM 模型在解析 PDF 封面时产生了"OCR 幻觉"：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># 原文档第二部分封面被识别成了这些乱码：
+</span><span>NO SMOKING
+</span><span>PVEHICLEX1
+</span><span>NO6CARDK
+</span><span>(2) $\mathrm{{NaOH}}$ 扩散的体积为   ← 这是什么鬼？
+</span><span>H21HxTg
+</span></code></pre><p>是的，一份印尼投资指南的封面，被 OCR 成了化学方程式 <code>NaOH</code>。<p>我把这个截图发给挚友，她说可以当成"AI 也会胡说八道"的案例存档。<p>不过这也提醒我们：<strong>即使是最先进的 VLM 模型，在处理设计感强的封面页时，也可能产生完全离谱的输出</strong>。好在这些乱码只出现在封面区域，正文内容是没问题的。<h2 id=jie-yu-xin-nian-de-zheng-que-da-kai-fang-shi>结语：新年的正确打开方式</h2><p>晚上8点，我把最终的 Word 文档和术语表打包发给了挚友，让她转交给律所那边。<p>发完消息，对方还没回复——大概还在享受新年假期吧。<p>不过这不重要。重要的是，这次测试让我对 Master-Translator 的实战能力更有信心了：97页官方文档，从 PDF 解析到中文 Word 导出，6小时搞定，成本不到2块钱。当然，这6小时里有一半时间是在调 API、抓 Bug。但正是这些折腾，让整个过程变得有趣。<p>2026年的第一天，就这样在 API Debug 和翻译校对中度过。没有跨年晚会，没有朋友聚餐，只有屏幕上跳动的代码和一份渐渐成型的中文译稿。<p>窗外天色已暗，桌上的咖啡早就凉透了。<p>但心里是热的——因为这个项目，正在从"个人工具"慢慢走向"可能真的有用"。<p><strong>新年第一天，用来折腾有意义的事情——这大概就是我的仪式感吧。</strong> 🚀<hr><p><em>本文使用的工具：</em><ul><li><em><a href=https://mineru.net>MinerU</a> - 高质量 PDF 解析 API</em><li><em><a href=https://github.com/Polly2014/Master-Translator-MCP-Server>Master-Translator-MCP-Server</a> - 长文档翻译 MCP 工具</em><li><em><a href=https://platform.deepseek.com>DeepSeek</a> - 大语言模型 API</em><li><em><a href=https://pandoc.org/>Pandoc</a> - 文档格式转换</em></ul><p><em>如果你对 AI 翻译或 MCP 开发感兴趣，欢迎在评论区交流！</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
