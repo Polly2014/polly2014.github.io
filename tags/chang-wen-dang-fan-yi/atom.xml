@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 长文档翻译</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/chang-wen-dang-fan-yi/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-03T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/chang-wen-dang-fan-yi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从崩溃到突破：ContextWeave 消融实验的一天</title>
+        <published>2026-01-03T00:00:00+00:00</published>
+        <updated>2026-01-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/contextweave-ablation-experiment-journey/" type="text/html"/>
+        <id>https://polly.wang/contextweave-ablation-experiment-journey/</id>
+        
+        <content type="html">&lt;p&gt;今天是 2026 年的第三天，也是我在 ContextWeave 项目上收获最大的一天。&lt;&#x2F;p&gt;
+&lt;p&gt;从早上开始运行消融实验，到深夜完成实验清单更新，这一天经历了兴奋、困惑、沮丧，最后又回到平静的满足。作为一个正在准备 ACL&#x2F;EMNLP 投稿的研究者，我想记录下这段宝贵的经历。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dart-bei-jing-wei-shi-yao-xu-yao-xiao-rong-shi-yan&quot;&gt;🎯 背景：为什么需要消融实验&lt;&#x2F;h2&gt;
+&lt;p&gt;ContextWeave 是我开发的一个长文档翻译系统，核心思想是通过&lt;strong&gt;智能分块 + 上下文编织&lt;&#x2F;strong&gt;来解决 LLM 翻译长文档时的各种问题。在之前的实验中，我已经验证了系统的整体效果：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;成功翻译 60 万字符的完整书籍&lt;&#x2F;li&gt;
+&lt;li&gt;COMETKiwi 质量评分超越人工翻译（在 FIDIC 法律文档上）&lt;&#x2F;li&gt;
+&lt;li&gt;支持 6 种目标语言&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但是，顶会 Reviewer 一定会问一个问题：&lt;strong&gt;&amp;quot;每个组件的独立贡献是多少？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这就是消融实验（Ablation Study）的意义——逐个移除系统组件，量化每个部分的价值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bar-chart-e14-5-pei-zhi-xiao-rong-ju-zhen&quot;&gt;📊 E14：5 配置消融矩阵&lt;&#x2F;h2&gt;
+&lt;p&gt;我设计了 5 个配置来验证系统的核心组件：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;配置&lt;&#x2F;th&gt;&lt;th&gt;分块方式&lt;&#x2F;th&gt;&lt;th&gt;上下文&lt;&#x2F;th&gt;&lt;th&gt;术语注入&lt;&#x2F;th&gt;&lt;th&gt;预期作用&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;A0&lt;&#x2F;td&gt;&lt;td&gt;Direct（不分块）&lt;&#x2F;td&gt;&lt;td&gt;-&lt;&#x2F;td&gt;&lt;td&gt;-&lt;&#x2F;td&gt;&lt;td&gt;验证 LLM 崩溃现象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A1&lt;&#x2F;td&gt;&lt;td&gt;Fixed-4K&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;基线：仅分块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A2&lt;&#x2F;td&gt;&lt;td&gt;Section-Aware&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;验证智能分块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A3&lt;&#x2F;td&gt;&lt;td&gt;Section-Aware&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;验证上下文编织&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A4&lt;&#x2F;td&gt;&lt;td&gt;Section-Aware&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;完整系统&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;测试文档选用了 Mustafa 的《The Coming Wave》第 4-6 章，约 115K 字符。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-ge-liang-xi-a0-pei-zhi-que-ren-beng-kui&quot;&gt;第一个惊喜：A0 配置确认崩溃&lt;&#x2F;h3&gt;
+&lt;p&gt;当 A0（Direct 翻译）的结果出来时，我知道论文的核心论点站住了：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;A0_direct:
+&lt;&#x2F;span&gt;&lt;span&gt;  - char_ratio: 13.47%  ← 只输出了原文的 13.5%！
+&lt;&#x2F;span&gt;&lt;span&gt;  - TCR: 45.45%
+&lt;&#x2F;span&gt;&lt;span&gt;  - 状态: COLLAPSED
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;115K 字符的输入，LLM 只输出了不到 16K 字符，然后就&amp;quot;累了&amp;quot;停止了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不是 token limit 的问题——DeepSeek V3 有 128K 上下文窗口，8K 输出限制。按理说 115K 输入完全在能力范围内。但 LLM 就是&amp;quot;崩溃&amp;quot;了，这正是我们系统要解决的核心问题。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ge-liang-xi-fen-kuai-de-xi-ju-xing-xiao-guo&quot;&gt;第二个惊喜：分块的戏剧性效果&lt;&#x2F;h3&gt;
+&lt;p&gt;A1（Fixed-4K 分块）的结果让人振奋：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;A1_fixed_only:
+&lt;&#x2F;span&gt;&lt;span&gt;  - char_ratio: 30.83%  ← 从 13.5% 提升到 30.8%！
+&lt;&#x2F;span&gt;&lt;span&gt;  - COMETKiwi: 0.8238
+&lt;&#x2F;span&gt;&lt;span&gt;  - TCR: 77.27%
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;仅仅是把文档分成小块，输出完整度就提升了 &lt;strong&gt;+17.4 个百分点&lt;&#x2F;strong&gt;。这是分块策略最直接的价值证明。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cold-sweat-yu-dao-wen-ti-tcr-wei-shi-yao-bu-zeng-chang&quot;&gt;😰 遇到问题：TCR 为什么不增长？&lt;&#x2F;h2&gt;
+&lt;p&gt;按照我的预期，A4（完整系统 + 术语注入）的 TCR 应该明显高于其他配置。但结果让我困惑：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;配置&lt;&#x2F;th&gt;&lt;th&gt;TCR&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;A1 (Fixed)&lt;&#x2F;td&gt;&lt;td&gt;77.27%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A2 (Section)&lt;&#x2F;td&gt;&lt;td&gt;75.00%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A3 (+Context)&lt;&#x2F;td&gt;&lt;td&gt;75.00%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A4 (+Term)&lt;&#x2F;td&gt;&lt;td&gt;77.27%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;A4 的 TCR 和 A1 一样？术语注入没有效果？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不符合直觉。我花了几个小时排查问题。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-ci-zhen-duan-fen-kuai-luo-ji-bug&quot;&gt;第一次诊断：分块逻辑 bug&lt;&#x2F;h3&gt;
+&lt;p&gt;首先发现分块引擎有问题。当遇到超大章节时，&lt;code&gt;_split_large_section&lt;&#x2F;code&gt; 函数没有被正确调用，导致某些块超过了目标大小限制。&lt;&#x2F;p&gt;
+&lt;p&gt;修复后重跑，问题依旧。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ci-zhen-duan-tcr-ji-suan-tai-yan-ge&quot;&gt;第二次诊断：TCR 计算太严格&lt;&#x2F;h3&gt;
+&lt;p&gt;深入分析 TCR 计算逻辑后，我发现了真正的问题：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 原始的严格匹配
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;term_zh in translation:
+&lt;&#x2F;span&gt;&lt;span&gt;    matches += &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这要求术语的中文翻译&lt;strong&gt;完全一致&lt;&#x2F;strong&gt;才算匹配。但实际上：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;术语表：&lt;code&gt;&amp;quot;artificial intelligence&amp;quot; → &amp;quot;人工智能&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;A4 翻译：&lt;code&gt;&amp;quot;人工智能技术&amp;quot;&lt;&#x2F;code&gt; ← 包含术语但不完全匹配&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;修复为宽松匹配后：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 宽松匹配：检查术语是否被包含
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;any&lt;&#x2F;span&gt;&lt;span&gt;(variant in translation &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;variant &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;[term_zh, term_zh.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39; &amp;#39;, &amp;#39;&amp;#39;)]):
+&lt;&#x2F;span&gt;&lt;span&gt;    matches += &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;结果立刻改善：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;配置&lt;&#x2F;th&gt;&lt;th&gt;TCR (严格)&lt;&#x2F;th&gt;&lt;th&gt;TCR (宽松)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;A1&lt;&#x2F;td&gt;&lt;td&gt;77.27%&lt;&#x2F;td&gt;&lt;td&gt;92.86%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;A4&lt;&#x2F;td&gt;&lt;td&gt;77.27%&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;96.43%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;终于看到了 +3.5pp 的提升！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mag-yi-wai-fa-xian-bian-jie-fen-xi-de-jie-zhi&quot;&gt;🔍 意外发现：边界分析的价值&lt;&#x2F;h2&gt;
+&lt;p&gt;在排查过程中，我额外做了边界分析，发现了更有价值的结论：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;分块方式&lt;&#x2F;th&gt;&lt;th&gt;边界数量&lt;&#x2F;th&gt;&lt;th&gt;问题边界&lt;&#x2F;th&gt;&lt;th&gt;词中截断&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Fixed-4K&lt;&#x2F;td&gt;&lt;td&gt;28&lt;&#x2F;td&gt;&lt;td&gt;17 (60.7%)&lt;&#x2F;td&gt;&lt;td&gt;17&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Section-Aware&lt;&#x2F;td&gt;&lt;td&gt;23&lt;&#x2F;td&gt;&lt;td&gt;0 (0%)&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;Section-Aware 分块完全消除了词中截断问题！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这个发现比 TCR 的微小提升更有说服力。Fixed-4K 有超过 60% 的边界会在单词中间截断，而 Section-Aware 通过尊重文档结构，实现了 100% 的段落完整性。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;memo-shi-yan-qing-dan-geng-xin&quot;&gt;📝 实验清单更新&lt;&#x2F;h2&gt;
+&lt;p&gt;一天下来，我更新了完整的实验清单：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;th&gt;数量&lt;&#x2F;th&gt;&lt;th&gt;占比&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;✅ 完成&lt;&#x2F;td&gt;&lt;td&gt;13&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;81%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;⚠️ 部分&#x2F;暂停&lt;&#x2F;td&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;19%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;❌ 未开始&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;特别值得一提的是 E01（CCF 指标验证），我决定采用&lt;strong&gt;文献替代&lt;&#x2F;strong&gt;方案而非人工标注：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We adopt established MT completeness metrics from prior work. &lt;strong&gt;Paragraph Retention Rate (PRR)&lt;&#x2F;strong&gt; follows the structural preservation principle proposed by [Tiedemann &amp;amp; Thottingal, 2020]...&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是学术写作的常见策略——当某个指标已经在领域内被广泛验证时，引用权威文献比重新做人工实验更有说服力。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mortar-board-jin-tian-xue-dao-de-jiao-xun&quot;&gt;🎓 今天学到的教训&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-shi-yan-she-ji-yao-kao-lu-ping-gu-li-du&quot;&gt;1. 实验设计要考虑评估粒度&lt;&#x2F;h3&gt;
+&lt;p&gt;TCR 计算的严格 vs 宽松匹配问题，本质上是评估粒度的选择。在消融实验中，选择合适的评估方式和选择合适的测试数据同样重要。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-yang-ben-liang-jue-ding-jie-lun-ke-xin-du&quot;&gt;2. 样本量决定结论可信度&lt;&#x2F;h3&gt;
+&lt;p&gt;E14 实验只匹配了 22 个术语（术语表 92 个中的 24%），这导致 TCR 差异不够显著。下次改进时需要：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;更换术语密集的测试文档（如 FIDIC 法律合同）&lt;&#x2F;li&gt;
+&lt;li&gt;或扩大术语表到 150+ 条目&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-yi-wai-fa-xian-you-shi-bi-yu-she-mu-biao-geng-you-jie-zhi&quot;&gt;3. 意外发现有时比预设目标更有价值&lt;&#x2F;h3&gt;
+&lt;p&gt;边界分析本来只是调试手段，但&amp;quot;Section-Aware 消除 100% 边界问题&amp;quot;这个发现，比 TCR 的 3.5pp 提升更能说明方法的价值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rocket-xia-yi-bu-ji-hua&quot;&gt;🚀 下一步计划&lt;&#x2F;h2&gt;
+&lt;p&gt;E14 暂停，但核心发现已经足够支撑论文：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ &lt;strong&gt;分块防止崩溃&lt;&#x2F;strong&gt;：Char% 13.5% → 30.8% (+17.4pp)&lt;&#x2F;li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Section-Aware 消除边界问题&lt;&#x2F;strong&gt;：60.7% → 0%&lt;&#x2F;li&gt;
+&lt;li&gt;✅ &lt;strong&gt;完整系统质量最优&lt;&#x2F;strong&gt;：COMETKiwi 0.833&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;剩余的 P0 实验：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;E02：DCR 边界重复检测（可用理论分析替代）&lt;&#x2F;li&gt;
+&lt;li&gt;E05：多文档 TCR 汇总&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;今天的工作让我更深刻地理解了一点：&lt;strong&gt;好的研究不是一帆风顺的，而是在发现问题、解决问题的循环中逐步前进的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;从崩溃到突破，这一天的经历会成为论文 Discussion 部分的宝贵素材。&lt;&#x2F;p&gt;
+&lt;p&gt;休息一下，明天继续！☕&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果你对长文档翻译或 LLM 应用有兴趣，欢迎关注 ContextWeave 项目的后续更新。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
