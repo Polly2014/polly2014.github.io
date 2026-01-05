@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Word排版</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/wordpai-ban/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-05T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/wordpai-ban/atom.xml</id>
+    <entry xml:lang="en">
+        <title>48小时翻译Qi的OPE新书：当Master Translator遇见「智能时代的OPE创业范式」</title>
+        <published>2026-01-05T00:00:00+00:00</published>
+        <updated>2026-01-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/ope-book-translation-48-hours/" type="text/html"/>
+        <id>https://polly.wang/ope-book-translation-48-hours/</id>
+        
+        <content type="html">&lt;h2 id=&quot;kai-pian-yuan-dan-jia-qi-de-zui-hou-yi-tian&quot;&gt;开篇：元旦假期的最后一天&lt;&#x2F;h2&gt;
+&lt;p&gt;1月3日，元旦假期的最后一天。&lt;&#x2F;p&gt;
+&lt;p&gt;正在准备论文实验的我，收到了Qi团队的消息：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;Qi的OPE新书马上要由北大出版社出版。目前我有word版本。Qi问，如果要做几本英文版，大概需要多长时间？他可能想去美国时送给Satya和Mustafa。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Satya Nadella，Microsoft CEO。Mustafa Suleyman，Microsoft AI CEO。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不是普通的翻译任务——这是Qi要送给两位科技巨头的礼物。&lt;&#x2F;p&gt;
+&lt;p&gt;我看了一眼文档：&lt;strong&gt;422页&lt;&#x2F;strong&gt;，完整的理论体系、实践案例、未来洞察。这是Qi关于**OPE（One Person Entrepreneur，一人企业家）**理念的系统阐述——在AI时代，一个人如何借助智能工具完成原本需要团队协作的事业。&lt;&#x2F;p&gt;
+&lt;p&gt;而我，恰好在两个月前的Hackathon上开发了&lt;strong&gt;Master Translator&lt;&#x2F;strong&gt;——一个专门用于长文档翻译的MCP Server。这已经是我翻译的&lt;strong&gt;第5本书&lt;&#x2F;strong&gt;了：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;《提示工程》&lt;&#x2F;strong&gt;（Qi的中文书）— 首次验证&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;《浪潮将至》&lt;&#x2F;strong&gt;（Mustafa的英文书）— TownHall展示&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;AV1视频编解码技术书籍&lt;&#x2F;strong&gt;（320页）— 12月27日，一个通宵&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;印尼投资指南&lt;&#x2F;strong&gt;（97页）— 1月1日，新年第一天&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;现在，轮到Qi的第二本书了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这是一种奇妙的闭环&lt;&#x2F;strong&gt;：用我践行OPE理念开发的工具，来翻译Qi阐述OPE理念的书籍。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;part-1-contextweavekuang-jia-de-he-xin-ji-zhu&quot;&gt;Part 1: ContextWeave框架的核心技术&lt;&#x2F;h2&gt;
+&lt;p&gt;从Hackathon版本到现在，Master Translator经历了本质性的升级。我为它设计了一套完整的理论框架——&lt;strong&gt;ContextWeave&lt;&#x2F;strong&gt;，并正在撰写论文和专利申请。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wan-zheng-xing-yi-zhi-xing-kuang-jia-ccf&quot;&gt;完整性-一致性框架（CCF）&lt;&#x2F;h3&gt;
+&lt;p&gt;长文档翻译的核心挑战可以归结为两个维度：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;完整性（Completeness）&lt;&#x2F;strong&gt;：译文是否完整保留了原文的所有内容？&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;一致性（Consistency）&lt;&#x2F;strong&gt;：术语和上下文是否全文一致？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我提出了&lt;strong&gt;Completeness-Consistency Framework (CCF)&lt;&#x2F;strong&gt;，用三个无需参考译文的指标来评估：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;全称&lt;&#x2F;th&gt;&lt;th&gt;含义&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;PRR&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Paragraph Retention Rate&lt;&#x2F;td&gt;&lt;td&gt;段落保留率&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;LRR&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Line Retention Rate&lt;&#x2F;td&gt;&lt;td&gt;行保留率&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;TCR&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Terminology Consistency Rate&lt;&#x2F;td&gt;&lt;td&gt;术语一致性率&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;这些指标的革命性在于：&lt;strong&gt;无需人工参考译文&lt;&#x2F;strong&gt;，就能评估翻译质量。对于422页的书籍，人工参考根本不现实。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhang-jie-gan-zhi-fen-kuai-section-aware-chunking&quot;&gt;章节感知分块（Section-Aware Chunking）&lt;&#x2F;h3&gt;
+&lt;p&gt;传统的分块策略（如LangChain的固定阈值分块）会在任意位置切断文档，导致：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;句子被截断&lt;&#x2F;li&gt;
+&lt;li&gt;段落被打散&lt;&#x2F;li&gt;
+&lt;li&gt;语义单元被破坏&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;ContextWeave的&lt;strong&gt;章节感知分块&lt;&#x2F;strong&gt;算法不同：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;1. 解析文档标题层级（H1-H6）
+&lt;&#x2F;span&gt;&lt;span&gt;2. 构建章节结构树
+&lt;&#x2F;span&gt;&lt;span&gt;3. 在章节边界处分块，确保语义完整
+&lt;&#x2F;span&gt;&lt;span&gt;4. 动态调整块大小，适应内容长度
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;对于Qi的OPE书，这意味着：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;第1章完整在一个块中&lt;&#x2F;li&gt;
+&lt;li&gt;第2.1节不会和第2.2节被切开&lt;&#x2F;li&gt;
+&lt;li&gt;每个分块都是一个完整的语义单元&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;kua-kuai-shang-xia-wen-bian-zhi-cross-chunk-context-weaving&quot;&gt;跨块上下文编织（Cross-Chunk Context Weaving）&lt;&#x2F;h3&gt;
+&lt;p&gt;分块翻译最大的问题是&lt;strong&gt;上下文断裂&lt;&#x2F;strong&gt;——每个块独立翻译，前后文不连贯。&lt;&#x2F;p&gt;
+&lt;p&gt;ContextWeave通过&lt;strong&gt;滑动窗口式上下文注入&lt;&#x2F;strong&gt;解决这个问题：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;翻译块N时：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 注入前一块的末尾段落（前文上下文）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 注入术语表（确保术语一致）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 注入翻译指令
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这就像翻译人员在翻译新章节时，会先回顾上一章的结尾——ContextWeave自动化了这个过程。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;llmshu-chu-jing-hua&quot;&gt;LLM输出净化&lt;&#x2F;h3&gt;
+&lt;p&gt;在实践中，我发现了一个之前未被记录的问题：&lt;strong&gt;Prompt Residual Contamination（提示词残留污染）&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;LLM有时会把系统提示词的片段&amp;quot;泄漏&amp;quot;到输出中，比如：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;previous_context&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;这是前文内容...
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;previous_context&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 第3章 正文开始
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这些标签不应该出现在最终译文中！ContextWeave的&lt;strong&gt;LLM输出净化模块&lt;&#x2F;strong&gt;通过正则表达式模式匹配，自动清理这些污染内容。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;qi-dong-fan-yi&quot;&gt;启动翻译&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用 DeepSeek-V3 作为翻译引擎
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcp_master-transl_translate_document&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;document_path&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;path&#x2F;to&#x2F;ope_chinese.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_language&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;english&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-v3&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;翻译过程出奇的顺利。这本书虽然页数多，但结构清晰、章节分明——恰好是ContextWeave最擅长处理的类型。&lt;&#x2F;p&gt;
+&lt;p&gt;一个下午，翻译主体完成。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;part-2-fan-yi-zhi-liang-shen-he&quot;&gt;Part 2: 翻译质量审核&lt;&#x2F;h2&gt;
+&lt;p&gt;翻译完成后，我没有急着交付，而是进行了系统的质量审核。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;jie-gou-wan-zheng-xing-jian-cha&quot;&gt;结构完整性检查&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 对比原文和译文的结构
+&lt;&#x2F;span&gt;&lt;span&gt;原文：3958行，约42万字符
+&lt;&#x2F;span&gt;&lt;span&gt;译文：3958行，结构完全对应
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;一级标题：12个 ✅
+&lt;&#x2F;span&gt;&lt;span&gt;二级标题：47个 ✅
+&lt;&#x2F;span&gt;&lt;span&gt;三级标题：123个 ✅
+&lt;&#x2F;span&gt;&lt;span&gt;图片引用：全部保留 ✅
+&lt;&#x2F;span&gt;&lt;span&gt;表格：全部保留 ✅
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;zhu-yu-yi-zhi-xing-yan-zheng&quot;&gt;术语一致性验证&lt;&#x2F;h3&gt;
+&lt;p&gt;OPE相关核心术语翻译一致性：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;中文术语&lt;&#x2F;th&gt;&lt;th&gt;英文翻译&lt;&#x2F;th&gt;&lt;th&gt;一致性&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;极简创新&lt;&#x2F;td&gt;&lt;td&gt;Minimalist Innovation&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;极致创业&lt;&#x2F;td&gt;&lt;td&gt;Ultimate Entrepreneurship&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;智能协同&lt;&#x2F;td&gt;&lt;td&gt;Intelligent Collaboration&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;一人企业家&lt;&#x2F;td&gt;&lt;td&gt;One Person Entrepreneur&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;大语言模型&lt;&#x2F;td&gt;&lt;td&gt;Large Language Models (LLMs)&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;AI代理&lt;&#x2F;td&gt;&lt;td&gt;AI Agents&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;fa-xian-bing-xiu-fu-wen-ti&quot;&gt;发现并修复问题&lt;&#x2F;h3&gt;
+&lt;p&gt;在8.1.2节，发现了一处翻译异常——模型出现了&amp;quot;幻觉&amp;quot;，产生了重复循环的内容。这是LLM翻译的典型问题之一。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复方案&lt;&#x2F;strong&gt;：手动重新翻译该段落，确保内容准确。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 修复前
+&lt;&#x2F;span&gt;&lt;span&gt;The content looped repeatedly...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 修复后  
+&lt;&#x2F;span&gt;&lt;span&gt;Section 8.1.2 covers the implementation details of...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;part-3-cong-markdowndao-chu-ban-ji-word&quot;&gt;Part 3: 从Markdown到出版级Word&lt;&#x2F;h2&gt;
+&lt;p&gt;翻译完成只是第一步。Qi要的是可以印刷成书的版本——这意味着需要专业的排版。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;worddao-chu-de-tiao-zhan&quot;&gt;Word导出的挑战&lt;&#x2F;h3&gt;
+&lt;p&gt;使用Pandoc将Markdown转换为Word：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pandoc&lt;&#x2F;span&gt;&lt;span&gt; ope_english.md&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; ope_english.docx \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --embed-resources &lt;&#x2F;span&gt;&lt;span&gt;\
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --standalone &lt;&#x2F;span&gt;&lt;span&gt;\
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --mathml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;导出成功，但打开Word后发现问题：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;页面尺寸是默认的A4&lt;&#x2F;li&gt;
+&lt;li&gt;字体大小不适合阅读&lt;&#x2F;li&gt;
+&lt;li&gt;图片和表格需要调整&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;a5pai-ban-de-zhuan-ye-she-zhi&quot;&gt;A5排版的专业设置&lt;&#x2F;h3&gt;
+&lt;p&gt;我仔细测量了中文版的实体书：&lt;strong&gt;A5尺寸（14.8cm × 21cm）&lt;&#x2F;strong&gt;，边距约2.2cm。&lt;&#x2F;p&gt;
+&lt;p&gt;在Word&#x2F;WPS中进行设置：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;设置项&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;纸张大小&lt;&#x2F;td&gt;&lt;td&gt;A5 (14.8 × 21cm)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;上下左右边距&lt;&#x2F;td&gt;&lt;td&gt;2.2cm&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;正文字体&lt;&#x2F;td&gt;&lt;td&gt;Times New Roman, 10pt&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;行距&lt;&#x2F;td&gt;&lt;td&gt;1.2倍&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;标题字体&lt;&#x2F;td&gt;&lt;td&gt;适当加大&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;ye-mei-de-zhi-neng-she-zhi&quot;&gt;页眉的智能设置&lt;&#x2F;h3&gt;
+&lt;p&gt;专业书籍的页眉应该显示当前章节标题。在Word中使用域代码实现：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;{ IF &amp;quot;{ STYLEREF &amp;quot;标题 2&amp;quot; }&amp;quot; = &amp;quot;&amp;quot; &amp;quot;{ STYLEREF &amp;quot;标题 1&amp;quot; }&amp;quot; &amp;quot;{ STYLEREF &amp;quot;标题 2&amp;quot; }&amp;quot; }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个域代码的逻辑：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;优先显示二级标题（Heading 2）&lt;&#x2F;li&gt;
+&lt;li&gt;如果当前页没有二级标题，则显示一级标题（Heading 1）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这样，每一页的页眉都会自动显示对应的章节名称。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tu-pian-he-biao-ge-de-gua-pei&quot;&gt;图片和表格的适配&lt;&#x2F;h3&gt;
+&lt;p&gt;由于页面从A4缩小到A5，所有图片和表格都需要重新调整：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;图片&lt;&#x2F;strong&gt;：设置宽度为页面内容区宽度（约10.4cm），锁定纵横比&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;表格&lt;&#x2F;strong&gt;：使用&amp;quot;自动调整&amp;quot;→&amp;quot;根据窗口调整表格&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;part-4-ji-zhu-xi-jie-yu-cai-keng-ji-lu&quot;&gt;Part 4: 技术细节与踩坑记录&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;gong-shi-chu-li&quot;&gt;公式处理&lt;&#x2F;h3&gt;
+&lt;p&gt;书中包含一些数学公式，如：&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+\text{From } 1 + 1 + 1 \dots = \infty \text{ to } 1 + AI = \infty
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;使用Pandoc的&lt;code&gt;--mathml&lt;&#x2F;code&gt;选项，确保公式在Word中可编辑。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhong-wen-can-liu-qing-li&quot;&gt;中文残留清理&lt;&#x2F;h3&gt;
+&lt;p&gt;翻译后仍有少量中文残留（主要是引用和注释），需要手动清理：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检测中文字符
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep -P &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[\x{4e00}-\x{9fff}]&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; ope_english.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;发现参考文献部分的中文保留了原样（如数英网的引用），这是合理的——保持原始来源的完整性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ye-shu-dui-bi&quot;&gt;页数对比&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;页数&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;中文版&lt;&#x2F;td&gt;&lt;td&gt;422页&lt;&#x2F;td&gt;&lt;td&gt;原版，A5尺寸&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;英文版（初始）&lt;&#x2F;td&gt;&lt;td&gt;700+页&lt;&#x2F;td&gt;&lt;td&gt;直接使用B5，页数暴涨&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;英文版（优化后）&lt;&#x2F;td&gt;&lt;td&gt;~500页&lt;&#x2F;td&gt;&lt;td&gt;A5 + 10pt字体 + 紧凑行距&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;英文版页数增加是正常的——英文比中文平均多20%~40%的字符。通过调整字体大小和行距，将页数控制在合理范围内。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;part-5-shi-jian-xian-hui-gu&quot;&gt;Part 5: 时间线回顾&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;时间&lt;&#x2F;th&gt;&lt;th&gt;里程碑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1月3日下午&lt;&#x2F;td&gt;&lt;td&gt;收到Qi团队消息，获取Word版本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;1月3日晚&lt;&#x2F;td&gt;&lt;td&gt;使用MinerU解析为Markdown&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;1月4日&lt;&#x2F;td&gt;&lt;td&gt;Master Translator翻译主体&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;1月5日上午&lt;&#x2F;td&gt;&lt;td&gt;质量审核，修复8.1.2节问题&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;1月5日下午&lt;&#x2F;td&gt;&lt;td&gt;Word排版，A5设置，页眉域代码&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;1月5日晚&lt;&#x2F;td&gt;&lt;td&gt;图片&#x2F;表格调整，完成初版&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;总耗时：约48小时（包含睡眠和其他工作）。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jie-yu-opeli-nian-de-zi-wo-yan-zheng&quot;&gt;结语：OPE理念的自我验证&lt;&#x2F;h2&gt;
+&lt;p&gt;这次翻译经历，本身就是OPE理念的完美诠释。&lt;&#x2F;p&gt;
+&lt;p&gt;一个人，借助AI工具（Master Translator），在两天内完成了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;422页书籍的完整翻译&lt;&#x2F;li&gt;
+&lt;li&gt;专业级的Word排版&lt;&#x2F;li&gt;
+&lt;li&gt;出版级的质量把控&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;这在传统模式下几乎不可能&lt;&#x2F;strong&gt;——至少需要一个翻译团队数周的时间。&lt;&#x2F;p&gt;
+&lt;p&gt;但更让我感慨的是这种&lt;strong&gt;闭环的美感&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;用践行OPE的方式，翻译阐述OPE的书籍，最终送给推动AI革命的两位领袖。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Qi在书中写道：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;AI正在赋予每个人组织能力——让个体第一次拥有真正意义上的&#x27;团队&#x27;。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话，我在这48小时里有了最深刻的体会。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fu-lu-ji-zhu-zhan-zong-jie&quot;&gt;附录：技术栈总结&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;环节&lt;&#x2F;th&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;PDF解析&lt;&#x2F;td&gt;&lt;td&gt;MinerU&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文档翻译&lt;&#x2F;td&gt;&lt;td&gt;Master-Translator-MCP-Server + DeepSeek-V3&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;格式转换&lt;&#x2F;td&gt;&lt;td&gt;Pandoc&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;排版编辑&lt;&#x2F;td&gt;&lt;td&gt;WPS&#x2F;Word&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;质量验证&lt;&#x2F;td&gt;&lt;td&gt;Python脚本 + 人工复核&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;hou-ji-cong-gong-ju-dao-xue-zhu-yan-jiu&quot;&gt;后记：从工具到学术研究&lt;&#x2F;h2&gt;
+&lt;p&gt;Master Translator不再只是一个翻译工具。在完成这五本书翻译的过程中，我逐渐意识到长文档翻译领域存在着&lt;strong&gt;系统性的技术空白&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;LLM生成能力崩塌（LLM Generation Collapse）&lt;&#x2F;strong&gt;——这是我在实践中发现的一个重要现象：当输入超过10万字符时，LLM的有效输出急剧下降，仅产出19.9%的内容。这个发现促使我将Master Translator的核心算法体系化为&lt;strong&gt;ContextWeave框架&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;目前，相关的学术论文《ContextWeave: A Section-Aware Chunking and Context Weaving Framework for Long Document Translation with Large Language Models》正在撰写中。同时，核心技术也在申请专利——《一种基于模型上下文协议的长文档完整性翻译系统及方法》。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一次从实践到理论的旅程：五本书的翻译实战，催生了一套完整的理论框架。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是我使用Master Translator翻译的第五本书。从《提示工程》入门，到《浪潮将至》的挑战，再到《AV1视频编码》的技术攻坚，《Indonesia Investment Guide》的实用验证，直到今天Qi的《OPE新书》——每一本书都在推动这个工具的进化。下一本书会是什么？我很期待。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
