@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - HTTP协议</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/httpxie-yi/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-08T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/httpxie-yi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复</title>
+        <published>2026-01-08T00:00:00+00:00</published>
+        <updated>2026-01-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/deepseek-api-transfer-encoding-error-debug/" type="text/html"/>
+        <id>https://polly.wang/deepseek-api-transfer-encoding-error-debug/</id>
+        
+        <content type="html">&lt;h1 id=&quot;shen-du-diao-shi-deepseek-api-transferencodingerror-de-gen-yin-fen-xi-yu-liu-shi-chuan-shu-xiu-fu&quot;&gt;深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复&lt;&#x2F;h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;调试的乐趣在于：你以为问题出在 A，结果根因在 B，而最终解法是 C。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;wen-ti-xian-xiang&quot;&gt;问题现象&lt;&#x2F;h2&gt;
+&lt;p&gt;最近我在开发一个基于 LLM 的长文档翻译系统 ContextWeave，用于将技术书籍进行高质量的双语翻译。系统使用 DeepSeek V3 API 作为翻译引擎，通过分块策略处理超长文档。&lt;&#x2F;p&gt;
+&lt;p&gt;一切看起来都很美好，直到我开始翻译一本 12 万字符的 AV1 视频编码技术书籍时，遇到了这个错误：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;TransferEncodingError: 400, message=&amp;#39;Not enough data to satisfy transfer length header.&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;更诡异的是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;短文本翻译（~200字符）&lt;&#x2F;strong&gt;：✅ 正常&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;中等文本翻译（~1K字符）&lt;&#x2F;strong&gt;：✅ 正常&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;长文本翻译（~4K字符）&lt;&#x2F;strong&gt;：❌ 必现失败&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;重试 3 次&lt;&#x2F;strong&gt;：❌ 全部失败&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这个错误信息相当&amp;quot;技术&amp;quot;，直译就是：&amp;quot;传输长度头声明的数据量，与实际接收到的数据量不匹配&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;我的第一反应是：难道 DeepSeek API 有 bug？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-she-yu-pai-chu&quot;&gt;假设与排除&lt;&#x2F;h2&gt;
+&lt;p&gt;作为一个有经验的工程师（自夸一下），我开始列举可能的原因：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;假设&lt;&#x2F;th&gt;&lt;th&gt;可能性&lt;&#x2F;th&gt;&lt;th&gt;验证方法&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1. API Key 失效&lt;&#x2F;td&gt;&lt;td&gt;低&lt;&#x2F;td&gt;&lt;td&gt;短请求正常&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2. 输出超过 8K token 限制&lt;&#x2F;td&gt;&lt;td&gt;中&lt;&#x2F;td&gt;&lt;td&gt;检查 max_tokens 配置&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3. 网络不稳定&lt;&#x2F;td&gt;&lt;td&gt;中&lt;&#x2F;td&gt;&lt;td&gt;诊断脚本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4. aiohttp 客户端配置问题&lt;&#x2F;td&gt;&lt;td&gt;中&lt;&#x2F;td&gt;&lt;td&gt;调整超时参数&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;5. 中间代理&#x2F;CDN 问题&lt;&#x2F;td&gt;&lt;td&gt;低&lt;&#x2F;td&gt;&lt;td&gt;traceroute 分析&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最初我怀疑是 &lt;strong&gt;8K token 限制&lt;&#x2F;strong&gt; 的问题。DeepSeek 官方文档明确说明：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;流式输出只是一种响应传输方式，不会改变 8K 的输出 token 限制。这个限制是由模型本身的能力决定的，与 API 调用方式无关。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;但问题是：4K 字符的中文翻译成英文，输出不会超过 8K tokens（实测约 2-3K tokens）。&lt;&#x2F;p&gt;
+&lt;p&gt;这条路走不通。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bian-xie-zhen-duan-jiao-ben&quot;&gt;编写诊断脚本&lt;&#x2F;h2&gt;
+&lt;p&gt;既然猜不出来，那就用数据说话。我写了一个完整的诊断脚本 &lt;code&gt;diagnose_deepseek_api.py&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;test_large_translation&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;测试 4: 大文本翻译 (~4K 字符)&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 读取实际的 AV1 Book 文本
+&lt;&#x2F;span&gt;&lt;span&gt;    test_text = full_text[:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4000&lt;&#x2F;span&gt;&lt;span&gt;]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 取前 4K
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    payload = {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-chat&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;],
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;8192&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;temperature&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.3
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;aiohttp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ClientSession&lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;session:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;session.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;API_URL&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;=payload) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;resp:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;resp.status == &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;200&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;                    data = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span&gt;resp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;()  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# &amp;lt;- 这里抛出 TransferEncodingError
+&lt;&#x2F;span&gt;&lt;span&gt;                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;aiohttp.ClientPayloadError &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;❌ ClientPayloadError: &lt;&#x2F;span&gt;&lt;span&gt;{e}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;   这是 TransferEncodingError 的父类错误&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;运行结果：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;测试 1: 基本连接 (Hello World)
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;状态码: 200
+&lt;&#x2F;span&gt;&lt;span&gt;耗时: 1.23s
+&lt;&#x2F;span&gt;&lt;span&gt;响应: Hello! How can I assist you today?
+&lt;&#x2F;span&gt;&lt;span&gt;✅ 基本连接正常
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;测试 2: 短文本翻译 (~200 字符)
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;源文本: 78 字符
+&lt;&#x2F;span&gt;&lt;span&gt;状态码: 200
+&lt;&#x2F;span&gt;&lt;span&gt;耗时: 2.45s
+&lt;&#x2F;span&gt;&lt;span&gt;译文: 156 字符
+&lt;&#x2F;span&gt;&lt;span&gt;✅ 短文本翻译正常
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;测试 3: 中等文本翻译 (~1K 字符)
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;源文本: 892 字符
+&lt;&#x2F;span&gt;&lt;span&gt;状态码: 200
+&lt;&#x2F;span&gt;&lt;span&gt;耗时: 8.67s
+&lt;&#x2F;span&gt;&lt;span&gt;译文: 1847 字符
+&lt;&#x2F;span&gt;&lt;span&gt;✅ 中等文本翻译正常
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;测试 4: 大文本翻译 (~4K 字符)
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;源文本: 4000 字符
+&lt;&#x2F;span&gt;&lt;span&gt;状态码: 200
+&lt;&#x2F;span&gt;&lt;span&gt;❌ ClientPayloadError: 400, message=&amp;#39;Not enough data to satisfy transfer length header.&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;   这是 TransferEncodingError 的父类错误
+&lt;&#x2F;span&gt;&lt;span&gt;   可能原因：响应被中途截断
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键发现：&lt;strong&gt;状态码是 200&lt;&#x2F;strong&gt;！&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着 DeepSeek API 成功生成了响应，但在传输过程中出了问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liu-shi-chuan-shu-ce-shi&quot;&gt;流式传输测试&lt;&#x2F;h2&gt;
+&lt;p&gt;接下来我添加了流式传输测试：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;test_with_stream&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;测试 5: 使用流式传输&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    payload = {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-chat&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;],
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;8192&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;stream&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 🔑 关键：启用流式传输
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;session.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;API_URL&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;=payload) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;resp:
+&lt;&#x2F;span&gt;&lt;span&gt;        result_chunks = []
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async for &lt;&#x2F;span&gt;&lt;span&gt;line &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;resp.content:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 逐行读取 SSE 数据
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;line.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;startswith&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data: &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;):
+&lt;&#x2F;span&gt;&lt;span&gt;                data = json.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;loads&lt;&#x2F;span&gt;&lt;span&gt;(line[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;:])
+&lt;&#x2F;span&gt;&lt;span&gt;                content = data[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;choices&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;][&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;][&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;delta&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;                result_chunks.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(result_chunks)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;结果令人惊喜：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;测试 5: 流式传输
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;源文本: 4000 字符
+&lt;&#x2F;span&gt;&lt;span&gt;状态码: 200
+&lt;&#x2F;span&gt;&lt;span&gt;耗时: 45.32s
+&lt;&#x2F;span&gt;&lt;span&gt;收到 chunks: 1847
+&lt;&#x2F;span&gt;&lt;span&gt;译文: 9234 字符
+&lt;&#x2F;span&gt;&lt;span&gt;比率: 230.9%
+&lt;&#x2F;span&gt;&lt;span&gt;✅ 流式传输正常
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;同样的请求，流式模式成功了！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wang-luo-lu-jing-fen-xi&quot;&gt;网络路径分析&lt;&#x2F;h2&gt;
+&lt;p&gt;为什么非流式失败，流式成功？我开始怀疑中间代理的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;使用 traceroute 分析网络路径：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; traceroute&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -m&lt;&#x2F;span&gt;&lt;span&gt; 10 api.deepseek.com
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;  192.168.31.1 (192.168.31.1)    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;6.296&lt;&#x2F;span&gt;&lt;span&gt; ms   3.957 ms   3.599 ms
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;  192.168.1.1 (192.168.1.1)      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;4.828&lt;&#x2F;span&gt;&lt;span&gt; ms   4.850 ms   4.957 ms
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;  123.116.96.1 (北京联通)        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;5.163&lt;&#x2F;span&gt;&lt;span&gt; ms   7.575 ms   5.734 ms
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;4&lt;&#x2F;span&gt;&lt;span&gt;  114.245.244.129                7.896 ms   *   *
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;5  &lt;&#x2F;span&gt;&lt;span&gt;* * *
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;  219.158.8.38 (中国骨干网)      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;9.924&lt;&#x2F;span&gt;&lt;span&gt; ms
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;7&lt;&#x2F;span&gt;&lt;span&gt;  219.158.10.86                  8.833 ms   *   *
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;8&lt;&#x2F;span&gt;&lt;span&gt;  219.158.12.162                 198.562 ms
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;9&lt;&#x2F;span&gt;&lt;span&gt;  151.148.9.32 (国际出口)        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;137.116&lt;&#x2F;span&gt;&lt;span&gt; ms  165.002 ms  154.920 ms
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;10  &lt;&#x2F;span&gt;&lt;span&gt;* * *
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PING&lt;&#x2F;span&gt;&lt;span&gt; d3bbv8sr76az5s.cloudfront.net (3.173.21.63)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;64&lt;&#x2F;span&gt;&lt;span&gt; bytes from 3.173.21.63: time=196.103 ms
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;64&lt;&#x2F;span&gt;&lt;span&gt; bytes from 3.173.21.63: time=194.315 ms
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;64&lt;&#x2F;span&gt;&lt;span&gt; bytes from 3.173.21.63: time=201.644 ms
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键发现：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;DeepSeek API 使用 AWS CloudFront CDN&lt;&#x2F;strong&gt;（域名解析到 cloudfront.net）&lt;&#x2F;li&gt;
+&lt;li&gt;网络路径：家庭路由器 → 北京联通 → 中国骨干网 → 国际出口 → AWS CloudFront&lt;&#x2F;li&gt;
+&lt;li&gt;延迟约 200ms，属于跨国请求的正常范围&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;gen-yin-fen-xi&quot;&gt;根因分析&lt;&#x2F;h2&gt;
+&lt;p&gt;结合所有证据，我画出了问题的完整链路：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;非流式请求的传输过程：
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  DeepSeek API                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────┐                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 生成完整响应      │  ← 这一步需要 30-60 秒              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ (8K tokens)      │                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └────────┬─────────┘                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│           ▼                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────┐                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 发送HTTP响应      │                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ Content-Length:  │  ← 声明：我要发送 50000 bytes        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 50000            │                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └────────┬─────────┘                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└───────────┼────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;    ════════╪════════  CloudFront CDN &#x2F; 运营商网络
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;            │  ❌ 传输在这里被中断！
+&lt;&#x2F;span&gt;&lt;span&gt;            │     CloudFront Origin Response Timeout: 30秒
+&lt;&#x2F;span&gt;&lt;span&gt;            │     连接处于&amp;quot;等待&amp;quot;状态超时，被 CDN 断开
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;            ▼ (只收到 30000 bytes)
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  aiohttp 客户端                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────┐                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 期望: 50000 bytes │                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 实际: 30000 bytes │  → TransferEncodingError!           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────┘                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;根因：CloudFront CDN 的 Origin Response Timeout&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;当 DeepSeek API 在生成大文本响应时（需要 30 秒以上），HTTP 连接处于&amp;quot;等待&amp;quot;状态——没有任何数据传输。CloudFront CDN 检测到连接&amp;quot;空闲&amp;quot;，在达到超时阈值后断开连接。&lt;&#x2F;p&gt;
+&lt;p&gt;这导致：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Content-Length&lt;&#x2F;code&gt; 头声明了完整响应大小（比如 50000 bytes）&lt;&#x2F;li&gt;
+&lt;li&gt;但实际只收到部分数据（比如 30000 bytes）&lt;&#x2F;li&gt;
+&lt;li&gt;aiohttp 检测到不一致，抛出 &lt;code&gt;TransferEncodingError&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;wei-shi-yao-liu-shi-chuan-shu-neng-jie-jue&quot;&gt;为什么流式传输能解决？&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;流式请求的传输过程：
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  DeepSeek API                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────┐                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ 边生成边发送      │  ← 不需要等待完整响应                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └────────┬─────────┘                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │ chunk1 (100 bytes)                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │ chunk2 (100 bytes)                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │ chunk3 (100 bytes)                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │ ... (持续发送)                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  HTTP响应: Transfer-Encoding: chunked  ← 没有 Content-Length！
+&lt;&#x2F;span&gt;&lt;span&gt;└───────────┼────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;    ════════╪════════  CloudFront CDN &#x2F; 运营商网络
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;            │  ✅ 每个小 chunk 快速传输完成
+&lt;&#x2F;span&gt;&lt;span&gt;            │     CDN 看到的是&amp;quot;活跃连接&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;            │     不会触发超时
+&lt;&#x2F;span&gt;&lt;span&gt;            │
+&lt;&#x2F;span&gt;&lt;span&gt;            ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  aiohttp 客户端                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ✅ 逐 chunk 接收，拼接成完整结果                           │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键区别：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模式&lt;&#x2F;th&gt;&lt;th&gt;HTTP 传输方式&lt;&#x2F;th&gt;&lt;th&gt;响应头&lt;&#x2F;th&gt;&lt;th&gt;CDN 行为&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;非流式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;一次性发送完整响应&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Content-Length: 50000&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;等待 30s+ 无数据 → 超时断开&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;流式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;分块持续发送&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Transfer-Encoding: chunked&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;持续收到数据 → 保持连接&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;xiu-fu-fang-an&quot;&gt;修复方案&lt;&#x2F;h2&gt;
+&lt;p&gt;修改 &lt;code&gt;llm_provider.py&lt;&#x2F;code&gt;，将 DeepSeek API 调用改为流式模式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_complete_deepseek_direct&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;system_prompt&lt;&#x2F;span&gt;&lt;span&gt;: str,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;user_prompt&lt;&#x2F;span&gt;&lt;span&gt;: str,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_retries&lt;&#x2F;span&gt;&lt;span&gt;: int = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;timeout&lt;&#x2F;span&gt;&lt;span&gt;: int = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;600
+&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    直接调用 DeepSeek 官方 API（使用流式传输）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    为什么使用 stream=True:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    ---------------------
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    问题: 非流式模式在大响应(~4K+字符)时出现 TransferEncodingError
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    根本原因分析:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    1. 非流式模式使用 Content-Length 头，声明完整响应大小
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    2. 大响应生成需要30秒+，此期间 HTTP 连接处于&amp;quot;等待&amp;quot;状态
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    3. 中间代理&#x2F;CDN 设有空闲超时限制，会在30-60秒后断开连接
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    4. 连接断开导致实际收到的数据少于 Content-Length 声明的长度
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    5. aiohttp 检测到不一致，抛出 TransferEncodingError
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    解决方案:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    - 流式模式使用 Transfer-Encoding: chunked，没有 Content-Length
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    - 边生成边发送，每个 chunk 都很小(~100 bytes)，快速传输
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    - 中间代理看到持续的数据流动，不会触发超时
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    注意: 这与 8K token 限制无关。流式不改变 token 限制，
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;          它只改变了 HTTP 传输方式，避免中间代理超时问题。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    payload = {
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;deepseek-chat&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;            {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: system_prompt},
+&lt;&#x2F;span&gt;&lt;span&gt;            {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: user_prompt}
+&lt;&#x2F;span&gt;&lt;span&gt;        ],
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.max_tokens,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;temperature&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.config.temperature,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;stream&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 🔑 启用流式传输
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;aiohttp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ClientSession&lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;session:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async with &lt;&#x2F;span&gt;&lt;span&gt;session.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(url, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;headers&lt;&#x2F;span&gt;&lt;span&gt;=headers, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;=payload) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;response:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 流式读取并拼接结果
+&lt;&#x2F;span&gt;&lt;span&gt;            result_chunks = []
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async for &lt;&#x2F;span&gt;&lt;span&gt;line &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;response.content:
+&lt;&#x2F;span&gt;&lt;span&gt;                line = line.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;decode&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;line.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;startswith&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data: &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;):
+&lt;&#x2F;span&gt;&lt;span&gt;                    data_str = line[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;:]
+&lt;&#x2F;span&gt;&lt;span&gt;                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;data_str == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[DONE]&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span&gt;                        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break
+&lt;&#x2F;span&gt;&lt;span&gt;                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;                        data = json.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;loads&lt;&#x2F;span&gt;&lt;span&gt;(data_str)
+&lt;&#x2F;span&gt;&lt;span&gt;                        content = data[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;choices&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;][&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;delta&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, {}).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;                        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;content:
+&lt;&#x2F;span&gt;&lt;span&gt;                            result_chunks.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;json.JSONDecodeError:
+&lt;&#x2F;span&gt;&lt;span&gt;                        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# SSE 协议中的空行或不完整行，正常跳过
+&lt;&#x2F;span&gt;&lt;span&gt;            
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(result_chunks)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;xiu-fu-yan-zheng&quot;&gt;修复验证&lt;&#x2F;h2&gt;
+&lt;p&gt;修复后重新运行翻译实验：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;E14 AV1 翻译实验结果
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;配置: A1_fixed_only
+&lt;&#x2F;span&gt;&lt;span&gt;  源文本: 20,000 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  译文: 46,755 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  扩展比: 233.8%
+&lt;&#x2F;span&gt;&lt;span&gt;  术语覆盖率: 65.4%
+&lt;&#x2F;span&gt;&lt;span&gt;  耗时: 366.6s
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 成功
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;配置: A2_section_only
+&lt;&#x2F;span&gt;&lt;span&gt;  源文本: 20,000 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  译文: 47,062 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  扩展比: 235.3%
+&lt;&#x2F;span&gt;&lt;span&gt;  术语覆盖率: 66.1%
+&lt;&#x2F;span&gt;&lt;span&gt;  耗时: 365.1s
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 成功
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;配置: A4_full (ContextWeave)
+&lt;&#x2F;span&gt;&lt;span&gt;  源文本: 20,000 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  译文: 47,736 字符
+&lt;&#x2F;span&gt;&lt;span&gt;  扩展比: 238.7%
+&lt;&#x2F;span&gt;&lt;span&gt;  术语覆盖率: 65.4%
+&lt;&#x2F;span&gt;&lt;span&gt;  耗时: 672.0s
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 成功
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;所有配置都成功完成！翻译质量和完整性也经过验证，没有内容丢失。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jing-yan-zong-jie&quot;&gt;经验总结&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-cuo-wu-xin-xi-ke-neng-ju-you-wu-dao-xing&quot;&gt;1. 错误信息可能具有误导性&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;TransferEncodingError&lt;&#x2F;code&gt; 看起来像是客户端的问题，但根因在网络传输层。不要被错误信息的表面含义误导。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-http-xie-yi-xi-jie-hen-zhong-yao&quot;&gt;2. HTTP 协议细节很重要&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Content-Length&lt;&#x2F;code&gt; vs &lt;code&gt;Transfer-Encoding: chunked&lt;&#x2F;code&gt; 是两种完全不同的传输方式&lt;&#x2F;li&gt;
+&lt;li&gt;前者需要预先知道完整响应大小，后者支持边生成边发送&lt;&#x2F;li&gt;
+&lt;li&gt;在涉及 CDN、代理的场景下，这个区别可能导致完全不同的结果&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-liu-shi-chuan-shu-bu-jin-jin-shi-ux-you-hua&quot;&gt;3. 流式传输不仅仅是 UX 优化&lt;&#x2F;h3&gt;
+&lt;p&gt;很多人认为流式传输只是为了更好的用户体验（打字机效果）。但在这个案例中，流式传输是&lt;strong&gt;功能性必需&lt;&#x2F;strong&gt;——没有它，大响应根本无法完整传输。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-zhong-jian-dai-li-wu-chu-bu-zai&quot;&gt;4. 中间代理无处不在&lt;&#x2F;h3&gt;
+&lt;p&gt;你的请求可能经过：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;家庭路由器&lt;&#x2F;li&gt;
+&lt;li&gt;运营商透明代理&lt;&#x2F;li&gt;
+&lt;li&gt;国际出口网关&lt;&#x2F;li&gt;
+&lt;li&gt;CDN 节点（本案例中的 CloudFront）&lt;&#x2F;li&gt;
+&lt;li&gt;目标服务器前的负载均衡器&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;任何一个环节都可能有自己的超时策略。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-zhen-duan-jiao-ben-de-jie-zhi&quot;&gt;5. 诊断脚本的价值&lt;&#x2F;h3&gt;
+&lt;p&gt;编写专门的诊断脚本，逐步缩小问题范围，比盲目猜测高效得多。这次的诊断脚本帮我在 30 分钟内定位了根因。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fu-lu-zhen-duan-jiao-ben-wan-zheng-dai-ma&quot;&gt;附录：诊断脚本完整代码&lt;&#x2F;h2&gt;
+&lt;p&gt;为了方便其他遇到类似问题的开发者，我将诊断脚本开源在：&lt;&#x2F;p&gt;
+&lt;p&gt;📎 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Master-Translator-MCP-Server&#x2F;blob&#x2F;main&#x2F;diagnose_deepseek_api.py&quot;&gt;diagnose_deepseek_api.py&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;希望这篇文章能帮助遇到类似问题的你节省调试时间。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果你在使用 DeepSeek API 或其他 LLM API 时遇到了类似的问题，欢迎在评论区分享你的经验！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,289 @@
+<!doctype html><html><head><title>深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复</title><meta content="在开发长文档翻译系统时，我遇到了一个诡异的 TransferEncodingError 错误。本文记录了从现象观察、假设推理、诊断验证到最终修复的完整过程，揭示了一个隐藏在 HTTP 传输层的 CDN 超时陷阱。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/deepseek-api-transfer-encoding-error-debug/ property=og:url><meta content="深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复" property=og:title><meta content="在开发长文档翻译系统时，我遇到了一个诡异的 TransferEncodingError 错误。本文记录了从现象观察、假设推理、诊断验证到最终修复的完整过程，揭示了一个隐藏在 HTTP 传输层的 CDN 超时陷阱。" property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/deepseek-api-transfer-encoding-error-debug/ name=twitter:url><meta content="深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复" name=twitter:title><meta content="在开发长文档翻译系统时，我遇到了一个诡异的 TransferEncodingError 错误。本文记录了从现象观察、假设推理、诊断验证到最终修复的完整过程，揭示了一个隐藏在 HTTP 传输层的 CDN 超时陷阱。" name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-01-08T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=DeepSeek property=article:tag><meta content=API调试 property=article:tag><meta content=TransferEncodingError property=article:tag><meta content=流式传输 property=article:tag><meta content=HTTP协议 property=article:tag><meta content=Python property=article:tag><meta content=aiohttp property=article:tag><meta content=网络诊断 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复</h1><div class=content><h1 id=shen-du-diao-shi-deepseek-api-transferencodingerror-de-gen-yin-fen-xi-yu-liu-shi-chuan-shu-xiu-fu>深度调试：DeepSeek API TransferEncodingError 的根因分析与流式传输修复</h1><blockquote><p>调试的乐趣在于：你以为问题出在 A，结果根因在 B，而最终解法是 C。</blockquote><h2 id=wen-ti-xian-xiang>问题现象</h2><p>最近我在开发一个基于 LLM 的长文档翻译系统 ContextWeave，用于将技术书籍进行高质量的双语翻译。系统使用 DeepSeek V3 API 作为翻译引擎，通过分块策略处理超长文档。<p>一切看起来都很美好，直到我开始翻译一本 12 万字符的 AV1 视频编码技术书籍时，遇到了这个错误：<pre style=background:#2b303b;color:#c0c5ce><code><span>TransferEncodingError: 400, message='Not enough data to satisfy transfer length header.'
+</span></code></pre><p>更诡异的是：<ul><li><strong>短文本翻译（~200字符）</strong>：✅ 正常<li><strong>中等文本翻译（~1K字符）</strong>：✅ 正常<li><strong>长文本翻译（~4K字符）</strong>：❌ 必现失败<li><strong>重试 3 次</strong>：❌ 全部失败</ul><p>这个错误信息相当"技术"，直译就是："传输长度头声明的数据量，与实际接收到的数据量不匹配"。<p>我的第一反应是：难道 DeepSeek API 有 bug？<h2 id=jia-she-yu-pai-chu>假设与排除</h2><p>作为一个有经验的工程师（自夸一下），我开始列举可能的原因：<table><thead><tr><th>假设<th>可能性<th>验证方法<tbody><tr><td>1. API Key 失效<td>低<td>短请求正常<tr><td>2. 输出超过 8K token 限制<td>中<td>检查 max_tokens 配置<tr><td>3. 网络不稳定<td>中<td>诊断脚本<tr><td>4. aiohttp 客户端配置问题<td>中<td>调整超时参数<tr><td>5. 中间代理/CDN 问题<td>低<td>traceroute 分析</table><p>最初我怀疑是 <strong>8K token 限制</strong> 的问题。DeepSeek 官方文档明确说明：<blockquote><p>流式输出只是一种响应传输方式，不会改变 8K 的输出 token 限制。这个限制是由模型本身的能力决定的，与 API 调用方式无关。</blockquote><p>但问题是：4K 字符的中文翻译成英文，输出不会超过 8K tokens（实测约 2-3K tokens）。<p>这条路走不通。<h2 id=bian-xie-zhen-duan-jiao-ben>编写诊断脚本</h2><p>既然猜不出来，那就用数据说话。我写了一个完整的诊断脚本 <code>diagnose_deepseek_api.py</code>：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>test_large_translation</span><span>():
+</span><span>    </span><span style=color:#65737e>"""测试 4: 大文本翻译 (~4K 字符)"""
+</span><span>    </span><span style=color:#65737e># 读取实际的 AV1 Book 文本
+</span><span>    test_text = full_text[:</span><span style=color:#d08770>4000</span><span>]  </span><span style=color:#65737e># 取前 4K
+</span><span>    
+</span><span>    payload = {
+</span><span>        "</span><span style=color:#a3be8c>model</span><span>": "</span><span style=color:#a3be8c>deepseek-chat</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>messages</span><span>": [</span><span style=color:#d08770>...</span><span>],
+</span><span>        "</span><span style=color:#a3be8c>max_tokens</span><span>": </span><span style=color:#d08770>8192</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>temperature</span><span>": </span><span style=color:#d08770>1.3
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>try</span><span>:
+</span><span>        </span><span style=color:#b48ead>async with </span><span>aiohttp.</span><span style=color:#bf616a>ClientSession</span><span>() </span><span style=color:#b48ead>as </span><span>session:
+</span><span>            </span><span style=color:#b48ead>async with </span><span>session.</span><span style=color:#bf616a>post</span><span>(</span><span style=color:#bf616a>API_URL</span><span>, </span><span style=color:#bf616a>json</span><span>=payload) </span><span style=color:#b48ead>as </span><span>resp:
+</span><span>                </span><span style=color:#b48ead>if </span><span>resp.status == </span><span style=color:#d08770>200</span><span>:
+</span><span>                    data = </span><span style=color:#b48ead>await </span><span>resp.</span><span style=color:#bf616a>json</span><span>()  </span><span style=color:#65737e># &LT- 这里抛出 TransferEncodingError
+</span><span>                    </span><span style=color:#b48ead>return </span><span style=color:#d08770>True
+</span><span>    </span><span style=color:#b48ead>except </span><span>aiohttp.ClientPayloadError </span><span style=color:#b48ead>as </span><span>e:
+</span><span>        </span><span style=color:#96b5b4>print</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>❌ ClientPayloadError: </span><span>{e}")
+</span><span>        </span><span style=color:#96b5b4>print</span><span>("</span><span style=color:#a3be8c>   这是 TransferEncodingError 的父类错误</span><span>")
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#d08770>False
+</span></code></pre><p>运行结果：<pre style=background:#2b303b;color:#c0c5ce><code><span>============================================================
+</span><span>测试 1: 基本连接 (Hello World)
+</span><span>============================================================
+</span><span>状态码: 200
+</span><span>耗时: 1.23s
+</span><span>响应: Hello! How can I assist you today?
+</span><span>✅ 基本连接正常
+</span><span>
+</span><span>============================================================
+</span><span>测试 2: 短文本翻译 (~200 字符)
+</span><span>============================================================
+</span><span>源文本: 78 字符
+</span><span>状态码: 200
+</span><span>耗时: 2.45s
+</span><span>译文: 156 字符
+</span><span>✅ 短文本翻译正常
+</span><span>
+</span><span>============================================================
+</span><span>测试 3: 中等文本翻译 (~1K 字符)
+</span><span>============================================================
+</span><span>源文本: 892 字符
+</span><span>状态码: 200
+</span><span>耗时: 8.67s
+</span><span>译文: 1847 字符
+</span><span>✅ 中等文本翻译正常
+</span><span>
+</span><span>============================================================
+</span><span>测试 4: 大文本翻译 (~4K 字符)
+</span><span>============================================================
+</span><span>源文本: 4000 字符
+</span><span>状态码: 200
+</span><span>❌ ClientPayloadError: 400, message='Not enough data to satisfy transfer length header.'
+</span><span>   这是 TransferEncodingError 的父类错误
+</span><span>   可能原因：响应被中途截断
+</span></code></pre><p>关键发现：<strong>状态码是 200</strong>！<p>这意味着 DeepSeek API 成功生成了响应，但在传输过程中出了问题。<h2 id=liu-shi-chuan-shu-ce-shi>流式传输测试</h2><p>接下来我添加了流式传输测试：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>test_with_stream</span><span>():
+</span><span>    </span><span style=color:#65737e>"""测试 5: 使用流式传输"""
+</span><span>    payload = {
+</span><span>        "</span><span style=color:#a3be8c>model</span><span>": "</span><span style=color:#a3be8c>deepseek-chat</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>messages</span><span>": [</span><span style=color:#d08770>...</span><span>],
+</span><span>        "</span><span style=color:#a3be8c>max_tokens</span><span>": </span><span style=color:#d08770>8192</span><span>,
+</span><span>        "</span><span style=color:#a3be8c>stream</span><span>": </span><span style=color:#d08770>True  </span><span style=color:#65737e># 🔑 关键：启用流式传输
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async with </span><span>session.</span><span style=color:#bf616a>post</span><span>(</span><span style=color:#bf616a>API_URL</span><span>, </span><span style=color:#bf616a>json</span><span>=payload) </span><span style=color:#b48ead>as </span><span>resp:
+</span><span>        result_chunks = []
+</span><span>        </span><span style=color:#b48ead>async for </span><span>line </span><span style=color:#b48ead>in </span><span>resp.content:
+</span><span>            </span><span style=color:#65737e># 逐行读取 SSE 数据
+</span><span>            </span><span style=color:#b48ead>if </span><span>line.</span><span style=color:#bf616a>startswith</span><span>('</span><span style=color:#a3be8c>data: </span><span>'):
+</span><span>                data = json.</span><span style=color:#bf616a>loads</span><span>(line[</span><span style=color:#d08770>6</span><span>:])
+</span><span>                content = data['</span><span style=color:#a3be8c>choices</span><span>'][</span><span style=color:#d08770>0</span><span>]['</span><span style=color:#a3be8c>delta</span><span>'].</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>content</span><span>', '')
+</span><span>                result_chunks.</span><span style=color:#bf616a>append</span><span>(content)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>''.</span><span style=color:#bf616a>join</span><span>(result_chunks)
+</span></code></pre><p>结果令人惊喜：<pre style=background:#2b303b;color:#c0c5ce><code><span>============================================================
+</span><span>测试 5: 流式传输
+</span><span>============================================================
+</span><span>源文本: 4000 字符
+</span><span>状态码: 200
+</span><span>耗时: 45.32s
+</span><span>收到 chunks: 1847
+</span><span>译文: 9234 字符
+</span><span>比率: 230.9%
+</span><span>✅ 流式传输正常
+</span></code></pre><p><strong>同样的请求，流式模式成功了！</strong><h2 id=wang-luo-lu-jing-fen-xi>网络路径分析</h2><p>为什么非流式失败，流式成功？我开始怀疑中间代理的问题。<p>使用 traceroute 分析网络路径：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> traceroute</span><span style=color:#bf616a> -m</span><span> 10 api.deepseek.com
+</span><span>
+</span><span> </span><span style=color:#bf616a>1</span><span>  192.168.31.1 (192.168.31.1)    </span><span style=color:#bf616a>6.296</span><span> ms   3.957 ms   3.599 ms
+</span><span> </span><span style=color:#bf616a>2</span><span>  192.168.1.1 (192.168.1.1)      </span><span style=color:#bf616a>4.828</span><span> ms   4.850 ms   4.957 ms
+</span><span> </span><span style=color:#bf616a>3</span><span>  123.116.96.1 (北京联通)        </span><span style=color:#bf616a>5.163</span><span> ms   7.575 ms   5.734 ms
+</span><span> </span><span style=color:#bf616a>4</span><span>  114.245.244.129                7.896 ms   *   *
+</span><span> </span><span style=color:#bf616a>5  </span><span>* * *
+</span><span> </span><span style=color:#bf616a>6</span><span>  219.158.8.38 (中国骨干网)      </span><span style=color:#bf616a>9.924</span><span> ms
+</span><span> </span><span style=color:#bf616a>7</span><span>  219.158.10.86                  8.833 ms   *   *
+</span><span> </span><span style=color:#bf616a>8</span><span>  219.158.12.162                 198.562 ms
+</span><span> </span><span style=color:#bf616a>9</span><span>  151.148.9.32 (国际出口)        </span><span style=color:#bf616a>137.116</span><span> ms  165.002 ms  154.920 ms
+</span><span style=color:#bf616a>10  </span><span>* * *
+</span><span>
+</span><span style=color:#bf616a>PING</span><span> d3bbv8sr76az5s.cloudfront.net (3.173.21.63)
+</span><span style=color:#bf616a>64</span><span> bytes from 3.173.21.63: time=196.103 ms
+</span><span style=color:#bf616a>64</span><span> bytes from 3.173.21.63: time=194.315 ms
+</span><span style=color:#bf616a>64</span><span> bytes from 3.173.21.63: time=201.644 ms
+</span></code></pre><p>关键发现：<ol><li><strong>DeepSeek API 使用 AWS CloudFront CDN</strong>（域名解析到 cloudfront.net）<li>网络路径：家庭路由器 → 北京联通 → 中国骨干网 → 国际出口 → AWS CloudFront<li>延迟约 200ms，属于跨国请求的正常范围</ol><h2 id=gen-yin-fen-xi>根因分析</h2><p>结合所有证据，我画出了问题的完整链路：<pre style=background:#2b303b;color:#c0c5ce><code><span>非流式请求的传输过程：
+</span><span>┌────────────────────────────────────────────────────────────┐
+</span><span>│  DeepSeek API                                              │
+</span><span>│  ┌──────────────────┐                                      │
+</span><span>│  │ 生成完整响应      │  ← 这一步需要 30-60 秒              │
+</span><span>│  │ (8K tokens)      │                                      │
+</span><span>│  └────────┬─────────┘                                      │
+</span><span>│           │                                                │
+</span><span>│           ▼                                                │
+</span><span>│  ┌──────────────────┐                                      │
+</span><span>│  │ 发送HTTP响应      │                                      │
+</span><span>│  │ Content-Length:  │  ← 声明：我要发送 50000 bytes        │
+</span><span>│  │ 50000            │                                      │
+</span><span>│  └────────┬─────────┘                                      │
+</span><span>└───────────┼────────────────────────────────────────────────┘
+</span><span>            │
+</span><span>    ════════╪════════  CloudFront CDN / 运营商网络
+</span><span>            │
+</span><span>            │  ❌ 传输在这里被中断！
+</span><span>            │     CloudFront Origin Response Timeout: 30秒
+</span><span>            │     连接处于"等待"状态超时，被 CDN 断开
+</span><span>            │
+</span><span>            ▼ (只收到 30000 bytes)
+</span><span>┌────────────────────────────────────────────────────────────┐
+</span><span>│  aiohttp 客户端                                            │
+</span><span>│  ┌──────────────────┐                                      │
+</span><span>│  │ 期望: 50000 bytes │                                      │
+</span><span>│  │ 实际: 30000 bytes │  → TransferEncodingError!           │
+</span><span>│  └──────────────────┘                                      │
+</span><span>└────────────────────────────────────────────────────────────┘
+</span></code></pre><p><strong>根因：CloudFront CDN 的 Origin Response Timeout</strong><p>当 DeepSeek API 在生成大文本响应时（需要 30 秒以上），HTTP 连接处于"等待"状态——没有任何数据传输。CloudFront CDN 检测到连接"空闲"，在达到超时阈值后断开连接。<p>这导致：<ul><li><code>Content-Length</code> 头声明了完整响应大小（比如 50000 bytes）<li>但实际只收到部分数据（比如 30000 bytes）<li>aiohttp 检测到不一致，抛出 <code>TransferEncodingError</code></ul><h2 id=wei-shi-yao-liu-shi-chuan-shu-neng-jie-jue>为什么流式传输能解决？</h2><pre style=background:#2b303b;color:#c0c5ce><code><span>流式请求的传输过程：
+</span><span>┌────────────────────────────────────────────────────────────┐
+</span><span>│  DeepSeek API                                              │
+</span><span>│  ┌──────────────────┐                                      │
+</span><span>│  │ 边生成边发送      │  ← 不需要等待完整响应                │
+</span><span>│  └────────┬─────────┘                                      │
+</span><span>│           │ chunk1 (100 bytes)                             │
+</span><span>│           │ chunk2 (100 bytes)                             │
+</span><span>│           │ chunk3 (100 bytes)                             │
+</span><span>│           │ ... (持续发送)                                  │
+</span><span>│           │                                                │
+</span><span>│  HTTP响应: Transfer-Encoding: chunked  ← 没有 Content-Length！
+</span><span>└───────────┼────────────────────────────────────────────────┘
+</span><span>            │
+</span><span>    ════════╪════════  CloudFront CDN / 运营商网络
+</span><span>            │
+</span><span>            │  ✅ 每个小 chunk 快速传输完成
+</span><span>            │     CDN 看到的是"活跃连接"
+</span><span>            │     不会触发超时
+</span><span>            │
+</span><span>            ▼
+</span><span>┌────────────────────────────────────────────────────────────┐
+</span><span>│  aiohttp 客户端                                            │
+</span><span>│  ✅ 逐 chunk 接收，拼接成完整结果                           │
+</span><span>└────────────────────────────────────────────────────────────┘
+</span></code></pre><p>关键区别：<table><thead><tr><th>模式<th>HTTP 传输方式<th>响应头<th>CDN 行为<tbody><tr><td><strong>非流式</strong><td>一次性发送完整响应<td><code>Content-Length: 50000</code><td>等待 30s+ 无数据 → 超时断开<tr><td><strong>流式</strong><td>分块持续发送<td><code>Transfer-Encoding: chunked</code><td>持续收到数据 → 保持连接</table><h2 id=xiu-fu-fang-an>修复方案</h2><p>修改 <code>llm_provider.py</code>，将 DeepSeek API 调用改为流式模式：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>_complete_deepseek_direct</span><span>(
+</span><span>    </span><span style=color:#bf616a>self</span><span>,
+</span><span>    </span><span style=color:#bf616a>system_prompt</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>user_prompt</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>max_retries</span><span>: int = </span><span style=color:#d08770>3</span><span>,
+</span><span>    </span><span style=color:#bf616a>timeout</span><span>: int = </span><span style=color:#d08770>600
+</span><span>) -> str:
+</span><span>    </span><span style=color:#65737e>"""
+</span><span style=color:#65737e>    直接调用 DeepSeek 官方 API（使用流式传输）
+</span><span style=color:#65737e>    
+</span><span style=color:#65737e>    为什么使用 stream=True:
+</span><span style=color:#65737e>    ---------------------
+</span><span style=color:#65737e>    问题: 非流式模式在大响应(~4K+字符)时出现 TransferEncodingError
+</span><span style=color:#65737e>    
+</span><span style=color:#65737e>    根本原因分析:
+</span><span style=color:#65737e>    1. 非流式模式使用 Content-Length 头，声明完整响应大小
+</span><span style=color:#65737e>    2. 大响应生成需要30秒+，此期间 HTTP 连接处于"等待"状态
+</span><span style=color:#65737e>    3. 中间代理/CDN 设有空闲超时限制，会在30-60秒后断开连接
+</span><span style=color:#65737e>    4. 连接断开导致实际收到的数据少于 Content-Length 声明的长度
+</span><span style=color:#65737e>    5. aiohttp 检测到不一致，抛出 TransferEncodingError
+</span><span style=color:#65737e>    
+</span><span style=color:#65737e>    解决方案:
+</span><span style=color:#65737e>    - 流式模式使用 Transfer-Encoding: chunked，没有 Content-Length
+</span><span style=color:#65737e>    - 边生成边发送，每个 chunk 都很小(~100 bytes)，快速传输
+</span><span style=color:#65737e>    - 中间代理看到持续的数据流动，不会触发超时
+</span><span style=color:#65737e>    
+</span><span style=color:#65737e>    注意: 这与 8K token 限制无关。流式不改变 token 限制，
+</span><span style=color:#65737e>          它只改变了 HTTP 传输方式，避免中间代理超时问题。
+</span><span style=color:#65737e>    """
+</span><span>    payload = {
+</span><span>        "</span><span style=color:#a3be8c>model</span><span>": "</span><span style=color:#a3be8c>deepseek-chat</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>messages</span><span>": [
+</span><span>            {"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>system</span><span>", "</span><span style=color:#a3be8c>content</span><span>": system_prompt},
+</span><span>            {"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": user_prompt}
+</span><span>        ],
+</span><span>        "</span><span style=color:#a3be8c>max_tokens</span><span>": </span><span style=color:#bf616a>self</span><span>.config.max_tokens,
+</span><span>        "</span><span style=color:#a3be8c>temperature</span><span>": </span><span style=color:#bf616a>self</span><span>.config.temperature,
+</span><span>        "</span><span style=color:#a3be8c>stream</span><span>": </span><span style=color:#d08770>True</span><span>,  </span><span style=color:#65737e># 🔑 启用流式传输
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async with </span><span>aiohttp.</span><span style=color:#bf616a>ClientSession</span><span>() </span><span style=color:#b48ead>as </span><span>session:
+</span><span>        </span><span style=color:#b48ead>async with </span><span>session.</span><span style=color:#bf616a>post</span><span>(url, </span><span style=color:#bf616a>headers</span><span>=headers, </span><span style=color:#bf616a>json</span><span>=payload) </span><span style=color:#b48ead>as </span><span>response:
+</span><span>            </span><span style=color:#65737e># 流式读取并拼接结果
+</span><span>            result_chunks = []
+</span><span>            </span><span style=color:#b48ead>async for </span><span>line </span><span style=color:#b48ead>in </span><span>response.content:
+</span><span>                line = line.</span><span style=color:#bf616a>decode</span><span>('</span><span style=color:#a3be8c>utf-8</span><span>').</span><span style=color:#bf616a>strip</span><span>()
+</span><span>                </span><span style=color:#b48ead>if </span><span>line.</span><span style=color:#bf616a>startswith</span><span>('</span><span style=color:#a3be8c>data: </span><span>'):
+</span><span>                    data_str = line[</span><span style=color:#d08770>6</span><span>:]
+</span><span>                    </span><span style=color:#b48ead>if </span><span>data_str == '</span><span style=color:#a3be8c>[DONE]</span><span>':
+</span><span>                        </span><span style=color:#b48ead>break
+</span><span>                    </span><span style=color:#b48ead>try</span><span>:
+</span><span>                        data = json.</span><span style=color:#bf616a>loads</span><span>(data_str)
+</span><span>                        content = data['</span><span style=color:#a3be8c>choices</span><span>'][</span><span style=color:#d08770>0</span><span>].</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>delta</span><span>', {}).</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>content</span><span>', '')
+</span><span>                        </span><span style=color:#b48ead>if </span><span>content:
+</span><span>                            result_chunks.</span><span style=color:#bf616a>append</span><span>(content)
+</span><span>                    </span><span style=color:#b48ead>except </span><span>json.JSONDecodeError:
+</span><span>                        </span><span style=color:#b48ead>continue  </span><span style=color:#65737e># SSE 协议中的空行或不完整行，正常跳过
+</span><span>            
+</span><span>            </span><span style=color:#b48ead>return </span><span>''.</span><span style=color:#bf616a>join</span><span>(result_chunks)
+</span></code></pre><h2 id=xiu-fu-yan-zheng>修复验证</h2><p>修复后重新运行翻译实验：<pre style=background:#2b303b;color:#c0c5ce><code><span>============================================================
+</span><span>E14 AV1 翻译实验结果
+</span><span>============================================================
+</span><span>
+</span><span>配置: A1_fixed_only
+</span><span>  源文本: 20,000 字符
+</span><span>  译文: 46,755 字符
+</span><span>  扩展比: 233.8%
+</span><span>  术语覆盖率: 65.4%
+</span><span>  耗时: 366.6s
+</span><span>  ✅ 成功
+</span><span>
+</span><span>配置: A2_section_only
+</span><span>  源文本: 20,000 字符
+</span><span>  译文: 47,062 字符
+</span><span>  扩展比: 235.3%
+</span><span>  术语覆盖率: 66.1%
+</span><span>  耗时: 365.1s
+</span><span>  ✅ 成功
+</span><span>
+</span><span>配置: A4_full (ContextWeave)
+</span><span>  源文本: 20,000 字符
+</span><span>  译文: 47,736 字符
+</span><span>  扩展比: 238.7%
+</span><span>  术语覆盖率: 65.4%
+</span><span>  耗时: 672.0s
+</span><span>  ✅ 成功
+</span></code></pre><p>所有配置都成功完成！翻译质量和完整性也经过验证，没有内容丢失。<h2 id=jing-yan-zong-jie>经验总结</h2><h3 id=1-cuo-wu-xin-xi-ke-neng-ju-you-wu-dao-xing>1. 错误信息可能具有误导性</h3><p><code>TransferEncodingError</code> 看起来像是客户端的问题，但根因在网络传输层。不要被错误信息的表面含义误导。<h3 id=2-http-xie-yi-xi-jie-hen-zhong-yao>2. HTTP 协议细节很重要</h3><ul><li><code>Content-Length</code> vs <code>Transfer-Encoding: chunked</code> 是两种完全不同的传输方式<li>前者需要预先知道完整响应大小，后者支持边生成边发送<li>在涉及 CDN、代理的场景下，这个区别可能导致完全不同的结果</ul><h3 id=3-liu-shi-chuan-shu-bu-jin-jin-shi-ux-you-hua>3. 流式传输不仅仅是 UX 优化</h3><p>很多人认为流式传输只是为了更好的用户体验（打字机效果）。但在这个案例中，流式传输是<strong>功能性必需</strong>——没有它，大响应根本无法完整传输。<h3 id=4-zhong-jian-dai-li-wu-chu-bu-zai>4. 中间代理无处不在</h3><p>你的请求可能经过：<ul><li>家庭路由器<li>运营商透明代理<li>国际出口网关<li>CDN 节点（本案例中的 CloudFront）<li>目标服务器前的负载均衡器</ul><p>任何一个环节都可能有自己的超时策略。<h3 id=5-zhen-duan-jiao-ben-de-jie-zhi>5. 诊断脚本的价值</h3><p>编写专门的诊断脚本，逐步缩小问题范围，比盲目猜测高效得多。这次的诊断脚本帮我在 30 分钟内定位了根因。<h2 id=fu-lu-zhen-duan-jiao-ben-wan-zheng-dai-ma>附录：诊断脚本完整代码</h2><p>为了方便其他遇到类似问题的开发者，我将诊断脚本开源在：<p>📎 <a href=https://github.com/Polly2014/Master-Translator-MCP-Server/blob/main/diagnose_deepseek_api.py>diagnose_deepseek_api.py</a><p>希望这篇文章能帮助遇到类似问题的你节省调试时间。<hr><p><em>如果你在使用 DeepSeek API 或其他 LLM API 时遇到了类似的问题，欢迎在评论区分享你的经验！</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
