@@ -5,8 +5,181 @@
     <link href="https://polly.wang/tags/chang-wen-dang-fan-yi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-01-03T00:00:00+00:00</updated>
+    <updated>2026-01-11T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/chang-wen-dang-fan-yi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>日夜奋战：ContextWeave 实验体系重构全记录</title>
+        <published>2026-01-11T00:00:00+00:00</published>
+        <updated>2026-01-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/contextweave-experiment-reconstruction-complete/" type="text/html"/>
+        <id>https://polly.wang/contextweave-experiment-reconstruction-complete/</id>
+        
+        <content type="html">&lt;p&gt;凌晨两点，当最后一行 JSON 数据通过一致性校验时，我长舒一口气。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Code4Paper v2.0.7，13个实验全部完成，学术审查评分：⭐⭐⭐⭐⭐。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这三天的日夜奋战，终于画上了句号。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dart-wei-shi-yao-xu-yao-zhong-gou&quot;&gt;🎯 为什么需要重构？&lt;&#x2F;h2&gt;
+&lt;p&gt;事情要从一周前说起。当时我的 ContextWeave 长文档翻译系统已经开发完成，各种实验也跑过一遍。但当我准备整理论文投稿材料时，发现了一个致命问题：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;实验代码和结果散落在各个文件夹，没有统一的组织逻辑。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;EXP01 的结果在 &lt;code&gt;old_experiments&#x2F;&lt;&#x2F;code&gt; 目录&lt;&#x2F;li&gt;
+&lt;li&gt;EXP05 和 EXP06 数据重复，分不清谁依赖谁&lt;&#x2F;li&gt;
+&lt;li&gt;部分实验有 JSON 结果但没有 LaTeX 表格&lt;&#x2F;li&gt;
+&lt;li&gt;术语不统一：&amp;quot;Content Shrinkage&amp;quot; 和 &amp;quot;Structural Compression&amp;quot; 混用&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这样的状态，别说投稿 ACL&#x2F;EMNLP，就连自己复盘都头疼。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我决定：&lt;strong&gt;推倒重来，按论文叙事逻辑重新组织所有实验。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;clipboard-zhong-gou-she-ji-yuan-ze&quot;&gt;📋 重构设计原则&lt;&#x2F;h2&gt;
+&lt;p&gt;在动手之前，我确立了三条设计原则：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yuan-ze-yi-lun-wen-luo-ji-qu-dong-shi-yan-zu-zhi&quot;&gt;原则一：论文逻辑驱动实验组织&lt;&#x2F;h3&gt;
+&lt;p&gt;传统的实验目录按时间或功能分类（&lt;code&gt;baseline&#x2F;&lt;&#x2F;code&gt;、&lt;code&gt;ablation&#x2F;&lt;&#x2F;code&gt;、&lt;code&gt;analysis&#x2F;&lt;&#x2F;code&gt;）。但这样的结构和论文章节对应不上，写作时需要频繁&amp;quot;翻译&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;我的方案：&lt;strong&gt;实验编号直接对应论文 Section 5 的小节编号&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;EXP01 → Section 5.2 (Sentence Baseline)
+&lt;&#x2F;span&gt;&lt;span&gt;EXP02 → Section 5.3 (Generation Collapse)
+&lt;&#x2F;span&gt;&lt;span&gt;EXP03 → Section 5.4.1 (Structural Compression)
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;EXP13 → Section 5.10 (Key Results Summary)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样写论文时，直接引用 &lt;code&gt;table03_collapse.tex&lt;&#x2F;code&gt; 就能对应到正确的实验，零心智负担。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yuan-ze-er-shu-ju-zhen-shi-xing-shi-sheng-ming-xian&quot;&gt;原则二：数据真实性是生命线&lt;&#x2F;h3&gt;
+&lt;p&gt;学术研究最忌讳的就是数据&amp;quot;调整&amp;quot;。我给自己定了一条铁律：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;所有指标必须从真实翻译文件实时计算，绝不允许预设值。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这意味着每个 &lt;code&gt;metrics.json&lt;&#x2F;code&gt; 都是脚本运行的输出，而非手工编辑的结果。任何人 clone 仓库后运行 &lt;code&gt;run_all_experiments.sh&lt;&#x2F;code&gt;，都能复现完全一致的数字。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yuan-ze-san-yin-guo-lian-bi-xu-qing-xi&quot;&gt;原则三：因果链必须清晰&lt;&#x2F;h3&gt;
+&lt;p&gt;实验之间不是孤立的，而是环环相扣。我花了大量时间梳理因果关系：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;EXP02 (发现问题) → EXP03 (定位根因) → EXP05 (解决方案)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓                    ↓                    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;生成坍塌            结构压缩            Section-Aware 分块
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每个实验的 README 都会标注&amp;quot;与前置实验的关系&amp;quot;，让审稿人一目了然。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;microscope-13ge-shi-yan-de-wan-zheng-tu-pu&quot;&gt;🔬 13个实验的完整图谱&lt;&#x2F;h2&gt;
+&lt;p&gt;三天时间，我完成了 13 个实验的组织和验证。这里分享一下核心发现：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;exp01-02-ji-xian-yu-wen-ti-ding-yi&quot;&gt;EXP01-02: 基线与问题定义&lt;&#x2F;h3&gt;
+&lt;p&gt;首先用 FLORES-200 数据集验证 DeepSeek 作为 Base LLM 的质量（COMET=88.5，与 Google 88.8 相当）。然后在 20K-100K 规模上验证&amp;quot;生成坍塌&amp;quot;现象：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;输入规模&lt;&#x2F;th&gt;&lt;th&gt;完成率 (RCR)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;20K&lt;&#x2F;td&gt;&lt;td&gt;103.4% ✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;50K&lt;&#x2F;td&gt;&lt;td&gt;78.2% ⚠️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;100K&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;53.1%&lt;&#x2F;strong&gt; ❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;100K 输入时，LLM 只输出了一半内容就&amp;quot;累了&amp;quot;。这就是 ContextWeave 要解决的核心问题。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;exp03-jie-kai-jie-gou-ya-suo-de-zhen-xiang&quot;&gt;EXP03: 揭开&amp;quot;结构压缩&amp;quot;的真相&lt;&#x2F;h3&gt;
+&lt;p&gt;这是整个实验体系中最关键的发现。&lt;&#x2F;p&gt;
+&lt;p&gt;最初我以为 LLM &amp;quot;偷懒&amp;quot;是删除了内容（MQM Omission）。但数据告诉我真相完全不同：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;策略&lt;&#x2F;th&gt;&lt;th&gt;PRR (段落保留率)&lt;&#x2F;th&gt;&lt;th&gt;char_ratio (字符压缩比)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Minimal&lt;&#x2F;td&gt;&lt;td&gt;31.8%&lt;&#x2F;td&gt;&lt;td&gt;29.0%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Anti-Shrinkage+&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;100.0%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;30.9%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;注意看：所有策略的 char_ratio 都在 ~29%，说明&lt;strong&gt;内容是完整的&lt;&#x2F;strong&gt;！&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 做的不是删除内容，而是&lt;strong&gt;合并段落&lt;&#x2F;strong&gt;——把原本独立的 10 个段落合并成连贯的 3 个段落。语义完整，但结构被压缩了。&lt;&#x2F;p&gt;
+&lt;p&gt;我把这个现象正式命名为 &lt;strong&gt;Structural Compression（结构压缩）&lt;&#x2F;strong&gt;，与 Generation Collapse（生成坍塌）区分开来：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特征&lt;&#x2F;th&gt;&lt;th&gt;Generation Collapse&lt;&#x2F;th&gt;&lt;th&gt;Structural Compression&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;触发条件&lt;&#x2F;td&gt;&lt;td&gt;Token 限制耗尽&lt;&#x2F;td&gt;&lt;td&gt;Token 充足&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;表现&lt;&#x2F;td&gt;&lt;td&gt;硬截断，&lt;code&gt;finish_reason=length&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;段落合并，语义完整&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;解决方案&lt;&#x2F;td&gt;&lt;td&gt;输入端分块&lt;&#x2F;td&gt;&lt;td&gt;Prompt 负面约束 (FORBIDDEN)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;这个区分非常重要——很多人误以为&amp;quot;内容缩水&amp;quot;是 LLM 在删东西，实际上它只是在&amp;quot;编辑&amp;quot;文档结构。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;exp03b-03c-xiao-rong-yan-zheng&quot;&gt;EXP03b&#x2F;03c: 消融验证&lt;&#x2F;h3&gt;
+&lt;p&gt;为了确认这是 LLM 的内在行为而非超参数问题，我做了两个补充实验：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;EXP03b (Temperature)&lt;&#x2F;strong&gt;: T=0.0~1.3 全范围测试，PRR 恒定 ~32%。Temperature 无影响。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;EXP03c (Rich-Format)&lt;&#x2F;strong&gt;: 含 LaTeX 公式&#x2F;表格的学术论文，公式保留率 98.8%，语义保留 100%。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;结论：结构压缩是 LLM 的内在优化倾向，与温度、文档类型无关。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;exp05-07-fen-kuai-yu-bian-jie-chu-li&quot;&gt;EXP05-07: 分块与边界处理&lt;&#x2F;h3&gt;
+&lt;p&gt;Section-Aware 分块策略的效果验证：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;物理重叠&lt;&#x2F;strong&gt;: 6.6% → 0%（从源头消除）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;边界截断率 (BTR)&lt;&#x2F;strong&gt;: 97.4% → 0%（不再在句子中间切分）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;翻译质量 (COMETKiwi)&lt;&#x2F;strong&gt;: 0.535 → 0.580 (+8.5%)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;exp08-09-zhu-yu-yi-zhi-xing&quot;&gt;EXP08-09: 术语一致性&lt;&#x2F;h3&gt;
+&lt;p&gt;跨 5 类文档验证 Context-Aware Terminology Injection：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文档类型&lt;&#x2F;th&gt;&lt;th&gt;Fixed TCR-A&lt;&#x2F;th&gt;&lt;th&gt;Section TCR-A&lt;&#x2F;th&gt;&lt;th&gt;提升&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;学术论文&lt;&#x2F;td&gt;&lt;td&gt;75.2%&lt;&#x2F;td&gt;&lt;td&gt;84.5%&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;+9.3%&lt;&#x2F;strong&gt; ⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;法律合同&lt;&#x2F;td&gt;&lt;td&gt;74.1%&lt;&#x2F;td&gt;&lt;td&gt;79.9%&lt;&#x2F;td&gt;&lt;td&gt;+5.9%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;技术文档&lt;&#x2F;td&gt;&lt;td&gt;79.8%&lt;&#x2F;td&gt;&lt;td&gt;80.8%&lt;&#x2F;td&gt;&lt;td&gt;+1.0%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;平均&lt;&#x2F;td&gt;&lt;td&gt;67.2%&lt;&#x2F;td&gt;&lt;td&gt;72.5%&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;+5.3%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;有趣的发现：术语注入会略微降低 COMETKiwi（-0.018），因为强制使用术语表会打断 LLM 的自然表达流。这是一个 &lt;strong&gt;TCR-A vs COMETKiwi 的 Trade-off&lt;&#x2F;strong&gt;，需要根据场景权衡。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;exp10-11-xiao-lu-yu-duo-yu-yan&quot;&gt;EXP10-11: 效率与多语言&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;并行加速&lt;&#x2F;strong&gt;: Sequential 13min → Parallel-5 2.6min，&lt;strong&gt;5× 提速&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多语言验证&lt;&#x2F;strong&gt;: 5 种语言（中&#x2F;日&#x2F;法&#x2F;俄&#x2F;印地语）全部通过 CCF 阈值&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;exp13-guan-jian-jie-guo-hui-zong&quot;&gt;EXP13: 关键结果汇总&lt;&#x2F;h3&gt;
+&lt;p&gt;最后一张表，汇总 ContextWeave 的 6 大核心改进：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;挑战&lt;&#x2F;th&gt;&lt;th&gt;解决方案&lt;&#x2F;th&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;基线&lt;&#x2F;th&gt;&lt;th&gt;CW&lt;&#x2F;th&gt;&lt;th&gt;提升&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;结构压缩&lt;&#x2F;td&gt;&lt;td&gt;FORBIDDEN 约束&lt;&#x2F;td&gt;&lt;td&gt;PRR&lt;&#x2F;td&gt;&lt;td&gt;31.8%&lt;&#x2F;td&gt;&lt;td&gt;100%&lt;&#x2F;td&gt;&lt;td&gt;+68.2pp&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;边界截断&lt;&#x2F;td&gt;&lt;td&gt;Section-Aware&lt;&#x2F;td&gt;&lt;td&gt;BTR&lt;&#x2F;td&gt;&lt;td&gt;97.4%&lt;&#x2F;td&gt;&lt;td&gt;0%&lt;&#x2F;td&gt;&lt;td&gt;-97.4pp&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;质量下降&lt;&#x2F;td&gt;&lt;td&gt;Context Weaving&lt;&#x2F;td&gt;&lt;td&gt;COMETKiwi&lt;&#x2F;td&gt;&lt;td&gt;0.535&lt;&#x2F;td&gt;&lt;td&gt;0.580&lt;&#x2F;td&gt;&lt;td&gt;+8.5%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;术语不一致&lt;&#x2F;td&gt;&lt;td&gt;Smart Injection&lt;&#x2F;td&gt;&lt;td&gt;TCR-A&lt;&#x2F;td&gt;&lt;td&gt;67.2%&lt;&#x2F;td&gt;&lt;td&gt;72.5%&lt;&#x2F;td&gt;&lt;td&gt;+5.3pp&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Token 浪费&lt;&#x2F;td&gt;&lt;td&gt;Chunk-Relevant&lt;&#x2F;td&gt;&lt;td&gt;Tokens&lt;&#x2F;td&gt;&lt;td&gt;14,805&lt;&#x2F;td&gt;&lt;td&gt;1,795&lt;&#x2F;td&gt;&lt;td&gt;-87.9%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;延迟&lt;&#x2F;td&gt;&lt;td&gt;Parallel Mode&lt;&#x2F;td&gt;&lt;td&gt;Speed&lt;&#x2F;td&gt;&lt;td&gt;1×&lt;&#x2F;td&gt;&lt;td&gt;5×&lt;&#x2F;td&gt;&lt;td&gt;5× faster&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;zhi-liang-bao-zheng-yi-zhi-xing-xiao-yan&quot;&gt;🛠️ 质量保证：一致性校验&lt;&#x2F;h2&gt;
+&lt;p&gt;实验多了，最怕的就是数据不一致。比如 EXP03 说基线 PRR 是 31.8%，EXP13 总结表里写成了 31.2%——这种低级错误会让审稿人对整个论文产生怀疑。&lt;&#x2F;p&gt;
+&lt;p&gt;为此，我写了一个跨实验一致性校验脚本：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 核心检查项
+&lt;&#x2F;span&gt;&lt;span&gt;checks = [
+&lt;&#x2F;span&gt;&lt;span&gt;    (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;EXP03 PRR Baseline&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, exp03_prr, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.318&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;EXP04 Human char_ratio&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, exp04_ratio, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.331&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;EXP07 vs EXP09 COMETKiwi&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;abs&lt;&#x2F;span&gt;&lt;span&gt;(exp07_comet - exp09_comet) &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.02&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;EXP08 vs EXP09 TCR-A&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;abs&lt;&#x2F;span&gt;&lt;span&gt;(exp08_tcr - exp09_tcr) &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.02&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;EXP11 CCF All Pass&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;all&lt;&#x2F;span&gt;&lt;span&gt;(lang[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ccf_pass&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;lang &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;exp11_results)),
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;运行结果：&lt;strong&gt;ALL CONSISTENCY CHECKS PASSED&lt;&#x2F;strong&gt; ✅&lt;&#x2F;p&gt;
+&lt;p&gt;这个脚本现在是 CI 流程的一部分，每次提交都会自动验证。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bar-chart-zui-zhong-jiao-fu-wu&quot;&gt;📊 最终交付物&lt;&#x2F;h2&gt;
+&lt;p&gt;三天奋战的成果：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;交付物&lt;&#x2F;th&gt;&lt;th&gt;数量&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;实验脚本&lt;&#x2F;td&gt;&lt;td&gt;13 个&lt;&#x2F;td&gt;&lt;td&gt;✅ 全部可重现&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;JSON 结果&lt;&#x2F;td&gt;&lt;td&gt;13 组&lt;&#x2F;td&gt;&lt;td&gt;✅ 数据一致&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LaTeX 表格&lt;&#x2F;td&gt;&lt;td&gt;13 张&lt;&#x2F;td&gt;&lt;td&gt;✅ 论文可直接引用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;一致性校验&lt;&#x2F;td&gt;&lt;td&gt;1 套&lt;&#x2F;td&gt;&lt;td&gt;✅ 自动化验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;README 文档&lt;&#x2F;td&gt;&lt;td&gt;1 份&lt;&#x2F;td&gt;&lt;td&gt;✅ 500+ 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;目录结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Code4Paper_v2&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 01_data&#x2F;          # 原始数据（只读）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 02_configs&#x2F;       # 实验配置
+&lt;&#x2F;span&gt;&lt;span&gt;├── 03_evaluation&#x2F;    # 评估脚本
+&lt;&#x2F;span&gt;&lt;span&gt;├── 04_experiments&#x2F;   # 13个实验脚本
+&lt;&#x2F;span&gt;&lt;span&gt;├── 05_results&#x2F;       # 结果 + LaTeX表格
+&lt;&#x2F;span&gt;&lt;span&gt;└── README.md         # 实验指南
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;thought-balloon-fan-si-xue-zhu-yan-jiu-de-gong-cheng-hua&quot;&gt;💭 反思：学术研究的工程化&lt;&#x2F;h2&gt;
+&lt;p&gt;这次重构让我深刻体会到：&lt;strong&gt;顶会论文不只是创新，更是工程。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;创新点固然重要，但如果实验混乱、数据不一致、无法复现，再好的想法也会在审稿中被质疑。&lt;&#x2F;p&gt;
+&lt;p&gt;我总结了几条经验：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;早规划，晚动手&lt;&#x2F;strong&gt;：先定好实验编号与论文章节的映射，再开始跑实验&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;数据不可篡改&lt;&#x2F;strong&gt;：用脚本生成结果，用版本控制追踪变更&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;因果链要可视化&lt;&#x2F;strong&gt;：每个实验的 README 都标注前置&#x2F;后置实验&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自动化校验&lt;&#x2F;strong&gt;：写检查脚本比人工核对可靠 100 倍&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;tada-xia-yi-bu&quot;&gt;🎉 下一步&lt;&#x2F;h2&gt;
+&lt;p&gt;实验体系已经就绪，接下来的计划：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;论文初稿&lt;&#x2F;strong&gt;：按照 Section 5 结构填充实验结果&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;可视化&lt;&#x2F;strong&gt;：为关键发现制作示意图&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;同行评审&lt;&#x2F;strong&gt;：找 2-3 位同事帮忙 review&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;投稿准备&lt;&#x2F;strong&gt;：确认 ACL 2026 DDL，准备 submission checklist&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;凌晨三点，保存最后一个文件，合上电脑。&lt;&#x2F;p&gt;
+&lt;p&gt;窗外的城市已经沉睡，而我心里是满满的成就感。这三天虽然累，但每一行代码、每一个数字，都是为 ContextWeave 论文打下的坚实地基。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;学术研究就是这样——日夜奋战的背后，是对真理的执着追求。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;期待在 ACL 2026 见到这些成果。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果你也在准备顶会投稿，欢迎在评论区交流实验组织的经验。学术之路，与君共勉。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从崩溃到突破：ContextWeave 消融实验的一天</title>
         <published>2026-01-03T00:00:00+00:00</published>
