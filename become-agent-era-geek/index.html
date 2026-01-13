@@ -1,0 +1,158 @@
+<!doctype html><html><head><title>如何成为Agent时代的极客：从MCP实践者到AI Agent专家的成长路线</title><meta content=Agent时代已经到来。从翻译5本书的MCP实践，到系统梳理Agent技术栈，这篇文章分享我对Agent专家成长路线的思考——理论基础、核心框架、工程能力、实战项目，以及如何在这个时代找到自己的独特定位。 name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/become-agent-era-geek/ property=og:url><meta content="如何成为Agent时代的极客：从MCP实践者到AI Agent专家的成长路线" property=og:title><meta content=Agent时代已经到来。从翻译5本书的MCP实践，到系统梳理Agent技术栈，这篇文章分享我对Agent专家成长路线的思考——理论基础、核心框架、工程能力、实战项目，以及如何在这个时代找到自己的独特定位。 property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/become-agent-era-geek/ name=twitter:url><meta content="如何成为Agent时代的极客：从MCP实践者到AI Agent专家的成长路线" name=twitter:title><meta content=Agent时代已经到来。从翻译5本书的MCP实践，到系统梳理Agent技术栈，这篇文章分享我对Agent专家成长路线的思考——理论基础、核心框架、工程能力、实战项目，以及如何在这个时代找到自己的独特定位。 name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-01-13T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="AI Agent" property=article:tag><meta content=LangChain property=article:tag><meta content=LangGraph property=article:tag><meta content=MCP property=article:tag><meta content=CrewAI property=article:tag><meta content=技术成长 property=article:tag><meta content=学习路线 property=article:tag><meta content=OPE property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>如何成为Agent时代的极客：从MCP实践者到AI Agent专家的成长路线</h1><div class=content><h2 id=kai-pian-yi-ge-wen-ti-yin-fa-de-si-kao>开篇：一个问题引发的思考</h2><p>最近完成了第5本书的AI翻译后，我开始思考一个问题：<blockquote><p>作为一个已经开发了MCP Server、实践了ContextWeave框架的人，如果我想成为真正的Agent专家，还需要学习什么？</blockquote><p>这个问题促使我系统性地梳理了整个Agent技术生态。今天，我把这份梳理分享出来——不仅是给自己的路线图，也希望能帮助同样在这条路上的你。<h2 id=wei-shi-yao-shi-agentshi-dai>为什么是Agent时代？</h2><p>在写这篇文章之前，让我先回答一个更根本的问题：<strong>为什么Agent如此重要？</strong><p>过去一年，我用Master Translator翻译了5本书：<table><thead><tr><th>书籍<th>页数<th>用时<th>传统方式估算<tbody><tr><td>《提示工程》<td>~200页<td>1天<td>2-3周<tr><td>《浪潮将至》<td>~300页<td>2天<td>3-4周<tr><td>《AV1视频编解码》<td>320页<td>1个通宵<td>4-5周<tr><td>《印尼投资指南》<td>97页<td>半天<td>1周<tr><td>《OPE新书》<td>422页<td>48小时<td>5-6周</table><p><strong>这就是Agent的力量</strong>——它不只是一个工具，而是一个能够自主完成复杂任务的"数字员工"。<p>而这仅仅是开始。当Agent能够：<ul><li>自主规划任务<li>调用多种工具<li>与其他Agent协作<li>从错误中学习</ul><p>我们就不再只是"使用AI"，而是在<strong>指挥一支AI团队</strong>。<p>这正是Qi在OPE理念中所说的：<blockquote><p>"AI正在赋予每个人组织能力——让个体第一次拥有真正意义上的'团队'。"</blockquote><h2 id=agentzhuan-jia-de-si-ceng-neng-li-mo-xing>Agent专家的四层能力模型</h2><p>经过系统梳理，我把Agent专家需要的能力分为四个层次：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────┐
+</span><span>│      第四层：实战项目与创新          │
+</span><span>├─────────────────────────────────────┤
+</span><span>│      第三层：工程能力与工具链        │
+</span><span>├─────────────────────────────────────┤
+</span><span>│      第二层：核心框架掌握            │
+</span><span>├─────────────────────────────────────┤
+</span><span>│      第一层：理论基础                │
+</span><span>└─────────────────────────────────────┘
+</span></code></pre><p>让我逐层展开。<hr><h2 id=di-yi-ceng-li-lun-ji-chu-li-jie-agentde-ben-zhi>第一层：理论基础——理解Agent的本质</h2><h3 id=reactfan-shi-agentde-si-wei-mo-xing>ReAct范式：Agent的思维模型</h3><p>如果只能学一个概念，那就是<strong>ReAct（Reasoning + Acting）</strong>。<pre style=background:#2b303b;color:#c0c5ce><code><span>观察(Observation) → 思考(Thought) → 行动(Action) → 观察 → ...
+</span></code></pre><p>这是Agent的基本思维循环。与传统的"输入→输出"模式不同，Agent能够：<ol><li><strong>观察</strong>当前状态<li><strong>思考</strong>下一步该做什么<li><strong>执行</strong>具体动作<li><strong>反馈</strong>结果并继续循环</ol><p>我在开发Master Translator时深刻体会到这一点——翻译不是一次性的输入输出，而是：<ul><li>观察当前章节的上下文<li>思考如何保持术语一致性<li>执行翻译<li>检查结果并决定是否需要修正</ul><h3 id=he-xin-gai-nian-qing-dan>核心概念清单</h3><table><thead><tr><th>概念<th>一句话解释<th>重要性<tbody><tr><td><strong>ReAct</strong><td>思考与行动交替的Agent范式<td>⭐⭐⭐⭐⭐<tr><td><strong>Tool Use</strong><td>Agent调用外部工具的能力<td>⭐⭐⭐⭐⭐<tr><td><strong>Planning</strong><td>任务分解与规划（CoT, ToT）<td>⭐⭐⭐⭐<tr><td><strong>Memory</strong><td>短期/长期记忆管理<td>⭐⭐⭐⭐<tr><td><strong>Multi-Agent</strong><td>多智能体协作<td>⭐⭐⭐⭐</table><h3 id=bi-du-lun-wen>必读论文</h3><p>我列出了一份精简的论文清单：<ol><li><strong>ReAct: Synergizing Reasoning and Acting in Language Models</strong> — Agent的理论基石<li><strong>Toolformer</strong> — 模型如何学会使用工具<li><strong>Chain-of-Thought Prompting</strong> — 思维链的原理<li><strong>Tree of Thoughts</strong> — 更复杂的推理结构<li><strong>Generative Agents</strong> — Stanford的虚拟小镇实验，Multi-Agent的经典案例</ol><blockquote><p>💡 <strong>学习建议</strong>：不需要读懂每个公式，重点理解设计思想和实现方法。</blockquote><hr><h2 id=di-er-ceng-he-xin-kuang-jia-xuan-dui-gong-ju-shi-ban-gong-bei>第二层：核心框架——选对工具事半功倍</h2><p>Agent开发框架众多，如何选择？我按学习优先级排序：<h3 id=tier-1-bi-xue-kuang-jia>Tier 1：必学框架</h3><h4 id=1-mcp-model-context-protocol>1. MCP (Model Context Protocol)</h4><p><strong>如果你还没接触过MCP，现在是最好的时机。</strong><p>MCP正在成为Agent工具调用的标准协议。我开发的Master Translator就是一个MCP Server，它让Agent能够：<ul><li>调用翻译功能<li>管理术语表<li>处理长文档</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># MCP Server 示例结构
+</span><span>@mcp.</span><span style=color:#bf616a>tool</span><span>()
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>translate_document</span><span>(
+</span><span>    </span><span style=color:#bf616a>document_path</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>target_language</span><span>: str,
+</span><span>    </span><span style=color:#bf616a>terminology</span><span>: dict = </span><span style=color:#d08770>None
+</span><span>) -> str:
+</span><span>    </span><span style=color:#65737e>"""翻译长文档，保持术语一致性"""
+</span><span>    </span><span style=color:#65737e># ContextWeave 核心逻辑
+</span><span>    </span><span style=color:#d08770>...
+</span></code></pre><h4 id=2-langchain>2. LangChain</h4><p>LangChain是目前生态最大的Agent框架。即使你最终选择其他框架，LangChain的概念和模式也会迁移。<p>核心要学的：<ul><li><strong>LCEL (LangChain Expression Language)</strong> — 声明式的链式调用<li><strong>Agents</strong> — 内置的Agent类型和工具调用<li><strong>Chains</strong> — 组合多个步骤</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>langchain.agents </span><span style=color:#b48ead>import </span><span>create_react_agent
+</span><span style=color:#b48ead>from </span><span>langchain.tools </span><span style=color:#b48ead>import </span><span>Tool
+</span><span>
+</span><span style=color:#65737e># 创建一个简单的ReAct Agent
+</span><span>tools = [
+</span><span>    </span><span style=color:#bf616a>Tool</span><span>(</span><span style=color:#bf616a>name</span><span>="</span><span style=color:#a3be8c>translate</span><span>", </span><span style=color:#bf616a>func</span><span>=translate_doc, </span><span style=color:#bf616a>description</span><span>="</span><span style=color:#a3be8c>翻译文档</span><span>"),
+</span><span>    </span><span style=color:#bf616a>Tool</span><span>(</span><span style=color:#bf616a>name</span><span>="</span><span style=color:#a3be8c>search</span><span>", </span><span style=color:#bf616a>func</span><span>=web_search, </span><span style=color:#bf616a>description</span><span>="</span><span style=color:#a3be8c>搜索信息</span><span>"),
+</span><span>]
+</span><span>
+</span><span>agent = </span><span style=color:#bf616a>create_react_agent</span><span>(llm, tools, prompt)
+</span></code></pre><h4 id=3-langgraph>3. LangGraph</h4><p><strong>这是我接下来要重点学习的框架。</strong><p>LangGraph用于构建复杂的Agent工作流，特别适合：<ul><li>有状态的对话<li>条件分支和循环<li>Human-in-the-loop</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>langgraph.graph </span><span style=color:#b48ead>import </span><span>StateGraph
+</span><span>
+</span><span style=color:#65737e># 定义状态图
+</span><span>workflow = </span><span style=color:#bf616a>StateGraph</span><span>(AgentState)
+</span><span>workflow.</span><span style=color:#bf616a>add_node</span><span>("</span><span style=color:#a3be8c>translate</span><span>", translate_node)
+</span><span>workflow.</span><span style=color:#bf616a>add_node</span><span>("</span><span style=color:#a3be8c>review</span><span>", review_node)
+</span><span>workflow.</span><span style=color:#bf616a>add_node</span><span>("</span><span style=color:#a3be8c>export</span><span>", export_node)
+</span><span>
+</span><span style=color:#65737e># 添加条件边
+</span><span>workflow.</span><span style=color:#bf616a>add_conditional_edges</span><span>(
+</span><span>    "</span><span style=color:#a3be8c>review</span><span>",
+</span><span>    should_revise,
+</span><span>    {"</span><span style=color:#a3be8c>revise</span><span>": "</span><span style=color:#a3be8c>translate</span><span>", "</span><span style=color:#a3be8c>pass</span><span>": "</span><span style=color:#a3be8c>export</span><span>"}
+</span><span>)
+</span></code></pre><p>我计划用LangGraph重新实现ContextWeave框架——把分块、翻译、审核、合并等步骤编排成一个状态图。<h3 id=tier-2-jin-jie-kuang-jia>Tier 2：进阶框架</h3><table><thead><tr><th>框架<th>定位<th>适用场景<tbody><tr><td><strong>CrewAI</strong><td>多Agent协作<td>需要多个角色配合的任务<tr><td><strong>AutoGen</strong><td>微软多Agent框架<td>企业级应用<tr><td><strong>Semantic Kernel</strong><td>微软SDK<td>.NET/Python双语言项目<tr><td><strong>Agno</strong><td>轻量快速<td>快速原型</table><h3 id=wo-de-xue-xi-ji-hua>我的学习计划</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>Week 1-2: LangChain 基础
+</span><span>├── LCEL 语法
+</span><span>├── Agents 和 Tools
+</span><span>└── 用 LangChain 实现简单翻译流程
+</span><span>
+</span><span>Week 3-4: LangGraph 进阶
+</span><span>├── StateGraph 状态机
+</span><span>├── 条件分支和循环
+</span><span>└── 用 LangGraph 重构 ContextWeave
+</span><span>
+</span><span>Week 5-6: Multi-Agent
+</span><span>├── CrewAI 入门
+</span><span>├── 设计多角色翻译团队（翻译员+审校+术语专家）
+</span><span>└── 与 AutoGen 对比
+</span><span>
+</span><span>Week 7-8: 整合实践
+</span><span>├── MCP + LangGraph 集成
+</span><span>├── 构建完整的翻译Agent系统
+</span><span>└── 性能优化和错误处理
+</span></code></pre><hr><h2 id=di-san-ceng-gong-cheng-neng-li-cong-demodao-production>第三层：工程能力——从Demo到Production</h2><p>会用框架只是开始，真正的挑战在于<strong>工程化</strong>。<h3 id=ke-shi-hua-di-dai-ma-ping-tai>可视化/低代码平台</h3><p>在之前的调研中，我对比了几个主流平台：<table><thead><tr><th>平台<th>核心定位<th>我的评价<tbody><tr><td><strong>Dify</strong><td>LLM应用开发<td>RAG和知识库首选，中文友好<tr><td><strong>n8n</strong><td>工作流自动化<td>500+集成，适合业务流程<tr><td><strong>Flowise</strong><td>LangChain可视化<td>轻量开源，适合学习<tr><td><strong>LangFlow</strong><td>LangChain可视化<td>官方支持，功能完整</table><p><strong>我的选择</strong>：对于我的翻译系统，我倾向于<strong>Python + Gradio</strong>的组合——<ul><li>代码完全可控<li>可以复用现有的MCP Server和ContextWeave<li>后续可以包装成API供Dify/n8n调用</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>import </span><span>gradio </span><span style=color:#b48ead>as </span><span>gr
+</span><span>
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>process_document</span><span>(</span><span style=color:#bf616a>file</span><span>, </span><span style=color:#bf616a>target_lang</span><span>, </span><span style=color:#bf616a>output_format</span><span>):
+</span><span>    </span><span style=color:#65737e># 1. MinerU 解析
+</span><span>    content = </span><span style=color:#bf616a>parse_with_mineru</span><span>(file)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 2. ContextWeave 翻译
+</span><span>    translated = </span><span style=color:#bf616a>translate_with_contextweave</span><span>(content, target_lang)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 3. 导出
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>export_document</span><span>(translated, output_format)
+</span><span>
+</span><span>demo = gr.</span><span style=color:#bf616a>Interface</span><span>(
+</span><span>    </span><span style=color:#bf616a>fn</span><span>=process_document,
+</span><span>    </span><span style=color:#bf616a>inputs</span><span>=[
+</span><span>        gr.</span><span style=color:#bf616a>File</span><span>(</span><span style=color:#bf616a>label</span><span>="</span><span style=color:#a3be8c>上传文档</span><span>"),
+</span><span>        gr.</span><span style=color:#bf616a>Dropdown</span><span>(["</span><span style=color:#a3be8c>English</span><span>", "</span><span style=color:#a3be8c>Chinese</span><span>", "</span><span style=color:#a3be8c>Japanese</span><span>"]),
+</span><span>        gr.</span><span style=color:#bf616a>Radio</span><span>(["</span><span style=color:#a3be8c>docx</span><span>", "</span><span style=color:#a3be8c>pdf</span><span>", "</span><span style=color:#a3be8c>md</span><span>"])
+</span><span>    ],
+</span><span>    </span><span style=color:#bf616a>outputs</span><span>=gr.</span><span style=color:#bf616a>File</span><span>(</span><span style=color:#bf616a>label</span><span>="</span><span style=color:#a3be8c>下载结果</span><span>"),
+</span><span>    </span><span style=color:#bf616a>title</span><span>="</span><span style=color:#a3be8c>📚 Master Translator</span><span>"
+</span><span>)
+</span></code></pre><h3 id=ke-guan-ce-xing-agentde-hei-he-wen-ti>可观测性：Agent的"黑盒"问题</h3><p>Agent最大的工程挑战之一是<strong>不可预测性</strong>。同样的输入可能产生不同的输出，这让调试变得困难。<p>我正在关注的工具：<table><thead><tr><th>工具<th>用途<th>开源<tbody><tr><td><strong>Langfuse</strong><td>Agent追踪、评估<td>✅<tr><td><strong>LangSmith</strong><td>LangChain官方观测<td>部分<tr><td><strong>Phoenix</strong><td>LLM可观测性<td>✅</table><p>在Master Translator中，我设计了自己的CCF评估框架（Completeness-Consistency Framework），这其实就是一种领域特定的可观测性方案：<ul><li><strong>PRR (Paragraph Retention Rate)</strong> — 段落保留率<li><strong>LRR (Line Retention Rate)</strong> — 行保留率<li><strong>TCR (Terminology Consistency Rate)</strong> — 术语一致性率</ul><p>这些指标让我能够<strong>量化</strong>翻译质量，而不是靠直觉判断。<h3 id=ji-yi-xi-tong>记忆系统</h3><p>Agent需要记忆。短期记忆用于当前对话，长期记忆用于跨会话的知识积累。<ul><li><strong>Mem0</strong> — 长期记忆管理，支持个性化<li><strong>MemGPT</strong> — 分层记忆架构</ul><p>我的ContextWeave框架中的"术语表注入"本质上就是一种<strong>领域记忆</strong>——让Agent在翻译时"记住"特定术语的译法。<hr><h2 id=di-si-ceng-shi-zhan-xiang-mu-zai-zhan-dou-zhong-cheng-chang>第四层：实战项目——在战斗中成长</h2><p>理论和框架最终要落地到项目中。基于我的Master Translator经验，我规划了几个进阶项目：<h3 id=xiang-mu-1-zhi-neng-fan-yi-agent-2-0>项目1：智能翻译Agent 2.0</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>当前版本：MCP Server + ContextWeave
+</span><span>目标版本：LangGraph + 多模型路由 + 自动质量评估
+</span></code></pre><p>新功能设计：<ul><li>根据文档类型自动选择翻译策略<li>集成GPT-4、DeepSeek、Claude多模型<li>自动检测幻觉和重复内容<li>生成翻译质量报告</ul><h3 id=xiang-mu-2-duo-agentfan-yi-tuan-dui>项目2：多Agent翻译团队</h3><p>用CrewAI实现一个"翻译公司"：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>crewai </span><span style=color:#b48ead>import </span><span>Agent, Task, Crew
+</span><span>
+</span><span style=color:#65737e># 定义角色
+</span><span>translator = </span><span style=color:#bf616a>Agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>role</span><span>="</span><span style=color:#a3be8c>资深翻译</span><span>",
+</span><span>    </span><span style=color:#bf616a>goal</span><span>="</span><span style=color:#a3be8c>准确翻译文档内容</span><span>",
+</span><span>    </span><span style=color:#bf616a>backstory</span><span>="</span><span style=color:#a3be8c>10年翻译经验，精通中英双语</span><span>"
+</span><span>)
+</span><span>
+</span><span>reviewer = </span><span style=color:#bf616a>Agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>role</span><span>="</span><span style=color:#a3be8c>审校专家</span><span>",
+</span><span>    </span><span style=color:#bf616a>goal</span><span>="</span><span style=color:#a3be8c>确保翻译质量和术语一致性</span><span>",
+</span><span>    </span><span style=color:#bf616a>backstory</span><span>="</span><span style=color:#a3be8c>严格把关每一个细节</span><span>"
+</span><span>)
+</span><span>
+</span><span>terminology_expert = </span><span style=color:#bf616a>Agent</span><span>(
+</span><span>    </span><span style=color:#bf616a>role</span><span>="</span><span style=color:#a3be8c>术语专家</span><span>",
+</span><span>    </span><span style=color:#bf616a>goal</span><span>="</span><span style=color:#a3be8c>维护和统一专业术语</span><span>",
+</span><span>    </span><span style=color:#bf616a>backstory</span><span>="</span><span style=color:#a3be8c>专注于特定领域的术语研究</span><span>"
+</span><span>)
+</span><span>
+</span><span style=color:#65737e># 组建团队
+</span><span>crew = </span><span style=color:#bf616a>Crew</span><span>(
+</span><span>    </span><span style=color:#bf616a>agents</span><span>=[translator, reviewer, terminology_expert],
+</span><span>    </span><span style=color:#bf616a>tasks</span><span>=[translate_task, review_task, terminology_task]
+</span><span>)
+</span></code></pre><h3 id=xiang-mu-3-zi-zhu-yan-jiu-agent>项目3：自主研究Agent</h3><p>这是一个更大的愿景——让Agent能够：<ul><li>自主搜索和阅读论文<li>提取关键信息<li>生成研究综述</ul><p>这对我正在写的ContextWeave论文会很有帮助。<hr><h2 id=zhao-dao-ni-de-du-te-ding-wei>找到你的独特定位</h2><p>在这个快速发展的领域，<strong>独特定位</strong>比追赶热点更重要。<p>我的定位思考：<h3 id=1-shen-geng-mcpsheng-tai>1. 深耕MCP生态</h3><p>MCP正在成为Agent工具调用的标准协议。作为早期实践者，我有机会：<ul><li>开源更多MCP Server<li>推动MCP与主流框架的集成<li>在这个生态中建立影响力</ul><h3 id=2-chang-wen-dang-chu-li-de-zhuan-jia>2. 长文档处理的专家</h3><p>ContextWeave解决的是一个<strong>真实且未被充分解决</strong>的问题——LLM的长文档处理能力崩塌。这个方向可以继续深入：<ul><li>学术研究（论文正在写）<li>技术专利（已在申请）<li>开源工具（计划中）</ul><h3 id=3-opeli-nian-de-jian-xing-zhe>3. OPE理念的践行者</h3><p>用AI工具让"一人企业"成为可能——这不仅是技术实践，也是一种生活方式的探索。<hr><h2 id=wo-de-xing-dong-qing-dan>我的行动清单</h2><p>写完这篇文章，我给自己定了几个近期目标：<ul><li><input disabled type=checkbox> <strong>本周</strong>：开始LangChain官方教程<li><input disabled type=checkbox> <strong>两周内</strong>：用LangGraph重构一个简化版ContextWeave<li><input disabled type=checkbox> <strong>一个月内</strong>：完成CrewAI多Agent翻译团队的原型<li><input disabled type=checkbox> <strong>持续</strong>：每周写一篇Agent相关的技术博客</ul><h2 id=jie-yu-agentshi-dai-de-ope>结语：Agent时代的OPE</h2><p>回到开头的问题：如何成为Agent时代的极客？<p>我的答案是：<strong>在实践中学习，在学习中实践</strong>。<p>五本书的翻译经历教会我一件事——最好的学习方式是解决真实的问题。Master Translator不是凭空设计出来的，它是在一次次翻译实战中进化的。<p>Agent技术也是如此。不要等到"学会了所有框架"才开始做项目。选一个真实的问题，用Agent去解决它，在这个过程中学习需要的一切。<p>正如Qi在书中所说：<blockquote><p>"AI时代，一个人可以完成原本需要团队协作的事业。"</blockquote><p>而成为Agent专家，就是让这种可能性变成现实的关键。<hr><p><em>这是我Agent学习之路的起点，也是一份公开的学习计划。如果你也在走这条路，欢迎一起交流。</em><p><em>下一篇，我会分享用LangGraph重构ContextWeave的实战经历。敬请期待。</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
