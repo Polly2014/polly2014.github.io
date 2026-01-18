@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 教程</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/jiao-cheng/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-18T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/jiao-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🛠️ VS Code Agent Skills 完全指南：从启用到自定义创建</title>
+        <published>2026-01-18T00:00:00+00:00</published>
+        <updated>2026-01-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/vs-code-agent-skills-guide/" type="text/html"/>
+        <id>https://polly.wang/vs-code-agent-skills-guide/</id>
+        
+        <content type="html">&lt;p&gt;18 个 Agent Skills，这是我目前 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录下的 Skill 数量。从论文写作到博客生成，从 PDF 处理到 PPT 制作，这些 Skills 已经成为我日常工作流中不可或缺的一部分。&lt;&#x2F;p&gt;
+&lt;p&gt;今天，我想分享如何在 VS Code 中启用和创建 Agent Skills——这可能是 2026 年最值得学习的 AI 工具技能之一。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;dart-shi-yao-shi-agent-skills&quot;&gt;🎯 什么是 Agent Skills？&lt;&#x2F;h2&gt;
+&lt;p&gt;Agent Skills 是&lt;strong&gt;模块化的能力扩展包&lt;&#x2F;strong&gt;，可以教会 AI 编程助手（如 GitHub Copilot、Claude）新的领域知识和专业技能。&lt;&#x2F;p&gt;
+&lt;p&gt;想象一下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;你可以让 AI 学会你们公司的代码规范&lt;&#x2F;li&gt;
+&lt;li&gt;你可以让 AI 掌握特定领域的写作风格&lt;&#x2F;li&gt;
+&lt;li&gt;你可以让 AI 自动执行复杂的多步骤工作流&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每个 Skill 本质上就是一个包含 &lt;code&gt;SKILL.md&lt;&#x2F;code&gt; 文件的文件夹：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;skill-name&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── SKILL.md           # 必需：Skill 定义和指令
+&lt;&#x2F;span&gt;&lt;span&gt;├── references&#x2F;        # 可选：参考文档
+&lt;&#x2F;span&gt;&lt;span&gt;├── scripts&#x2F;           # 可选：可执行脚本
+&lt;&#x2F;span&gt;&lt;span&gt;└── assets&#x2F;            # 可选：模板、图片等资源
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;skill-md-wen-jian-jie-gou&quot;&gt;SKILL.md 文件结构&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;background-color:#4f5b66;color:#c0c5ce;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;name: skill-name
+&lt;&#x2F;span&gt;&lt;span&gt;description: 详细描述这个 Skill 的用途和触发条件...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# Skill Name
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 核心功能
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;具体的指令和工作流...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;关键点&lt;&#x2F;strong&gt;：&lt;code&gt;description&lt;&#x2F;code&gt; 字段非常重要！AI 会根据这个描述来判断何时应该使用这个 Skill。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;rocket-vs-code-kai-qi-agent-skills&quot;&gt;🚀 VS Code 开启 Agent Skills&lt;&#x2F;h2&gt;
+&lt;p&gt;VS Code 1.108 (December 2025) 正式引入了 Agent Skills 支持。启用步骤：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-1-geng-xin-vs-code&quot;&gt;Step 1: 更新 VS Code&lt;&#x2F;h3&gt;
+&lt;p&gt;确保你的 VS Code 版本 ≥ 1.108。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-2-qi-yong-skills-she-zhi&quot;&gt;Step 2: 启用 Skills 设置&lt;&#x2F;h3&gt;
+&lt;p&gt;打开 Settings (⌘ + ,)，搜索 &lt;code&gt;useAgentSkills&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;chat.useAgentSkills&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;或者直接在设置界面勾选：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Chat: Use Agent Skills&lt;&#x2F;strong&gt; ✅&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;step-3-chuang-jian-skills-mu-lu&quot;&gt;Step 3: 创建 Skills 目录&lt;&#x2F;h3&gt;
+&lt;p&gt;VS Code 支持两个位置存放 Skills：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;位置&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;推荐位置（新标准）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;兼容位置（Claude 原生支持）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;我个人使用 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;，因为这个目录可以在 Claude Code、VS Code、Claude Desktop 等多个环境中共享。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在项目根目录创建
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkdir -p&lt;&#x2F;span&gt;&lt;span&gt; .claude&#x2F;skills
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;package-huo-qu-guan-fang-skills-zi-yuan&quot;&gt;📦 获取官方 Skills 资源&lt;&#x2F;h2&gt;
+&lt;p&gt;Anthropic 维护了一个官方的 Skills 仓库，包含了大量开箱即用的高质量 Skills。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;clone-guan-fang-cang-ku&quot;&gt;Clone 官方仓库&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Clone Anthropic 官方 Skills 仓库
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;git&lt;&#x2F;span&gt;&lt;span&gt; clone https:&#x2F;&#x2F;github.com&#x2F;anthropics&#x2F;skills.git anthropic-skills
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看可用的 Skills
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ls&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;官方仓库包含的 Skills（截至 2026.01）：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Skill&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;skill-creator&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;创建新 Skills 的向导&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;frontend-design&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;前端 UI 设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;docx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Word 文档处理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;pdf&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;PDF 文件操作&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;pptx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;PPT 演示文稿制作&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;xlsx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Excel 表格处理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;canvas-design&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;可视化设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;mcp-builder&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;MCP Server 开发&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;更多&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;kao-bei-dao-xiang-mu-mu-lu&quot;&gt;拷贝到项目目录&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 拷贝你需要的 Skills
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp -r&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;skill-creator .claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp -r&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;frontend-design .claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp -r&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;docx .claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp -r&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;pdf .claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 或者一次性拷贝全部
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp -r&lt;&#x2F;span&gt;&lt;span&gt; anthropic-skills&#x2F;* .claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yan-zheng-shi-fou-sheng-xiao&quot;&gt;验证是否生效&lt;&#x2F;h3&gt;
+&lt;p&gt;重启 VS Code 后，在 Chat 中输入相关问题，AI 应该会询问是否使用对应的 Skill：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;💬 用户: 帮我创建一个 PowerPoint 演示文稿
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;🤖 AI: 我发现你有 pptx Skill 可用，是否需要我使用它来帮助创建演示文稿？
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;sparkles-shi-yong-skill-creator-chuang-jian-zi-ding-yi-skills&quot;&gt;✨ 使用 Skill Creator 创建自定义 Skills&lt;&#x2F;h2&gt;
+&lt;p&gt;官方的 &lt;code&gt;skill-creator&lt;&#x2F;code&gt; 是创建新 Skill 的最佳起点。让我分享如何用它创建了 &lt;code&gt;academic-paper-writer&lt;&#x2F;code&gt; 和 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; 两个 Skill。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chuang-jian-academic-paper-writer-skill&quot;&gt;创建 Academic Paper Writer Skill&lt;&#x2F;h3&gt;
+&lt;p&gt;这是一个帮助撰写和修改学术论文的 Skill。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;触发方式&lt;&#x2F;strong&gt;：在 Chat 中直接说：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;帮我创建一个用于学术论文写作的 Agent Skill
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;AI 会自动调用 &lt;code&gt;skill-creator&lt;&#x2F;code&gt;，然后我提供了以下需求：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;功能定位&lt;&#x2F;strong&gt;：AI&#x2F;ML 领域学术论文写作顾问&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;核心工作流&lt;&#x2F;strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;论文从零撰写&lt;&#x2F;li&gt;
+&lt;li&gt;全文修订润色&lt;&#x2F;li&gt;
+&lt;li&gt;审稿意见回复&lt;&#x2F;li&gt;
+&lt;li&gt;投稿策略建议&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;特殊需求&lt;&#x2F;strong&gt;：集成 Tavily 搜索获取最新文献&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;生成的 Skill 结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;academic-paper-writer&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── SKILL.md                          # 主文件 (~370行)
+&lt;&#x2F;span&gt;&lt;span&gt;└── references&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── ai-ml-domains.md              # AI&#x2F;ML 领域分类
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── venues.md                      # 顶会&#x2F;期刊信息
+&lt;&#x2F;span&gt;&lt;span&gt;    └── writing-templates.md           # 写作模板
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;关键配置&lt;&#x2F;strong&gt;（SKILL.md frontmatter）：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span&gt;---
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;academic-paper-writer
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Expert AI&#x2F;ML academic paper writing consultant for drafting, 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;polishing, revision, and publication guidance. Use when user asks to 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(1) write academic papers from scratch, (2) revise or polish existing papers, 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(3) prepare rebuttal letters, (4) get publication strategy advice. 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Triggers on keywords like &amp;quot;write a paper&amp;quot;, &amp;quot;paper revision&amp;quot;, &amp;quot;reviewer response&amp;quot;.
+&lt;&#x2F;span&gt;&lt;span&gt;---
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;chuang-jian-blog-writer-skill&quot;&gt;创建 Blog Writer Skill&lt;&#x2F;h3&gt;
+&lt;p&gt;这是我日常使用最频繁的 Skill，用于快速撰写技术博文。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;需求输入&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;创建一个博客写作 Skill，要求：
+&lt;&#x2F;span&gt;&lt;span&gt;1. 第一人称叙述风格
+&lt;&#x2F;span&gt;&lt;span&gt;2. 自动生成 Zola 静态网站的 frontmatter
+&lt;&#x2F;span&gt;&lt;span&gt;3. 根据历史文章保持标签一致性
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;AI 分析了我博客目录下的 100+ 篇历史文章，提取了高频标签和分类模式，然后生成了定制化的 Skill。&lt;&#x2F;p&gt;
+&lt;p&gt;生成的 Skill 结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;blog-writer&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── SKILL.md                          # 主文件 (~260行)
+&lt;&#x2F;span&gt;&lt;span&gt;└── references&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    └── common-tags.md                 # Top 50 高频标签
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;核心功能&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;四阶段工作流&lt;&#x2F;strong&gt;：理解需求 → 生成大纲 → 撰写正文 → 生成完整文件&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Zola Frontmatter 自动生成&lt;&#x2F;strong&gt;：&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt;+++&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;文章标题&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;date &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2026-01-18
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;template &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blog.html&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;slug &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;url-friendly-slug&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;url-friendly-slug&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;archive &lt;&#x2F;span&gt;&lt;span&gt;= [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2026&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;[taxonomies]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;category &lt;&#x2F;span&gt;&lt;span&gt;= [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AI工具&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tags &lt;&#x2F;span&gt;&lt;span&gt;= [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;标签1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;标签2&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;[extra]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;author &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Polly&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;summary &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;100-150字摘要&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt;+++&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;开篇模式选择&lt;&#x2F;strong&gt;：场景开篇 &#x2F; 问题开篇 &#x2F; 数据开篇 &#x2F; 观点开篇&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bulb-shi-jian-xin-de-yu-ji-qiao&quot;&gt;💡 实践心得与技巧&lt;&#x2F;h2&gt;
+&lt;p&gt;经过创建和使用多个 Skills 后，我总结了几个关键经验：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-description-shi-ling-hun&quot;&gt;1. Description 是灵魂&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;description&lt;&#x2F;code&gt; 字段决定了 AI 何时会调用这个 Skill。写得越清晰、越具体，触发就越准确。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;好的示例&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Use when user asks to (1) write academic papers from scratch, 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(2) revise existing papers, (3) prepare rebuttal letters. 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Triggers on keywords like &amp;quot;write a paper&amp;quot;, &amp;quot;paper revision&amp;quot;.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;差的示例&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;A skill for writing things.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;2-shan-yong-references-mu-lu&quot;&gt;2. 善用 References 目录&lt;&#x2F;h3&gt;
+&lt;p&gt;不要把所有内容都塞进 SKILL.md。把详细的参考资料放到 &lt;code&gt;references&#x2F;&lt;&#x2F;code&gt; 目录，AI 会按需加载：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;references&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── api-docs.md        # API 文档
+&lt;&#x2F;span&gt;&lt;span&gt;├── code-style.md      # 代码规范
+&lt;&#x2F;span&gt;&lt;span&gt;└── domain-terms.md    # 领域术语表
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-bao-chi-skill-md-jing-jian&quot;&gt;3. 保持 SKILL.md 精简&lt;&#x2F;h3&gt;
+&lt;p&gt;官方建议 SKILL.md 控制在 &lt;strong&gt;500 行以内&lt;&#x2F;strong&gt;。太长会影响 AI 的处理效率。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-ce-shi-hong-fa-tiao-jian&quot;&gt;4. 测试触发条件&lt;&#x2F;h3&gt;
+&lt;p&gt;创建后，用不同的问法测试 Skill 是否能正确触发：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;✅ &amp;quot;帮我写一篇论文&amp;quot; → 触发 academic-paper-writer
+&lt;&#x2F;span&gt;&lt;span&gt;✅ &amp;quot;review 我的 paper&amp;quot; → 触发 academic-paper-writer
+&lt;&#x2F;span&gt;&lt;span&gt;✅ &amp;quot;写一篇博客&amp;quot; → 触发 blog-writer
+&lt;&#x2F;span&gt;&lt;span&gt;❌ &amp;quot;写代码&amp;quot; → 不应触发上述 Skills
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wrench-chang-jian-wen-ti&quot;&gt;🔧 常见问题&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;q-skill-mei-you-bei-hong-fa&quot;&gt;Q: Skill 没有被触发？&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;检查 &lt;code&gt;chat.useAgentSkills&lt;&#x2F;code&gt; 是否启用&lt;&#x2F;li&gt;
+&lt;li&gt;重启 VS Code&lt;&#x2F;li&gt;
+&lt;li&gt;检查 SKILL.md 的 frontmatter 格式是否正确（&lt;code&gt;---&lt;&#x2F;code&gt; 分隔符）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;q-duo-ge-skill-chong-tu-zen-yao-ban&quot;&gt;Q: 多个 Skill 冲突怎么办？&lt;&#x2F;h3&gt;
+&lt;p&gt;让 &lt;code&gt;description&lt;&#x2F;code&gt; 更具体，避免重叠。或者合并为一个更通用的 Skill。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;q-ru-he-fen-xiang-skill-gei-tuan-dui&quot;&gt;Q: 如何分享 Skill 给团队？&lt;&#x2F;h3&gt;
+&lt;p&gt;将 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 或 &lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录加入 Git 仓库即可。团队成员 clone 后自动拥有相同的 Skills。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;books-xiang-guan-zi-yuan&quot;&gt;📚 相关资源&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.claude.com&#x2F;docs&#x2F;en&#x2F;skills&quot;&gt;Claude Code Skills 官方文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;anthropics&#x2F;skills&quot;&gt;Anthropic Skills 官方仓库&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;heilcheng&#x2F;awesome-agent-skills&quot;&gt;Awesome Agent Skills&lt;&#x2F;a&gt; - 社区 Skills 收集&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;updates&quot;&gt;VS Code 1.108 Release Notes&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie&quot;&gt;总结&lt;&#x2F;h2&gt;
+&lt;p&gt;Agent Skills 是 AI 辅助编程的一个重大进步。它让我们可以：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;标准化工作流&lt;&#x2F;strong&gt;：把最佳实践固化为 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;知识沉淀&lt;&#x2F;strong&gt;：团队经验变成可复用的资产&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;效率提升&lt;&#x2F;strong&gt;：减少重复的上下文解释&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;从今天开始，试着把你最常用的工作流变成一个 Skill 吧。我的 &lt;code&gt;academic-paper-writer&lt;&#x2F;code&gt; 和 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; 已经帮我节省了大量时间——包括这篇文章本身，就是用 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; Skill 辅助完成的 😄&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;如果你有任何问题或创建了有趣的 Skill，欢迎在评论区分享！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

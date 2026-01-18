@@ -1,0 +1,130 @@
+<!doctype html><html><head><title>🛠️ VS Code Agent Skills 完全指南：从启用到自定义创建</title><meta content="VS Code 1.108 引入了 Agent Skills 功能，让你可以教会 AI 助手新能力。本文记录如何开启 Skills、获取官方 Skill 库，以及如何使用 Skill Creator 从零创建 Paper Writer 和 Blog Writer 两个实用 Skills。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/vs-code-agent-skills-guide/ property=og:url><meta content="🛠️ VS Code Agent Skills 完全指南：从启用到自定义创建" property=og:title><meta content="VS Code 1.108 引入了 Agent Skills 功能，让你可以教会 AI 助手新能力。本文记录如何开启 Skills、获取官方 Skill 库，以及如何使用 Skill Creator 从零创建 Paper Writer 和 Blog Writer 两个实用 Skills。" property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/vs-code-agent-skills-guide/ name=twitter:url><meta content="🛠️ VS Code Agent Skills 完全指南：从启用到自定义创建" name=twitter:title><meta content="VS Code 1.108 引入了 Agent Skills 功能，让你可以教会 AI 助手新能力。本文记录如何开启 Skills、获取官方 Skill 库，以及如何使用 Skill Creator 从零创建 Paper Writer 和 Blog Writer 两个实用 Skills。" name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-01-18T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="VS Code" property=article:tag><meta content=Claude property=article:tag><meta content="Agent Skills" property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content=AI编程 property=article:tag><meta content=教程 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🛠️ VS Code Agent Skills 完全指南：从启用到自定义创建</h1><div class=content><p>18 个 Agent Skills，这是我目前 <code>.claude/skills/</code> 目录下的 Skill 数量。从论文写作到博客生成，从 PDF 处理到 PPT 制作，这些 Skills 已经成为我日常工作流中不可或缺的一部分。<p>今天，我想分享如何在 VS Code 中启用和创建 Agent Skills——这可能是 2026 年最值得学习的 AI 工具技能之一。<hr><h2 id=dart-shi-yao-shi-agent-skills>🎯 什么是 Agent Skills？</h2><p>Agent Skills 是<strong>模块化的能力扩展包</strong>，可以教会 AI 编程助手（如 GitHub Copilot、Claude）新的领域知识和专业技能。<p>想象一下：<ul><li>你可以让 AI 学会你们公司的代码规范<li>你可以让 AI 掌握特定领域的写作风格<li>你可以让 AI 自动执行复杂的多步骤工作流</ul><p>每个 Skill 本质上就是一个包含 <code>SKILL.md</code> 文件的文件夹：<pre style=background:#2b303b;color:#c0c5ce><code><span>skill-name/
+</span><span>├── SKILL.md           # 必需：Skill 定义和指令
+</span><span>├── references/        # 可选：参考文档
+</span><span>├── scripts/           # 可选：可执行脚本
+</span><span>└── assets/            # 可选：模板、图片等资源
+</span></code></pre><h3 id=skill-md-wen-jian-jie-gou>SKILL.md 文件结构</h3><pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=background:#4f5b66;color:#c0c5ce>---
+</span><span>name: skill-name
+</span><span>description: 详细描述这个 Skill 的用途和触发条件...
+</span><span style=color:#8fa1b3>---
+</span><span>
+</span><span style=color:#8fa1b3># Skill Name
+</span><span>
+</span><span style=color:#8fa1b3>## 核心功能
+</span><span>
+</span><span>具体的指令和工作流...
+</span></code></pre><p><strong>关键点</strong>：<code>description</code> 字段非常重要！AI 会根据这个描述来判断何时应该使用这个 Skill。<hr><h2 id=rocket-vs-code-kai-qi-agent-skills>🚀 VS Code 开启 Agent Skills</h2><p>VS Code 1.108 (December 2025) 正式引入了 Agent Skills 支持。启用步骤：<h3 id=step-1-geng-xin-vs-code>Step 1: 更新 VS Code</h3><p>确保你的 VS Code 版本 ≥ 1.108。<h3 id=step-2-qi-yong-skills-she-zhi>Step 2: 启用 Skills 设置</h3><p>打开 Settings (⌘ + ,)，搜索 <code>useAgentSkills</code>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>chat.useAgentSkills</span><span>": </span><span style=color:#d08770>true
+</span><span>}
+</span></code></pre><p>或者直接在设置界面勾选：<blockquote><p><strong>Chat: Use Agent Skills</strong> ✅</blockquote><h3 id=step-3-chuang-jian-skills-mu-lu>Step 3: 创建 Skills 目录</h3><p>VS Code 支持两个位置存放 Skills：<table><thead><tr><th>位置<th>说明<tbody><tr><td><code>.github/skills/</code><td>推荐位置（新标准）<tr><td><code>.claude/skills/</code><td>兼容位置（Claude 原生支持）</table><p>我个人使用 <code>.claude/skills/</code>，因为这个目录可以在 Claude Code、VS Code、Claude Desktop 等多个环境中共享。<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 在项目根目录创建
+</span><span style=color:#bf616a>mkdir -p</span><span> .claude/skills
+</span></code></pre><hr><h2 id=package-huo-qu-guan-fang-skills-zi-yuan>📦 获取官方 Skills 资源</h2><p>Anthropic 维护了一个官方的 Skills 仓库，包含了大量开箱即用的高质量 Skills。<h3 id=clone-guan-fang-cang-ku>Clone 官方仓库</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># Clone Anthropic 官方 Skills 仓库
+</span><span style=color:#bf616a>git</span><span> clone https://github.com/anthropics/skills.git anthropic-skills
+</span><span>
+</span><span style=color:#65737e># 查看可用的 Skills
+</span><span style=color:#bf616a>ls</span><span> anthropic-skills/
+</span></code></pre><p>官方仓库包含的 Skills（截至 2026.01）：<table><thead><tr><th>Skill<th>用途<tbody><tr><td><code>skill-creator</code><td>创建新 Skills 的向导<tr><td><code>frontend-design</code><td>前端 UI 设计<tr><td><code>docx</code><td>Word 文档处理<tr><td><code>pdf</code><td>PDF 文件操作<tr><td><code>pptx</code><td>PPT 演示文稿制作<tr><td><code>xlsx</code><td>Excel 表格处理<tr><td><code>canvas-design</code><td>可视化设计<tr><td><code>mcp-builder</code><td>MCP Server 开发<tr><td>...<td>更多</table><h3 id=kao-bei-dao-xiang-mu-mu-lu>拷贝到项目目录</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 拷贝你需要的 Skills
+</span><span style=color:#bf616a>cp -r</span><span> anthropic-skills/skill-creator .claude/skills/
+</span><span style=color:#bf616a>cp -r</span><span> anthropic-skills/frontend-design .claude/skills/
+</span><span style=color:#bf616a>cp -r</span><span> anthropic-skills/docx .claude/skills/
+</span><span style=color:#bf616a>cp -r</span><span> anthropic-skills/pdf .claude/skills/
+</span><span>
+</span><span style=color:#65737e># 或者一次性拷贝全部
+</span><span style=color:#bf616a>cp -r</span><span> anthropic-skills/* .claude/skills/
+</span></code></pre><h3 id=yan-zheng-shi-fou-sheng-xiao>验证是否生效</h3><p>重启 VS Code 后，在 Chat 中输入相关问题，AI 应该会询问是否使用对应的 Skill：<pre style=background:#2b303b;color:#c0c5ce><code><span>💬 用户: 帮我创建一个 PowerPoint 演示文稿
+</span><span>
+</span><span>🤖 AI: 我发现你有 pptx Skill 可用，是否需要我使用它来帮助创建演示文稿？
+</span></code></pre><hr><h2 id=sparkles-shi-yong-skill-creator-chuang-jian-zi-ding-yi-skills>✨ 使用 Skill Creator 创建自定义 Skills</h2><p>官方的 <code>skill-creator</code> 是创建新 Skill 的最佳起点。让我分享如何用它创建了 <code>academic-paper-writer</code> 和 <code>blog-writer</code> 两个 Skill。<h3 id=chuang-jian-academic-paper-writer-skill>创建 Academic Paper Writer Skill</h3><p>这是一个帮助撰写和修改学术论文的 Skill。<p><strong>触发方式</strong>：在 Chat 中直接说：<pre style=background:#2b303b;color:#c0c5ce><code><span>帮我创建一个用于学术论文写作的 Agent Skill
+</span></code></pre><p>AI 会自动调用 <code>skill-creator</code>，然后我提供了以下需求：<ol><li><strong>功能定位</strong>：AI/ML 领域学术论文写作顾问<li><strong>核心工作流</strong>： <ul><li>论文从零撰写<li>全文修订润色<li>审稿意见回复<li>投稿策略建议</ul><li><strong>特殊需求</strong>：集成 Tavily 搜索获取最新文献</ol><p>生成的 Skill 结构：<pre style=background:#2b303b;color:#c0c5ce><code><span>academic-paper-writer/
+</span><span>├── SKILL.md                          # 主文件 (~370行)
+</span><span>└── references/
+</span><span>    ├── ai-ml-domains.md              # AI/ML 领域分类
+</span><span>    ├── venues.md                      # 顶会/期刊信息
+</span><span>    └── writing-templates.md           # 写作模板
+</span></code></pre><p><strong>关键配置</strong>（SKILL.md frontmatter）：<pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span>---
+</span><span style=color:#bf616a>name</span><span>: </span><span style=color:#a3be8c>academic-paper-writer
+</span><span style=color:#bf616a>description</span><span>: </span><span style=color:#a3be8c>Expert AI/ML academic paper writing consultant for drafting, 
+</span><span>  </span><span style=color:#a3be8c>polishing, revision, and publication guidance. Use when user asks to 
+</span><span>  </span><span style=color:#a3be8c>(1) write academic papers from scratch, (2) revise or polish existing papers, 
+</span><span>  </span><span style=color:#a3be8c>(3) prepare rebuttal letters, (4) get publication strategy advice. 
+</span><span>  </span><span style=color:#a3be8c>Triggers on keywords like "write a paper", "paper revision", "reviewer response".
+</span><span>---
+</span></code></pre><h3 id=chuang-jian-blog-writer-skill>创建 Blog Writer Skill</h3><p>这是我日常使用最频繁的 Skill，用于快速撰写技术博文。<p><strong>需求输入</strong>：<pre style=background:#2b303b;color:#c0c5ce><code><span>创建一个博客写作 Skill，要求：
+</span><span>1. 第一人称叙述风格
+</span><span>2. 自动生成 Zola 静态网站的 frontmatter
+</span><span>3. 根据历史文章保持标签一致性
+</span></code></pre><p>AI 分析了我博客目录下的 100+ 篇历史文章，提取了高频标签和分类模式，然后生成了定制化的 Skill。<p>生成的 Skill 结构：<pre style=background:#2b303b;color:#c0c5ce><code><span>blog-writer/
+</span><span>├── SKILL.md                          # 主文件 (~260行)
+</span><span>└── references/
+</span><span>    └── common-tags.md                 # Top 50 高频标签
+</span></code></pre><p><strong>核心功能</strong>：<ol><li><strong>四阶段工作流</strong>：理解需求 → 生成大纲 → 撰写正文 → 生成完整文件<li><strong>Zola Frontmatter 自动生成</strong>：</ol><pre class=language-toml data-lang=toml style=background:#2b303b;color:#c0c5ce><code class=language-toml data-lang=toml><span style=background:#bf616a;color:#2b303b>+++</span><span>
+</span><span style=color:#bf616a>title </span><span>= "</span><span style=color:#a3be8c>文章标题</span><span>"
+</span><span style=color:#bf616a>date </span><span>= </span><span style=color:#d08770>2026-01-18
+</span><span style=color:#bf616a>template </span><span>= "</span><span style=color:#a3be8c>blog.html</span><span>"
+</span><span style=color:#bf616a>slug </span><span>= "</span><span style=color:#a3be8c>url-friendly-slug</span><span>"
+</span><span style=color:#bf616a>path </span><span>= "</span><span style=color:#a3be8c>url-friendly-slug</span><span>"
+</span><span style=color:#bf616a>archive </span><span>= ["</span><span style=color:#a3be8c>2026</span><span>"]
+</span><span>[taxonomies]
+</span><span style=color:#bf616a>category </span><span>= ["</span><span style=color:#a3be8c>AI工具</span><span>"]
+</span><span style=color:#bf616a>tags </span><span>= ["</span><span style=color:#a3be8c>标签1</span><span>", "</span><span style=color:#a3be8c>标签2</span><span>"]
+</span><span>[extra]
+</span><span style=color:#bf616a>author </span><span>= "</span><span style=color:#a3be8c>Polly</span><span>"
+</span><span style=color:#bf616a>summary </span><span>= "</span><span style=color:#a3be8c>100-150字摘要</span><span>"
+</span><span style=background:#bf616a;color:#2b303b>+++</span><span>
+</span></code></pre><ol start=3><li><strong>开篇模式选择</strong>：场景开篇 / 问题开篇 / 数据开篇 / 观点开篇</ol><hr><h2 id=bulb-shi-jian-xin-de-yu-ji-qiao>💡 实践心得与技巧</h2><p>经过创建和使用多个 Skills 后，我总结了几个关键经验：<h3 id=1-description-shi-ling-hun>1. Description 是灵魂</h3><p><code>description</code> 字段决定了 AI 何时会调用这个 Skill。写得越清晰、越具体，触发就越准确。<p><strong>好的示例</strong>：<pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>description</span><span>: </span><span style=color:#a3be8c>Use when user asks to (1) write academic papers from scratch, 
+</span><span>  </span><span style=color:#a3be8c>(2) revise existing papers, (3) prepare rebuttal letters. 
+</span><span>  </span><span style=color:#a3be8c>Triggers on keywords like "write a paper", "paper revision".
+</span></code></pre><p><strong>差的示例</strong>：<pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span style=color:#bf616a>description</span><span>: </span><span style=color:#a3be8c>A skill for writing things.
+</span></code></pre><h3 id=2-shan-yong-references-mu-lu>2. 善用 References 目录</h3><p>不要把所有内容都塞进 SKILL.md。把详细的参考资料放到 <code>references/</code> 目录，AI 会按需加载：<pre style=background:#2b303b;color:#c0c5ce><code><span>references/
+</span><span>├── api-docs.md        # API 文档
+</span><span>├── code-style.md      # 代码规范
+</span><span>└── domain-terms.md    # 领域术语表
+</span></code></pre><h3 id=3-bao-chi-skill-md-jing-jian>3. 保持 SKILL.md 精简</h3><p>官方建议 SKILL.md 控制在 <strong>500 行以内</strong>。太长会影响 AI 的处理效率。<h3 id=4-ce-shi-hong-fa-tiao-jian>4. 测试触发条件</h3><p>创建后，用不同的问法测试 Skill 是否能正确触发：<pre style=background:#2b303b;color:#c0c5ce><code><span>✅ "帮我写一篇论文" → 触发 academic-paper-writer
+</span><span>✅ "review 我的 paper" → 触发 academic-paper-writer
+</span><span>✅ "写一篇博客" → 触发 blog-writer
+</span><span>❌ "写代码" → 不应触发上述 Skills
+</span></code></pre><hr><h2 id=wrench-chang-jian-wen-ti>🔧 常见问题</h2><h3 id=q-skill-mei-you-bei-hong-fa>Q: Skill 没有被触发？</h3><ol><li>检查 <code>chat.useAgentSkills</code> 是否启用<li>重启 VS Code<li>检查 SKILL.md 的 frontmatter 格式是否正确（<code>---</code> 分隔符）</ol><h3 id=q-duo-ge-skill-chong-tu-zen-yao-ban>Q: 多个 Skill 冲突怎么办？</h3><p>让 <code>description</code> 更具体，避免重叠。或者合并为一个更通用的 Skill。<h3 id=q-ru-he-fen-xiang-skill-gei-tuan-dui>Q: 如何分享 Skill 给团队？</h3><p>将 <code>.claude/skills/</code> 或 <code>.github/skills/</code> 目录加入 Git 仓库即可。团队成员 clone 后自动拥有相同的 Skills。<hr><h2 id=books-xiang-guan-zi-yuan>📚 相关资源</h2><ul><li><a href=https://code.claude.com/docs/en/skills>Claude Code Skills 官方文档</a><li><a href=https://github.com/anthropics/skills>Anthropic Skills 官方仓库</a><li><a href=https://github.com/heilcheng/awesome-agent-skills>Awesome Agent Skills</a> - 社区 Skills 收集<li><a href=https://code.visualstudio.com/updates>VS Code 1.108 Release Notes</a></ul><hr><h2 id=zong-jie>总结</h2><p>Agent Skills 是 AI 辅助编程的一个重大进步。它让我们可以：<ol><li><strong>标准化工作流</strong>：把最佳实践固化为 Skill<li><strong>知识沉淀</strong>：团队经验变成可复用的资产<li><strong>效率提升</strong>：减少重复的上下文解释</ol><p>从今天开始，试着把你最常用的工作流变成一个 Skill 吧。我的 <code>academic-paper-writer</code> 和 <code>blog-writer</code> 已经帮我节省了大量时间——包括这篇文章本身，就是用 <code>blog-writer</code> Skill 辅助完成的 😄<hr><p><em>如果你有任何问题或创建了有趣的 Skill，欢迎在评论区分享！</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
