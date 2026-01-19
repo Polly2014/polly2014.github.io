@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 项目记录</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/category/xiang-mu-ji-lu/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-20T00:00:00+00:00</updated>
+    <id>https://polly.wang/category/xiang-mu-ji-lu/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🚀 GateX 上架记：从打包到 Marketplace 的踩坑之旅</title>
+        <published>2026-01-20T00:00:00+00:00</published>
+        <updated>2026-01-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/gatex-marketplace-publish-journey/" type="text/html"/>
+        <id>https://polly.wang/gatex-marketplace-publish-journey/</id>
+        
+        <content type="html">&lt;p&gt;&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;上一篇文章&lt;&#x2F;a&gt;记录了 GateX 的诞生过程——从发现 Agent Maestro 的 120 秒超时限制，到自己动手实现一个功能更完善的 AI Gateway 扩展。&lt;&#x2F;p&gt;
+&lt;p&gt;代码写完了，测试通过了，接下来应该很简单：发布到 VS Code Marketplace，让大家都能用上。&lt;&#x2F;p&gt;
+&lt;p&gt;我天真地以为这只需要几分钟。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;package-da-bao-zhe-bu-hen-shun-li&quot;&gt;📦 打包：这步很顺利&lt;&#x2F;h2&gt;
+&lt;p&gt;打包 VS Code 扩展用的是官方的 &lt;code&gt;vsce&lt;&#x2F;code&gt; 工具：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; gatex
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npm&lt;&#x2F;span&gt;&lt;span&gt; install
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npm&lt;&#x2F;span&gt;&lt;span&gt; run compile
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npx&lt;&#x2F;span&gt;&lt;span&gt; vsce package
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;一切顺利，生成了 &lt;code&gt;gatex-0.1.0.vsix&lt;&#x2F;code&gt;，大小 112 KB。完美。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt; DONE  Packaged: gatex-0.1.0.vsix (16 files, 111.57 KB)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;接下来，登录 Marketplace 发布——&lt;&#x2F;p&gt;
+&lt;p&gt;然后噩梦开始了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;closed-lock-with-key-azure-devops-yi-chang-yu-ding-yue-de-zhan-dou&quot;&gt;🔐 Azure DevOps：一场与订阅的战斗&lt;&#x2F;h2&gt;
+&lt;p&gt;VS Code Marketplace 的发布需要一个 Personal Access Token (PAT)，而这个 PAT 必须从 Azure DevOps 获取。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-ge-keng-portal-azure-com-dev-azure-com&quot;&gt;第一个坑：portal.azure.com ≠ dev.azure.com&lt;&#x2F;h3&gt;
+&lt;p&gt;我用 GitHub 账号登录后，被重定向到了 &lt;code&gt;portal.azure.com&lt;&#x2F;code&gt;——这是 Azure 云服务的管理门户，不是 Azure DevOps！&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;portal.azure.com → Azure 云服务（虚拟机、数据库）
+&lt;&#x2F;span&gt;&lt;span&gt;dev.azure.com   → Azure DevOps（代码仓库、Marketplace）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;花了十分钟才意识到这是两个完全不同的服务。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ge-keng-ding-yue-ji-fei-xian-zhi&quot;&gt;第二个坑：订阅计费限制&lt;&#x2F;h3&gt;
+&lt;p&gt;好不容易进入 &lt;code&gt;dev.azure.com&lt;&#x2F;code&gt;，创建组织时又卡住了：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;This subscription has a monetary limit set and cannot be used 
+&lt;&#x2F;span&gt;&lt;span&gt;for Azure DevOps billing. Please choose a different subscription 
+&lt;&#x2F;span&gt;&lt;span&gt;or remove the spending limit.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;我的 Azure 订阅有消费限制，无法用于 Azure DevOps 计费。&lt;&#x2F;p&gt;
+&lt;p&gt;等等，我只是想发布一个免费扩展，为什么需要计费设置？&lt;&#x2F;p&gt;
+&lt;p&gt;更糟糕的是，页面上没有「跳过」按钮，也没有「无需计费」选项。我尝试了各种方法：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;切换 Microsoft 账号 ❌&lt;&#x2F;li&gt;
+&lt;li&gt;用 GitHub 账号登录 ❌&lt;&#x2F;li&gt;
+&lt;li&gt;创建新订阅 → 需要信用卡 ❌&lt;&#x2F;li&gt;
+&lt;li&gt;移除消费限制 → 也需要信用卡 ❌&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;折腾了快两个小时，我开始怀疑人生。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bulb-zhuan-ji-zhi-jie-shang-chuan-vsix&quot;&gt;💡 转机：直接上传 .vsix&lt;&#x2F;h2&gt;
+&lt;p&gt;就在我准备放弃的时候，突然想到：既然 Marketplace 有管理后台，能不能直接上传打包好的文件？&lt;&#x2F;p&gt;
+&lt;p&gt;打开 &lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;manage&quot;&gt;marketplace.visualstudio.com&#x2F;manage&lt;&#x2F;a&gt;，用 Microsoft 账号登录，发现——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;居然可以直接上传 .vsix 文件！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;完全不需要 PAT，不需要 Azure DevOps 组织，不需要任何订阅设置。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fa-bu-bu-zou&quot;&gt;发布步骤&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;创建 Publisher&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;访问 marketplace.visualstudio.com&#x2F;manage&lt;&#x2F;li&gt;
+&lt;li&gt;点击「Create publisher」&lt;&#x2F;li&gt;
+&lt;li&gt;填写 Publisher ID（要和 package.json 里的一致！）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;上传扩展&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;点击「+ New extension」→「Visual Studio Code」&lt;&#x2F;li&gt;
+&lt;li&gt;拖拽 &lt;code&gt;.vsix&lt;&#x2F;code&gt; 文件上传&lt;&#x2F;li&gt;
+&lt;li&gt;等待验证（大约 1-2 分钟）&lt;&#x2F;li&gt;
+&lt;li&gt;完成！&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;就这么简单。我之前折腾的两个小时完全是走了弯路。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dart-tu-biao-you-hua-xiao-xi-jie-da-ying-xiang&quot;&gt;🎨 图标优化：小细节大影响&lt;&#x2F;h2&gt;
+&lt;p&gt;上传完成后，我发现图标在 Marketplace 上显示有点奇怪——黑边太多，主体太小。&lt;&#x2F;p&gt;
+&lt;p&gt;原始图标是 766 KB 的大图，先压缩：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 压缩并调整尺寸
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sips -Z&lt;&#x2F;span&gt;&lt;span&gt; 256 images&#x2F;gatex.png
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 766 KB → 44 KB
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后裁剪调整，去掉多余的黑边，让闪电符号更突出：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 裁剪中心区域（上面多留一点，下面多裁一点）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sips --cropOffset&lt;&#x2F;span&gt;&lt;span&gt; 30 38&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -c&lt;&#x2F;span&gt;&lt;span&gt; 180 180 gatex.png
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 放大回 256x256
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sips -Z&lt;&#x2F;span&gt;&lt;span&gt; 256 gatex.png
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;重新打包上传，效果好多了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;经验&lt;&#x2F;strong&gt;：Marketplace 的图标显示在各种尺寸下都要好看，建议：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;尺寸：至少 128x128，推荐 256x256&lt;&#x2F;li&gt;
+&lt;li&gt;大小：控制在 100KB 以内&lt;&#x2F;li&gt;
+&lt;li&gt;设计：主体要足够大，留白不要过多&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;white-check-mark-fa-bu-cheng-gong&quot;&gt;✅ 发布成功&lt;&#x2F;h2&gt;
+&lt;p&gt;最终，GateX 0.1.0 成功上架：&lt;&#x2F;p&gt;
+&lt;p&gt;👉 &lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=BaoliWang.gatex&quot;&gt;marketplace.visualstudio.com&#x2F;items?itemName=BaoliWang.gatex&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;在 VS Code 里搜索「GateX」就能找到并安装。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt; ██████╗  █████╗ ████████╗███████╗██╗  ██╗
+&lt;&#x2F;span&gt;&lt;span&gt;██╔════╝ ██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝
+&lt;&#x2F;span&gt;&lt;span&gt;██║  ███╗███████║   ██║   █████╗   ╚███╔╝ 
+&lt;&#x2F;span&gt;&lt;span&gt;██║   ██║██╔══██║   ██║   ██╔══╝   ██╔██╗ 
+&lt;&#x2F;span&gt;&lt;span&gt;╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗
+&lt;&#x2F;span&gt;&lt;span&gt; ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+&lt;&#x2F;span&gt;&lt;span&gt;      🚀 NOW LIVE ON MARKETPLACE 🚀
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;memo-fa-bu-qing-dan&quot;&gt;📝 发布清单&lt;&#x2F;h2&gt;
+&lt;p&gt;给未来的自己（和读者）留个备忘：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fa-bu-qian-jian-cha&quot;&gt;发布前检查&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;code&gt;package.json&lt;&#x2F;code&gt; 中的 &lt;code&gt;publisher&lt;&#x2F;code&gt; 和 Marketplace Publisher ID 一致&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;code&gt;package.json&lt;&#x2F;code&gt; 中的 &lt;code&gt;version&lt;&#x2F;code&gt; 已更新&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;code&gt;package.json&lt;&#x2F;code&gt; 中的 &lt;code&gt;repository&lt;&#x2F;code&gt; 填写正确&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+README.md 内容完整，包含安装使用说明&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+图标尺寸合适（推荐 256x256），大小 &amp;lt; 100KB&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+LICENSE 文件存在&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;da-bao-fa-bu&quot;&gt;打包发布&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 编译
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npm&lt;&#x2F;span&gt;&lt;span&gt; run compile
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 打包
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;npx&lt;&#x2F;span&gt;&lt;span&gt; vsce package
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 上传到 marketplace.visualstudio.com&#x2F;manage
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;geng-xin-ban-ben&quot;&gt;更新版本&lt;&#x2F;h3&gt;
+&lt;p&gt;修改 &lt;code&gt;package.json&lt;&#x2F;code&gt; 中的 &lt;code&gt;version&lt;&#x2F;code&gt;，重新打包上传即可。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bulb-jing-yan-zong-jie&quot;&gt;💡 经验总结&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;官方文档不是唯一路径&lt;&#x2F;strong&gt; —— 微软文档推荐的 PAT 方式需要 Azure DevOps 组织，但直接上传 .vsix 更简单，对于个人开发者足够用了。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;portal.azure.com ≠ dev.azure.com&lt;&#x2F;strong&gt; —— 这两个是完全不同的服务，别搞混了。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;图标很重要&lt;&#x2F;strong&gt; —— Marketplace 的第一印象就是图标，值得花时间调整。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;版本号从 0.1.0 开始&lt;&#x2F;strong&gt; —— 给后续更新留空间，也表示这是早期版本，用户会更包容 bug。&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;link-xiang-guan-lian-jie&quot;&gt;🔗 相关链接&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=BaoliWang.gatex&quot;&gt;GateX on Marketplace&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;api&#x2F;working-with-extensions&#x2F;publishing-extension&quot;&gt;VS Code 扩展发布官方文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;上一篇：GateX 技术实现详解&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;从「干掉 Agent Maestro」到「上架 Marketplace」，前后大约 48 小时。&lt;&#x2F;p&gt;
+&lt;p&gt;开发用了 24 小时，发布流程的坑占了 2 小时。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你也打算发布 VS Code 扩展，希望这篇踩坑记录能帮你节省一些时间。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;GateX —— Your gateway to AI models.&lt;&#x2F;strong&gt; ⚡&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
