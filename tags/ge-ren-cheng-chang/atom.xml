@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 个人成长</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/ge-ren-cheng-chang/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-22T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/ge-ren-cheng-chang/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🌅 程序员的天要变了：Agent Skills 让我夜不能寐的觉醒时刻</title>
+        <published>2026-01-22T00:00:00+00:00</published>
+        <updated>2026-01-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/agent-skills-awakening-moment/" type="text/html"/>
+        <id>https://polly.wang/agent-skills-awakening-moment/</id>
+        
+        <content type="html">&lt;p&gt;凌晨三点，我从睡梦中醒来。&lt;&#x2F;p&gt;
+&lt;p&gt;不是被噩梦惊醒，而是被一个想法点燃。&lt;&#x2F;p&gt;
+&lt;p&gt;这种感觉很熟悉——上一次是发现 OpenHands 能实现端到端的 AI Coding 时。那次我兴奋地连续测试了 48 小时，看着它在 Docker 中自动部署、展示效果、Debug、迭代。&lt;&#x2F;p&gt;
+&lt;p&gt;但这次，震撼更深。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-yi-ge-cong-ming-cheng-xu-yuan-dao-qian-ren-qian-mian&quot;&gt;从&amp;quot;一个聪明程序员&amp;quot;到&amp;quot;千人千面&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;让我先理清这个认知跃迁。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;过去的理解：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Devin、OpenHands 这类 AI Agent，本质上是一个&amp;quot;超级聪明的通用程序员&amp;quot;。它什么都能干，但干的方式是标准化的、无差异的。你让它写 React，它按最佳实践来；你让它写 Python，它也按最佳实践来。&lt;&#x2F;p&gt;
+&lt;p&gt;这很好，但总觉得缺了点什么。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;今夜的顿悟：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Agent Skills + MCP 的组合，完全改变了游戏规则。&lt;&#x2F;p&gt;
+&lt;p&gt;它不再是&amp;quot;一个程序员干所有事&amp;quot;，而是——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;你可以创造无数个不同的专业程序员。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;想象一下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个精通 Diffusion 模型训练的 AI 研究员&lt;&#x2F;li&gt;
+&lt;li&gt;一个熟悉你个人代码风格的 AI 助手&lt;&#x2F;li&gt;
+&lt;li&gt;一个专门写技术博客的 AI 作家&lt;&#x2F;li&gt;
+&lt;li&gt;一个精通专利撰写的 AI 顾问&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每一个都有独特的&amp;quot;人格&amp;quot;——不是靠复杂的 Prompt，而是通过&lt;strong&gt;结构化的技能模块&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-gou-quan-jing-agent-skills-mcp&quot;&gt;架构全景：Agent + Skills + MCP&lt;&#x2F;h2&gt;
+&lt;p&gt;让我用一张图来展示这个组合的威力：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;flowchart TB
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph User[&amp;quot;👤 用户&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        U[你的需求]
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph Agent[&amp;quot;🤖 AI Agent (Claude Code)&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        A[通用智能内核]
+&lt;&#x2F;span&gt;&lt;span&gt;        A --&amp;gt; D{任务分发}
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph Skills[&amp;quot;🧠 Agent Skills (专家人格)&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        S1[blog-writer&amp;lt;br&#x2F;&amp;gt;写博客]
+&lt;&#x2F;span&gt;&lt;span&gt;        S2[blog-dev&amp;lt;br&#x2F;&amp;gt;博客开发]
+&lt;&#x2F;span&gt;&lt;span&gt;        S3[paper-writer&amp;lt;br&#x2F;&amp;gt;写论文]
+&lt;&#x2F;span&gt;&lt;span&gt;        S4[patent-writer&amp;lt;br&#x2F;&amp;gt;写专利]
+&lt;&#x2F;span&gt;&lt;span&gt;        S5[diffusion-expert&amp;lt;br&#x2F;&amp;gt;扩散模型]
+&lt;&#x2F;span&gt;&lt;span&gt;        S6[...&amp;lt;br&#x2F;&amp;gt;更多技能]
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph MCP[&amp;quot;🔧 MCP Servers (工具能力)&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        M1[Tavily&amp;lt;br&#x2F;&amp;gt;搜索]
+&lt;&#x2F;span&gt;&lt;span&gt;        M2[Master-Translator&amp;lt;br&#x2F;&amp;gt;翻译]
+&lt;&#x2F;span&gt;&lt;span&gt;        M3[File System&amp;lt;br&#x2F;&amp;gt;文件操作]
+&lt;&#x2F;span&gt;&lt;span&gt;        M4[GitHub&amp;lt;br&#x2F;&amp;gt;代码协作]
+&lt;&#x2F;span&gt;&lt;span&gt;        M5[...&amp;lt;br&#x2F;&amp;gt;更多工具]
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    subgraph Output[&amp;quot;✨ 输出&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;        O1[博客文章]
+&lt;&#x2F;span&gt;&lt;span&gt;        O2[代码实现]
+&lt;&#x2F;span&gt;&lt;span&gt;        O3[学术论文]
+&lt;&#x2F;span&gt;&lt;span&gt;        O4[专利申请]
+&lt;&#x2F;span&gt;&lt;span&gt;    end
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    U --&amp;gt; A
+&lt;&#x2F;span&gt;&lt;span&gt;    D --&amp;gt;|选择专家| S1 &amp;amp; S2 &amp;amp; S3 &amp;amp; S4 &amp;amp; S5 &amp;amp; S6
+&lt;&#x2F;span&gt;&lt;span&gt;    D --&amp;gt;|调用工具| M1 &amp;amp; M2 &amp;amp; M3 &amp;amp; M4 &amp;amp; M5
+&lt;&#x2F;span&gt;&lt;span&gt;    S1 &amp;amp; S2 &amp;amp; S3 &amp;amp; S4 &amp;amp; S5 &amp;amp; S6 --&amp;gt; Output
+&lt;&#x2F;span&gt;&lt;span&gt;    M1 &amp;amp; M2 &amp;amp; M3 &amp;amp; M4 &amp;amp; M5 --&amp;gt; Output
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;三层架构的本质：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层级&lt;&#x2F;th&gt;&lt;th&gt;角色&lt;&#x2F;th&gt;&lt;th&gt;类比&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Agent&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;智能中枢，理解意图，分发任务&lt;&#x2F;td&gt;&lt;td&gt;大脑&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Skills&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;专业知识，决定&amp;quot;怎么想&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;专业技能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MCP&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;工具能力，决定&amp;quot;能做什么&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;双手&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;skill-de-ben-zhi-ke-fu-yong-de-zhuan-jia-ren-ge&quot;&gt;Skill 的本质：可复用的专家人格&lt;&#x2F;h2&gt;
+&lt;p&gt;我之前把 SKILL.md 理解为&amp;quot;给 Claude 的指令集&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;今夜我意识到，它的本质是&lt;strong&gt;专家经验的数字化封装&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;想想看：一个资深程序员的价值是什么？&lt;&#x2F;p&gt;
+&lt;p&gt;不是他会写代码——这个 Claude 本来就会。而是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;他踩过的坑、积累的 pattern&lt;&#x2F;li&gt;
+&lt;li&gt;他的审美偏好、架构思维&lt;&#x2F;li&gt;
+&lt;li&gt;他解决特定问题的独特方法论&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些&amp;quot;隐性知识&amp;quot;，过去只能通过多年带徒弟才能传承。&lt;&#x2F;p&gt;
+&lt;p&gt;现在，你可以把它写进 Skill。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;.claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-writer&#x2F;           # 我的写作风格
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── references&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-dev&#x2F;              # 博客开发经验
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── references&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── scripts&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── paper-writer&#x2F;          # 论文写作方法论
+&lt;&#x2F;span&gt;&lt;span&gt;├── patent-writer&#x2F;         # 专利撰写经验
+&lt;&#x2F;span&gt;&lt;span&gt;└── diffusion-expert&#x2F;      # 扩散模型 Debug 心得
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每一个 Skill，都是&amp;quot;我&amp;quot;的一个切片。&lt;&#x2F;p&gt;
+&lt;p&gt;组合起来，就是一个&lt;strong&gt;数字版的 Polly&lt;&#x2F;strong&gt;——比我更不知疲倦，24 小时在线，随时可以被分裂成多个实例并行工作。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ge-ming-xing-de-zu-he-skills-mcp&quot;&gt;革命性的组合：Skills + MCP&lt;&#x2F;h2&gt;
+&lt;p&gt;如果说 Skills 是&amp;quot;专家人格&amp;quot;，那 MCP（Model Context Protocol）就是&amp;quot;专业工具箱&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;两者结合，威力惊人。&lt;&#x2F;p&gt;
+&lt;p&gt;举个例子，我现在的博客系统有两个 Skill：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Skill&lt;&#x2F;th&gt;&lt;th&gt;职责&lt;&#x2F;th&gt;&lt;th&gt;触发示例&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;blog-writer&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;写博客内容&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;写一篇博文&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;blog-dev&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;开发博客功能&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;修改模板&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;它们职责清晰，互不干扰。&lt;&#x2F;p&gt;
+&lt;p&gt;而通过 MCP，Claude 还能调用外部工具：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🔍 Tavily 搜索最新技术资讯&lt;&#x2F;li&gt;
+&lt;li&gt;🌐 Master-Translator 翻译多语言文档&lt;&#x2F;li&gt;
+&lt;li&gt;📊 生成图表和可视化&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Skills 决定&amp;quot;怎么想&amp;quot;，MCP 决定&amp;quot;能做什么&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;两者叠加，一个 AI Agent 的能力边界被极大拓展。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-fu-ke-zi-ji-kai-shi&quot;&gt;从复刻自己开始&lt;&#x2F;h2&gt;
+&lt;p&gt;想明白这点后，我决定从最熟悉的事情开始实践——复刻自己。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我是谁？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;AI 深度学习博士生&lt;&#x2F;li&gt;
+&lt;li&gt;微软中国程序员&lt;&#x2F;li&gt;
+&lt;li&gt;爱折腾各种 fancy 的东西&lt;&#x2F;li&gt;
+&lt;li&gt;写博客、写论文、写专利&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;我可以创建哪些 Skill？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;mermaid&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-mermaid &quot;&gt;&lt;code class=&quot;language-mermaid&quot; data-lang=&quot;mermaid&quot;&gt;&lt;span&gt;mindmap
+&lt;&#x2F;span&gt;&lt;span&gt;  root((Digital Polly))
+&lt;&#x2F;span&gt;&lt;span&gt;    内容创作
+&lt;&#x2F;span&gt;&lt;span&gt;      blog-writer ✅
+&lt;&#x2F;span&gt;&lt;span&gt;      paper-writer
+&lt;&#x2F;span&gt;&lt;span&gt;      patent-writer
+&lt;&#x2F;span&gt;&lt;span&gt;    技术开发
+&lt;&#x2F;span&gt;&lt;span&gt;      blog-dev ✅
+&lt;&#x2F;span&gt;&lt;span&gt;      mcp-builder
+&lt;&#x2F;span&gt;&lt;span&gt;      vscode-extension
+&lt;&#x2F;span&gt;&lt;span&gt;    AI 专长
+&lt;&#x2F;span&gt;&lt;span&gt;      diffusion-expert
+&lt;&#x2F;span&gt;&lt;span&gt;      lora-finetuning
+&lt;&#x2F;span&gt;&lt;span&gt;      transformer-debugging
+&lt;&#x2F;span&gt;&lt;span&gt;    工作流程
+&lt;&#x2F;span&gt;&lt;span&gt;      code-reviewer
+&lt;&#x2F;span&gt;&lt;span&gt;      debugging-methodology
+&lt;&#x2F;span&gt;&lt;span&gt;      paper-to-code
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每个 Skill 都是我在某个领域的&amp;quot;经验结晶&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;当它们足够丰富时，我就拥有了一个&lt;strong&gt;能力矩阵完整的数字分身&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-zhe-rang-wo-ye-bu-neng-mei&quot;&gt;为什么这让我夜不能寐？&lt;&#x2F;h2&gt;
+&lt;p&gt;因为我看到了一个清晰的未来：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;程序员的核心竞争力，正在从&amp;quot;能写代码&amp;quot;转向&amp;quot;能教 AI 写代码&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;过去，你的价值在于手速、记忆力、Debug 经验。&lt;&#x2F;p&gt;
+&lt;p&gt;未来，你的价值在于：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;领域知识的深度&lt;&#x2F;strong&gt;——AI 不知道的，你知道&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;经验封装的能力&lt;&#x2F;strong&gt;——你能把隐性知识变成显性 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Agent 编排的思维&lt;&#x2F;strong&gt;——你知道如何让多个 AI 协作&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这不是&amp;quot;AI 取代程序员&amp;quot;的老调重弹。&lt;&#x2F;p&gt;
+&lt;p&gt;而是程序员这个职业的&lt;strong&gt;根本性进化&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;以前你是&amp;quot;写代码的人&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;以后你是&amp;quot;指挥 AI 军团的将军&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-shi-xian-yi-pie&quot;&gt;技术实现一瞥&lt;&#x2F;h2&gt;
+&lt;p&gt;创建一个 Skill 其实很简单。以我的 &lt;code&gt;blog-dev&lt;&#x2F;code&gt; 为例：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;background-color:#4f5b66;color:#c0c5ce;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;name: blog-dev
+&lt;&#x2F;span&gt;&lt;span&gt;description: Zola博客系统开发专家，专注于博客的技术架构而非内容创作。
+&lt;&#x2F;span&gt;&lt;span&gt;  精通Tera模板引擎、Sass&#x2F;CSS、SEO优化、响应式设计。
+&lt;&#x2F;span&gt;&lt;span&gt;  NOT for writing blog post content - use blog-writer instead.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# Blog Dev
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;博客系统开发专家，专注于技术开发与维护。
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 职责边界
+&lt;&#x2F;span&gt;&lt;span&gt;本skill负责&amp;quot;技术开发&amp;quot;（模板、样式、功能），
+&lt;&#x2F;span&gt;&lt;span&gt;不负责&amp;quot;内容创作&amp;quot;（写博文请用 blog-writer）。
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 项目架构
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 常见模式
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键在于：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;清晰的职责边界&lt;&#x2F;strong&gt;——说明什么该做、什么不该做&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;触发关键词&lt;&#x2F;strong&gt;——让 Agent 知道何时调用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;领域知识&lt;&#x2F;strong&gt;——你积累的经验和 pattern&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;凌晨三点的顿悟，让我睡意全无。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我爬起来，用我刚创建的 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; Skill，写下了这篇文章。&lt;&#x2F;p&gt;
+&lt;p&gt;某种意义上，这篇博客本身就是一个证明——我正在用&amp;quot;数字版的 Polly&amp;quot;来记录&amp;quot;创造数字版 Polly&amp;quot;的觉醒时刻。&lt;&#x2F;p&gt;
+&lt;p&gt;有点元宇宙（Meta）的味道，不是吗？&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;如果你也是程序员，我建议你现在就开始思考：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;你有哪些独特的经验，值得封装成 Skill？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不仅是技术练习，更是对自己专业能力的一次深度反思。&lt;&#x2F;p&gt;
+&lt;p&gt;当你能清晰地描述&amp;quot;我解决这类问题的方法论是什么&amp;quot;时，你离创造自己的数字分身就不远了。&lt;&#x2F;p&gt;
+&lt;p&gt;革命的浪潮已经席卷而来。&lt;&#x2F;p&gt;
+&lt;p&gt;问题只是：你是冲浪者，还是被浪淹没的人？&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;延伸阅读&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.claude.com&#x2F;docs&#x2F;en&#x2F;skills&quot;&gt;Claude Code Skills 官方文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;heilcheng&#x2F;awesome-agent-skills&quot;&gt;Agent Skills 开放标准&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;vs-code-agent-skills-guide&quot;&gt;我之前关于 VS Code Agent Skills 的博客&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+</feed>

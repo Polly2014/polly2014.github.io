@@ -252,6 +252,31 @@ body {
     transition: box-shadow 0.3s ease-in-out;
 }
 
+/* 封面图样式 */
+.cover-image {
+    margin: 1.5em 0 2em 0;
+    text-align: center;
+}
+
+.blog-post .cover-image img {
+    max-width: 60% !important;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .blog-post .cover-image img {
+        max-width: 90% !important;
+        max-height: 220px;
+        border-radius: 4px;
+    }
+}
+
 /* 关于我页面 */
 .about-me {
     font-family: Arial, sans-serif;
