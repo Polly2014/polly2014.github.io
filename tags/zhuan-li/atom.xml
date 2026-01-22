@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 专利</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/zhuan-li/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-22T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/zhuan-li/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从想法到专利：100天数字分身进化记</title>
+        <published>2026-01-22T00:00:00+00:00</published>
+        <updated>2026-01-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/from-idea-to-patent-100-days-of-digital-avatar-evolution/" type="text/html"/>
+        <id>https://polly.wang/from-idea-to-patent-100-days-of-digital-avatar-evolution/</id>
+        
+        <content type="html">&lt;p&gt;2026年1月21日，当收到NTD专利律师团队的邮件，邀请安排Disclosure Meeting时，我意识到：一个始于100天前的想法，正在走向知识产权保护的实质阶段。&lt;&#x2F;p&gt;
+&lt;p&gt;更让我感慨的是——这封邮件提醒我回顾这100天的旅程，&lt;strong&gt;从Idea到专利，每一步都有AI的深度参与&lt;&#x2F;strong&gt;。我似乎正在见证自己数字分身的诞生。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;round-pushpin-shi-jian-xian-100tian-si-ci-shui-bian&quot;&gt;📍 时间线：100天四次蜕变&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;2025.10 ─ Hackathon Idea诞生 ─ MCP Server V1.0
+&lt;&#x2F;span&gt;&lt;span&gt;    │
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;2025.11 ─ Mustafa TownHall ─── Web版连夜开发
+&lt;&#x2F;span&gt;&lt;span&gt;    │
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;2025.12 ─ Qi OPE新书翻译 ──── MCP Server V2.0
+&lt;&#x2F;span&gt;&lt;span&gt;    │
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;2026.01 ─ 专利CELA通过 ───── 进入正式申请流程
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这不是一个线性的技术迭代故事，而是一个&lt;strong&gt;需求驱动的进化过程&lt;&#x2F;strong&gt;——每一次蜕变都源于真实的业务场景。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;dart-di-yi-ci-shui-bian-hackathon-mcp-v1-0&quot;&gt;🎯 第一次蜕变：Hackathon MCP V1.0&lt;&#x2F;h2&gt;
+&lt;p&gt;2025年10月，公司Hackathon的主题是&amp;quot;AI Agent from AI Foundry&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;当时我在思考：&lt;strong&gt;如何让LLM真正处理长文档翻译？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;痛点很明显：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接丢给GPT一本书，它会截断、遗漏&lt;&#x2F;li&gt;
+&lt;li&gt;手动分块，上下文断裂，术语不一致&lt;&#x2F;li&gt;
+&lt;li&gt;市面上的翻译工具，对专业书籍效果堪忧&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;于是，&lt;strong&gt;Section-Aware Chunking + Context Weaving&lt;&#x2F;strong&gt; 的想法诞生了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;按章节语义分块，而非固定字符数&lt;&#x2F;li&gt;
+&lt;li&gt;跨块编织上下文，保持术语一致性&lt;&#x2F;li&gt;
+&lt;li&gt;前文摘要注入，避免&amp;quot;失忆&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我用GitHub Copilot快速搭建了第一版MCP Server，这是&lt;strong&gt;代码层面AI辅助的开始&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;结果：🏆 Judge&#x27;s Favorite Award + 🥈 北京赛区第二名&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;globe-with-meridians-di-er-ci-shui-bian-mustafa-townhall-webban&quot;&gt;🌐 第二次蜕变：Mustafa TownHall Web版&lt;&#x2F;h2&gt;
+&lt;p&gt;Kickoff后不到两周，接到任务：为Mustafa（Microsoft AI CEO）访华TownHall翻译《The Coming Wave》。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;9种语言，3天时间，实体书要打印出来。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;MCP Server虽然能用，但：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令行界面不够直观，难以展示&lt;&#x2F;li&gt;
+&lt;li&gt;需要一个可以Demo的Web界面&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;于是，我连夜开发了&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Master-Translator-Web&quot;&gt;Master-Translator-Web&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;GitHub Copilot在这个阶段成了真正的pair programmer：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;FastAPI后端框架搭建&lt;&#x2F;li&gt;
+&lt;li&gt;React前端组件开发&lt;&#x2F;li&gt;
+&lt;li&gt;Azure Blob存储集成&lt;&#x2F;li&gt;
+&lt;li&gt;实时翻译进度展示&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;36小时后&lt;&#x2F;strong&gt;，Web版上线。TownHall当天，Qi带着Mustafa参观展位，我流畅地演示了整个翻译流程。&lt;&#x2F;p&gt;
+&lt;p&gt;Qi的反馈：&amp;quot;&lt;strong&gt;Great job today!!&lt;&#x2F;strong&gt;&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;此刻我意识到：这个项目不只是Hackathon的demo，它正在成为一个&lt;strong&gt;真正可用的产品&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;books-di-san-ci-shui-bian-qi-opexin-shu-mcp-v2-0&quot;&gt;📚 第三次蜕变：Qi OPE新书 MCP V2.0&lt;&#x2F;h2&gt;
+&lt;p&gt;2026年1月3日，收到消息：Qi的OPE新书《智能时代的OPE创业范式》需要英文版，送给Satya Nadella和Mustafa。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;422页，48小时。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这一次，我决定彻底重构MCP Server：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Web版与MCP版&lt;strong&gt;统一翻译引擎&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;长文档智能分块&lt;&#x2F;strong&gt;优化（Section-Aware Chunking升级）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;跨块上下文编织&lt;&#x2F;strong&gt;增强（Context Weaving 2.0）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;完整性-一致性框架&lt;&#x2F;strong&gt;（CCF）验证&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;技术突破的同时，一个理论框架也在成型：&lt;strong&gt;ContextWeave&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;翻译完成后的验证结果：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;📖 原文3958行 → 译文3958行&lt;&#x2F;li&gt;
+&lt;li&gt;🎯 结构完整性：100%&lt;&#x2F;li&gt;
+&lt;li&gt;✅ 无遗漏、无重复&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;用&lt;strong&gt;践行OPE的方式，翻译阐述OPE的书籍&lt;&#x2F;strong&gt;——这可能是最好的致敬。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;scroll-di-si-ci-shui-bian-cong-dai-ma-dao-zhuan-li&quot;&gt;📜 第四次蜕变：从代码到专利&lt;&#x2F;h2&gt;
+&lt;p&gt;当技术框架成熟后，下一个问题是：&lt;strong&gt;如何保护这个创新？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;2025年12月25日，圣诞节，我正式提交了专利申请。&lt;&#x2F;p&gt;
+&lt;p&gt;但这次不同的是——&lt;strong&gt;写专利的过程本身，也是AI辅助的&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;gong-ju-lian-de-jin-hua&quot;&gt;工具链的进化&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;阶段&lt;&#x2F;th&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;MCP&#x2F;Web开发&lt;&#x2F;td&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;AI pair programming&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;专利初稿&lt;&#x2F;td&gt;&lt;td&gt;Patent Prompt&lt;&#x2F;td&gt;&lt;td&gt;自己构建的专利撰写提示词&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;专利优化&lt;&#x2F;td&gt;&lt;td&gt;Patent Skills&lt;&#x2F;td&gt;&lt;td&gt;升级为Claude Agent Skill&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Disclosure PPT&lt;&#x2F;td&gt;&lt;td&gt;PPTX Skills&lt;&#x2F;td&gt;&lt;td&gt;用Skill生成专业演示文稿&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;从&lt;strong&gt;临时的Prompt&lt;&#x2F;strong&gt;到&lt;strong&gt;可复用的Skills&lt;&#x2F;strong&gt;，这是一个重要的转变。&lt;&#x2F;p&gt;
+&lt;p&gt;Skills不只是提示词，它们是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;包含领域知识的专家系统&lt;&#x2F;li&gt;
+&lt;li&gt;可以调用工具的能力模块&lt;&#x2F;li&gt;
+&lt;li&gt;能够学习和改进的记忆体&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;cela-reviewyi-ci-xing-tong-guo&quot;&gt;CELA Review一次性通过&lt;&#x2F;h3&gt;
+&lt;p&gt;2026年1月15日，CELA Review完成。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;没有任何材料补交或修改需求，一次性通过。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这让我有些意外。复盘原因：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Patent Skills中内置了专利写作的结构规范&lt;&#x2F;li&gt;
+&lt;li&gt;核心创新点（Section-Aware Chunking + Context Weaving）定义清晰&lt;&#x2F;li&gt;
+&lt;li&gt;技术方案与现有技术的区别阐述充分&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;1月21日，收到NTD律师团队邮件，Disclosure Meeting定于2月3日。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shu-zi-fen-shen-de-dan-sheng&quot;&gt;🧬 数字分身的诞生&lt;&#x2F;h2&gt;
+&lt;p&gt;回看这100天，最让我兴奋的不只是专利本身，而是一个更大的图景正在浮现。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cong-neng-liao-tian-dao-neng-zuo-shi&quot;&gt;从&amp;quot;能聊天&amp;quot;到&amp;quot;能做事&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;2025年2月，我写过一篇博文：《&lt;a href=&quot;..&#x2F;build-ai-agent-polly-with-ai-tools&#x2F;&quot;&gt;让AI成为你的分身：Polly AI Agent的诞生&lt;&#x2F;a&gt;》。&lt;&#x2F;p&gt;
+&lt;p&gt;那时候的&amp;quot;数字分身&amp;quot;还只是一个&lt;strong&gt;能聊天的智能助手&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于DeepSeek的对话系统&lt;&#x2F;li&gt;
+&lt;li&gt;OpenHands构建的前端界面&lt;&#x2F;li&gt;
+&lt;li&gt;能回答问题，但&lt;strong&gt;不能真正做事&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;11个月后，这个分身正在蜕变：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;2025.02 Polly Agent&lt;&#x2F;th&gt;&lt;th&gt;2026.01 Polly Skills&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;交互&lt;&#x2F;td&gt;&lt;td&gt;聊天对话&lt;&#x2F;td&gt;&lt;td&gt;任务执行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;能力&lt;&#x2F;td&gt;&lt;td&gt;知识问答&lt;&#x2F;td&gt;&lt;td&gt;代码&#x2F;文档&#x2F;专利生成&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;记忆&lt;&#x2F;td&gt;&lt;td&gt;单次会话&lt;&#x2F;td&gt;&lt;td&gt;持久化Skills&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;工具&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;MCP Server、文件系统、API&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;输出&lt;&#x2F;td&gt;&lt;td&gt;文本回复&lt;&#x2F;td&gt;&lt;td&gt;完整产品产出&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;gou-jian-zhong-de-skillju-zhen&quot;&gt;构建中的Skill矩阵&lt;&#x2F;h3&gt;
+&lt;p&gt;现在我的Claude Agent Skills已经包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;blog-writer&lt;&#x2F;strong&gt;: 博客写作（你正在阅读的这篇文章）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;patent-writer&lt;&#x2F;strong&gt;: 专利申请文件撰写&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;pptx&lt;&#x2F;strong&gt;: PPT生成与编辑&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;docx&lt;&#x2F;strong&gt;: Word文档处理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;academic-paper-writer&lt;&#x2F;strong&gt;: 学术论文写作&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;image-model-training-expert&lt;&#x2F;strong&gt;: 扩散模型训练专家&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每一个Skill都是&lt;strong&gt;数字分身的一个能力模块&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它们不只是提示词，而是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;包含领域知识的专家系统&lt;&#x2F;li&gt;
+&lt;li&gt;能够调用工具执行任务&lt;&#x2F;li&gt;
+&lt;li&gt;可以随时间学习和改进&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;thought-balloon-opejing-shen-de-jian-xing&quot;&gt;💭 OPE精神的践行&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾这100天，有一个词贯穿始终：&lt;strong&gt;OPE&lt;&#x2F;strong&gt;（One Person Enterprise）。&lt;&#x2F;p&gt;
+&lt;p&gt;Qi的新书阐述的正是这个理念：在AI时代，一个人可以成就过去需要一个团队才能完成的事情。&lt;&#x2F;p&gt;
+&lt;p&gt;而我正在用自己的方式践行它：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;一个人&lt;&#x2F;strong&gt;完成了5本书的AI翻译（累计1500+页）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;一个人&lt;&#x2F;strong&gt;开发了MCP Server和Web系统&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;一个人&lt;&#x2F;strong&gt;撰写了专利申请并通过CELA Review&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;一个人&lt;&#x2F;strong&gt;正在构建一套可复用的Agent Skills&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但这个&amp;quot;一个人&amp;quot;背后，站着的是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;GitHub Copilot，我的代码伙伴&lt;&#x2F;li&gt;
+&lt;li&gt;Claude Agent Skills，我的能力延伸&lt;&#x2F;li&gt;
+&lt;li&gt;以及无数开源社区的贡献&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;数字分身不是取代人，而是放大人。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;crystal-ball-xia-yi-bu&quot;&gt;🔮 下一步&lt;&#x2F;h2&gt;
+&lt;p&gt;2月3日，Disclosure Meeting。&lt;&#x2F;p&gt;
+&lt;p&gt;这将是第一次与专利律师团队详细讨论ContextWeave框架的技术细节。&lt;&#x2F;p&gt;
+&lt;p&gt;这个专利的诞生，背后还有一个&amp;quot;隐形发明人&amp;quot;——&lt;strong&gt;那些AI工具和Skills&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;memo-xie-zai-zui-hou&quot;&gt;📝 写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;如果说2025年10月的Hackathon是一粒种子，那么这100天就是它破土而出的过程。&lt;&#x2F;p&gt;
+&lt;p&gt;从一个想法，到一个产品，到一份专利，到一个数字分身的雏形。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是终点，而是起点。&lt;&#x2F;p&gt;
+&lt;p&gt;下一个100天，我期待看到：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;ContextWeave论文正式发表&lt;&#x2F;li&gt;
+&lt;li&gt;专利获得授权&lt;&#x2F;li&gt;
+&lt;li&gt;Skills矩阵继续扩展&lt;&#x2F;li&gt;
+&lt;li&gt;更多的&amp;quot;一人成团&amp;quot;故事&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;追逐AI浪潮，也许最好的方式，就是成为浪潮本身。&lt;&#x2F;strong&gt; 🌊&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;后记&lt;&#x2F;strong&gt;：这篇博文由 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; Skill 辅助撰写，封面图由 &lt;code&gt;gpt-image-1.5&lt;&#x2F;code&gt; 生成。用AI写关于AI的故事，大概是最合适的方式了。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+</feed>
