@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI换装</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/aihuan-zhuang/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-23T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/aihuan-zhuang/atom.xml</id>
+    <entry xml:lang="en">
+        <title>👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析</title>
+        <published>2026-01-23T00:00:00+00:00</published>
+        <updated>2026-01-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jco-mvton-complete-guide-for-beginners/" type="text/html"/>
+        <id>https://polly.wang/jco-mvton-complete-guide-for-beginners/</id>
+        
+        <content type="html">&lt;p&gt;最近在做虚拟试衣（Virtual Try-On）项目时，我深入研究了 JCo-MVTON 这个基于 FLUX 的新一代架构。网上关于 VTON 的资料要么过于学术化，要么只讲旧方案，对于最新的 FLUX-based 方案几乎没有系统讲解。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我决定写这篇&amp;quot;小白友好&amp;quot;的完全指南——用大量的类比来解释复杂的概念，让你即使没有深度学习背景，也能理解 JCo-MVTON 是什么、怎么工作、如何训练和扩展。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;blue-mu-lu&quot;&gt;📖 目录&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E6%98%AF%E4%BB%80%E4%B9%88&quot;&gt;JCo-MVTON 是什么？&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#%E8%99%9A%E6%8B%9F%E8%AF%95%E8%A1%A3%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F&quot;&gt;虚拟试衣的前世今生&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86&quot;&gt;JCo-MVTON 的核心原理&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E7%9A%84%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90&quot;&gt;JCo-MVTON 的架构组成&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C&quot;&gt;JCo-MVTON 如何工作&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E7%9A%84%E8%AE%AD%E7%BB%83&quot;&gt;JCo-MVTON 的训练&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#jco-mvton-%E7%9A%84%E6%89%A9%E5%B1%95%E4%B8%8E%E5%BA%94%E7%94%A8&quot;&gt;JCo-MVTON 的扩展与应用&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;jco-mvton-complete-guide-for-beginners&#x2F;#%E6%80%BB%E7%BB%93%E4%B8%8E%E9%80%9F%E6%9F%A5%E5%8D%A1&quot;&gt;总结与速查卡&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-是什么&quot;&gt;JCo-MVTON 是什么？&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;yi-ju-hua-ban-ben&quot;&gt;一句话版本&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;JCo-MVTON = 一个超级智能的&amp;quot;AI 换装师&amp;quot;，能把任意衣服完美&amp;quot;穿&amp;quot;到任意人身上。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;house-lei-bi-xiang-xiang-yi-ge-shen-qi-de-shi-yi-jian&quot;&gt;🏠 类比：想象一个神奇的试衣间&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;传统网购：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 看模特穿的效果图
+&lt;&#x2F;span&gt;&lt;span&gt;├── 猜自己穿上什么样
+&lt;&#x2F;span&gt;&lt;span&gt;├── 买回来发现不合适
+&lt;&#x2F;span&gt;&lt;span&gt;└── 退货！😭
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;JCo-MVTON：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 上传你的照片
+&lt;&#x2F;span&gt;&lt;span&gt;├── 选择喜欢的衣服
+&lt;&#x2F;span&gt;&lt;span&gt;├── AI 直接生成你穿上的效果
+&lt;&#x2F;span&gt;&lt;span&gt;└── 完美！买买买！🎉
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;dart-ming-zi-chai-jie&quot;&gt;🎯 名字拆解&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;JCo-MVTON = Joint Conditional Multi-View Try-On Network
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Joint（联合）: 人和衣服一起处理
+&lt;&#x2F;span&gt;&lt;span&gt;Conditional（条件）: 根据条件（姿势、体型）生成
+&lt;&#x2F;span&gt;&lt;span&gt;Multi-View（多视角）: 支持不同角度
+&lt;&#x2F;span&gt;&lt;span&gt;Try-On（试穿）: 核心功能
+&lt;&#x2F;span&gt;&lt;span&gt;Network（网络）: 神经网络
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;虚拟试衣的前世今生&quot;&gt;虚拟试衣的前世今生&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;scroll-ji-zhu-jin-hua-shi&quot;&gt;📜 技术进化史&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     虚拟试衣技术进化史                               │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第一代：图像变形（2018-2020）                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：CP-VTON, VITON                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：把衣服&amp;quot;扭&amp;quot;到人身上                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 问题：像贴纸一样，很假                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：硬把衣服贴纸贴在照片上 📄                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第二代：GAN生成（2020-2022）                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：HR-VITON, VITON-HD                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：用对抗网络生成                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 问题：衣服细节丢失，容易模糊                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：画家凭记忆画，细节不够 🎨                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第三代：扩散模型（2023-2024）                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：IDM-VTON, LaDI-VTON, StableVITON                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：基于SD&#x2F;SDXL的扩散生成                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 优点：质量高，但衣服理解不够深                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：聪明画家，但对衣服不够专注 👨‍🎨                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第四代：FLUX增强（2024-2025）                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：JCo-MVTON（我们的主角！）                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：FLUX + 专门的人物&#x2F;衣服分支                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 优点：人和衣服分别深度理解，完美融合                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：两个专家合作，一个懂人，一个懂衣服 👥                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;vs-jco-mvton-vs-qi-ta-fang-an&quot;&gt;🆚 JCo-MVTON vs 其他方案&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;传统方法&lt;&#x2F;th&gt;&lt;th&gt;IDM-VTON&lt;&#x2F;th&gt;&lt;th&gt;JCo-MVTON&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;底层架构&lt;&#x2F;td&gt;&lt;td&gt;GAN&#x2F;SD&lt;&#x2F;td&gt;&lt;td&gt;SDXL&lt;&#x2F;td&gt;&lt;td&gt;FLUX (更强)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;衣服保真度&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;人体适配&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;复杂图案&lt;&#x2F;td&gt;&lt;td&gt;容易糊&lt;&#x2F;td&gt;&lt;td&gt;还行&lt;&#x2F;td&gt;&lt;td&gt;清晰保留&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文字Logo&lt;&#x2F;td&gt;&lt;td&gt;基本不行&lt;&#x2F;td&gt;&lt;td&gt;勉强&lt;&#x2F;td&gt;&lt;td&gt;可以！&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;推理速度&lt;&#x2F;td&gt;&lt;td&gt;快&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-的核心原理&quot;&gt;JCo-MVTON 的核心原理&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;he-xin-si-xiang-fen-er-zhi-zhi-ge-si-qi-zhi&quot;&gt;🧩 核心思想：分而治之，各司其职&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;lei-bi-zhuan-ye-de-huan-zhuang-tuan-dui&quot;&gt;类比：专业的换装团队&lt;&#x2F;h4&gt;
+&lt;p&gt;想象你去一个超级高端的换装工作室：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                      传统方法 vs JCo-MVTON                          │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  传统方法（一个人干所有活）：                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────┐                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  一个设计师：                                    │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 看人                                        │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 看衣服                                      │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 想怎么搭配                                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 自己动手换装                                │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  问题：精力分散，顾此失彼                        │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────┘                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  JCo-MVTON（专业团队分工）：                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────┐                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  👤 人物专家（extra_to_q&#x2F;k&#x2F;v[0]）               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 专门研究人的体型                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 分析姿势和身材                             │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 确保人物特征完整                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  👔 衣服专家（extra_to_q&#x2F;k&#x2F;v[1]）               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 专门研究衣服细节                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 保留图案、logo、纹理                       │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 确保衣服不变形                             │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  🎨 总设计师（Main Attention）                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 协调人物专家和衣服专家                     │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 整合所有信息                               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 输出最终效果图                             │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────┘                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-yi-ji-yu-flux-de-qiang-da-di-zuo&quot;&gt;🧩 核心技术一：基于 FLUX 的强大底座&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;为什么选 FLUX 而不是 SDXL？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;SDXL（老员工）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解力：单向的，文字告诉图像怎么画
+&lt;&#x2F;span&gt;&lt;span&gt;├── 效率：需要很多步才能画好
+&lt;&#x2F;span&gt;&lt;span&gt;└── 能力：已经很强了
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;FLUX（新员工）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解力：双向的，图像和文字互相讨论
+&lt;&#x2F;span&gt;&lt;span&gt;├── 效率：走直线，更快到达
+&lt;&#x2F;span&gt;&lt;span&gt;├── 能力：更强！特别是文字理解
+&lt;&#x2F;span&gt;&lt;span&gt;└── 额外福利：能画对衣服上的 logo 和文字！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;JCo-MVTON 选择 FLUX 就像：
+&lt;&#x2F;span&gt;&lt;span&gt;选一个更聪明、效率更高的基础员工
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-er-joint-attention-lian-he-zhu-yi-li&quot;&gt;🧩 核心技术二：Joint Attention（联合注意力）&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;lei-bi-san-fang-shi-pin-hui-yi&quot;&gt;类比：三方视频会议&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;想象一个视频会议，三方同时在线：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;参会者：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 👤 人物代表：描述这个人的特征
+&lt;&#x2F;span&gt;&lt;span&gt;├── 👔 衣服代表：描述这件衣服的细节
+&lt;&#x2F;span&gt;&lt;span&gt;└── 📝 文字代表：描述整体需求
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;会议过程：
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ 第 1 轮                                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 人物代表：&amp;quot;这个人身材偏瘦，双手叉腰&amp;quot;                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 衣服代表：&amp;quot;这件衣服是白色T恤，胸前有红色logo&amp;quot;                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 文字代表：&amp;quot;需要把衣服自然地穿到人身上&amp;quot;                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 第 2 轮                                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 人物代表：&amp;quot;我需要知道衣服的具体尺寸感&amp;quot;                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 衣服代表：&amp;quot;我需要知道人的肩宽和胸围&amp;quot;                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│ （互相交换信息）                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│ ...                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 第 19 轮                                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 三方达成共识：知道怎么完美融合了！                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-san-extra-branches-e-wai-fen-zhi&quot;&gt;🧩 核心技术三：Extra Branches（额外分支）&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;lei-bi-zhuan-shu-tong-dao&quot;&gt;类比：专属通道&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;普通 FLUX 的注意力：
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  一条主通道处理所有信息                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── to_q: 提问                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── to_k: 找答案                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── to_v: 获取内容                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  问题：人和衣服的信息混在一起           │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;JCo-MVTON 的注意力：
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  主通道 + 两条专属通道                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  主通道（原有的）：                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── to_q, to_k, to_v                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 处理通用信息                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  人物专属通道：                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── extra_to_q[0]: 人物专属提问        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── extra_to_k[0]: 人物专属索引        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── extra_to_v[0]: 人物专属内容        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  衣服专属通道：                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── extra_to_q[1]: 衣服专属提问        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── extra_to_k[1]: 衣服专属索引        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── extra_to_v[1]: 衣服专属内容        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  好处：人和衣服各有专属理解通道          │
+&lt;&#x2F;span&gt;&lt;span&gt;│        不会互相干扰，理解更深            │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-的架构组成&quot;&gt;JCo-MVTON 的架构组成&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;zheng-ti-jia-gou-tu&quot;&gt;🏗️ 整体架构图&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                        JCo-MVTON Architecture                        │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  输入层（4个输入）                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Noise   │  │  Person  │  │ Garment  │  │   Text Prompt    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ (随机噪声)│  │ (人物图) │  │ (衣服图) │  │ (文字描述)       │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  latent  │  │1024×768  │  │1024×1024 │  │ CLIP + T5-XXL   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────────┬─────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │             │             │                  │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        ┌────▼─────┐  ┌────▼─────┐           │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        │   VAE    │  │   VAE    │           │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        │ Encoder  │  │ Encoder  │           │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        │ (压缩机) │  │ (压缩机) │           │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        └────┬─────┘  └────┬─────┘           │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │             │             │                  │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │        人物latent    衣服latent              │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│       │             │             │                  │              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌────▼─────────────▼─────────────▼──────────────────▼─────┐       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │              FluxTransformer2DModel (MM-DiT)             │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                          │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ┌────────────────────────────────────────────────────┐ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │      19× FluxTransformerBlock (双流注意力块)       │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  ┌──────────────────────────────────────────────┐  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │  Main Attention (主注意力):                  │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    to_q, to_k, to_v → 通用理解              │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │  ───────────────────────────────────────────│  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │  Extra Branches (专属分支):                 │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_q[0]: 人物Query  ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_q[1]: 衣服Query  ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_k[0]: 人物Key    ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_k[1]: 衣服Key    ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_v[0]: 人物Value  ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  │    • extra_to_v[1]: 衣服Value  ◄── LoRA    │  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  └──────────────────────────────────────────────┘  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └────────────────────────────────────────────────────┘ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                          ↓                              │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ┌────────────────────────────────────────────────────┐ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │     38× FluxSingleTransformerBlock (单流块)       │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │     (同样的 extra_to_q&#x2F;k&#x2F;v 结构)                  │ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └────────────────────────────────────────────────────┘ │       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────────────┬──────────────────────────────┘       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                             │                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        ┌────▼─────┐                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │   VAE    │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │ Decoder  │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │ (解压机) │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        └────┬─────┘                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                             │                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        ┌────▼─────┐                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │  Output  │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │ 穿上衣服 │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │ 的人物图 │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │1024×768  │                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        └──────────┘                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wrench-ge-zu-jian-xiang-jie&quot;&gt;🔧 各组件详解&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;1-shu-ru-ceng-si-da-jin-gang&quot;&gt;1️⃣ 输入层：四大金刚&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                           四大输入                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  1. 🎲 Noise（噪声）                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 是什么：随机的&amp;quot;雪花点&amp;quot;                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 作用：作为画布的&amp;quot;底稿&amp;quot;                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：一块还没雕刻的大理石                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2. 👤 Person（人物图）                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 是什么：要试穿衣服的人的照片                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 尺寸：1024×768（竖版人像）                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 要求：清晰、正面或侧面、最好背景简单                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：需要换装的模特                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  3. 👔 Garment（衣服图）                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 是什么：要穿上的衣服的照片                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 尺寸：1024×1024（正方形展示图）                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 要求：平铺或模特图、清晰、完整                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：衣架上展示的新衣服                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  4. 📝 Text Prompt（文字描述）                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 是什么：对穿搭效果的文字描述                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 作用：指导整体风格和细节                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 例子：&amp;quot;A woman wearing a white t-shirt, casual style&amp;quot;         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：给换装师的口头指示                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;2-vae-tu-pian-de-ya-suo-jie-ya-ji&quot;&gt;2️⃣ VAE：图片的压缩&#x2F;解压机&lt;&#x2F;h4&gt;
+&lt;p&gt;&lt;strong&gt;类比：行李打包&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;原始图片太大，直接处理会爆炸！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;VAE Encoder（打包）：
+&lt;&#x2F;span&gt;&lt;span&gt;原图 1024×768×3 = 236万个数字
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ 压缩
+&lt;&#x2F;span&gt;&lt;span&gt;latent 128×96×16 = 19.6万个数字
+&lt;&#x2F;span&gt;&lt;span&gt;（体积缩小到 1&#x2F;12！）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;VAE Decoder（解包）：
+&lt;&#x2F;span&gt;&lt;span&gt;latent 128×96×16
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ 解压
+&lt;&#x2F;span&gt;&lt;span&gt;输出图 1024×768×3 = 还原成高清大图
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;类比：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 你有一个巨大的行李箱（原图）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 用真空袋压缩（VAE Encoder）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 轻松搬运（在 latent 空间处理）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 到达后打开真空袋（VAE Decoder）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;3-text-encoder-wen-zi-fan-yi-guan&quot;&gt;3️⃣ Text Encoder：文字翻译官&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;JCo-MVTON 继承 FLUX 的双翻译官配置：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                        文字编码器                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  CLIP-L（快速理解）                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 输入：&amp;quot;A woman wearing white t-shirt&amp;quot;                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 输出：77个词 × 768维 的向量                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 特点：快速抓住大意                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  T5-XXL（深度理解）                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 输入：同上                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 输出：512个词 × 4096维 的向量                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 特点：理解每个细节、语法关系                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  两者配合 = 既快又准                                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;4-extra-branches-lora-jco-mvton-de-mi-mi-wu-qi&quot;&gt;4️⃣ Extra Branches + LoRA：JCo-MVTON 的秘密武器&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                   Extra Branches 详解                                │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  原版 FLUX 的 Attention：                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────────────────────┐                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  to_q (Query)  ──┐                    │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  to_k (Key)    ──┼── 标准注意力      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  to_v (Value)  ──┘                    │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  功能：通用的图文理解                 │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───────────────────────────────────────┘                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  JCo-MVTON 新增的分支：                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────────────────────┐                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  人物分支 [0]：                        │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── extra_to_q[0]: 人物专属提问      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │   &amp;quot;这个人的肩膀在哪里？&amp;quot;           │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── extra_to_k[0]: 人物专属索引      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │   &amp;quot;人物特征标签库&amp;quot;                 │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── extra_to_v[0]: 人物专属内容      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │       &amp;quot;人物的具体像素信息&amp;quot;            │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───────────────────────────────────────┘                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────────────────────┐                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  衣服分支 [1]：                        │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── extra_to_q[1]: 衣服专属提问      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │   &amp;quot;这件衣服的logo在哪里？&amp;quot;         │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── extra_to_k[1]: 衣服专属索引      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │   &amp;quot;衣服特征标签库&amp;quot;                 │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── extra_to_v[1]: 衣服专属内容      │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │       &amp;quot;衣服的具体纹理信息&amp;quot;            │                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───────────────────────────────────────┘                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  为什么用 LoRA？                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 不需要重新训练整个 FLUX（太贵！）                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 只训练这些新增的小分支                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 参数量小，训练快                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 可以随时&amp;quot;插拔&amp;quot;，不影响原模型                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-如何工作&quot;&gt;JCo-MVTON 如何工作&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;clapper-lei-bi-yi-chang-wan-mei-de-huan-zhuang-xiu&quot;&gt;🎬 类比：一场完美的换装秀&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     JCo-MVTON 工作全流程                             │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 1: 准备阶段（输入处理）                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  📷 人物图 → VAE压缩 → 人物latent（行李打包）                │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  👔 衣服图 → VAE压缩 → 衣服latent（行李打包）                │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  📝 文字 → CLIP+T5 → 文字embedding（理解意图）               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  🎲 生成随机噪声 → 初始latent（空白画布）                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                              ↓                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 2: 开会阶段（19轮双流Transformer）                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第1轮会议：                                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 人物专家 via extra[0]：&amp;quot;人物身材是这样的...&amp;quot;            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 衣服专家 via extra[1]：&amp;quot;衣服细节是这样的...&amp;quot;            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 文字指导 via main：&amp;quot;整体风格要休闲...&amp;quot;                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 互相交换信息，初步理解                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第2轮会议：                                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 人物专家：&amp;quot;了解了衣服尺寸，我来调整姿势适配&amp;quot;            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 衣服专家：&amp;quot;了解了人物体型，我来调整衣服形态&amp;quot;            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ... 第3-19轮 ...                                             │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第19轮：大家完全达成共识！                                   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                              ↓                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 3: 执行阶段（38轮单流Transformer）                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  把会议共识转化为具体像素：                                   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 确定每个位置应该画什么                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 融合人物和衣服的特征                                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 逐步去除噪声，图像越来越清晰                            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                              ↓                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 4: 输出阶段（VAE解码）                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  latent结果 → VAE解压 → 1024×768高清大图                     │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  🎉 完美的换装效果！                                          │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bar-chart-qu-zao-guo-cheng-ke-shi-hua&quot;&gt;📊 去噪过程可视化&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;时间步 t 从 1.0 到 0.0：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;t=1.0  ████████████████████  纯噪声（电视雪花）
+&lt;&#x2F;span&gt;&lt;span&gt;t=0.8  ████░░░░░░░░░░░░░░░░  开始有轮廓
+&lt;&#x2F;span&gt;&lt;span&gt;t=0.6  ████████░░░░░░░░░░░░  人和衣服形状出现
+&lt;&#x2F;span&gt;&lt;span&gt;t=0.4  ████████████░░░░░░░░  细节开始清晰
+&lt;&#x2F;span&gt;&lt;span&gt;t=0.2  ████████████████░░░░  衣服纹理出现
+&lt;&#x2F;span&gt;&lt;span&gt;t=0.0  ████████████████████  完美的换装图！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;每一步：
+&lt;&#x2F;span&gt;&lt;span&gt;1. 模型看当前图 + 所有条件
+&lt;&#x2F;span&gt;&lt;span&gt;2. 预测&amp;quot;这一步应该往哪个方向走&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;3. 朝着清晰图片的方向走一小步
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-的训练&quot;&gt;JCo-MVTON 的训练&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;mortar-board-xun-lian-jiao-ai-cheng-wei-huan-zhuang-da-shi&quot;&gt;🎓 训练 = 教 AI 成为换装大师&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;lei-bi-pei-yang-yi-ge-huan-zhuang-shi&quot;&gt;类比：培养一个换装师&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     JCo-MVTON 训练过程                               │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📚 教材准备（数据集）：                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  VITON-HD &#x2F; DressCode 数据集                                 │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  每个样本包含：                                               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 人物原图（穿着某件衣服）                                │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 衣服单独图（平铺展示）                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 人物解析图（哪里是头、身体、手...）                     │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 姿势骨架图（人的姿势）                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── DensePose（3D身体表面）                                 │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 衣服描述文字                                            │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  数量：约 13,000 对训练数据                                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🏋️ 训练过程（每一步）：                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  1. 拿一对真实的&amp;quot;人物-衣服&amp;quot;数据                              │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  2. 给真实效果图加随机噪声（模拟&amp;quot;弄脏&amp;quot;）                     │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  3. 让 AI 猜：怎么去掉噪声？                                 │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  4. 对比 AI 的猜测和正确答案                                 │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  5. 计算误差，调整 Extra Branches 的 LoRA 参数               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  6. 重复 50,000+ 次                                          │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎓 毕业标准：                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 能准确还原衣服细节（logo、图案、纹理）                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 能自然适配人物体型（不变形、不穿帮）                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 能处理各种姿势（正面、侧面、动态）                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;chart-with-downwards-trend-xun-lian-pei-zhi-shi-li&quot;&gt;📉 训练配置示例&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# JCo-MVTON 训练配置
+&lt;&#x2F;span&gt;&lt;span&gt;training_config = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 基础设置
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;base_model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;black-forest-labs&#x2F;FLUX.1-dev&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;resolution&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1024&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;768&lt;&#x2F;span&gt;&lt;span&gt;),  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 人物图尺寸
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;garment_resolution&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1024&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1024&lt;&#x2F;span&gt;&lt;span&gt;),  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 衣服图尺寸
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# LoRA 设置（只训练 Extra Branches）
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;lora_rank&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;16&lt;&#x2F;span&gt;&lt;span&gt;,            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 额外分支的表达能力
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;lora_alpha&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;16&lt;&#x2F;span&gt;&lt;span&gt;,           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 缩放因子
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;target_modules&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 训练目标
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;extra_to_q&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 6 个额外的 Q 投影
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;extra_to_k&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 6 个额外的 K 投影
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;extra_to_v&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 6 个额外的 V 投影
+&lt;&#x2F;span&gt;&lt;span&gt;    ],
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 优化器设置
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;learning_rate&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1e-4&lt;&#x2F;span&gt;&lt;span&gt;,      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 学习率
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;optimizer&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AdamW8bit&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 8bit优化器省显存
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;batch_size&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4&lt;&#x2F;span&gt;&lt;span&gt;,            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 批次大小
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_steps&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50000&lt;&#x2F;span&gt;&lt;span&gt;,         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 总步数
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 精度设置
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mixed_precision&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bf16&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 混合精度
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gradient_checkpointing&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 检查点节省显存
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wrench-shu-ju-yu-chu-li-liu-cheng&quot;&gt;🔧 数据预处理流程&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;原始图片
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  1. Human Parsing（人体解析）                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 工具：Graphonomy &#x2F; SCHP                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 输出：分割图（头=1, 上衣=4, 裤子=6...）           │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  2. Pose Estimation（姿势估计）                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 工具：DWPose &#x2F; OpenPose                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 输出：18&#x2F;25个关键点坐标                           │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  3. DensePose（密集姿态）                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 工具：Detectron2 DensePose                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 输出：每个像素对应身体哪个部位的3D坐标            │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  4. Agnostic Mask（衣服无关蒙版）                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 保留：脸、头发、手、裤子                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 遮盖：上衣区域（待替换）                           │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;处理完成！准备训练
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jco-mvton-的扩展与应用&quot;&gt;JCo-MVTON 的扩展与应用&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;electric-plug-ke-kuo-zhan-de-fang-xiang&quot;&gt;🔌 可扩展的方向&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     JCo-MVTON 扩展生态                               │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  👔 多品类扩展                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 上装试穿（T恤、衬衫、外套...）✅ 已支持                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 下装试穿（裤子、裙子...）→ 添加下装 extra 分支                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 全身套装 → 添加套装 extra 分支                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 配饰（帽子、包包...）→ 添加配饰 extra 分支                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📐 姿势控制增强                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── + ControlNet：精确控制人物姿势                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── + DensePose Conditioning：更精准的身体适配                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── + 骨架引导：让模特摆出指定动作                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎨 风格控制                                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── + IP-Adapter：参考图风格迁移                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── + LoRA 风格：特定摄影风格                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── + 场景融合：换背景 + 换装同时进行                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎬 视频扩展                                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 单帧 → 视频：添加时序一致性模块                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 动态试穿：人物走动时的换装效果                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 360° 展示：多角度旋转展示                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;dart-shi-ji-ying-yong-chang-jing&quot;&gt;🎯 实际应用场景&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;描述&lt;&#x2F;th&gt;&lt;th&gt;业务价值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;电商平台&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;用户上传照片试穿商品&lt;&#x2F;td&gt;&lt;td&gt;提升转化率 30%+&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;服装设计&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;快速预览设计效果&lt;&#x2F;td&gt;&lt;td&gt;节省打样成本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;社交媒体&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;虚拟换装滤镜&lt;&#x2F;td&gt;&lt;td&gt;增加用户互动&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;直播带货&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;主播实时换装展示&lt;&#x2F;td&gt;&lt;td&gt;提升观看体验&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;线下门店&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;AR 试衣镜&lt;&#x2F;td&gt;&lt;td&gt;减少试衣间排队&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;总结与速查卡&quot;&gt;总结与速查卡&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;books-jco-mvton-yi-tu-kan-dong&quot;&gt;📚 JCo-MVTON 一图看懂&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     JCo-MVTON 速查卡                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎯 核心任务：人物图 + 衣服图 → 穿上衣服的人物图                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🧠 核心创新：                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 基于 FLUX：更强的底层能力                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── Extra Branches：人物&#x2F;衣服专属理解通道                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── Joint Attention：三方（人+衣+文字）深度交流                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── LoRA 训练：高效、可插拔                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🔧 架构组成：                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── VAE：图片压缩&#x2F;解压（1&#x2F;12 体积）                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── CLIP + T5：文字理解                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 19× FluxTransformerBlock：双流深度交流                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 38× FluxSingleTransformerBlock：执行生成                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── Extra Branches × 2：人物分支 + 衣服分支                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📊 关键参数：                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 输入分辨率：Person 1024×768, Garment 1024×1024                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── LoRA Rank：16（默认）                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 学习率：1e-4                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 训练步数：50,000+                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 推理步数：28-50                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  💡 适用场景：                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 电商试穿 ✅                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 服装设计预览 ✅                                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 社交滤镜 ✅                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── AR 试衣镜 ✅                                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;vs-fang-an-dui-bi-su-cha&quot;&gt;🆚 方案对比速查&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方案&lt;&#x2F;th&gt;&lt;th&gt;底座&lt;&#x2F;th&gt;&lt;th&gt;衣服保真&lt;&#x2F;th&gt;&lt;th&gt;人体适配&lt;&#x2F;th&gt;&lt;th&gt;复杂图案&lt;&#x2F;th&gt;&lt;th&gt;训练成本&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;CP-VTON&lt;&#x2F;td&gt;&lt;td&gt;变形网络&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;td&gt;💰&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;HR-VITON&lt;&#x2F;td&gt;&lt;td&gt;GAN&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;💰💰&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;IDM-VTON&lt;&#x2F;td&gt;&lt;td&gt;SDXL&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;💰💰💰&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;JCo-MVTON&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;FLUX&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;💰💰💰&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;mortar-board-xue-xi-lu-jing-jian-yi&quot;&gt;🎓 学习路径建议&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;阶段&lt;&#x2F;th&gt;&lt;th&gt;目标&lt;&#x2F;th&gt;&lt;th&gt;推荐行动&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;入门&lt;&#x2F;td&gt;&lt;td&gt;理解虚拟试衣是什么&lt;&#x2F;td&gt;&lt;td&gt;玩现有的试衣 Demo&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;基础&lt;&#x2F;td&gt;&lt;td&gt;理解 FLUX 原理&lt;&#x2F;td&gt;&lt;td&gt;先看我的 &lt;a href=&quot;&#x2F;flux-complete-guide-for-beginners&quot;&gt;FLUX 指南&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;进阶&lt;&#x2F;td&gt;&lt;td&gt;理解 JCo-MVTON 架构&lt;&#x2F;td&gt;&lt;td&gt;阅读本指南 + 源码&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;实践&lt;&#x2F;td&gt;&lt;td&gt;能跑通训练流程&lt;&#x2F;td&gt;&lt;td&gt;准备数据、训练 LoRA&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;深入&lt;&#x2F;td&gt;&lt;td&gt;能扩展新功能&lt;&#x2F;td&gt;&lt;td&gt;添加新品类、优化性能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;希望这篇指南能帮你全面理解 JCo-MVTON！虚拟试衣是一个非常有商业价值的方向，掌握了这些核心概念，你就能在这个领域快速上手。&lt;&#x2F;p&gt;
+&lt;p&gt;如果有任何问题，欢迎在评论区讨论！🚀&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

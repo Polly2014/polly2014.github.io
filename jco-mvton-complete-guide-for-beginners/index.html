@@ -1,0 +1,556 @@
+<!doctype html><html><head><title>👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析</title><meta content="用最通俗的类比，全面讲解 JCo-MVTON 虚拟试衣模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架，理解如何让 AI 完美地把衣服'穿'到任意人身上。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/jco-mvton-complete-guide-for-beginners/ property=og:url><meta content="👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析" property=og:title><meta content="用最通俗的类比，全面讲解 JCo-MVTON 虚拟试衣模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架，理解如何让 AI 完美地把衣服'穿'到任意人身上。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/jco-mvton-complete-guide-for-beginners/ name=twitter:url><meta content="👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析" name=twitter:title><meta content="用最通俗的类比，全面讲解 JCo-MVTON 虚拟试衣模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架，理解如何让 AI 完美地把衣服'穿'到任意人身上。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-01-23T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=VTON property=article:tag><meta content=虚拟试衣 property=article:tag><meta content=FLUX property=article:tag><meta content="Diffusion Model" property=article:tag><meta content=LoRA property=article:tag><meta content=图像生成 property=article:tag><meta content=AI换装 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析</h1><div style="text-align:center;margin:1.5em 0 2em 0" class=cover-image><img alt="👔 JCo-MVTON 完全指南：从小白到入门的深入浅出解析" style="max-width:60%;max-height:350px;width:auto;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:none" loading=lazy src=cover.jpg></div><div class=content><p>最近在做虚拟试衣（Virtual Try-On）项目时，我深入研究了 JCo-MVTON 这个基于 FLUX 的新一代架构。网上关于 VTON 的资料要么过于学术化，要么只讲旧方案，对于最新的 FLUX-based 方案几乎没有系统讲解。<p>于是我决定写这篇"小白友好"的完全指南——用大量的类比来解释复杂的概念，让你即使没有深度学习背景，也能理解 JCo-MVTON 是什么、怎么工作、如何训练和扩展。<hr><h2 id=blue-mu-lu>📖 目录</h2><ol><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E6%98%AF%E4%BB%80%E4%B9%88>JCo-MVTON 是什么？</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#%E8%99%9A%E6%8B%9F%E8%AF%95%E8%A1%A3%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F>虚拟试衣的前世今生</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86>JCo-MVTON 的核心原理</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E7%9A%84%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90>JCo-MVTON 的架构组成</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C>JCo-MVTON 如何工作</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E7%9A%84%E8%AE%AD%E7%BB%83>JCo-MVTON 的训练</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#jco-mvton-%E7%9A%84%E6%89%A9%E5%B1%95%E4%B8%8E%E5%BA%94%E7%94%A8>JCo-MVTON 的扩展与应用</a><li><a href=https://polly.wang/jco-mvton-complete-guide-for-beginners/#%E6%80%BB%E7%BB%93%E4%B8%8E%E9%80%9F%E6%9F%A5%E5%8D%A1>总结与速查卡</a></ol><hr><h2 id=jco-mvton-是什么>JCo-MVTON 是什么？</h2><h3 id=yi-ju-hua-ban-ben>一句话版本</h3><blockquote><p><strong>JCo-MVTON = 一个超级智能的"AI 换装师"，能把任意衣服完美"穿"到任意人身上。</strong></blockquote><h3 id=house-lei-bi-xiang-xiang-yi-ge-shen-qi-de-shi-yi-jian>🏠 类比：想象一个神奇的试衣间</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>传统网购：
+</span><span>├── 看模特穿的效果图
+</span><span>├── 猜自己穿上什么样
+</span><span>├── 买回来发现不合适
+</span><span>└── 退货！😭
+</span><span>
+</span><span>JCo-MVTON：
+</span><span>├── 上传你的照片
+</span><span>├── 选择喜欢的衣服
+</span><span>├── AI 直接生成你穿上的效果
+</span><span>└── 完美！买买买！🎉
+</span></code></pre><h3 id=dart-ming-zi-chai-jie>🎯 名字拆解</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>JCo-MVTON = Joint Conditional Multi-View Try-On Network
+</span><span>
+</span><span>Joint（联合）: 人和衣服一起处理
+</span><span>Conditional（条件）: 根据条件（姿势、体型）生成
+</span><span>Multi-View（多视角）: 支持不同角度
+</span><span>Try-On（试穿）: 核心功能
+</span><span>Network（网络）: 神经网络
+</span></code></pre><hr><h2 id=虚拟试衣的前世今生>虚拟试衣的前世今生</h2><h3 id=scroll-ji-zhu-jin-hua-shi>📜 技术进化史</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                     虚拟试衣技术进化史                               │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  第一代：图像变形（2018-2020）                                       │
+</span><span>│  ├── 代表：CP-VTON, VITON                                           │
+</span><span>│  ├── 方法：把衣服"扭"到人身上                                       │
+</span><span>│  ├── 问题：像贴纸一样，很假                                         │
+</span><span>│  └── 类比：硬把衣服贴纸贴在照片上 📄                                │
+</span><span>│                                                                      │
+</span><span>│  第二代：GAN生成（2020-2022）                                       │
+</span><span>│  ├── 代表：HR-VITON, VITON-HD                                       │
+</span><span>│  ├── 方法：用对抗网络生成                                           │
+</span><span>│  ├── 问题：衣服细节丢失，容易模糊                                   │
+</span><span>│  └── 类比：画家凭记忆画，细节不够 🎨                                │
+</span><span>│                                                                      │
+</span><span>│  第三代：扩散模型（2023-2024）                                       │
+</span><span>│  ├── 代表：IDM-VTON, LaDI-VTON, StableVITON                         │
+</span><span>│  ├── 方法：基于SD/SDXL的扩散生成                                    │
+</span><span>│  ├── 优点：质量高，但衣服理解不够深                                 │
+</span><span>│  └── 类比：聪明画家，但对衣服不够专注 👨‍🎨                         │
+</span><span>│                                                                      │
+</span><span>│  第四代：FLUX增强（2024-2025）                                      │
+</span><span>│  ├── 代表：JCo-MVTON（我们的主角！）                                │
+</span><span>│  ├── 方法：FLUX + 专门的人物/衣服分支                               │
+</span><span>│  ├── 优点：人和衣服分别深度理解，完美融合                           │
+</span><span>│  └── 类比：两个专家合作，一个懂人，一个懂衣服 👥                   │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=vs-jco-mvton-vs-qi-ta-fang-an>🆚 JCo-MVTON vs 其他方案</h3><table><thead><tr><th>特性<th>传统方法<th>IDM-VTON<th>JCo-MVTON<tbody><tr><td>底层架构<td>GAN/SD<td>SDXL<td>FLUX (更强)<tr><td>衣服保真度<td>⭐⭐<td>⭐⭐⭐<td>⭐⭐⭐⭐⭐<tr><td>人体适配<td>⭐⭐<td>⭐⭐⭐⭐<td>⭐⭐⭐⭐⭐<tr><td>复杂图案<td>容易糊<td>还行<td>清晰保留<tr><td>文字Logo<td>基本不行<td>勉强<td>可以！<tr><td>推理速度<td>快<td>中等<td>中等</table><hr><h2 id=jco-mvton-的核心原理>JCo-MVTON 的核心原理</h2><h3 id=he-xin-si-xiang-fen-er-zhi-zhi-ge-si-qi-zhi>🧩 核心思想：分而治之，各司其职</h3><h4 id=lei-bi-zhuan-ye-de-huan-zhuang-tuan-dui>类比：专业的换装团队</h4><p>想象你去一个超级高端的换装工作室：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                      传统方法 vs JCo-MVTON                          │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  传统方法（一个人干所有活）：                                        │
+</span><span>│  ┌─────────────────────────────────────────────────┐                │
+</span><span>│  │  一个设计师：                                    │                │
+</span><span>│  │  ├── 看人                                        │                │
+</span><span>│  │  ├── 看衣服                                      │                │
+</span><span>│  │  ├── 想怎么搭配                                  │                │
+</span><span>│  │  └── 自己动手换装                                │                │
+</span><span>│  │  问题：精力分散，顾此失彼                        │                │
+</span><span>│  └─────────────────────────────────────────────────┘                │
+</span><span>│                                                                      │
+</span><span>│  JCo-MVTON（专业团队分工）：                                         │
+</span><span>│  ┌─────────────────────────────────────────────────┐                │
+</span><span>│  │  👤 人物专家（extra_to_q/k/v[0]）               │                │
+</span><span>│  │  ├── 专门研究人的体型                           │                │
+</span><span>│  │  ├── 分析姿势和身材                             │                │
+</span><span>│  │  └── 确保人物特征完整                           │                │
+</span><span>│  │                                                  │                │
+</span><span>│  │  👔 衣服专家（extra_to_q/k/v[1]）               │                │
+</span><span>│  │  ├── 专门研究衣服细节                           │                │
+</span><span>│  │  ├── 保留图案、logo、纹理                       │                │
+</span><span>│  │  └── 确保衣服不变形                             │                │
+</span><span>│  │                                                  │                │
+</span><span>│  │  🎨 总设计师（Main Attention）                  │                │
+</span><span>│  │  ├── 协调人物专家和衣服专家                     │                │
+</span><span>│  │  ├── 整合所有信息                               │                │
+</span><span>│  │  └── 输出最终效果图                             │                │
+</span><span>│  └─────────────────────────────────────────────────┘                │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=he-xin-ji-zhu-yi-ji-yu-flux-de-qiang-da-di-zuo>🧩 核心技术一：基于 FLUX 的强大底座</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>为什么选 FLUX 而不是 SDXL？
+</span><span>
+</span><span>SDXL（老员工）：
+</span><span>├── 理解力：单向的，文字告诉图像怎么画
+</span><span>├── 效率：需要很多步才能画好
+</span><span>└── 能力：已经很强了
+</span><span>
+</span><span>FLUX（新员工）：
+</span><span>├── 理解力：双向的，图像和文字互相讨论
+</span><span>├── 效率：走直线，更快到达
+</span><span>├── 能力：更强！特别是文字理解
+</span><span>└── 额外福利：能画对衣服上的 logo 和文字！
+</span><span>
+</span><span>JCo-MVTON 选择 FLUX 就像：
+</span><span>选一个更聪明、效率更高的基础员工
+</span></code></pre><h3 id=he-xin-ji-zhu-er-joint-attention-lian-he-zhu-yi-li>🧩 核心技术二：Joint Attention（联合注意力）</h3><h4 id=lei-bi-san-fang-shi-pin-hui-yi>类比：三方视频会议</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>想象一个视频会议，三方同时在线：
+</span><span>
+</span><span>参会者：
+</span><span>├── 👤 人物代表：描述这个人的特征
+</span><span>├── 👔 衣服代表：描述这件衣服的细节
+</span><span>└── 📝 文字代表：描述整体需求
+</span><span>
+</span><span>会议过程：
+</span><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│ 第 1 轮                                                              │
+</span><span>│ 人物代表："这个人身材偏瘦，双手叉腰"                                │
+</span><span>│ 衣服代表："这件衣服是白色T恤，胸前有红色logo"                       │
+</span><span>│ 文字代表："需要把衣服自然地穿到人身上"                              │
+</span><span>│                                                                      │
+</span><span>│ 第 2 轮                                                              │
+</span><span>│ 人物代表："我需要知道衣服的具体尺寸感"                              │
+</span><span>│ 衣服代表："我需要知道人的肩宽和胸围"                                │
+</span><span>│ （互相交换信息）                                                     │
+</span><span>│                                                                      │
+</span><span>│ ...                                                                  │
+</span><span>│                                                                      │
+</span><span>│ 第 19 轮                                                             │
+</span><span>│ 三方达成共识：知道怎么完美融合了！                                   │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=he-xin-ji-zhu-san-extra-branches-e-wai-fen-zhi>🧩 核心技术三：Extra Branches（额外分支）</h3><h4 id=lei-bi-zhuan-shu-tong-dao>类比：专属通道</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>普通 FLUX 的注意力：
+</span><span>┌─────────────────────────────────────────┐
+</span><span>│  一条主通道处理所有信息                  │
+</span><span>│  ├── to_q: 提问                         │
+</span><span>│  ├── to_k: 找答案                       │
+</span><span>│  └── to_v: 获取内容                     │
+</span><span>│  问题：人和衣服的信息混在一起           │
+</span><span>└─────────────────────────────────────────┘
+</span><span>
+</span><span>JCo-MVTON 的注意力：
+</span><span>┌─────────────────────────────────────────┐
+</span><span>│  主通道 + 两条专属通道                   │
+</span><span>│                                          │
+</span><span>│  主通道（原有的）：                      │
+</span><span>│  ├── to_q, to_k, to_v                   │
+</span><span>│  └── 处理通用信息                       │
+</span><span>│                                          │
+</span><span>│  人物专属通道：                          │
+</span><span>│  ├── extra_to_q[0]: 人物专属提问        │
+</span><span>│  ├── extra_to_k[0]: 人物专属索引        │
+</span><span>│  └── extra_to_v[0]: 人物专属内容        │
+</span><span>│                                          │
+</span><span>│  衣服专属通道：                          │
+</span><span>│  ├── extra_to_q[1]: 衣服专属提问        │
+</span><span>│  ├── extra_to_k[1]: 衣服专属索引        │
+</span><span>│  └── extra_to_v[1]: 衣服专属内容        │
+</span><span>│                                          │
+</span><span>│  好处：人和衣服各有专属理解通道          │
+</span><span>│        不会互相干扰，理解更深            │
+</span><span>└─────────────────────────────────────────┘
+</span></code></pre><hr><h2 id=jco-mvton-的架构组成>JCo-MVTON 的架构组成</h2><h3 id=zheng-ti-jia-gou-tu>🏗️ 整体架构图</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                        JCo-MVTON Architecture                        │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  输入层（4个输入）                                                   │
+</span><span>│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐    │
+</span><span>│  │  Noise   │  │  Person  │  │ Garment  │  │   Text Prompt    │    │
+</span><span>│  │ (随机噪声)│  │ (人物图) │  │ (衣服图) │  │ (文字描述)       │    │
+</span><span>│  │  latent  │  │1024×768  │  │1024×1024 │  │ CLIP + T5-XXL   │    │
+</span><span>│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────────┬─────────┘    │
+</span><span>│       │             │             │                  │              │
+</span><span>│       │        ┌────▼─────┐  ┌────▼─────┐           │              │
+</span><span>│       │        │   VAE    │  │   VAE    │           │              │
+</span><span>│       │        │ Encoder  │  │ Encoder  │           │              │
+</span><span>│       │        │ (压缩机) │  │ (压缩机) │           │              │
+</span><span>│       │        └────┬─────┘  └────┬─────┘           │              │
+</span><span>│       │             │             │                  │              │
+</span><span>│       │        人物latent    衣服latent              │              │
+</span><span>│       │             │             │                  │              │
+</span><span>│  ┌────▼─────────────▼─────────────▼──────────────────▼─────┐       │
+</span><span>│  │              FluxTransformer2DModel (MM-DiT)             │       │
+</span><span>│  │                                                          │       │
+</span><span>│  │  ┌────────────────────────────────────────────────────┐ │       │
+</span><span>│  │  │      19× FluxTransformerBlock (双流注意力块)       │ │       │
+</span><span>│  │  │  ┌──────────────────────────────────────────────┐  │ │       │
+</span><span>│  │  │  │  Main Attention (主注意力):                  │  │ │       │
+</span><span>│  │  │  │    to_q, to_k, to_v → 通用理解              │  │ │       │
+</span><span>│  │  │  │  ───────────────────────────────────────────│  │ │       │
+</span><span>│  │  │  │  Extra Branches (专属分支):                 │  │ │       │
+</span><span>│  │  │  │    • extra_to_q[0]: 人物Query  ◄── LoRA    │  │ │       │
+</span><span>│  │  │  │    • extra_to_q[1]: 衣服Query  ◄── LoRA    │  │ │       │
+</span><span>│  │  │  │    • extra_to_k[0]: 人物Key    ◄── LoRA    │  │ │       │
+</span><span>│  │  │  │    • extra_to_k[1]: 衣服Key    ◄── LoRA    │  │ │       │
+</span><span>│  │  │  │    • extra_to_v[0]: 人物Value  ◄── LoRA    │  │ │       │
+</span><span>│  │  │  │    • extra_to_v[1]: 衣服Value  ◄── LoRA    │  │ │       │
+</span><span>│  │  │  └──────────────────────────────────────────────┘  │ │       │
+</span><span>│  │  └────────────────────────────────────────────────────┘ │       │
+</span><span>│  │                          ↓                              │       │
+</span><span>│  │  ┌────────────────────────────────────────────────────┐ │       │
+</span><span>│  │  │     38× FluxSingleTransformerBlock (单流块)       │ │       │
+</span><span>│  │  │     (同样的 extra_to_q/k/v 结构)                  │ │       │
+</span><span>│  │  └────────────────────────────────────────────────────┘ │       │
+</span><span>│  └──────────────────────────┬──────────────────────────────┘       │
+</span><span>│                             │                                       │
+</span><span>│                        ┌────▼─────┐                                 │
+</span><span>│                        │   VAE    │                                 │
+</span><span>│                        │ Decoder  │                                 │
+</span><span>│                        │ (解压机) │                                 │
+</span><span>│                        └────┬─────┘                                 │
+</span><span>│                             │                                       │
+</span><span>│                        ┌────▼─────┐                                 │
+</span><span>│                        │  Output  │                                 │
+</span><span>│                        │ 穿上衣服 │                                 │
+</span><span>│                        │ 的人物图 │                                 │
+</span><span>│                        │1024×768  │                                 │
+</span><span>│                        └──────────┘                                 │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=wrench-ge-zu-jian-xiang-jie>🔧 各组件详解</h3><h4 id=1-shu-ru-ceng-si-da-jin-gang>1️⃣ 输入层：四大金刚</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                           四大输入                                   │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  1. 🎲 Noise（噪声）                                                │
+</span><span>│  ├── 是什么：随机的"雪花点"                                        │
+</span><span>│  ├── 作用：作为画布的"底稿"                                        │
+</span><span>│  └── 类比：一块还没雕刻的大理石                                    │
+</span><span>│                                                                      │
+</span><span>│  2. 👤 Person（人物图）                                             │
+</span><span>│  ├── 是什么：要试穿衣服的人的照片                                  │
+</span><span>│  ├── 尺寸：1024×768（竖版人像）                                    │
+</span><span>│  ├── 要求：清晰、正面或侧面、最好背景简单                          │
+</span><span>│  └── 类比：需要换装的模特                                          │
+</span><span>│                                                                      │
+</span><span>│  3. 👔 Garment（衣服图）                                            │
+</span><span>│  ├── 是什么：要穿上的衣服的照片                                    │
+</span><span>│  ├── 尺寸：1024×1024（正方形展示图）                               │
+</span><span>│  ├── 要求：平铺或模特图、清晰、完整                                │
+</span><span>│  └── 类比：衣架上展示的新衣服                                      │
+</span><span>│                                                                      │
+</span><span>│  4. 📝 Text Prompt（文字描述）                                      │
+</span><span>│  ├── 是什么：对穿搭效果的文字描述                                  │
+</span><span>│  ├── 作用：指导整体风格和细节                                      │
+</span><span>│  ├── 例子："A woman wearing a white t-shirt, casual style"         │
+</span><span>│  └── 类比：给换装师的口头指示                                      │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h4 id=2-vae-tu-pian-de-ya-suo-jie-ya-ji>2️⃣ VAE：图片的压缩/解压机</h4><p><strong>类比：行李打包</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>原始图片太大，直接处理会爆炸！
+</span><span>
+</span><span>VAE Encoder（打包）：
+</span><span>原图 1024×768×3 = 236万个数字
+</span><span>    ↓ 压缩
+</span><span>latent 128×96×16 = 19.6万个数字
+</span><span>（体积缩小到 1/12！）
+</span><span>
+</span><span>VAE Decoder（解包）：
+</span><span>latent 128×96×16
+</span><span>    ↓ 解压
+</span><span>输出图 1024×768×3 = 还原成高清大图
+</span><span>
+</span><span>类比：
+</span><span>├── 你有一个巨大的行李箱（原图）
+</span><span>├── 用真空袋压缩（VAE Encoder）
+</span><span>├── 轻松搬运（在 latent 空间处理）
+</span><span>└── 到达后打开真空袋（VAE Decoder）
+</span></code></pre><h4 id=3-text-encoder-wen-zi-fan-yi-guan>3️⃣ Text Encoder：文字翻译官</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>JCo-MVTON 继承 FLUX 的双翻译官配置：
+</span><span>
+</span><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                        文字编码器                                    │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  CLIP-L（快速理解）                                                  │
+</span><span>│  ├── 输入："A woman wearing white t-shirt"                         │
+</span><span>│  ├── 输出：77个词 × 768维 的向量                                   │
+</span><span>│  └── 特点：快速抓住大意                                            │
+</span><span>│                                                                      │
+</span><span>│  T5-XXL（深度理解）                                                  │
+</span><span>│  ├── 输入：同上                                                     │
+</span><span>│  ├── 输出：512个词 × 4096维 的向量                                 │
+</span><span>│  └── 特点：理解每个细节、语法关系                                  │
+</span><span>│                                                                      │
+</span><span>│  两者配合 = 既快又准                                                 │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h4 id=4-extra-branches-lora-jco-mvton-de-mi-mi-wu-qi>4️⃣ Extra Branches + LoRA：JCo-MVTON 的秘密武器</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                   Extra Branches 详解                                │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  原版 FLUX 的 Attention：                                           │
+</span><span>│  ┌───────────────────────────────────────┐                          │
+</span><span>│  │  to_q (Query)  ──┐                    │                          │
+</span><span>│  │  to_k (Key)    ──┼── 标准注意力      │                          │
+</span><span>│  │  to_v (Value)  ──┘                    │                          │
+</span><span>│  │  功能：通用的图文理解                 │                          │
+</span><span>│  └───────────────────────────────────────┘                          │
+</span><span>│                                                                      │
+</span><span>│  JCo-MVTON 新增的分支：                                             │
+</span><span>│  ┌───────────────────────────────────────┐                          │
+</span><span>│  │  人物分支 [0]：                        │                          │
+</span><span>│  │  ├── extra_to_q[0]: 人物专属提问      │                          │
+</span><span>│  │  │   "这个人的肩膀在哪里？"           │                          │
+</span><span>│  │  ├── extra_to_k[0]: 人物专属索引      │                          │
+</span><span>│  │  │   "人物特征标签库"                 │                          │
+</span><span>│  │  └── extra_to_v[0]: 人物专属内容      │                          │
+</span><span>│  │       "人物的具体像素信息"            │                          │
+</span><span>│  └───────────────────────────────────────┘                          │
+</span><span>│  ┌───────────────────────────────────────┐                          │
+</span><span>│  │  衣服分支 [1]：                        │                          │
+</span><span>│  │  ├── extra_to_q[1]: 衣服专属提问      │                          │
+</span><span>│  │  │   "这件衣服的logo在哪里？"         │                          │
+</span><span>│  │  ├── extra_to_k[1]: 衣服专属索引      │                          │
+</span><span>│  │  │   "衣服特征标签库"                 │                          │
+</span><span>│  │  └── extra_to_v[1]: 衣服专属内容      │                          │
+</span><span>│  │       "衣服的具体纹理信息"            │                          │
+</span><span>│  └───────────────────────────────────────┘                          │
+</span><span>│                                                                      │
+</span><span>│  为什么用 LoRA？                                                     │
+</span><span>│  ├── 不需要重新训练整个 FLUX（太贵！）                              │
+</span><span>│  ├── 只训练这些新增的小分支                                         │
+</span><span>│  ├── 参数量小，训练快                                               │
+</span><span>│  └── 可以随时"插拔"，不影响原模型                                  │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><hr><h2 id=jco-mvton-如何工作>JCo-MVTON 如何工作</h2><h3 id=clapper-lei-bi-yi-chang-wan-mei-de-huan-zhuang-xiu>🎬 类比：一场完美的换装秀</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                     JCo-MVTON 工作全流程                             │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  Step 1: 准备阶段（输入处理）                                        │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  📷 人物图 → VAE压缩 → 人物latent（行李打包）                │    │
+</span><span>│  │  👔 衣服图 → VAE压缩 → 衣服latent（行李打包）                │    │
+</span><span>│  │  📝 文字 → CLIP+T5 → 文字embedding（理解意图）               │    │
+</span><span>│  │  🎲 生成随机噪声 → 初始latent（空白画布）                    │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                              ↓                                       │
+</span><span>│  Step 2: 开会阶段（19轮双流Transformer）                            │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  第1轮会议：                                                  │    │
+</span><span>│  │  ├── 人物专家 via extra[0]："人物身材是这样的..."            │    │
+</span><span>│  │  ├── 衣服专家 via extra[1]："衣服细节是这样的..."            │    │
+</span><span>│  │  ├── 文字指导 via main："整体风格要休闲..."                  │    │
+</span><span>│  │  └── 互相交换信息，初步理解                                  │    │
+</span><span>│  │                                                               │    │
+</span><span>│  │  第2轮会议：                                                  │    │
+</span><span>│  │  ├── 人物专家："了解了衣服尺寸，我来调整姿势适配"            │    │
+</span><span>│  │  └── 衣服专家："了解了人物体型，我来调整衣服形态"            │    │
+</span><span>│  │                                                               │    │
+</span><span>│  │  ... 第3-19轮 ...                                             │    │
+</span><span>│  │                                                               │    │
+</span><span>│  │  第19轮：大家完全达成共识！                                   │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                              ↓                                       │
+</span><span>│  Step 3: 执行阶段（38轮单流Transformer）                            │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  把会议共识转化为具体像素：                                   │    │
+</span><span>│  │  ├── 确定每个位置应该画什么                                  │    │
+</span><span>│  │  ├── 融合人物和衣服的特征                                    │    │
+</span><span>│  │  └── 逐步去除噪声，图像越来越清晰                            │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                              ↓                                       │
+</span><span>│  Step 4: 输出阶段（VAE解码）                                        │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  latent结果 → VAE解压 → 1024×768高清大图                     │    │
+</span><span>│  │  🎉 完美的换装效果！                                          │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=bar-chart-qu-zao-guo-cheng-ke-shi-hua>📊 去噪过程可视化</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>时间步 t 从 1.0 到 0.0：
+</span><span>
+</span><span>t=1.0  ████████████████████  纯噪声（电视雪花）
+</span><span>t=0.8  ████░░░░░░░░░░░░░░░░  开始有轮廓
+</span><span>t=0.6  ████████░░░░░░░░░░░░  人和衣服形状出现
+</span><span>t=0.4  ████████████░░░░░░░░  细节开始清晰
+</span><span>t=0.2  ████████████████░░░░  衣服纹理出现
+</span><span>t=0.0  ████████████████████  完美的换装图！
+</span><span>
+</span><span>每一步：
+</span><span>1. 模型看当前图 + 所有条件
+</span><span>2. 预测"这一步应该往哪个方向走"
+</span><span>3. 朝着清晰图片的方向走一小步
+</span></code></pre><hr><h2 id=jco-mvton-的训练>JCo-MVTON 的训练</h2><h3 id=mortar-board-xun-lian-jiao-ai-cheng-wei-huan-zhuang-da-shi>🎓 训练 = 教 AI 成为换装大师</h3><h4 id=lei-bi-pei-yang-yi-ge-huan-zhuang-shi>类比：培养一个换装师</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                     JCo-MVTON 训练过程                               │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  📚 教材准备（数据集）：                                             │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  VITON-HD / DressCode 数据集                                 │    │
+</span><span>│  │  每个样本包含：                                               │    │
+</span><span>│  │  ├── 人物原图（穿着某件衣服）                                │    │
+</span><span>│  │  ├── 衣服单独图（平铺展示）                                  │    │
+</span><span>│  │  ├── 人物解析图（哪里是头、身体、手...）                     │    │
+</span><span>│  │  ├── 姿势骨架图（人的姿势）                                  │    │
+</span><span>│  │  ├── DensePose（3D身体表面）                                 │    │
+</span><span>│  │  └── 衣服描述文字                                            │    │
+</span><span>│  │  数量：约 13,000 对训练数据                                  │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                                                                      │
+</span><span>│  🏋️ 训练过程（每一步）：                                            │
+</span><span>│  ┌─────────────────────────────────────────────────────────────┐    │
+</span><span>│  │  1. 拿一对真实的"人物-衣服"数据                              │    │
+</span><span>│  │  2. 给真实效果图加随机噪声（模拟"弄脏"）                     │    │
+</span><span>│  │  3. 让 AI 猜：怎么去掉噪声？                                 │    │
+</span><span>│  │  4. 对比 AI 的猜测和正确答案                                 │    │
+</span><span>│  │  5. 计算误差，调整 Extra Branches 的 LoRA 参数               │    │
+</span><span>│  │  6. 重复 50,000+ 次                                          │    │
+</span><span>│  └─────────────────────────────────────────────────────────────┘    │
+</span><span>│                                                                      │
+</span><span>│  🎓 毕业标准：                                                       │
+</span><span>│  ├── 能准确还原衣服细节（logo、图案、纹理）                        │
+</span><span>│  ├── 能自然适配人物体型（不变形、不穿帮）                          │
+</span><span>│  └── 能处理各种姿势（正面、侧面、动态）                            │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=chart-with-downwards-trend-xun-lian-pei-zhi-shi-li>📉 训练配置示例</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># JCo-MVTON 训练配置
+</span><span>training_config = {
+</span><span>    </span><span style=color:#65737e># 基础设置
+</span><span>    "</span><span style=color:#a3be8c>base_model</span><span>": "</span><span style=color:#a3be8c>black-forest-labs/FLUX.1-dev</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>resolution</span><span>": (</span><span style=color:#d08770>1024</span><span>, </span><span style=color:#d08770>768</span><span>),  </span><span style=color:#65737e># 人物图尺寸
+</span><span>    "</span><span style=color:#a3be8c>garment_resolution</span><span>": (</span><span style=color:#d08770>1024</span><span>, </span><span style=color:#d08770>1024</span><span>),  </span><span style=color:#65737e># 衣服图尺寸
+</span><span>    
+</span><span>    </span><span style=color:#65737e># LoRA 设置（只训练 Extra Branches）
+</span><span>    "</span><span style=color:#a3be8c>lora_rank</span><span>": </span><span style=color:#d08770>16</span><span>,            </span><span style=color:#65737e># 额外分支的表达能力
+</span><span>    "</span><span style=color:#a3be8c>lora_alpha</span><span>": </span><span style=color:#d08770>16</span><span>,           </span><span style=color:#65737e># 缩放因子
+</span><span>    "</span><span style=color:#a3be8c>target_modules</span><span>": [         </span><span style=color:#65737e># 训练目标
+</span><span>        "</span><span style=color:#a3be8c>extra_to_q</span><span>",           </span><span style=color:#65737e># 6 个额外的 Q 投影
+</span><span>        "</span><span style=color:#a3be8c>extra_to_k</span><span>",           </span><span style=color:#65737e># 6 个额外的 K 投影
+</span><span>        "</span><span style=color:#a3be8c>extra_to_v</span><span>",           </span><span style=color:#65737e># 6 个额外的 V 投影
+</span><span>    ],
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 优化器设置
+</span><span>    "</span><span style=color:#a3be8c>learning_rate</span><span>": </span><span style=color:#d08770>1e-4</span><span>,      </span><span style=color:#65737e># 学习率
+</span><span>    "</span><span style=color:#a3be8c>optimizer</span><span>": "</span><span style=color:#a3be8c>AdamW8bit</span><span>",   </span><span style=color:#65737e># 8bit优化器省显存
+</span><span>    "</span><span style=color:#a3be8c>batch_size</span><span>": </span><span style=color:#d08770>4</span><span>,            </span><span style=color:#65737e># 批次大小
+</span><span>    "</span><span style=color:#a3be8c>max_steps</span><span>": </span><span style=color:#d08770>50000</span><span>,         </span><span style=color:#65737e># 总步数
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 精度设置
+</span><span>    "</span><span style=color:#a3be8c>mixed_precision</span><span>": "</span><span style=color:#a3be8c>bf16</span><span>",  </span><span style=color:#65737e># 混合精度
+</span><span>    "</span><span style=color:#a3be8c>gradient_checkpointing</span><span>": </span><span style=color:#d08770>True</span><span>,  </span><span style=color:#65737e># 检查点节省显存
+</span><span>}
+</span></code></pre><h3 id=wrench-shu-ju-yu-chu-li-liu-cheng>🔧 数据预处理流程</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>原始图片
+</span><span>    ↓
+</span><span>┌────────────────────────────────────────────────────────┐
+</span><span>│  1. Human Parsing（人体解析）                           │
+</span><span>│  ├── 工具：Graphonomy / SCHP                           │
+</span><span>│  └── 输出：分割图（头=1, 上衣=4, 裤子=6...）           │
+</span><span>└────────────────────────────────────────────────────────┘
+</span><span>    ↓
+</span><span>┌────────────────────────────────────────────────────────┐
+</span><span>│  2. Pose Estimation（姿势估计）                         │
+</span><span>│  ├── 工具：DWPose / OpenPose                           │
+</span><span>│  └── 输出：18/25个关键点坐标                           │
+</span><span>└────────────────────────────────────────────────────────┘
+</span><span>    ↓
+</span><span>┌────────────────────────────────────────────────────────┐
+</span><span>│  3. DensePose（密集姿态）                               │
+</span><span>│  ├── 工具：Detectron2 DensePose                        │
+</span><span>│  └── 输出：每个像素对应身体哪个部位的3D坐标            │
+</span><span>└────────────────────────────────────────────────────────┘
+</span><span>    ↓
+</span><span>┌────────────────────────────────────────────────────────┐
+</span><span>│  4. Agnostic Mask（衣服无关蒙版）                       │
+</span><span>│  ├── 保留：脸、头发、手、裤子                          │
+</span><span>│  └── 遮盖：上衣区域（待替换）                           │
+</span><span>└────────────────────────────────────────────────────────┘
+</span><span>    ↓
+</span><span>处理完成！准备训练
+</span></code></pre><hr><h2 id=jco-mvton-的扩展与应用>JCo-MVTON 的扩展与应用</h2><h3 id=electric-plug-ke-kuo-zhan-de-fang-xiang>🔌 可扩展的方向</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                     JCo-MVTON 扩展生态                               │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  👔 多品类扩展                                                       │
+</span><span>│  ├── 上装试穿（T恤、衬衫、外套...）✅ 已支持                        │
+</span><span>│  ├── 下装试穿（裤子、裙子...）→ 添加下装 extra 分支                │
+</span><span>│  ├── 全身套装 → 添加套装 extra 分支                                 │
+</span><span>│  └── 配饰（帽子、包包...）→ 添加配饰 extra 分支                    │
+</span><span>│                                                                      │
+</span><span>│  📐 姿势控制增强                                                     │
+</span><span>│  ├── + ControlNet：精确控制人物姿势                                 │
+</span><span>│  ├── + DensePose Conditioning：更精准的身体适配                     │
+</span><span>│  └── + 骨架引导：让模特摆出指定动作                                 │
+</span><span>│                                                                      │
+</span><span>│  🎨 风格控制                                                         │
+</span><span>│  ├── + IP-Adapter：参考图风格迁移                                   │
+</span><span>│  ├── + LoRA 风格：特定摄影风格                                      │
+</span><span>│  └── + 场景融合：换背景 + 换装同时进行                              │
+</span><span>│                                                                      │
+</span><span>│  🎬 视频扩展                                                         │
+</span><span>│  ├── 单帧 → 视频：添加时序一致性模块                               │
+</span><span>│  ├── 动态试穿：人物走动时的换装效果                                 │
+</span><span>│  └── 360° 展示：多角度旋转展示                                      │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=dart-shi-ji-ying-yong-chang-jing>🎯 实际应用场景</h3><table><thead><tr><th>场景<th>描述<th>业务价值<tbody><tr><td><strong>电商平台</strong><td>用户上传照片试穿商品<td>提升转化率 30%+<tr><td><strong>服装设计</strong><td>快速预览设计效果<td>节省打样成本<tr><td><strong>社交媒体</strong><td>虚拟换装滤镜<td>增加用户互动<tr><td><strong>直播带货</strong><td>主播实时换装展示<td>提升观看体验<tr><td><strong>线下门店</strong><td>AR 试衣镜<td>减少试衣间排队</table><hr><h2 id=总结与速查卡>总结与速查卡</h2><h3 id=books-jco-mvton-yi-tu-kan-dong>📚 JCo-MVTON 一图看懂</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                     JCo-MVTON 速查卡                                 │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  🎯 核心任务：人物图 + 衣服图 → 穿上衣服的人物图                    │
+</span><span>│                                                                      │
+</span><span>│  🧠 核心创新：                                                       │
+</span><span>│  ├── 基于 FLUX：更强的底层能力                                      │
+</span><span>│  ├── Extra Branches：人物/衣服专属理解通道                          │
+</span><span>│  ├── Joint Attention：三方（人+衣+文字）深度交流                   │
+</span><span>│  └── LoRA 训练：高效、可插拔                                        │
+</span><span>│                                                                      │
+</span><span>│  🔧 架构组成：                                                       │
+</span><span>│  ├── VAE：图片压缩/解压（1/12 体积）                                │
+</span><span>│  ├── CLIP + T5：文字理解                                            │
+</span><span>│  ├── 19× FluxTransformerBlock：双流深度交流                         │
+</span><span>│  ├── 38× FluxSingleTransformerBlock：执行生成                       │
+</span><span>│  └── Extra Branches × 2：人物分支 + 衣服分支                        │
+</span><span>│                                                                      │
+</span><span>│  📊 关键参数：                                                       │
+</span><span>│  ├── 输入分辨率：Person 1024×768, Garment 1024×1024                │
+</span><span>│  ├── LoRA Rank：16（默认）                                          │
+</span><span>│  ├── 学习率：1e-4                                                   │
+</span><span>│  ├── 训练步数：50,000+                                              │
+</span><span>│  └── 推理步数：28-50                                                │
+</span><span>│                                                                      │
+</span><span>│  💡 适用场景：                                                       │
+</span><span>│  ├── 电商试穿 ✅                                                     │
+</span><span>│  ├── 服装设计预览 ✅                                                 │
+</span><span>│  ├── 社交滤镜 ✅                                                     │
+</span><span>│  └── AR 试衣镜 ✅                                                    │
+</span><span>│                                                                      │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=vs-fang-an-dui-bi-su-cha>🆚 方案对比速查</h3><table><thead><tr><th>方案<th>底座<th>衣服保真<th>人体适配<th>复杂图案<th>训练成本<tbody><tr><td>CP-VTON<td>变形网络<td>⭐⭐<td>⭐⭐<td>⭐<td>💰<tr><td>HR-VITON<td>GAN<td>⭐⭐⭐<td>⭐⭐⭐<td>⭐⭐<td>💰💰<tr><td>IDM-VTON<td>SDXL<td>⭐⭐⭐⭐<td>⭐⭐⭐⭐<td>⭐⭐⭐<td>💰💰💰<tr><td><strong>JCo-MVTON</strong><td><strong>FLUX</strong><td>⭐⭐⭐⭐⭐<td>⭐⭐⭐⭐⭐<td>⭐⭐⭐⭐⭐<td>💰💰💰</table><h3 id=mortar-board-xue-xi-lu-jing-jian-yi>🎓 学习路径建议</h3><table><thead><tr><th>阶段<th>目标<th>推荐行动<tbody><tr><td>入门<td>理解虚拟试衣是什么<td>玩现有的试衣 Demo<tr><td>基础<td>理解 FLUX 原理<td>先看我的 <a href=/flux-complete-guide-for-beginners>FLUX 指南</a><tr><td>进阶<td>理解 JCo-MVTON 架构<td>阅读本指南 + 源码<tr><td>实践<td>能跑通训练流程<td>准备数据、训练 LoRA<tr><td>深入<td>能扩展新功能<td>添加新品类、优化性能</table><hr><p>希望这篇指南能帮你全面理解 JCo-MVTON！虚拟试衣是一个非常有商业价值的方向，掌握了这些核心概念，你就能在这个领域快速上手。<p>如果有任何问题，欢迎在评论区讨论！🚀</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
