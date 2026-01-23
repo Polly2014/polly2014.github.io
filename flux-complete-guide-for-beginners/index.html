@@ -1,0 +1,363 @@
+<!doctype html><html><head><title>🎨 FLUX 模型完全指南：从小白到入门的深入浅出解析</title><meta content="用最通俗的类比，全面讲解 FLUX 模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/flux-complete-guide-for-beginners/ property=og:url><meta content="🎨 FLUX 模型完全指南：从小白到入门的深入浅出解析" property=og:title><meta content="用最通俗的类比，全面讲解 FLUX 模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架。" property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/flux-complete-guide-for-beginners/ name=twitter:url><meta content="🎨 FLUX 模型完全指南：从小白到入门的深入浅出解析" name=twitter:title><meta content="用最通俗的类比，全面讲解 FLUX 模型的原理、架构、训练和扩展。无论你是完全的小白还是想深入理解的开发者，这篇指南都能帮你建立清晰的知识框架。" name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-01-19T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=FLUX property=article:tag><meta content="Diffusion Model" property=article:tag><meta content=AI绘画 property=article:tag><meta content=Transformer property=article:tag><meta content=LoRA property=article:tag><meta content=VTON property=article:tag><meta content=图像生成 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🎨 FLUX 模型完全指南：从小白到入门的深入浅出解析</h1><div class=content><p>最近在研究虚拟试衣（Virtual Try-On）项目时，我深入学习了 FLUX 模型的方方面面。作为 2024 年 AI 绘画领域的"天花板"级模型，FLUX 的强大让我印象深刻，但网上的资料要么过于学术，要么过于零散。<p>于是我决定写这篇"小白友好"的完全指南——用大量的类比来解释复杂的概念，让你即使没有深度学习背景，也能理解 FLUX 是什么、怎么工作、如何训练和扩展。<hr><h2 id=blue-mu-lu>📖 目录</h2><ol><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E6%98%AF%E4%BB%80%E4%B9%88>FLUX 是什么？</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-flux>为什么需要 FLUX？</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86>FLUX 的核心原理</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E7%9A%84%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90>FLUX 的架构组成</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87>FLUX 如何生成图片</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E7%9A%84%E8%AE%AD%E7%BB%83>FLUX 的训练</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#flux-%E7%9A%84%E6%89%A9%E5%B1%95>FLUX 的扩展</a><li><a href=https://polly.wang/flux-complete-guide-for-beginners/#%E6%80%BB%E7%BB%93%E4%B8%8E%E5%AD%A6%E4%B9%A0%E5%BB%BA%E8%AE%AE>总结与学习建议</a></ol><hr><h2 id=flux-是什么>FLUX 是什么？</h2><blockquote><p><strong>一句话版本：FLUX = 一个超级聪明的"翻译机"，能把你的文字描述翻译成图片。</strong></blockquote><p>就像你对一个画家说"给我画一只穿西装的猫在开会"，FLUX 就能画出来。<h3 id=house-lei-bi-zi-dong-zuo-hua-ji-qi-ren>🏠 类比：自动作画机器人</h3><p>想象你有一个机器人画家：<ul><li>📝 你写下想要的画面（文字提示词）<li>🎨 机器人理解你的意思<li>🖼️ 机器人一笔一笔画出来</ul><p>FLUX 就是这个机器人画家，只不过它：<ul><li>画得更快（几秒钟）<li>画得更好（1024×1024 高清）<li>理解力更强（能理解复杂的描述）</ul><hr><h2 id=为什么需要-flux>为什么需要 FLUX？</h2><h3 id=scroll-ai-hui-hua-de-jin-hua-shi>📜 AI 绘画的进化史</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>SD 1.5 (2022)   →   SDXL (2023)   →   FLUX (2024)
+</span><span>  小学生              初中生              大学生
+</span><span> 512×512           1024×1024          1024×1024+
+</span><span> 理解力一般          理解力更好          理解力超强
+</span></code></pre><h3 id=vs-flux-vs-lao-yi-dai-mo-xing>🆚 FLUX vs 老一代模型</h3><table><thead><tr><th>特性<th>SD 1.5 / SDXL<th>FLUX<tbody><tr><td>架构<td>UNet (老式设计)<td>Transformer (新式设计)<tr><td>文字理解<td>一般般<td>超级强<tr><td>图文一致性<td>经常跑偏<td>非常准确<tr><td>复杂场景<td>容易乱<td>处理得好<tr><td>文字渲染<td>基本不行<td>能写对字</table><h3 id=dart-lei-bi-cong-fan-gai-shou-ji-dao-zhi-neng-shou-ji>🎯 类比：从翻盖手机到智能手机</h3><ul><li><strong>SD 1.5</strong> = 翻盖手机（能打电话，但功能有限）<li><strong>SDXL</strong> = 早期智能手机（功能多了，但还不够聪明）<li><strong>FLUX</strong> = 最新旗舰机（聪明、快、什么都能干）</ul><hr><h2 id=flux-的核心原理>FLUX 的核心原理</h2><h3 id=he-xin-gai-nian-yi-kuo-san-mo-xing-diffusion>🧩 核心概念一：扩散模型（Diffusion）</h3><h4 id=lei-bi-xiu-fu-bei-po-zang-de-zhao-pian>类比：修复被泼脏的照片</h4><p>想象一下：<ol><li>你有一张漂亮的照片 📷<li>有人往上面泼了很多墨水 🖤<li>墨水越来越多，照片完全看不清了<li>现在给你一个神奇橡皮擦，一点点擦掉墨水<li>最后照片又清晰了！</ol><p><strong>这就是扩散模型的原理：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>正向过程（加噪声）：清晰图片 → 加噪声 → 加更多噪声 → 纯噪声（电视雪花）
+</span><span>反向过程（去噪声）：纯噪声 → 去一点噪声 → 去更多噪声 → 清晰图片
+</span></code></pre><p>FLUX 学会的就是：<strong>如何一步一步去掉噪声，"恢复"出图片。</strong><h3 id=he-xin-gai-nian-er-rectified-flow-zheng-liu-liu>🧩 核心概念二：Rectified Flow（整流流）</h3><h4 id=lei-bi-zou-lu-vs-zuo-huo-che>类比：走路 vs 坐火车</h4><p><strong>老方法（DDPM）= 走山路</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>从 A 到 B，要翻山越岭，走很多弯路
+</span><span>需要 50-100 步才能到
+</span></code></pre><p><strong>FLUX 的方法（Rectified Flow）= 坐高铁</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>从 A 到 B，走直线！
+</span><span>只需要 20-30 步就能到
+</span></code></pre><pre style=background:#2b303b;color:#c0c5ce><code><span>老方法:  起点 ~~~曲曲折折~~~ 终点
+</span><span>FLUX:    起点 ————直线———— 终点
+</span></code></pre><p><strong>公式（其实很简单）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>位置 = 起点 × (1-t) + 终点 × t
+</span><span>
+</span><span>t=0 时：100% 起点，0% 终点 → 在起点
+</span><span>t=0.5 时：50% 起点，50% 终点 → 在中间
+</span><span>t=1 时：0% 起点，100% 终点 → 在终点
+</span></code></pre><h3 id=he-xin-gai-nian-san-transformer>🧩 核心概念三：Transformer</h3><h4 id=lei-bi-chao-ji-fan-yi-guan>类比：超级翻译官</h4><p>想象一个会议室里有两种人：<ul><li>📝 文字专家（理解你的描述）<li>🎨 图像专家（负责画画）</ul><p><strong>普通翻译官（UNet 架构）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>文字专家告诉图像专家要画什么
+</span><span>→ 单向沟通，图像专家只能听
+</span><span>→ 容易理解偏差
+</span></code></pre><p><strong>超级翻译官（FLUX 的 Transformer）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>文字专家和图像专家坐在一起
+</span><span>→ 你一言我一语，互相讨论
+</span><span>→ "你说的猫是什么颜色？" "橙色的！"
+</span><span>→ "西装是什么款式？" "三件套！"
+</span><span>→ 双向沟通，理解更准确
+</span></code></pre><p>这就是 FLUX 使用的 <strong>MMDiT（多模态扩散 Transformer）</strong> 的核心思想！<hr><h2 id=flux-的架构组成>FLUX 的架构组成</h2><h3 id=zheng-ti-jia-gou-tu>🏗️ 整体架构图</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                        FLUX 整体流程                             │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│   输入层                                                         │
+</span><span>│   ┌─────────────┐   ┌─────────────┐   ┌─────────────────────┐   │
+</span><span>│   │   噪声      │   │    图片     │   │    文字提示词        │   │
+</span><span>│   │  (随机的)   │   │ (如果有的话) │   │ "一只橙色的猫..."   │   │
+</span><span>│   └──────┬──────┘   └──────┬──────┘   └──────────┬──────────┘   │
+</span><span>│          │                 │                      │              │
+</span><span>│          │                 ▼                      ▼              │
+</span><span>│          │          ┌──────────────┐    ┌─────────────────────┐ │
+</span><span>│          │          │     VAE      │    │    文字编码器        │ │
+</span><span>│          │          │   (压缩机)   │    │   CLIP + T5-XXL     │ │
+</span><span>│          │          └──────┬───────┘    └──────────┬──────────┘ │
+</span><span>│          │                 │                       │             │
+</span><span>│          ▼                 ▼                       ▼             │
+</span><span>│   ┌──────────────────────────────────────────────────────────┐  │
+</span><span>│   │            🧠 FluxTransformer2DModel（大脑）              │  │
+</span><span>│   │                                                           │  │
+</span><span>│   │   ┌─────────────────────────────────────────────────┐    │  │
+</span><span>│   │   │   19 个 FluxTransformerBlock（双流注意力块）      │    │  │
+</span><span>│   │   │   文字和图像一起讨论，互相理解                     │    │  │
+</span><span>│   │   └─────────────────────────────────────────────────┘    │  │
+</span><span>│   │                          ↓                                │  │
+</span><span>│   │   ┌─────────────────────────────────────────────────┐    │  │
+</span><span>│   │   │   38 个 FluxSingleTransformerBlock（单流块）     │    │  │
+</span><span>│   │   │   把讨论结果整合，准备输出                        │    │  │
+</span><span>│   │   └─────────────────────────────────────────────────┘    │  │
+</span><span>│   └──────────────────────────┬───────────────────────────────┘  │
+</span><span>│                              │                                   │
+</span><span>│                              ▼                                   │
+</span><span>│                       ┌──────────────┐                           │
+</span><span>│                       │     VAE      │                           │
+</span><span>│                       │  (解压缩机)   │                          │
+</span><span>│                       └──────┬───────┘                           │
+</span><span>│                              │                                   │
+</span><span>│                              ▼                                   │
+</span><span>│                       ┌──────────────┐                           │
+</span><span>│                       │   输出图片    │                          │
+</span><span>│                       │  1024×768    │                           │
+</span><span>│                       └──────────────┘                           │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=wrench-zu-jian-xiang-jie>🔧 组件详解</h3><h4 id=1-vae-bian-fen-zi-bian-ma-qi-ya-suo-jie-ya-suo-ji>1️⃣ VAE（变分自编码器）—— 压缩/解压缩机</h4><h5 id=lei-bi-tu-pian-de-zip-ya-suo>类比：图片的"ZIP 压缩"</h5><pre style=background:#2b303b;color:#c0c5ce><code><span>原始图片：1024×768×3 = 236 万个数字（太大了！）
+</span><span>        ↓ VAE 编码（压缩）
+</span><span>压缩版本：128×96×16 = 19.6 万个数字（只有原来的 1/12！）
+</span><span>        ↓ VAE 解码（解压缩）
+</span><span>恢复图片：1024×768×3 = 又变回高清图片
+</span></code></pre><p><strong>为什么要压缩？</strong><ul><li>直接处理高清图片 → 计算量爆炸 💥<li>压缩后处理 → 计算量大大减少 ✨<li>最后再解压缩回来 → 完美！</ul><h4 id=2-wen-zi-bian-ma-qi-fan-yi-guan>2️⃣ 文字编码器 —— 翻译官</h4><p>FLUX 使用<strong>两个</strong>翻译官：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────┐
+</span><span>│                    文字编码器团队                            │
+</span><span>├─────────────────────────────────────────────────────────────┤
+</span><span>│                                                              │
+</span><span>│  CLIP-L（快速翻译官）                                        │
+</span><span>│  ├── 特点：速度快，抓大意                                    │
+</span><span>│  ├── 输出：77 个词 × 768 维                                  │
+</span><span>│  └── 类比：看一眼就知道大概意思                              │
+</span><span>│                                                              │
+</span><span>│  T5-XXL（深度翻译官）                                        │
+</span><span>│  ├── 特点：超级详细，理解深                                  │
+</span><span>│  ├── 输出：512 个词 × 4096 维                                │
+</span><span>│  ├── 参数：110 亿个！                                        │
+</span><span>│  └── 类比：逐字逐句分析，理解所有细节                        │
+</span><span>│                                                              │
+</span><span>│  两个翻译官配合 = 既快又准！                                  │
+</span><span>└─────────────────────────────────────────────────────────────┘
+</span></code></pre><h4 id=3-fluxtransformer2dmodel-he-xin-da-nao>3️⃣ FluxTransformer2DModel —— 核心大脑</h4><h5 id=lei-bi-chao-ji-hui-yi-shi>类比：超级会议室</h5><pre style=background:#2b303b;color:#c0c5ce><code><span>想象一个大型会议室，有两组人：
+</span><span>- 🖼️ 图像组（把图片切成小块，每块派一个代表）
+</span><span>- 📝 文字组（每个词派一个代表）
+</span><span>
+</span><span>会议过程（19 轮 FluxTransformerBlock）：
+</span><span>┌──────────────────────────────────────────────────────────┐
+</span><span>│ 第 1 轮会议                                               │
+</span><span>│ ├── 图像组内部讨论："我负责左上角，你负责右下角"          │
+</span><span>│ ├── 文字组内部讨论："'橙色'和'猫'要配合好"               │
+</span><span>│ └── 跨组讨论："文字组说要橙色，图像组，你们听到了吗？"    │
+</span><span>│                                                           │
+</span><span>│ 第 2 轮会议...                                            │
+</span><span>│ ...                                                       │
+</span><span>│ 第 19 轮会议：大家达成共识！                              │
+</span><span>└──────────────────────────────────────────────────────────┘
+</span><span>
+</span><span>后续工作（38 轮 FluxSingleTransformerBlock）：
+</span><span>┌──────────────────────────────────────────────────────────┐
+</span><span>│ 把会议结论整理成最终方案                                  │
+</span><span>│ 图像组开始按照共识画画                                    │
+</span><span>└──────────────────────────────────────────────────────────┘
+</span></code></pre><h4 id=4-attention-zhu-yi-li-ji-zhi-hui-yi-zhong-de-ju-shou-fa-yan>4️⃣ Attention（注意力机制）—— 会议中的"举手发言"</h4><h5 id=lei-bi-ke-tang-shang-ju-shou-hui-da-wen-ti>类比：课堂上举手回答问题</h5><pre style=background:#2b303b;color:#c0c5ce><code><span>Q (Query) = 问题："谁和'橙色'最相关？"
+</span><span>K (Key)   = 标签：每个人举着自己的标签（"我是猫"、"我是背景"...）
+</span><span>V (Value) = 答案：每个人的具体内容
+</span><span>
+</span><span>过程：
+</span><span>1. 提问（Query）
+</span><span>2. 看谁的标签（Key）和问题最匹配
+</span><span>3. 让匹配的人回答（Value）
+</span><span>4. 综合所有答案
+</span></code></pre><p>在 FLUX 中：<ul><li><strong>Self-Attention</strong>：图像小块之间互相问答<li><strong>Cross-Attention</strong>：图像问文字，文字问图像</ul><hr><h2 id=flux-如何生成图片>FLUX 如何生成图片</h2><h3 id=birthday-lei-bi-cong-mian-fen-dao-dan-gao>🎂 类比：从面粉到蛋糕</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>生成图片 ≈ 做蛋糕
+</span><span>
+</span><span>步骤 1：准备原料
+</span><span>├── 噪声（纯随机）= 一堆面粉
+</span><span>├── 文字提示 = 蛋糕设计图
+</span><span>└── 时间步 = 当前做到第几步
+</span><span>
+</span><span>步骤 2：逐步加工（去噪过程）
+</span><span>├── t=1.0：纯面粉（纯噪声）
+</span><span>├── t=0.8：开始有形状了
+</span><span>├── t=0.5：能看出是蛋糕了
+</span><span>├── t=0.2：细节出来了
+</span><span>└── t=0.0：完美的蛋糕！（清晰图片）
+</span></code></pre><h3 id=bar-chart-shi-ji-cai-yang-guo-cheng>📊 实际采样过程</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 简化版 FLUX 采样代码
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>flux_generate</span><span>(</span><span style=color:#bf616a>prompt</span><span>, </span><span style=color:#bf616a>num_steps</span><span>=</span><span style=color:#d08770>28</span><span>):
+</span><span>    </span><span style=color:#65737e># 1. 编码文字提示
+</span><span>    text_embeds = </span><span style=color:#bf616a>encode_prompt</span><span>(prompt)  </span><span style=color:#65737e># "一只橙色的猫"
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 2. 从纯噪声开始
+</span><span>    x = </span><span style=color:#bf616a>random_noise</span><span>(</span><span style=color:#bf616a>shape</span><span>=(</span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>16</span><span>, </span><span style=color:#d08770>128</span><span>, </span><span style=color:#d08770>96</span><span>))  </span><span style=color:#65737e># 随机噪声
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 3. 逐步去噪
+</span><span>    </span><span style=color:#b48ead>for </span><span>i </span><span style=color:#b48ead>in </span><span style=color:#96b5b4>range</span><span>(num_steps):
+</span><span>        t = </span><span style=color:#d08770>1.0 </span><span>- i / num_steps  </span><span style=color:#65737e># 时间从 1 到 0
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 模型预测：当前应该往哪个方向走
+</span><span>        velocity = </span><span style=color:#bf616a>model</span><span>(x, t, text_embeds)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 往目标方向走一小步
+</span><span>        x = x + velocity * (</span><span style=color:#d08770>1 </span><span>/ num_steps)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 4. 解码成图片
+</span><span>    image = </span><span style=color:#bf616a>vae_decode</span><span>(x)
+</span><span>    </span><span style=color:#b48ead>return </span><span>image
+</span></code></pre><h3 id=rocket-guidance-scale-yin-dao-qiang-du>🚀 Guidance Scale（引导强度）</h3><h5 id=lei-bi-ting-hua-cheng-du>类比：听话程度</h5><pre style=background:#2b303b;color:#c0c5ce><code><span>guidance_scale = 1.0  → 画家自由发挥，可能跑偏
+</span><span>guidance_scale = 3.5  → 画家大致按你说的画（推荐）
+</span><span>guidance_scale = 7.5  → 画家严格按你说的画
+</span><span>guidance_scale = 15+  → 画家太紧张，画崩了
+</span></code></pre><p><strong>原理（Classifier-Free Guidance）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>最终结果 = 无条件结果 + scale × (有条件结果 - 无条件结果)
+</span><span>
+</span><span>翻译：
+</span><span>最终结果 = 画家想画的 + scale × (你想要的 - 画家想画的)
+</span></code></pre><hr><h2 id=flux-的训练>FLUX 的训练</h2><h3 id=mortar-board-xun-lian-jiao-ai-hua-hua>🎓 训练 = 教 AI 画画</h3><h4 id=lei-bi-mei-zhu-pei-xun-ban>类比：美术培训班</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────┐
+</span><span>│                     FLUX 训练过程                           │
+</span><span>├─────────────────────────────────────────────────────────────┤
+</span><span>│                                                              │
+</span><span>│  教材准备（数据集）：                                        │
+</span><span>│  ├── 收集大量 图片 + 描述 配对                               │
+</span><span>│  ├── 例如：[猫的图片] + "一只橙色的猫坐在沙发上"             │
+</span><span>│  └── 越多越好，越多样越好                                    │
+</span><span>│                                                              │
+</span><span>│  上课过程（每一步训练）：                                     │
+</span><span>│  ├── 1. 拿一张图片，加上随机噪声（模拟弄脏）                 │
+</span><span>│  ├── 2. 给 AI 看弄脏的图片 + 文字描述                        │
+</span><span>│  ├── 3. 让 AI 猜：要怎么去掉噪声？                           │
+</span><span>│  ├── 4. 对比 AI 的猜测和正确答案                             │
+</span><span>│  └── 5. AI 根据错误调整自己（反向传播）                      │
+</span><span>│                                                              │
+</span><span>│  毕业标准：                                                   │
+</span><span>│  └── AI 能准确预测如何从噪声恢复图片                         │
+</span><span>│                                                              │
+</span><span>└─────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=chart-with-downwards-trend-xun-lian-de-he-xin-gong-shi>📉 训练的核心公式</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>损失 = ||预测的速度 - 真实的速度||²
+</span><span>
+</span><span>真实速度 = 噪声 - 原图（方向：从原图到噪声）
+</span><span>预测速度 = AI 猜的方向
+</span><span>
+</span><span>目标：让 AI 猜得越来越准
+</span></code></pre><h3 id=dart-lora-xun-lian-qing-liang-wei-diao>🎯 LoRA 训练（轻量微调）</h3><h4 id=lei-bi-gei-hua-jia-jia-ge-wai-gua-ji-neng>类比：给画家加个"外挂技能"</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>想教 FLUX 画特定风格（比如你自己的脸），有两种方法：
+</span><span>
+</span><span>方法 1：重新培训（Full Fine-tuning）
+</span><span>├── 让画家从头学画你的脸
+</span><span>├── 要学很久
+</span><span>├── 忘记之前学的东西
+</span><span>└── 成本：💰💰💰💰💰
+</span><span>
+</span><span>方法 2：加外挂（LoRA）
+</span><span>├── 画家基本功不变
+</span><span>├── 只学一个"画你的脸"的小技能
+</span><span>├── 只需要学一小会儿
+</span><span>├── 不影响之前学的
+</span><span>└── 成本：💰
+</span><span>
+</span><span>LoRA 就是这个"外挂技能"！
+</span></code></pre><p><strong>LoRA 原理（超简化版）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>原始权重 W：画家的基本功（不动）
+</span><span>外挂 ΔW = B × A：新学的技能（很小）
+</span><span>
+</span><span>最终 = W + ΔW
+</span><span>
+</span><span>关键：ΔW 分解成两个小矩阵 B 和 A
+</span><span>原本要学 1000×1000 = 100 万个参数
+</span><span>现在只学 1000×8 + 8×1000 = 1.6 万个参数
+</span></code></pre><h3 id=wrench-lora-xun-lian-shi-zhan-ming-ling>🔧 LoRA 训练实战命令</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 使用 kohya-ss/sd-scripts 训练 FLUX LoRA
+</span><span style=color:#bf616a>accelerate</span><span> launch flux_train_network.py \
+</span><span style=color:#bf616a>  --pretrained_model_name_or_path</span><span>="</span><span style=color:#a3be8c>black-forest-labs/FLUX.1-dev</span><span>" \
+</span><span style=color:#bf616a>  --network_module</span><span>=networks.lora_flux \
+</span><span style=color:#bf616a>  --network_dim</span><span>=16 </span><span style=color:#96b5b4>\      </span><span style=color:#65737e># rank，越大学习能力越强
+</span><span>  </span><span style=color:#bf616a>--network_alpha</span><span>=</span><span style=color:#a3be8c>16 </span><span style=color:#96b5b4>\    </span><span style=color:#65737e># 缩放因子
+</span><span>  </span><span style=color:#bf616a>--learning_rate</span><span>=</span><span style=color:#a3be8c>1e-4 </span><span style=color:#96b5b4>\  </span><span style=color:#65737e># 学习率
+</span><span>  </span><span style=color:#bf616a>--optimizer_type</span><span>=</span><span style=color:#a3be8c>AdamW8bit </span><span>\
+</span><span>  </span><span style=color:#bf616a>--mixed_precision</span><span>=</span><span style=color:#a3be8c>bf16 </span><span>\
+</span><span>  </span><span style=color:#bf616a>--cache_latents_to_disk </span><span>\
+</span><span style=color:#bf616a>  --max_train_steps</span><span>=1000
+</span></code></pre><h3 id=bar-chart-lora-can-shu-xuan-ze-zhi-nan>📊 LoRA 参数选择指南</h3><table><thead><tr><th>用途<th>推荐 Rank<th>Alpha<th>说明<tbody><tr><td>风格迁移<td>8-16<td>rank/2 或 rank<td>轻量级<tr><td>角色/人脸<td>32-64<td>rank/2<td>需要更多细节<tr><td>复杂概念<td>64-128<td>rank/2<td>大容量<tr><td>显存受限<td>4-8<td>rank<td>最小化</table><hr><h2 id=flux-的扩展>FLUX 的扩展</h2><h3 id=electric-plug-ke-yi-jie-ru-de-wai-she>🔌 可以接入的"外设"</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────┐
+</span><span>│                    FLUX 扩展生态                            │
+</span><span>├─────────────────────────────────────────────────────────────┤
+</span><span>│                                                              │
+</span><span>│  🎮 ControlNet（姿态/边缘控制）                              │
+</span><span>│  ├── 输入：骨架图、边缘图、深度图...                        │
+</span><span>│  ├── 输出：按照给定结构生成图片                             │
+</span><span>│  └── 类比：给画家一个草图，让他按照草图画                   │
+</span><span>│                                                              │
+</span><span>│  🖼️ IP-Adapter（图像提示）                                  │
+</span><span>│  ├── 输入：参考图片                                         │
+</span><span>│  ├── 输出：风格/内容类似的图片                              │
+</span><span>│  └── 类比：给画家看一张参考图，说"画成这种感觉"            │
+</span><span>│                                                              │
+</span><span>│  👔 Virtual Try-On（虚拟试衣）                               │
+</span><span>│  ├── 输入：人物图 + 衣服图                                  │
+</span><span>│  ├── 输出：穿上衣服的效果图                                 │
+</span><span>│  └── 类比：PS 换装，但是是 AI 自动的                        │
+</span><span>│                                                              │
+</span><span>│  🎭 LoRA（风格/角色）                                        │
+</span><span>│  ├── 输入：特定风格的训练数据                               │
+</span><span>│  ├── 输出：能画该风格的模型                                 │
+</span><span>│  └── 类比：教画家一种新画风                                 │
+</span><span>│                                                              │
+</span><span>│  📐 Inpainting（局部重绘）                                   │
+</span><span>│  ├── 输入：图片 + 遮罩                                      │
+</span><span>│  ├── 输出：遮罩区域重新生成                                 │
+</span><span>│  └── 类比：只擦掉一部分重画                                 │
+</span><span>│                                                              │
+</span><span>└─────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=wrench-flux-bian-ti>🔧 FLUX 变体</h3><table><thead><tr><th>变体<th>特点<th>使用场景<tbody><tr><td>FLUX.1-dev<td>需要 guidance，质量高<td>追求质量<tr><td>FLUX.1-schnell<td>4 步出图，超快<td>实时应用<tr><td>FLUX.1-pro<td>商业版，API 调用<td>商业项目</table><h3 id=dart-jco-mvton-jia-gou-shi-li>🎯 JCo-MVTON 架构示例</h3><p>在我最近的虚拟试衣项目中，基于 FLUX 扩展了专门处理人物和衣服的分支：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────┐
+</span><span>│                        JCo-MVTON Architecture                        │
+</span><span>├─────────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                      │
+</span><span>│  输入:                                                               │
+</span><span>│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐    │
+</span><span>│  │  Noise   │  │  Person  │  │ Garment  │  │   Text Prompt    │    │
+</span><span>│  │ (latent) │  │(1024×768)│  │(1024×1024)│  │ (CLIP + T5-XXL) │    │
+</span><span>│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────────┬─────────┘    │
+</span><span>│       │             │             │                  │              │
+</span><span>│  ┌────▼─────────────▼─────────────▼──────────────────▼─────┐       │
+</span><span>│  │              FluxTransformer2DModel (MM-DiT)             │       │
+</span><span>│  │  ┌─────────────────────────────────────────────────────┐│       │
+</span><span>│  │  │     19× FluxTransformerBlock (Joint Attention)      ││       │
+</span><span>│  │  │  ┌───────────────────────────────────────────────┐  ││       │
+</span><span>│  │  │  │  Main Attention:  to_q, to_k, to_v            │  ││       │
+</span><span>│  │  │  │  ─────────────────────────────────────────────│  ││       │
+</span><span>│  │  │  │  Extra Branches (虚拟试衣专用):               │  ││       │
+</span><span>│  │  │  │    • extra_to_q[0]: 人物 Query    ◄── LoRA    │  ││       │
+</span><span>│  │  │  │    • extra_to_q[1]: 衣服 Query    ◄── LoRA    │  ││       │
+</span><span>│  │  │  │    • extra_to_k[0]: 人物 Key      ◄── LoRA    │  ││       │
+</span><span>│  │  │  │    • extra_to_k[1]: 衣服 Key      ◄── LoRA    │  ││       │
+</span><span>│  │  │  │    • extra_to_v[0]: 人物 Value    ◄── LoRA    │  ││       │
+</span><span>│  │  │  │    • extra_to_v[1]: 衣服 Value    ◄── LoRA    │  ││       │
+</span><span>│  │  │  └───────────────────────────────────────────────┘  ││       │
+</span><span>│  │  └─────────────────────────────────────────────────────┘│       │
+</span><span>│  └──────────────────────────┬──────────────────────────────┘       │
+</span><span>│                             ▼                                       │
+</span><span>│                       输出: 穿上衣服的人物图                         │
+</span><span>└─────────────────────────────────────────────────────────────────────┘
+</span></code></pre><p><strong>设计思路：</strong><ul><li>主干网络保持 FLUX 原有能力<li>添加额外的 Q/K/V 分支专门处理人物和衣服<li>用 LoRA 只训练这些额外分支，快速且高效<li>人物和衣服分别理解，最终完美融合</ul><hr><h2 id=总结与学习建议>总结与学习建议</h2><h3 id=books-yi-tu-kan-dong-flux>📚 一图看懂 FLUX</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                        FLUX 速查卡                               │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  🎯 核心任务：文字 → 图片                                        │
+</span><span>│                                                                  │
+</span><span>│  🧠 核心技术：                                                   │
+</span><span>│  ├── Diffusion（扩散）：从噪声逐步恢复图片                       │
+</span><span>│  ├── Rectified Flow（整流流）：走直线，更快更稳                  │
+</span><span>│  ├── Transformer：图文双向理解，更准确                          │
+</span><span>│  └── MMDiT：多模态混合，处理多种输入                            │
+</span><span>│                                                                  │
+</span><span>│  🔧 主要组件：                                                   │
+</span><span>│  ├── VAE：压缩解压缩图片（省计算）                               │
+</span><span>│  ├── CLIP + T5：理解文字含义                                     │
+</span><span>│  └── FluxTransformer：核心推理大脑                              │
+</span><span>│                                                                  │
+</span><span>│  📊 关键参数：                                                   │
+</span><span>│  ├── Steps：20-50（越多越精细）                                  │
+</span><span>│  ├── Guidance Scale：3.5-7.5（越高越听话）                       │
+</span><span>│  ├── Resolution：1024×1024（主流）                               │
+</span><span>│  └── Precision：bf16/fp16（节省显存）                            │
+</span><span>│                                                                  │
+</span><span>│  🚀 训练方式：                                                   │
+</span><span>│  ├── Full Fine-tuning：全量微调（土豪专用）                      │
+</span><span>│  ├── LoRA：轻量微调（推荐）                                      │
+</span><span>│  └── DreamBooth：学特定主体                                      │
+</span><span>│                                                                  │
+</span><span>│  💡 扩展能力：                                                   │
+</span><span>│  ├── ControlNet → 结构控制                                       │
+</span><span>│  ├── IP-Adapter → 图像参考                                       │
+</span><span>│  ├── Inpainting → 局部重绘                                       │
+</span><span>│  └── VTON → 虚拟试衣                                             │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=mortar-board-xue-xi-lu-jing-jian-yi>🎓 学习路径建议</h3><table><thead><tr><th>阶段<th>目标<th>推荐行动<tbody><tr><td>入门<td>感受 FLUX 能做什么<td>玩 ComfyUI/WebUI<tr><td>进阶<td>定制自己的风格<td>学习 LoRA 训练<tr><td>深入<td>精确控制生成<td>研究 ControlNet/IP-Adapter<tr><td>专业<td>开发新应用<td>阅读源码，研究论文</table><h3 id=blue-yan-shen-yue-du>📖 延伸阅读</h3><ul><li><a href=https://github.com/black-forest-labs/flux>FLUX 官方仓库</a><li><a href=https://github.com/kohya-ss/sd-scripts>kohya-ss/sd-scripts</a> - LoRA 训练工具<li><a href=https://github.com/comfyanonymous/ComfyUI>ComfyUI</a> - 可视化工作流<li>Rectified Flow 论文：<em>Flow Matching for Generative Modeling</em></ul><hr><p>希望这篇指南能帮助你建立对 FLUX 的整体理解。AI 绘画领域发展飞快，但只要掌握了这些核心概念，不管未来出现什么新模型，你都能快速上手。<p>有任何问题，欢迎在评论区讨论！🚀</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
