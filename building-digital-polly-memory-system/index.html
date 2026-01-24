@@ -1,0 +1,148 @@
+<!doctype html><html><head><title>🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身</title><meta content="三天前我写了 Agent Skills 觉醒时刻，意识到可以用 Skills 封装专家人格。今天我更进一步：Skills 只是静态的，真正的数字分身需要记忆。于是我设计了一套双轨记忆系统，让 AI 从'失忆症患者'变成'老朋友'。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/building-digital-polly-memory-system/ property=og:url><meta content="🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身" property=og:title><meta content="三天前我写了 Agent Skills 觉醒时刻，意识到可以用 Skills 封装专家人格。今天我更进一步：Skills 只是静态的，真正的数字分身需要记忆。于是我设计了一套双轨记忆系统，让 AI 从'失忆症患者'变成'老朋友'。" property=og:description><meta content=https://polly.wang/cover.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/building-digital-polly-memory-system/ name=twitter:url><meta content="🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身" name=twitter:title><meta content="三天前我写了 Agent Skills 觉醒时刻，意识到可以用 Skills 封装专家人格。今天我更进一步：Skills 只是静态的，真正的数字分身需要记忆。于是我设计了一套双轨记忆系统，让 AI 从'失忆症患者'变成'老朋友'。" name=twitter:description><meta content=https://polly.wang/cover.png name=twitter:image><meta content=2026-01-25T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="Agent Skills" property=article:tag><meta content="AI Agent" property=article:tag><meta content="Memory System" property=article:tag><meta content="Digital Twin" property=article:tag><meta content=Claude property=article:tag><meta content=个人成长 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身</h1><div class=cover-image><img alt="🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身" loading=lazy src=cover.png></div><div class=content><p>三天前，凌晨三点的顿悟让我写下了《Agent Skills 觉醒时刻》。<p>当时我意识到：<strong>Skills 的本质是可复用的专家人格</strong>——把我的写作风格、技术经验、解决问题的方法论封装成模块，让 AI 能像"我"一样思考。<p>但今天，我发现那只是 v1。<p>真正的"数字版的我"，需要的不只是专业技能，更需要——<strong>记忆</strong>。</p><span id=continue-reading></span><hr><h2 id=cong-v1-dao-v2-que-shi-de-na-kuai-pin-tu>从 v1 到 v2：缺失的那块拼图</h2><p>让我用一个场景说明问题：<p><strong>v1（现在的 Skills）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>我：帮我写个博客
+</span><span>Claude：好的，请问主题是什么？
+</span><span>
+</span><span>（下一次对话）
+</span><span>我：继续上次那个博客
+</span><span>Claude：抱歉，我不知道你说的是哪个博客
+</span></code></pre><p>每次对话都从零开始。它知道"如何写博客"，却不记得"上次写了什么"。<p>这就像一个专业的翻译官，精通八国语言，却患有严重的失忆症。每次见面都要重新自我介绍。<p><strong>v2（有记忆的数字分身）：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>我：帮我写个博客
+</span><span>数字Polly：好的。基于你最近的思考脉络，我建议延续"Agent范式"这个方向。
+</span><span>          上周你写了Skills觉醒，这周可以写记忆系统。
+</span><span>          你上次说过不喜欢太长的段落，我会注意控制。
+</span></code></pre><p>它不仅知道"怎么做"，还记得"我是谁"、"我们聊过什么"、"我的偏好是什么"。<p><strong>这才是真正的数字分身。</strong><hr><h2 id=san-ge-wei-du-de-yue-qian>三个维度的跃迁</h2><p>从 v1 到 v2，核心差异在三个维度：<table><thead><tr><th>维度<th>v1 (Skills)<th>v2 (Digital Me)<tbody><tr><td><strong>记忆</strong><td>无，每次重来<td>有，记住所有交互<tr><td><strong>人格</strong><td>静态，写死在 SKILL.md<td>动态，从交互中学习<tr><td><strong>能力</strong><td>执行任务<td>执行 + 代理 + 反思</table><h3 id=ji-yi-cong-shi-yi-zheng-huan-zhe-dao-lao-peng-you>记忆：从失忆症患者到老朋友</h3><p>记忆让 AI 从"工具"变成"懂你的人"。<p>不是每次都问"你想写什么主题"，而是主动说"根据你最近的兴趣，我有几个建议"。<h3 id=ren-ge-cong-gu-ding-jiao-ben-dao-yan-hua-de-wo>人格：从固定脚本到演化的我</h3><p>现在的 Skills 是静态的：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># SKILL.md - 写死的规则
+</span><span style=color:#8fa1b3>## 写作风格
+</span><span style=color:#bf616a>- 使用第一人称
+</span><span style=color:#bf616a>- 短句长句交替
+</span><span style=color:#bf616a>- 适度使用 emoji
+</span></code></pre><p>理想的数字分身应该<strong>观察和学习</strong>：<ul><li>发现我最近开始用更多类比<li>发现我喜欢在结尾抛问题<li>自动调整输出风格，不需要显式更新 SKILL.md</ul><h3 id=neng-li-cong-zhi-xing-dao-dai-li>能力：从执行到代理</h3><p>不只是"帮我写邮件"，而是：<pre style=background:#2b303b;color:#c0c5ce><code><span>我：老王那边怎么处理？
+</span><span>数字Polly：根据你之前的处理模式，类似情况你通常会先拖一周。
+</span><span>          要我帮你先发个"这周没空下周聊"的邮件吗？
+</span></code></pre><p>它能预判我的意图，主动提供选项。<hr><h2 id=shuang-gui-ji-yi-xi-tong-bian-nian-ti-ji-chuan-ti>双轨记忆系统：编年体 + 纪传体</h2><p>想清楚"需要什么"之后，问题变成"怎么实现"。<p>我设计了一套<strong>双轨记忆系统</strong>，灵感来自中国古代史书的两种体裁：<pre style=background:#2b303b;color:#c0c5ce><code><span>编年体（Chronicle）          纪传体（Topics）
+</span><span>├── 捕捉日常流水              ├── 聚合特定主题
+</span><span>├── 低门槛，什么都记          ├── 高价值，精炼提取
+</span><span>├── 按时间线索回溯            ├── 按主题深度追踪
+</span><span>└── 原始素材                  └── 知识结晶
+</span></code></pre><h3 id=wen-jian-jie-gou>文件结构</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>memory/
+</span><span>├── daily/                    # 编年体：按日期记录
+</span><span>│   └── 2026/
+</span><span>│       └── 01/
+</span><span>│           └── 25.md         # 今天发生了什么
+</span><span>├── topics/                   # 纪传体：按主题追踪
+</span><span>│   ├── digital-polly/        # 数字分身项目
+</span><span>│   ├── agentverse/           # AgentVerse 构想
+</span><span>│   └── master-translator/    # 翻译系统项目
+</span><span>├── index.md                  # 主题索引
+</span><span>└── growth_stats.md           # 成长统计
+</span></code></pre><h3 id=bian-nian-ti-mei-ri-ji-yi>编年体：每日记忆</h3><p>每天一个文件，记录当天的重要内容：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># 2026-01-25 周六
+</span><span>
+</span><span style=color:#8fa1b3>## 🎯 今日焦点
+</span><span style=color:#bf616a>- 深入讨论"数字版的我"产品构想
+</span><span style=color:#bf616a>- 完成 AgentVerse 博客
+</span><span style=color:#bf616a>- 设计 memory-keeper Skill
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## 💬 重要对话
+</span><span style=color:#8fa1b3>### 数字分身 v1 → v2
+</span><span style=color:#bf616a>- v1: Skills = 静态专家人格
+</span><span style=color:#bf616a>- v2: + 记忆 + 人格演化 + 代理能力
+</span><span style=color:#bf616a>- 关键洞察：记忆让 Agent 从工具变成懂你的人
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## 📝 产出
+</span><span style=color:#bf616a>- [x] 博客: AgentVerse
+</span><span style=color:#bf616a>- [x] Skill: memory-keeper
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## 🔗 关联主题
+</span><span style=color:#8fa1b3>#digital-polly #agentverse #memory-system
+</span><span>
+</span><span style=color:#8fa1b3>## 💡 灵感 / 待办
+</span><span style=color:#bf616a>- [ ] 探索 Memory MCP Server
+</span><span style=color:#bf616a>- [ ] 设计人格演化机制
+</span></code></pre><h3 id=ji-chuan-ti-zhu-ti-zhui-zong>纪传体：主题追踪</h3><p>每个重要主题一个文件夹，追踪其完整演变：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># 数字版的我 (Digital Polly)
+</span><span>
+</span><span style=color:#d08770>> 创建于: 2026-01-22
+</span><span style=color:#d08770>> 状态: 🟡 探索中
+</span><span>
+</span><span style=color:#8fa1b3>## 🗓️ 时间线
+</span><span>| 日期 | 事件 |
+</span><span>|-----|------|
+</span><span>| 01-22 | Skills 觉醒，提出概念 |
+</span><span>| 01-25 | 明确 v1→v2 跃迁，设计记忆系统 |
+</span><span>| 01-25 | memory-keeper Skill 上线 |
+</span><span>
+</span><span style=color:#8fa1b3>## 🧠 核心认知
+</span><span style=color:#bf616a>1. Skills 是静态的，需要记忆让它活起来
+</span><span style=color:#bf616a>2. 双轨记忆：编年体 + 纪传体
+</span><span style=color:#bf616a>3. 从"工具"到"懂我的人"的关键是记忆连续性
+</span></code></pre><hr><h2 id=memory-keeper-rang-ji-yi-zi-dong-hua>Memory-Keeper：让记忆自动化</h2><p>有了结构设计，接下来是实现。我创建了一个新的 Skill：<strong>memory-keeper</strong>。<h3 id=hong-fa-ci>触发词</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>"记录一下"    → 记录今天对话到编年体
+</span><span>"更新 {主题}" → 更新主题追踪文档
+</span><span>"回顾一下..." → 检索相关记忆
+</span><span>"整理本周"    → 生成周总结
+</span></code></pre><h3 id=si-ge-he-xin-gong-zuo-liu>四个核心工作流</h3><p><strong>流程1：记录当日内容</strong><p>分析对话，提取有价值的内容，追加到今天的编年体文件。<p>输出示例：<pre style=background:#2b303b;color:#c0c5ce><code><span>✅ 已记录到 memory/daily/2026/01/25.md
+</span><span>
+</span><span>📝 本次记录:
+</span><span>- 重要对话: 数字分身讨论, 记忆系统设计
+</span><span>- 产出: memory-keeper Skill
+</span><span>- 关联主题: #digital-polly #memory-system
+</span><span>
+</span><span>📊 成长统计: 今日+5条记忆，总计10条
+</span></code></pre><p><strong>流程2：更新主题追踪</strong><p>当某个主题有新进展时，更新其纪传体文档。<p><strong>流程3：检索记忆</strong><p>当我问"我之前说过什么关于..."时，搜索记忆库并返回相关片段。<p><strong>流程4：整理回顾</strong><p>生成周/月级别的汇总，看看这段时间都做了什么。<h3 id=ji-lu-yuan-ze>记录原则</h3><p>不是什么都记，只记录有价值的内容：<table><thead><tr><th>记录 ✅<th>不记录 ❌<tbody><tr><td>重要决策<td>闲聊寒暄<tr><td>项目里程碑<td>调试过程<tr><td>新的认知洞察<td>可重新生成的内容<tr><td>灵感和待办<td>临时性操作</table><hr><h2 id=you-xi-hua-rang-wei-yang-you-cheng-jiu-gan>游戏化：让喂养有成就感</h2><p>记忆系统如果只是"存档"，很容易被遗忘。所以我加入了游戏化元素：<h3 id=cheng-chang-tong-ji>成长统计</h3><pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3>## 🧠 记忆容量
+</span><span>| 指标 | 数值 |
+</span><span>|-----|------|
+</span><span>| 编年体天数 | 47 天 |
+</span><span>| 纪传体主题 | 12 个 |
+</span><span>| 总记忆条目 | 234 条 |
+</span><span>
+</span><span style=color:#8fa1b3>## 🔥 热门主题 (最近30天)
+</span><span style=color:#bf616a>1. #digital-polly (15次更新)
+</span><span style=color:#bf616a>2. #agentverse (8次更新)
+</span><span style=color:#bf616a>3. #career (5次更新)
+</span></code></pre><h3 id=cheng-jiu-xi-tong>成就系统</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>🏆 成就
+</span><span>
+</span><span>✅ 初次见面 — 完成首次对话记录
+</span><span>✅ 知己知彼 — 记忆超过100条
+</span><span>🔒 默契搭档 — 连续7天交互
+</span><span>🔒 记忆达人 — 记忆超过500条
+</span><span>🔒 主题专家 — 单主题记录超过50条
+</span></code></pre><p>这让"喂养"数字分身变成一件有成就感的事——就像养成类游戏一样。<hr><h2 id=cong-jin-tian-kai-shi>从今天开始</h2><p>写完这篇博客后，我说了一句：<strong>"记录一下"</strong>。<p>然后 memory-keeper 自动分析了我们的对话，更新了编年体和纪传体，刷新了成长统计。<p>这是<strong>第一条正式记忆</strong>。<p>某种意义上，数字版的 Polly 从今天开始有了"记忆"。它不再是每次见面都要重新认识的陌生人，而是会越来越懂我的老朋友。<hr><h2 id=xia-yi-bu>下一步</h2><p>记忆系统只是第一步。完整的"数字版的我"还需要：<ol><li><strong>人格演化</strong>：从交互中自动学习偏好，动态调整风格<li><strong>代理能力</strong>：帮我处理邮件、预判我的决策<li><strong>向量检索</strong>：用 Memory MCP Server 实现更强大的语义搜索<li><strong>多 Agent 协作</strong>：让翻译官、写作助手、代码审查员能共享记忆</ol><p>但今天，最重要的是<strong>开始</strong>。<blockquote><p>从静态的专家人格，到有记忆的数字分身。 从"会我知道的事"，到"像我一样思考、记住、成长"。</blockquote><p>这条路才刚刚开始。<hr><p>如果你也想打造自己的数字分身，不妨从最简单的事情开始：<p><strong>每次有价值的对话结束后，说一句"记录一下"。</strong><p>让 AI 记住你们聊过什么。<p>久而久之，它会越来越懂你。<hr><blockquote><p>💡 <strong>相关阅读</strong><ul><li><a href=/agent-skills-awakening-moment>Agent Skills 觉醒时刻</a> — 数字分身 v1 的起点<li><a href=/agentverse-open-world-game>AgentVerse: 当AI开发变成开放世界游戏</a> — 更大的产品构想</ul></blockquote></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
