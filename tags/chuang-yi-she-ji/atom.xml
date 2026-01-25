@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 创意设计</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/chuang-yi-she-ji/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-25T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/chuang-yi-she-ji/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🎈 用 AI 绘出朋友的梦：气球婚纱的奇幻创作</title>
+        <published>2026-01-25T00:00:00+00:00</published>
+        <updated>2026-01-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/balloon-wedding-dress-ai-dream-art/" type="text/html"/>
+        <id>https://polly.wang/balloon-wedding-dress-ai-dream-art/</id>
+        
+        <content type="html">&lt;p&gt;&amp;quot;我梦见自己要结婚了，穿着一件气球做的裙子。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;朋友发来这条消息时，我正在调试 MCP 翻译服务器。但这个意象太美了——半透明的气球簇拥成蓬松的裙摆，在阳光下折射出珠光色泽。我立刻放下手头的工作，决定用 AI 把这个梦境画出来。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-meng-jing-dao-ti-shi-ci&quot;&gt;从梦境到提示词&lt;&#x2F;h2&gt;
+&lt;p&gt;将一个模糊的梦境转化为精准的图像生成提示词，是 Prompt Engineering 的一次小型实践。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;jie-gou-he-xin-yuan-su&quot;&gt;解构核心元素&lt;&#x2F;h3&gt;
+&lt;p&gt;朋友的描述只有两个关键词：&lt;strong&gt;婚礼&lt;&#x2F;strong&gt; + &lt;strong&gt;气球裙子&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我需要补全缺失的细节：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;气球的&lt;strong&gt;颜色&lt;&#x2F;strong&gt;？（梦境往往是柔和的）&lt;&#x2F;li&gt;
+&lt;li&gt;裙子的&lt;strong&gt;造型&lt;&#x2F;strong&gt;？（蓬松还是修身？）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;场景氛围&lt;&#x2F;strong&gt;？（室内教堂还是户外花园？）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;光线&lt;&#x2F;strong&gt;？（梦幻感需要什么样的光？）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;gou-jian-ti-shi-ci&quot;&gt;构建提示词&lt;&#x2F;h3&gt;
+&lt;p&gt;最终我写下这段提示词：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;A dreamy wedding scene: a young woman wearing an extraordinary 
+&lt;&#x2F;span&gt;&lt;span&gt;wedding dress made entirely of translucent pastel balloons - 
+&lt;&#x2F;span&gt;&lt;span&gt;soft pinks, whites, and iridescent pearls. The balloon gown 
+&lt;&#x2F;span&gt;&lt;span&gt;is voluminous and whimsical, with balloons of various sizes 
+&lt;&#x2F;span&gt;&lt;span&gt;clustered together forming an ethereal silhouette. She stands 
+&lt;&#x2F;span&gt;&lt;span&gt;in a sunlit garden with soft bokeh lights floating around her. 
+&lt;&#x2F;span&gt;&lt;span&gt;The atmosphere is surreal and magical, like a scene from a dream. 
+&lt;&#x2F;span&gt;&lt;span&gt;Soft golden hour lighting, romantic and fantastical mood. 
+&lt;&#x2F;span&gt;&lt;span&gt;High fashion editorial photography style, shallow depth of field.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;几个关键的提示词技巧：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;技巧&lt;&#x2F;th&gt;&lt;th&gt;应用&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;材质细节&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;translucent pastel balloons&amp;quot; 强调半透明和柔和色调&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;大小层次&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;various sizes clustered together&amp;quot; 增加真实感&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;光线氛围&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;soft bokeh lights&amp;quot; + &amp;quot;golden hour&amp;quot; 营造梦幻感&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;风格锚定&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;high fashion editorial photography&amp;quot; 提升质感&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;情绪词&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;surreal&amp;quot;, &amp;quot;magical&amp;quot;, &amp;quot;ethereal&amp;quot; 引导整体氛围&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;shu-zi-ban-polly-de-hui-tu-neng-li&quot;&gt;数字版 Polly 的绘图能力&lt;&#x2F;h2&gt;
+&lt;p&gt;我使用的是 &lt;strong&gt;gpt-image-1.5&lt;&#x2F;strong&gt; 模型，通过 Azure AI Foundry 的 API 调用。这个模型相比之前的 DALL-E 系列有几个明显提升：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;更好的构图理解&lt;&#x2F;strong&gt; - 能理解&amp;quot;婚纱&amp;quot;这种复杂服装的结构&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;材质表现力&lt;&#x2F;strong&gt; - 气球的半透明质感渲染得很自然&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;光影一致性&lt;&#x2F;strong&gt; - 整体光线氛围统一，没有穿帮&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;diao-yong-fang-shi&quot;&gt;调用方式&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 简化版代码，完整版见 blog-writer skill
+&lt;&#x2F;span&gt;&lt;span&gt;python generate_cover.py &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;气球婚纱梦境&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; --size 1536x1024
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;图片生成后自动优化为 JPG 格式，控制在 300-500KB，方便网页加载。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sheng-cheng-jie-guo&quot;&gt;生成结果&lt;&#x2F;h2&gt;
+&lt;p&gt;这次我用的不是从零生成，而是基于朋友的真实照片进行 AI 图像变换：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;balloon-wedding-dress-ai-dream-art&#x2F;cover.jpg&quot; alt=&quot;气球婚纱梦境&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;大大小小的粉白色气球簇拥成蓬松的裙摆，柔和的光线让气球边缘泛着珠光色泽。最神奇的是，AI 保留了朋友本人的特征——发型、姿态、甚至表情神韵都在，只是把普通的衣服变成了梦幻的气球婚纱。&lt;&#x2F;p&gt;
+&lt;p&gt;这种&lt;strong&gt;基于真实照片的图像变换&lt;&#x2F;strong&gt;比凭空生成更有意义——它让梦境变得可触摸，让想象照进现实。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ti-shi-ci-bian-ti&quot;&gt;提示词变体&lt;&#x2F;h2&gt;
+&lt;p&gt;如果第一版不满意，我还准备了几个变体：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;更超现实版：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Surrealist wedding portrait: bride floating among clouds 
+&lt;&#x2F;span&gt;&lt;span&gt;wearing a magnificent gown constructed from hundreds of 
+&lt;&#x2F;span&gt;&lt;span&gt;helium balloons in soft pastel colors. Style of Tim Walker 
+&lt;&#x2F;span&gt;&lt;span&gt;fashion photography meets René Magritte surrealism.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;动漫风格版：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Beautiful bride in a whimsical wedding dress made of pastel 
+&lt;&#x2F;span&gt;&lt;span&gt;pink and white balloons, dreamy garden setting, soft romantic 
+&lt;&#x2F;span&gt;&lt;span&gt;lighting, anime style, Studio Ghibli aesthetic
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;AI 绘图最让我着迷的，是它能把人脑中模糊的意象具象化。朋友的梦境只有短短一句话，但通过精心构建的提示词，我们能把这个转瞬即逝的画面永久保存下来。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;dart-xin-ji-neng-jie-suo-dream-painter&quot;&gt;🎨 新技能解锁：Dream Painter&lt;&#x2F;h3&gt;
+&lt;p&gt;这次创作让我意识到&amp;quot;画梦境&amp;quot;是一个非常有趣的应用场景。于是我给数字版 Polly 新增了一个技能——&lt;strong&gt;dream-painter&lt;&#x2F;strong&gt;（画梦师）。&lt;&#x2F;p&gt;
+&lt;p&gt;这个技能可以：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于真实照片进行创意变换（如本文的气球婚纱）&lt;&#x2F;li&gt;
+&lt;li&gt;将文字描述的梦境&#x2F;想象具象化&lt;&#x2F;li&gt;
+&lt;li&gt;风格迁移（赛博朋克、吉卜力、油画等）&lt;&#x2F;li&gt;
+&lt;li&gt;场景替换（把背景换成星空、花海、城市等）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;技术上采用两阶段架构：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Claude 负责理解意图&lt;&#x2F;strong&gt;：将中文描述转化为优化的英文 Prompt&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;GPT-image-1.5 负责执行&lt;&#x2F;strong&gt;：基于 Prompt 生成&#x2F;变换图像&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这样的分工让创作更加灵活——你只需要用自然语言描述你的想象，剩下的交给 AI。&lt;&#x2F;p&gt;
+&lt;p&gt;下次如果你做了什么有趣的梦，不妨试试把它描述给 AI —— 你可能会惊讶于它的&amp;quot;解梦&amp;quot;能力。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;P.S. 朋友看到图片后说：&amp;quot;哇哦，真的就是这样子的，你是不是闯入我的梦里了！&amp;quot; 这大概是对 AI 绘图最好的评价了。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
