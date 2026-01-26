@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - TikZ</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/tikz/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-27T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/tikz/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🎯 数字Polly v3：用 brainstorming 审视 Skills，用 paper-figurer 画论文图</title>
+        <published>2026-01-27T00:00:00+00:00</published>
+        <updated>2026-01-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/building-agent-skills-brainstorming-paper-figurer/" type="text/html"/>
+        <id>https://polly.wang/building-agent-skills-brainstorming-paper-figurer/</id>
+        
+        <content type="html">&lt;p&gt;&amp;quot;你的 20+ Skills 里，有多少是真正在用的？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;这个问题在我脑子里盘旋了一整天。五天前的《Skills 觉醒时刻》让我意识到 Skills 是可复用的专家人格，两天前的《打造数字版的我》给了它记忆。但今天我发现，光有记忆还不够——我需要审视这套 Skills 体系本身。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我做了一件有点元（meta）的事：&lt;strong&gt;用 brainstorming 来 brainstorm 整个 Skills 体系。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;结果？发现了一个巨大的能力真空——论文配图。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;数字Polly v3：从&amp;quot;能记住&amp;quot;到&amp;quot;会画图&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yuan-qi-20-skills-xu-yao-yi-ci-da-jian-yue&quot;&gt;缘起：20+ Skills 需要一次大检阅&lt;&#x2F;h2&gt;
+&lt;p&gt;有了记忆系统后，我开始审视现有的 Skills 体系。&lt;&#x2F;p&gt;
+&lt;p&gt;我一直在用 Claude Code，也积累了 20+ 个 Skills，但总觉得哪里不对劲。有些 Skills 从没触发过，有些功能重叠严重，更关键的是——我没有一个清晰的愿景：这套 Skills 到底要把 Claude 打造成什么样的助手？&lt;&#x2F;p&gt;
+&lt;p&gt;于是，我决定用刚学到的 brainstorming 方法论，对整个 Skills 体系来一次彻底的&amp;quot;灵魂拷问&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-bu-yong-brainstorming-shen-shi-brainstorming&quot;&gt;第一步：用 brainstorming 审视 brainstorming&lt;&#x2F;h2&gt;
+&lt;p&gt;有点元（meta）的操作——我先把 Superpowers 的 brainstorming skill 移植过来，然后用它来 brainstorm 整个 Skills 体系的设计。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Q1: 你希望 Claude 的核心定位是什么？
+&lt;&#x2F;span&gt;&lt;span&gt;    A. 研究助手
+&lt;&#x2F;span&gt;&lt;span&gt;    B. 代码开发者  
+&lt;&#x2F;span&gt;&lt;span&gt;    C. 内容创作者
+&lt;&#x2F;span&gt;&lt;span&gt;    D. 全栈综合（全都要）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;我的回答: D
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个选择决定了后续的一切——我不想要一个狭窄的专才，我想要一个能真正代表我的&amp;quot;数字分身&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;gao-pin-ren-wu-fu-chu-shui-mian&quot;&gt;高频任务浮出水面&lt;&#x2F;h3&gt;
+&lt;p&gt;继续追问下去，真正高频使用的场景逐渐清晰：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;频率&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;当前覆盖&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;写博客&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;高&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅ blog-writer&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;AI 模型训练&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;高&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅ image-model-training-expert&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;学术论文&#x2F;专利&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;高&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅ academic-paper-writer&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;论文配图&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;高&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌ 缺失&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;技术设计探索&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;中&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌ 缺失&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;一个关键发现：&lt;strong&gt;论文配图需求没有被覆盖&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我翻看了现有的三个视觉 Skills：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;canvas-design&lt;&#x2F;code&gt; → 海报、艺术设计&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;algorithmic-art&lt;&#x2F;code&gt; → 生成艺术&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;dream-painter&lt;&#x2F;code&gt; → AI 图像创意&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;没有一个是为学术配图设计的。这是个真空地带。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;paper-figurer-de-dan-sheng&quot;&gt;Paper Figurer 的诞生&lt;&#x2F;h2&gt;
+&lt;p&gt;当我明确需求后，下一个问题是：怎么命名？&lt;&#x2F;p&gt;
+&lt;p&gt;Claude 给了几个选项：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;academic-figure-designer&lt;&#x2F;code&gt; — 太长&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;paper-diagram-maker&lt;&#x2F;code&gt; — 太泛&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;figure-smith&lt;&#x2F;code&gt; — 有点奇怪&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;paper-figurer&lt;&#x2F;code&gt; — 简洁、个人化、精准&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我选了 &lt;code&gt;paper-figurer&lt;&#x2F;code&gt;。这个名字带着一点自造词的趣味，但含义一目了然。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;san-gao-biao-zhun&quot;&gt;三高标准&lt;&#x2F;h3&gt;
+&lt;p&gt;这是我对论文配图的核心要求：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;标准&lt;&#x2F;th&gt;&lt;th&gt;含义&lt;&#x2F;th&gt;&lt;th&gt;检验方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;高精度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;像素级对齐、数学级准确&lt;&#x2F;td&gt;&lt;td&gt;放大 400% 无瑕疵&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;高美感&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;顶刊级审美、配色和谐&lt;&#x2F;td&gt;&lt;td&gt;可直接投 CVPR&#x2F;NeurIPS&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;高效率&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;快速迭代、模板复用&lt;&#x2F;td&gt;&lt;td&gt;10 分钟出初稿&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;gong-ju-lian-xuan-ze&quot;&gt;工具链选择&lt;&#x2F;h3&gt;
+&lt;p&gt;为什么不用 AI 生图（DALL-E、Midjourney）？因为学术配图需要的是&lt;strong&gt;精确控制&lt;&#x2F;strong&gt;，不是&amp;quot;大致感觉&amp;quot;。一个模型架构图里的箭头指向错误，就是硬伤。&lt;&#x2F;p&gt;
+&lt;p&gt;最终技术栈：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;图类型&lt;&#x2F;th&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;理由&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;模型架构图&lt;&#x2F;td&gt;&lt;td&gt;TikZ&lt;&#x2F;td&gt;&lt;td&gt;像素级控制、可复现&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;流程图&lt;&#x2F;td&gt;&lt;td&gt;D2&lt;&#x2F;td&gt;&lt;td&gt;语法简洁、自动布局&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;实验曲线&lt;&#x2F;td&gt;&lt;td&gt;Matplotlib&lt;&#x2F;td&gt;&lt;td&gt;Python 生态、灵活度高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;热力图&lt;&#x2F;td&gt;&lt;td&gt;Seaborn + custom&lt;&#x2F;td&gt;&lt;td&gt;配色专业&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;mu-lu-jie-gou-zun-xun-skill-creator-biao-zhun&quot;&gt;目录结构遵循 skill-creator 标准&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;paper-figurer&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── SKILL.md                 # 主技能文档
+&lt;&#x2F;span&gt;&lt;span&gt;├── references&#x2F;              # Claude 读取的参考规范
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── color-palettes.md   # 5套学术配色
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── typography.md       # 字号线宽规范
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── tikz-patterns.md    # TikZ 常用模式
+&lt;&#x2F;span&gt;&lt;span&gt;├── scripts&#x2F;                 # 工具脚本
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── render_tikz.py
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── render_d2.py
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── quality_check.py
+&lt;&#x2F;span&gt;&lt;span&gt;└── assets&#x2F;                  # 输出模板
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── model-architecture&#x2F;vit.tex
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── flowchart&#x2F;lora-pipeline.d2
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── comparison&#x2F;ablation.py
+&lt;&#x2F;span&gt;&lt;span&gt;    └── attention-map&#x2F;attention.py
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这里有个细节值得一提：我一开始把模板放在 &lt;code&gt;templates&#x2F;&lt;&#x2F;code&gt; 目录，后来 Review 时发现按 skill-creator 标准应该叫 &lt;code&gt;assets&#x2F;&lt;&#x2F;code&gt;——因为这些文件是&amp;quot;复制后修改使用&amp;quot;的输出资源，而非&amp;quot;读入 context 参考&amp;quot;的文档。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;小事情，但专业性体现在细节里。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-zhan-ce-shi-contextweave-jia-gou-tu&quot;&gt;实战测试：ContextWeave 架构图&lt;&#x2F;h2&gt;
+&lt;p&gt;正好手头有篇论文需要画架构图，直接实战检验。&lt;&#x2F;p&gt;
+&lt;p&gt;论文描述的系统包含 6 个模块：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Document Processor&lt;&#x2F;li&gt;
+&lt;li&gt;Section-Aware Chunk Engine&lt;&#x2F;li&gt;
+&lt;li&gt;Context Weaver&lt;&#x2F;li&gt;
+&lt;li&gt;Translation Orchestrator&lt;&#x2F;li&gt;
+&lt;li&gt;LLM Provider&lt;&#x2F;li&gt;
+&lt;li&gt;Quality Validator&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;还有底层的 MCP Protocol Layer。&lt;&#x2F;p&gt;
+&lt;p&gt;我让 Claude 调用 paper-figurer skill，生成了这段 TikZ 代码：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;latex&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-latex &quot;&gt;&lt;code class=&quot;language-latex&quot; data-lang=&quot;latex&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\node&lt;&#x2F;span&gt;&lt;span&gt;[core] (chunk) at (0, 2.5) {Section-Aware&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\\&lt;&#x2F;span&gt;&lt;span&gt;Chunk Engine};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\node&lt;&#x2F;span&gt;&lt;span&gt;[llm] (llm) at (0, 0.5) {LLM Provider&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\\&lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\tiny&lt;&#x2F;span&gt;&lt;span&gt; (DeepSeek&#x2F;GPT)}};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\draw&lt;&#x2F;span&gt;&lt;span&gt;[biarrow] (orch) -- (llm);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;编译一次成功。600 DPI 导出，放大看细节，对齐完美。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是我想要的效果——&lt;strong&gt;不是 AI 猜测我想要什么，而是精确执行我的设计&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;brainstorming-de-jie-zhi&quot;&gt;Brainstorming 的价值&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看这次开发过程，brainstorming skill 的价值不在于它输出了什么&amp;quot;答案&amp;quot;，而在于它提出的问题迫使我澄清自己的想法。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Q3: 视觉设计类 Skills 中，你最常需要哪些类型？
+&lt;&#x2F;span&gt;&lt;span&gt;    A. 配图、封面图
+&lt;&#x2F;span&gt;&lt;span&gt;    B. 信息图表
+&lt;&#x2F;span&gt;&lt;span&gt;    C. 交互式原型
+&lt;&#x2F;span&gt;&lt;span&gt;    D. 技术图解（架构图、流程图）
+&lt;&#x2F;span&gt;&lt;span&gt;    E. 生成式艺术
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;我的回答: A, D, E
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果没有这个结构化的追问，我可能会继续模糊地觉得&amp;quot;现有的视觉 skills 够用了&amp;quot;，而不会意识到论文配图是个真空。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hou-xu-ji-hua&quot;&gt;后续计划&lt;&#x2F;h2&gt;
+&lt;p&gt;今天只完成了两个 Skills，但 brainstorming 还识别了其他几个能力缺口：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;缺口&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;状态&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;优先级&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;✅ brainstorming&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;已完成&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;-&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;✅ paper-figurer&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;已完成&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;-&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔲 人格持久化&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;待开发&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔲 实验记录&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;待开发&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;中&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔲 文献研究&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;待开发&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;中&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;还有 8 个潜在冗余的 Skills 需要清理：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;brand-guidelines&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;internal-comms&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;slack-gif-creator&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;...&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;渐进式迭代&lt;&#x2F;strong&gt;，每次只做一小步，保证质量。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;从觉醒到记忆，从记忆到专业技能——数字Polly 正在一步步成型。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th style=&quot;text-align: center&quot;&gt;版本&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;核心能力&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;v1&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;01-22&lt;&#x2F;td&gt;&lt;td&gt;Skills 觉醒 — 可复用的专家人格&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;v2&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;01-25&lt;&#x2F;td&gt;&lt;td&gt;记忆系统 — 双轨记忆，不再失忆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;v3&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;01-27&lt;&#x2F;td&gt;&lt;td&gt;专业技能 — brainstorming + paper-figurer&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;今天的两个 Skills 填补了重要的能力缺口：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;brainstorming&lt;&#x2F;strong&gt; 让我在设计前先想清楚&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;paper-figurer&lt;&#x2F;strong&gt; 让我的论文配图达到顶刊水准&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;下一步？人格持久化。让它不只是记住事实，还能记住&amp;quot;我是谁&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是科幻，这是正在发生的事情。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;今日开发成果：&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;brainstorming skill — 苏格拉底式设计探索&lt;&#x2F;em&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;paper-figurer skill — 顶刊级论文配图&lt;&#x2F;em&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;ContextWeave 架构图 — 首次实战验证&lt;&#x2F;em&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>
