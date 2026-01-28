@@ -1,0 +1,176 @@
+<!doctype html><html><head><title>🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理</title><meta content="Instructions、Prompts、Skills、Tools——这四个概念在 AI Agent 生态中频繁出现，但它们到底是什么关系？本文从实际使用角度梳理这四层架构，帮你理清配置思路。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/agent-architecture-instructions-prompts-skills-tools/ property=og:url><meta content="🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理" property=og:title><meta content="Instructions、Prompts、Skills、Tools——这四个概念在 AI Agent 生态中频繁出现，但它们到底是什么关系？本文从实际使用角度梳理这四层架构，帮你理清配置思路。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/agent-architecture-instructions-prompts-skills-tools/ name=twitter:url><meta content="🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理" name=twitter:title><meta content="Instructions、Prompts、Skills、Tools——这四个概念在 AI Agent 生态中频繁出现，但它们到底是什么关系？本文从实际使用角度梳理这四层架构，帮你理清配置思路。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-01-28T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="AI Agent" property=article:tag><meta content="Claude Code" property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content="Prompt Engineering" property=article:tag><meta content=MCP property=article:tag><meta content="Agent Architecture" property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理</h1><div class=cover-image><img alt="🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理" loading=lazy src=cover.jpg></div><div class=content><p>"CLAUDE.md 是什么？跟 .github/prompts 有什么区别？Skills 又是什么？"<p>当我第一次尝试配置 GitHub Copilot 和 Claude Code 时，面对这些散落在不同目录的配置文件，一度非常困惑。官方文档各讲各的，很少有人把它们放在一起对比。<p>直到我把自己的博客项目完整配置了一遍，才终于理清了这四个概念的关系。今天把这个梳理过程记录下来，希望能帮到同样困惑的你。<h2 id=xian-kan-quan-jing-si-ceng-jia-gou>先看全景：四层架构</h2><p>在动手配置之前，先建立一个整体认知。我把 AI Agent 的"知识体系"分为四层：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────────────┐
+</span><span>│                           用户请求                                       │
+</span><span>│                    "帮我写一篇关于 MCP 的博客"                            │
+</span><span>└─────────────────────────────────────────────────────────────────────────┘
+</span><span>                                    │
+</span><span>                                    ▼
+</span><span>┌─────────────────────────────────────────────────────────────────────────┐
+</span><span>│  📋 INSTRUCTIONS (项目上下文)                                            │
+</span><span>│  • 每次请求自动加载 • 告诉 AI：项目结构、命令、约定                        │
+</span><span>└─────────────────────────────────────────────────────────────────────────┘
+</span><span>                                    │
+</span><span>                                    ▼
+</span><span>┌─────────────────────────────────────────────────────────────────────────┐
+</span><span>│  📝 PROMPTS (任务模板)                                                   │
+</span><span>│  • 手动调用 • 告诉 AI：这个任务怎么做、输出格式                            │
+</span><span>└─────────────────────────────────────────────────────────────────────────┘
+</span><span>                                    │
+</span><span>                                    ▼
+</span><span>┌─────────────────────────────────────────────────────────────────────────┐
+</span><span>│  🎯 SKILLS (能力模块)                                                    │
+</span><span>│  • AI 自动识别 • 包含：知识 + 流程 + 工具使用指南                          │
+</span><span>└─────────────────────────────────────────────────────────────────────────┘
+</span><span>                                    │
+</span><span>                                    ▼
+</span><span>┌─────────────────────────────────────────────────────────────────────────┐
+</span><span>│  🔧 TOOLS (执行能力)                                                     │
+</span><span>│  • AI 按需调用 • 实际执行：读写文件、运行命令、调用 API                     │
+</span><span>└─────────────────────────────────────────────────────────────────────────┘
+</span></code></pre><p>用一个类比来理解：<table><thead><tr><th>层级<th>类比<th>作用<tbody><tr><td>Instructions<td>员工入职手册<td>了解公司基本情况<tr><td>Prompts<td>工作 SOP 流程<td>具体任务怎么做<tr><td>Skills<td>专业技能认证<td>我擅长什么领域<tr><td>Tools<td>工具箱<td>锤子、螺丝刀等执行工具</table><h2 id=di-yi-ceng-instructions-xiang-mu-de-ru-zhi-shou-ce>第一层：Instructions — 项目的"入职手册"</h2><h3 id=shi-shi-yao>是什么？</h3><p>Instructions 是<strong>项目级的上下文信息</strong>，告诉 AI：<ul><li>这是什么项目？<li>用什么技术栈？<li>有哪些常用命令？<li>代码/文件组织有什么约定？</ul><h3 id=zai-na-li-pei-zhi>在哪里配置？</h3><table><thead><tr><th>工具<th>配置文件<th>加载方式<tbody><tr><td>Claude Code<td><code>CLAUDE.md</code>（项目根目录）<td>自动加载<tr><td>GitHub Copilot<td><code>.github/copilot-instructions.md</code> 或 <code>settings.json</code><td>自动加载<tr><td>Cursor<td><code>.cursorrules</code><td>自动加载</table><h3 id=wo-de-pei-zhi-shi-li>我的配置示例</h3><p>我的博客项目 <code>CLAUDE.md</code> 长这样：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># CLAUDE.md
+</span><span>
+</span><span style=color:#8fa1b3>## Project Overview
+</span><span>Personal website/portfolio built with </span><span style=font-weight:700;color:#ebcb8b>**Zola**</span><span> (Rust-based static site generator).
+</span><span>
+</span><span style=color:#8fa1b3>## Commands
+</span><span style=color:#bf616a>- </span><span style=color:#a3be8c>`zola serve`</span><span style=color:#bf616a> — 本地开发服务器
+</span><span style=color:#bf616a>- </span><span style=color:#a3be8c>`zola build`</span><span style=color:#bf616a> — 构建静态站点
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## Content Conventions
+</span><span style=color:#bf616a>- Blog posts: </span><span style=color:#a3be8c>`content/blog/YYYYMMDD-{slug}/index.md`
+</span><span style=color:#bf616a>- Images for posts go in the same directory as </span><span style=color:#a3be8c>`index.md`
+</span></code></pre><h3 id=guan-jian-te-dian>关键特点</h3><ul><li><strong>每次请求都会加载</strong>：无论你问什么，这些内容都会被注入到 System Prompt<li><strong>Token 消耗</strong>：内容越多，每次请求消耗的 token 越多<li><strong>建议精简</strong>：只放真正全局需要的信息</ul><h3 id=xiao-ji-qiao-rang-copilot-fu-yong-claude-md>小技巧：让 Copilot 复用 CLAUDE.md</h3><p>如果你同时用 Claude Code 和 GitHub Copilot，不想维护两份文件，可以在 <code>.vscode/settings.json</code> 中配置：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>github.copilot.chat.codeGeneration.instructions</span><span>": [
+</span><span>    { "</span><span style=color:#a3be8c>file</span><span>": "</span><span style=color:#a3be8c>CLAUDE.md</span><span>" }
+</span><span>  ]
+</span><span>}
+</span></code></pre><p>这样 Copilot 也会读取 <code>CLAUDE.md</code>，一处维护，两边生效。<h2 id=di-er-ceng-prompts-ren-wu-de-sop-liu-cheng>第二层：Prompts — 任务的"SOP 流程"</h2><h3 id=shi-shi-yao-1>是什么？</h3><p>Prompts 是<strong>任务级的模板</strong>，当你需要执行特定任务时调用。比如：<ul><li>写博客有固定格式要求<li>写专利有特定结构<li>代码审查有标准流程</ul><h3 id=zai-na-li-pei-zhi-1>在哪里配置？</h3><table><thead><tr><th>工具<th>配置位置<th>调用方式<tbody><tr><td>GitHub Copilot<td><code>.github/prompts/*.prompt.md</code><td><code>#文件名</code><tr><td>Claude Code<td>不直接支持，用 Skills 替代<td>—</table><h3 id=wo-de-pei-zhi-shi-li-1>我的配置示例</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>.github/prompts/
+</span><span>├── BlogWriter.prompt.md      # 写博客
+</span><span>├── PatentWriter.prompt.md    # 写专利
+</span><span>├── PaperWriter.prompt.md     # 写论文
+</span><span>└── BlogToWechat.prompt.md    # 博客转微信格式
+</span></code></pre><p><code>BlogWriter.prompt.md</code> 片段：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=background:#4f5b66;color:#c0c5ce>---
+</span><span>agent: 'agent'
+</span><span style=color:#8fa1b3>---
+</span><span>你是 Polly 的博文写作助手...
+</span><span>
+</span><span><</span><span style=color:#bf616a>CONTENT_STRUCTURE</span><span>>
+</span><span style=color:#bf616a>* 开篇吸引：以引人入胜的问题、案例或现象开始
+</span><span style=color:#bf616a>* 明确主题：在开头部分清晰表达核心议题
+</span><span style=color:#bf616a>* 内容层次：使用清晰的标题组织内容
+</span><span style=color:#bf616a>...
+</span><span style=color:#bf616a>&LT/CONTENT_STRUCTURE>
+</span></code></pre><h3 id=diao-yong-fang-shi>调用方式</h3><p>在 Copilot Chat 中输入 <code>#BlogWriter</code>，就会加载这个模板：<pre style=background:#2b303b;color:#c0c5ce><code><span>你：#BlogWriter 帮我写一篇关于 MCP Server 的博客
+</span><span>
+</span><span>Copilot 收到：
+</span><span>├── Instructions（CLAUDE.md）     ← 自动加载
+</span><span>├── BlogWriter.prompt.md 全文    ← #触发加载
+</span><span>└── 你的问题
+</span></code></pre><h3 id=guan-jian-te-dian-1>关键特点</h3><ul><li><strong>手动触发</strong>：只在需要时加载，不浪费 token<li><strong>任务专用</strong>：每个 prompt 针对一种任务类型<li><strong>平台限定</strong>：目前主要是 GitHub Copilot 支持这种语法</ul><h2 id=di-san-ceng-skills-zhuan-ye-de-ji-neng-ren-zheng>第三层：Skills — 专业的"技能认证"</h2><h3 id=shi-shi-yao-2>是什么？</h3><p>Skills 是 <strong>Claude Code 特有的概念</strong>，比 Prompts 更进一步：<ul><li>不只是文字模板，还可以包含<strong>参考资料、脚本、工具使用指南</strong><li>AI 会根据用户意图<strong>自动识别</strong>并调用合适的 skill<li>类似于"专家模块"——写博客找博客专家，写代码找代码专家</ul><h3 id=zai-na-li-pei-zhi-2>在哪里配置？</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>.claude/skills/
+</span><span>├── blog-writer/
+</span><span>│   ├── SKILL.md              # 技能定义
+</span><span>│   ├── references/           # 参考资料
+</span><span>│   │   └── common-tags.md    # 常用标签
+</span><span>│   └── scripts/              # 辅助脚本
+</span><span>│       └── generate_cover.py # 封面图生成
+</span><span>├── blog-dev/
+</span><span>│   └── SKILL.md              # 博客开发技能
+</span><span>└── brainstorming/
+</span><span>    └── SKILL.md              # 头脑风暴技能
+</span></code></pre><h3 id=wo-de-pei-zhi-shi-li-2>我的配置示例</h3><p><code>blog-writer/SKILL.md</code> 片段：<pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=background:#4f5b66;color:#c0c5ce>---
+</span><span>name: blog-writer
+</span><span>description: Polly 个人博客写作助手。Triggers on keywords 
+</span><span>like "写博文", "blog post", "写一篇", "发布文章".
+</span><span style=color:#8fa1b3>---
+</span><span>
+</span><span style=color:#8fa1b3># Blog Writer
+</span><span>
+</span><span style=color:#8fa1b3>## 核心原则
+</span><span style=color:#bf616a>1. </span><span style=font-weight:700;color:#ebcb8b>**第一人称叙述**</span><span style=color:#bf616a>: 始终使用"我"进行叙述
+</span><span style=color:#bf616a>2. </span><span style=font-weight:700;color:#ebcb8b>**语言匹配**</span><span style=color:#bf616a>: 根据用户输入语言选择中文或英文
+</span><span style=color:#bf616a>3. </span><span style=font-weight:700;color:#ebcb8b>**技术准确**</span><span style=color:#bf616a>: 代码、工具名称必须准确
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## 写作工作流
+</span><span style=color:#8fa1b3>### Phase 1: 理解需求
+</span><span style=color:#8fa1b3>### Phase 2: 生成大纲
+</span><span style=color:#8fa1b3>### Phase 3: 撰写正文
+</span><span style=color:#8fa1b3>### Phase 4: 生成完整文件
+</span><span style=color:#8fa1b3>### Phase 5: 生成封面图（可选）
+</span></code></pre><h3 id=hong-fa-fang-shi>触发方式</h3><p>当我说"帮我写一篇博客"时，Claude Code 会：<ol><li>扫描 <code>.claude/skills/</code> 目录<li>匹配到 <code>blog-writer</code> 的触发词<li>自动读取 <code>SKILL.md</code> 及相关资源<li>按 skill 定义的流程执行</ol><h3 id=skills-vs-prompts-dui-bi>Skills vs Prompts 对比</h3><table><thead><tr><th>维度<th>Prompts<th>Skills<tbody><tr><td>平台<td>GitHub Copilot<td>Claude Code<tr><td>触发<td>手动 <code>#名称</code><td>AI 自动识别<tr><td>内容<td>单个 .md 文件<td>目录结构（可含脚本、资料）<tr><td>智能度<td>被动模板<td>主动能力模块</table><p><strong>它们是不同平台的类似概念，不是一起使用的关系。</strong><h2 id=di-si-ceng-tools-shi-ji-de-gong-ju-xiang>第四层：Tools — 实际的"工具箱"</h2><h3 id=shi-shi-yao-3>是什么？</h3><p>前三层都是"告诉 AI 怎么想"，而 Tools 是"让 AI 能做事"：<ul><li>读写文件<li>执行终端命令<li>调用外部 API<li>操作数据库</ul><h3 id=chang-jian-de-tools>常见的 Tools</h3><table><thead><tr><th>类型<th>示例<th>来源<tbody><tr><td>内置工具<td>文件读写、终端执行、代码搜索<td>AI 工具自带<tr><td>MCP Tools<td>翻译服务、数据库操作、自定义 API<td>MCP Server 提供<tr><td>VS Code API<td>编辑器操作、调试控制<td>扩展提供</table><h3 id=mcp-tools-shi-li>MCP Tools 示例</h3><p>我开发的翻译 MCP Server 提供了这些 Tools：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>@mcp.</span><span style=color:#bf616a>tool</span><span>()
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>translate_document</span><span>(</span><span style=color:#bf616a>file_path</span><span>: str, </span><span style=color:#bf616a>target_lang</span><span>: str):
+</span><span>    </span><span style=color:#65737e>"""翻译整篇文档"""
+</span><span>    </span><span style=color:#d08770>...
+</span><span>
+</span><span>@mcp.</span><span style=color:#bf616a>tool</span><span>()
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>extract_terminology</span><span>(</span><span style=color:#bf616a>file_path</span><span>: str):
+</span><span>    </span><span style=color:#65737e>"""提取术语表"""
+</span><span>    </span><span style=color:#d08770>...
+</span></code></pre><p>当 AI 需要翻译文档时，会自动调用这些 tools。<h3 id=tools-yu-qi-ta-ceng-de-guan-xi>Tools 与其他层的关系</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>Instructions → 告诉 AI 项目背景
+</span><span>Prompts/Skills → 告诉 AI 任务流程
+</span><span>Tools → 让 AI 实际执行操作
+</span></code></pre><p>Tools 是执行层，前三层是知识层。<h2 id=ping-tai-chai-yi-claude-code-vs-github-copilot>平台差异：Claude Code vs GitHub Copilot</h2><p>理解完四层架构后，再看两个主流工具的差异就清晰了：<table><thead><tr><th>特性<th>Claude Code<th>GitHub Copilot<tbody><tr><td>Instructions<td><code>CLAUDE.md</code><td><code>settings.json</code> 配置<tr><td>Prompts<td>❌ 不支持<td>✅ <code>.github/prompts/</code><tr><td>Skills<td>✅ <code>.claude/skills/</code><td>❌ 不支持<tr><td>Tools<td>MCP Tools<td>VS Code 内置 + MCP<tr><td>自动识别能力<td>✅ 强（会自动选 skill）<td>⚠️ 弱（需手动 #调用）</table><h3 id=wo-de-pei-zhi-ce-lue>我的配置策略</h3><p>同时使用两个工具时，我的策略是：<ol><li><strong>Instructions 共用</strong>：<code>CLAUDE.md</code> 通过 settings.json 给 Copilot 用<li><strong>任务模板分开</strong>：Copilot 用 prompts，Claude 用 skills<li><strong>Tools 共用</strong>：MCP Server 两边都能调用</ol><p>文件结构：<pre style=background:#2b303b;color:#c0c5ce><code><span>/
+</span><span>├── CLAUDE.md                    # 共用
+</span><span>├── .vscode/settings.json        # 让 Copilot 读 CLAUDE.md
+</span><span>├── .github/prompts/             # Copilot 专用
+</span><span>│   ├── BlogWriter.prompt.md
+</span><span>│   └── ...
+</span><span>├── .claude/skills/              # Claude Code 专用
+</span><span>│   ├── blog-writer/
+</span><span>│   └── ...
+</span><span>└── Master-Translator-MCP-Server/  # MCP Tools，两边共用
+</span></code></pre><h2 id=shi-ji-gong-zuo-liu-shi-li>实际工作流示例</h2><h3 id=chang-jing-xie-yi-pian-bo-ke>场景：写一篇博客</h3><p><strong>用 GitHub Copilot：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>我：#BlogWriter 帮我写一篇关于 MCP 的博客
+</span><span>
+</span><span>System Prompt 包含：
+</span><span>├── CLAUDE.md (Instructions)      ← 自动
+</span><span>├── BlogWriter.prompt.md          ← #触发
+</span><span>└── 我的问题
+</span></code></pre><p><strong>用 Claude Code：</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>我：帮我写一篇关于 MCP 的博客
+</span><span>
+</span><span>System Prompt 包含：
+</span><span>├── CLAUDE.md (Instructions)      ← 自动
+</span><span>├── blog-writer/SKILL.md          ← 自动识别
+</span><span>└── 我的问题
+</span></code></pre><p>效果类似，但 Claude Code 不需要手动指定 <code>#BlogWriter</code>。<h2 id=yi-zhang-biao-ge-zong-jie>一张表格总结</h2><table><thead><tr><th><th>Instructions<th>Prompts<th>Skills<th>Tools<tbody><tr><td><strong>是什么</strong><td>项目上下文<td>任务模板<td>能力模块<td>执行工具<tr><td><strong>类比</strong><td>入职手册<td>SOP 流程<td>技能认证<td>工具箱<tr><td><strong>位置</strong><td><code>CLAUDE.md</code><td><code>.github/prompts/</code><td><code>.claude/skills/</code><td>MCP Server<tr><td><strong>加载方式</strong><td>自动<td>手动 <code>#</code><td>自动识别<td>按需调用<tr><td><strong>Token 消耗</strong><td>每次都消耗<td>调用时消耗<td>调用时消耗<td>不消耗<tr><td><strong>Copilot</strong><td>✅<td>✅<td>❌<td>✅<tr><td><strong>Claude Code</strong><td>✅<td>❌<td>✅<td>✅</table><h2 id=xie-zai-zui-hou>写在最后</h2><p>理清这四层架构后，配置 AI 助手就不再是"试错"，而是有章可循：<ol><li><strong>全局信息放 Instructions</strong>——项目结构、命令、约定<li><strong>任务流程放 Prompts/Skills</strong>——写博客、写专利的具体步骤<li><strong>复杂能力做成 Tools</strong>——翻译服务、图像生成等</ol><p>配置的核心原则是：<strong>让 AI 在需要的时候获取需要的信息，而不是一股脑全塞给它。</strong><p>如果你也在配置自己的 AI 工作流，希望这篇梳理能帮到你。有问题欢迎在评论区讨论！</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

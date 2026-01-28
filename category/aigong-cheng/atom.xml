@@ -5,8 +5,314 @@
     <link href="https://polly.wang/category/aigong-cheng/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-01-25T00:00:00+00:00</updated>
+    <updated>2026-01-28T00:00:00+00:00</updated>
     <id>https://polly.wang/category/aigong-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🧩 AI Agent 四层架构：Instructions、Prompts、Skills、Tools 关系梳理</title>
+        <published>2026-01-28T00:00:00+00:00</published>
+        <updated>2026-01-28T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/agent-architecture-instructions-prompts-skills-tools/" type="text/html"/>
+        <id>https://polly.wang/agent-architecture-instructions-prompts-skills-tools/</id>
+        
+        <content type="html">&lt;p&gt;&amp;quot;CLAUDE.md 是什么？跟 .github&#x2F;prompts 有什么区别？Skills 又是什么？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;当我第一次尝试配置 GitHub Copilot 和 Claude Code 时，面对这些散落在不同目录的配置文件，一度非常困惑。官方文档各讲各的，很少有人把它们放在一起对比。&lt;&#x2F;p&gt;
+&lt;p&gt;直到我把自己的博客项目完整配置了一遍，才终于理清了这四个概念的关系。今天把这个梳理过程记录下来，希望能帮到同样困惑的你。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xian-kan-quan-jing-si-ceng-jia-gou&quot;&gt;先看全景：四层架构&lt;&#x2F;h2&gt;
+&lt;p&gt;在动手配置之前，先建立一个整体认知。我把 AI Agent 的&amp;quot;知识体系&amp;quot;分为四层：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                           用户请求                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    &amp;quot;帮我写一篇关于 MCP 的博客&amp;quot;                            │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;                                    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  📋 INSTRUCTIONS (项目上下文)                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  • 每次请求自动加载 • 告诉 AI：项目结构、命令、约定                        │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;                                    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  📝 PROMPTS (任务模板)                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  • 手动调用 • 告诉 AI：这个任务怎么做、输出格式                            │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;                                    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎯 SKILLS (能力模块)                                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  • AI 自动识别 • 包含：知识 + 流程 + 工具使用指南                          │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;                                    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  🔧 TOOLS (执行能力)                                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  • AI 按需调用 • 实际执行：读写文件、运行命令、调用 API                     │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;用一个类比来理解：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层级&lt;&#x2F;th&gt;&lt;th&gt;类比&lt;&#x2F;th&gt;&lt;th&gt;作用&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Instructions&lt;&#x2F;td&gt;&lt;td&gt;员工入职手册&lt;&#x2F;td&gt;&lt;td&gt;了解公司基本情况&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Prompts&lt;&#x2F;td&gt;&lt;td&gt;工作 SOP 流程&lt;&#x2F;td&gt;&lt;td&gt;具体任务怎么做&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Skills&lt;&#x2F;td&gt;&lt;td&gt;专业技能认证&lt;&#x2F;td&gt;&lt;td&gt;我擅长什么领域&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Tools&lt;&#x2F;td&gt;&lt;td&gt;工具箱&lt;&#x2F;td&gt;&lt;td&gt;锤子、螺丝刀等执行工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;di-yi-ceng-instructions-xiang-mu-de-ru-zhi-shou-ce&quot;&gt;第一层：Instructions — 项目的&amp;quot;入职手册&amp;quot;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;shi-shi-yao&quot;&gt;是什么？&lt;&#x2F;h3&gt;
+&lt;p&gt;Instructions 是&lt;strong&gt;项目级的上下文信息&lt;&#x2F;strong&gt;，告诉 AI：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;这是什么项目？&lt;&#x2F;li&gt;
+&lt;li&gt;用什么技术栈？&lt;&#x2F;li&gt;
+&lt;li&gt;有哪些常用命令？&lt;&#x2F;li&gt;
+&lt;li&gt;代码&#x2F;文件组织有什么约定？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;zai-na-li-pei-zhi&quot;&gt;在哪里配置？&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;配置文件&lt;&#x2F;th&gt;&lt;th&gt;加载方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;（项目根目录）&lt;&#x2F;td&gt;&lt;td&gt;自动加载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt; 或 &lt;code&gt;settings.json&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;自动加载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Cursor&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.cursorrules&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;自动加载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;wo-de-pei-zhi-shi-li&quot;&gt;我的配置示例&lt;&#x2F;h3&gt;
+&lt;p&gt;我的博客项目 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 长这样：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# CLAUDE.md
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Project Overview
+&lt;&#x2F;span&gt;&lt;span&gt;Personal website&#x2F;portfolio built with &lt;&#x2F;span&gt;&lt;span style=&quot;font-weight:bold;color:#ebcb8b;&quot;&gt;**Zola**&lt;&#x2F;span&gt;&lt;span&gt; (Rust-based static site generator).
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Commands
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;`zola serve`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; — 本地开发服务器
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;`zola build`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; — 构建静态站点
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Content Conventions
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- Blog posts: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;`content&#x2F;blog&#x2F;YYYYMMDD-{slug}&#x2F;index.md`
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- Images for posts go in the same directory as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;`index.md`
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;guan-jian-te-dian&quot;&gt;关键特点&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;每次请求都会加载&lt;&#x2F;strong&gt;：无论你问什么，这些内容都会被注入到 System Prompt&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Token 消耗&lt;&#x2F;strong&gt;：内容越多，每次请求消耗的 token 越多&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;建议精简&lt;&#x2F;strong&gt;：只放真正全局需要的信息&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;xiao-ji-qiao-rang-copilot-fu-yong-claude-md&quot;&gt;小技巧：让 Copilot 复用 CLAUDE.md&lt;&#x2F;h3&gt;
+&lt;p&gt;如果你同时用 Claude Code 和 GitHub Copilot，不想维护两份文件，可以在 &lt;code&gt;.vscode&#x2F;settings.json&lt;&#x2F;code&gt; 中配置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;github.copilot.chat.codeGeneration.instructions&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;file&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CLAUDE.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样 Copilot 也会读取 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;，一处维护，两边生效。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-ceng-prompts-ren-wu-de-sop-liu-cheng&quot;&gt;第二层：Prompts — 任务的&amp;quot;SOP 流程&amp;quot;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;shi-shi-yao-1&quot;&gt;是什么？&lt;&#x2F;h3&gt;
+&lt;p&gt;Prompts 是&lt;strong&gt;任务级的模板&lt;&#x2F;strong&gt;，当你需要执行特定任务时调用。比如：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;写博客有固定格式要求&lt;&#x2F;li&gt;
+&lt;li&gt;写专利有特定结构&lt;&#x2F;li&gt;
+&lt;li&gt;代码审查有标准流程&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;zai-na-li-pei-zhi-1&quot;&gt;在哪里配置？&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;配置位置&lt;&#x2F;th&gt;&lt;th&gt;调用方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;prompts&#x2F;*.prompt.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;#文件名&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;td&gt;不直接支持，用 Skills 替代&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;wo-de-pei-zhi-shi-li-1&quot;&gt;我的配置示例&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;.github&#x2F;prompts&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── BlogWriter.prompt.md      # 写博客
+&lt;&#x2F;span&gt;&lt;span&gt;├── PatentWriter.prompt.md    # 写专利
+&lt;&#x2F;span&gt;&lt;span&gt;├── PaperWriter.prompt.md     # 写论文
+&lt;&#x2F;span&gt;&lt;span&gt;└── BlogToWechat.prompt.md    # 博客转微信格式
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;BlogWriter.prompt.md&lt;&#x2F;code&gt; 片段：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;background-color:#4f5b66;color:#c0c5ce;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;agent: &amp;#39;agent&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;你是 Polly 的博文写作助手...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONTENT_STRUCTURE&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;* 开篇吸引：以引人入胜的问题、案例或现象开始
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;* 明确主题：在开头部分清晰表达核心议题
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;* 内容层次：使用清晰的标题组织内容
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;&amp;lt;&#x2F;CONTENT_STRUCTURE&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;diao-yong-fang-shi&quot;&gt;调用方式&lt;&#x2F;h3&gt;
+&lt;p&gt;在 Copilot Chat 中输入 &lt;code&gt;#BlogWriter&lt;&#x2F;code&gt;，就会加载这个模板：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你：#BlogWriter 帮我写一篇关于 MCP Server 的博客
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Copilot 收到：
+&lt;&#x2F;span&gt;&lt;span&gt;├── Instructions（CLAUDE.md）     ← 自动加载
+&lt;&#x2F;span&gt;&lt;span&gt;├── BlogWriter.prompt.md 全文    ← #触发加载
+&lt;&#x2F;span&gt;&lt;span&gt;└── 你的问题
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;guan-jian-te-dian-1&quot;&gt;关键特点&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;手动触发&lt;&#x2F;strong&gt;：只在需要时加载，不浪费 token&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;任务专用&lt;&#x2F;strong&gt;：每个 prompt 针对一种任务类型&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;平台限定&lt;&#x2F;strong&gt;：目前主要是 GitHub Copilot 支持这种语法&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;di-san-ceng-skills-zhuan-ye-de-ji-neng-ren-zheng&quot;&gt;第三层：Skills — 专业的&amp;quot;技能认证&amp;quot;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;shi-shi-yao-2&quot;&gt;是什么？&lt;&#x2F;h3&gt;
+&lt;p&gt;Skills 是 &lt;strong&gt;Claude Code 特有的概念&lt;&#x2F;strong&gt;，比 Prompts 更进一步：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不只是文字模板，还可以包含&lt;strong&gt;参考资料、脚本、工具使用指南&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;AI 会根据用户意图&lt;strong&gt;自动识别&lt;&#x2F;strong&gt;并调用合适的 skill&lt;&#x2F;li&gt;
+&lt;li&gt;类似于&amp;quot;专家模块&amp;quot;——写博客找博客专家，写代码找代码专家&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;zai-na-li-pei-zhi-2&quot;&gt;在哪里配置？&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;.claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-writer&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── SKILL.md              # 技能定义
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── references&#x2F;           # 参考资料
+&lt;&#x2F;span&gt;&lt;span&gt;│   │   └── common-tags.md    # 常用标签
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── scripts&#x2F;              # 辅助脚本
+&lt;&#x2F;span&gt;&lt;span&gt;│       └── generate_cover.py # 封面图生成
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-dev&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── SKILL.md              # 博客开发技能
+&lt;&#x2F;span&gt;&lt;span&gt;└── brainstorming&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    └── SKILL.md              # 头脑风暴技能
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wo-de-pei-zhi-shi-li-2&quot;&gt;我的配置示例&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;blog-writer&#x2F;SKILL.md&lt;&#x2F;code&gt; 片段：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;background-color:#4f5b66;color:#c0c5ce;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;name: blog-writer
+&lt;&#x2F;span&gt;&lt;span&gt;description: Polly 个人博客写作助手。Triggers on keywords 
+&lt;&#x2F;span&gt;&lt;span&gt;like &amp;quot;写博文&amp;quot;, &amp;quot;blog post&amp;quot;, &amp;quot;写一篇&amp;quot;, &amp;quot;发布文章&amp;quot;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# Blog Writer
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 核心原则
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1. &lt;&#x2F;span&gt;&lt;span style=&quot;font-weight:bold;color:#ebcb8b;&quot;&gt;**第一人称叙述**&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;: 始终使用&amp;quot;我&amp;quot;进行叙述
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;2. &lt;&#x2F;span&gt;&lt;span style=&quot;font-weight:bold;color:#ebcb8b;&quot;&gt;**语言匹配**&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;: 根据用户输入语言选择中文或英文
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;3. &lt;&#x2F;span&gt;&lt;span style=&quot;font-weight:bold;color:#ebcb8b;&quot;&gt;**技术准确**&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;: 代码、工具名称必须准确
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 写作工作流
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### Phase 1: 理解需求
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### Phase 2: 生成大纲
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### Phase 3: 撰写正文
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### Phase 4: 生成完整文件
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;### Phase 5: 生成封面图（可选）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;hong-fa-fang-shi&quot;&gt;触发方式&lt;&#x2F;h3&gt;
+&lt;p&gt;当我说&amp;quot;帮我写一篇博客&amp;quot;时，Claude Code 会：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;扫描 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录&lt;&#x2F;li&gt;
+&lt;li&gt;匹配到 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; 的触发词&lt;&#x2F;li&gt;
+&lt;li&gt;自动读取 &lt;code&gt;SKILL.md&lt;&#x2F;code&gt; 及相关资源&lt;&#x2F;li&gt;
+&lt;li&gt;按 skill 定义的流程执行&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;skills-vs-prompts-dui-bi&quot;&gt;Skills vs Prompts 对比&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Prompts&lt;&#x2F;th&gt;&lt;th&gt;Skills&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;平台&lt;&#x2F;td&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;触发&lt;&#x2F;td&gt;&lt;td&gt;手动 &lt;code&gt;#名称&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;AI 自动识别&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;内容&lt;&#x2F;td&gt;&lt;td&gt;单个 .md 文件&lt;&#x2F;td&gt;&lt;td&gt;目录结构（可含脚本、资料）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;智能度&lt;&#x2F;td&gt;&lt;td&gt;被动模板&lt;&#x2F;td&gt;&lt;td&gt;主动能力模块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;它们是不同平台的类似概念，不是一起使用的关系。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-si-ceng-tools-shi-ji-de-gong-ju-xiang&quot;&gt;第四层：Tools — 实际的&amp;quot;工具箱&amp;quot;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;shi-shi-yao-3&quot;&gt;是什么？&lt;&#x2F;h3&gt;
+&lt;p&gt;前三层都是&amp;quot;告诉 AI 怎么想&amp;quot;，而 Tools 是&amp;quot;让 AI 能做事&amp;quot;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;读写文件&lt;&#x2F;li&gt;
+&lt;li&gt;执行终端命令&lt;&#x2F;li&gt;
+&lt;li&gt;调用外部 API&lt;&#x2F;li&gt;
+&lt;li&gt;操作数据库&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;chang-jian-de-tools&quot;&gt;常见的 Tools&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;类型&lt;&#x2F;th&gt;&lt;th&gt;示例&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;内置工具&lt;&#x2F;td&gt;&lt;td&gt;文件读写、终端执行、代码搜索&lt;&#x2F;td&gt;&lt;td&gt;AI 工具自带&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MCP Tools&lt;&#x2F;td&gt;&lt;td&gt;翻译服务、数据库操作、自定义 API&lt;&#x2F;td&gt;&lt;td&gt;MCP Server 提供&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;VS Code API&lt;&#x2F;td&gt;&lt;td&gt;编辑器操作、调试控制&lt;&#x2F;td&gt;&lt;td&gt;扩展提供&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;mcp-tools-shi-li&quot;&gt;MCP Tools 示例&lt;&#x2F;h3&gt;
+&lt;p&gt;我开发的翻译 MCP Server 提供了这些 Tools：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@mcp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;translate_document&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;file_path&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_lang&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;翻译整篇文档&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;@mcp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;extract_terminology&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;file_path&lt;&#x2F;span&gt;&lt;span&gt;: str):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;提取术语表&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;当 AI 需要翻译文档时，会自动调用这些 tools。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tools-yu-qi-ta-ceng-de-guan-xi&quot;&gt;Tools 与其他层的关系&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Instructions → 告诉 AI 项目背景
+&lt;&#x2F;span&gt;&lt;span&gt;Prompts&#x2F;Skills → 告诉 AI 任务流程
+&lt;&#x2F;span&gt;&lt;span&gt;Tools → 让 AI 实际执行操作
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Tools 是执行层，前三层是知识层。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ping-tai-chai-yi-claude-code-vs-github-copilot&quot;&gt;平台差异：Claude Code vs GitHub Copilot&lt;&#x2F;h2&gt;
+&lt;p&gt;理解完四层架构后，再看两个主流工具的差异就清晰了：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;Claude Code&lt;&#x2F;th&gt;&lt;th&gt;GitHub Copilot&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Instructions&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;settings.json&lt;&#x2F;code&gt; 配置&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Prompts&lt;&#x2F;td&gt;&lt;td&gt;❌ 不支持&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;code&gt;.github&#x2F;prompts&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Skills&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;❌ 不支持&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Tools&lt;&#x2F;td&gt;&lt;td&gt;MCP Tools&lt;&#x2F;td&gt;&lt;td&gt;VS Code 内置 + MCP&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;自动识别能力&lt;&#x2F;td&gt;&lt;td&gt;✅ 强（会自动选 skill）&lt;&#x2F;td&gt;&lt;td&gt;⚠️ 弱（需手动 #调用）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;wo-de-pei-zhi-ce-lue&quot;&gt;我的配置策略&lt;&#x2F;h3&gt;
+&lt;p&gt;同时使用两个工具时，我的策略是：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Instructions 共用&lt;&#x2F;strong&gt;：&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 通过 settings.json 给 Copilot 用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;任务模板分开&lt;&#x2F;strong&gt;：Copilot 用 prompts，Claude 用 skills&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Tools 共用&lt;&#x2F;strong&gt;：MCP Server 两边都能调用&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;文件结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── CLAUDE.md                    # 共用
+&lt;&#x2F;span&gt;&lt;span&gt;├── .vscode&#x2F;settings.json        # 让 Copilot 读 CLAUDE.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── .github&#x2F;prompts&#x2F;             # Copilot 专用
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── BlogWriter.prompt.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── ...
+&lt;&#x2F;span&gt;&lt;span&gt;├── .claude&#x2F;skills&#x2F;              # Claude Code 专用
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── blog-writer&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── ...
+&lt;&#x2F;span&gt;&lt;span&gt;└── Master-Translator-MCP-Server&#x2F;  # MCP Tools，两边共用
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;shi-ji-gong-zuo-liu-shi-li&quot;&gt;实际工作流示例&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;chang-jing-xie-yi-pian-bo-ke&quot;&gt;场景：写一篇博客&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;用 GitHub Copilot：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;我：#BlogWriter 帮我写一篇关于 MCP 的博客
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;System Prompt 包含：
+&lt;&#x2F;span&gt;&lt;span&gt;├── CLAUDE.md (Instructions)      ← 自动
+&lt;&#x2F;span&gt;&lt;span&gt;├── BlogWriter.prompt.md          ← #触发
+&lt;&#x2F;span&gt;&lt;span&gt;└── 我的问题
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;用 Claude Code：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;我：帮我写一篇关于 MCP 的博客
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;System Prompt 包含：
+&lt;&#x2F;span&gt;&lt;span&gt;├── CLAUDE.md (Instructions)      ← 自动
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-writer&#x2F;SKILL.md          ← 自动识别
+&lt;&#x2F;span&gt;&lt;span&gt;└── 我的问题
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;效果类似，但 Claude Code 不需要手动指定 &lt;code&gt;#BlogWriter&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-zhang-biao-ge-zong-jie&quot;&gt;一张表格总结&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;&lt;&#x2F;th&gt;&lt;th&gt;Instructions&lt;&#x2F;th&gt;&lt;th&gt;Prompts&lt;&#x2F;th&gt;&lt;th&gt;Skills&lt;&#x2F;th&gt;&lt;th&gt;Tools&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;是什么&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;项目上下文&lt;&#x2F;td&gt;&lt;td&gt;任务模板&lt;&#x2F;td&gt;&lt;td&gt;能力模块&lt;&#x2F;td&gt;&lt;td&gt;执行工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;类比&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;入职手册&lt;&#x2F;td&gt;&lt;td&gt;SOP 流程&lt;&#x2F;td&gt;&lt;td&gt;技能认证&lt;&#x2F;td&gt;&lt;td&gt;工具箱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;位置&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;prompts&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;MCP Server&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;加载方式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;自动&lt;&#x2F;td&gt;&lt;td&gt;手动 &lt;code&gt;#&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;自动识别&lt;&#x2F;td&gt;&lt;td&gt;按需调用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Token 消耗&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;每次都消耗&lt;&#x2F;td&gt;&lt;td&gt;调用时消耗&lt;&#x2F;td&gt;&lt;td&gt;调用时消耗&lt;&#x2F;td&gt;&lt;td&gt;不消耗&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Copilot&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Claude Code&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;理清这四层架构后，配置 AI 助手就不再是&amp;quot;试错&amp;quot;，而是有章可循：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;全局信息放 Instructions&lt;&#x2F;strong&gt;——项目结构、命令、约定&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;任务流程放 Prompts&#x2F;Skills&lt;&#x2F;strong&gt;——写博客、写专利的具体步骤&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;复杂能力做成 Tools&lt;&#x2F;strong&gt;——翻译服务、图像生成等&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;配置的核心原则是：&lt;strong&gt;让 AI 在需要的时候获取需要的信息，而不是一股脑全塞给它。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果你也在配置自己的 AI 工作流，希望这篇梳理能帮到你。有问题欢迎在评论区讨论！&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🧠 打造数字版的我：从 Agent Skills 到有记忆的 AI 分身</title>
         <published>2026-01-25T00:00:00+00:00</published>
