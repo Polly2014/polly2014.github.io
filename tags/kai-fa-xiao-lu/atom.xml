@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 开发效率</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/kai-fa-xiao-lu/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-30T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/kai-fa-xiao-lu/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🛠️ 在 VS Code 中打造丝滑的 Claude Code 体验</title>
+        <published>2026-01-30T00:00:00+00:00</published>
+        <updated>2026-01-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-vscode-smooth-experience/" type="text/html"/>
+        <id>https://polly.wang/claude-code-vscode-smooth-experience/</id>
+        
+        <content type="html">&lt;h2 id=&quot;cong-yi-ci-bai-mang-huo-shuo-qi&quot;&gt;从一次&amp;quot;白忙活&amp;quot;说起&lt;&#x2F;h2&gt;
+&lt;p&gt;今天我花了一整天开发一个语音控制 Copilot 的插件，结果发现 VS Code 早就自带了这功能。&lt;&#x2F;p&gt;
+&lt;p&gt;但这次踩坑让我意外发现了一个更重要的事情：&lt;strong&gt;Claude Code 在 VS Code 里的体验，其实可以比 CLI 更丝滑&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-shi-yao-zai-vs-code-li-yong-claude-code&quot;&gt;为什么在 VS Code 里用 Claude Code？&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 官方推荐的方式是在终端里运行 CLI：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;claude
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样能用，但有几个痛点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;没有语法高亮的代码预览&lt;&#x2F;li&gt;
+&lt;li&gt;文件编辑需要切换窗口确认&lt;&#x2F;li&gt;
+&lt;li&gt;上下文管理全靠手动 &lt;code&gt;&#x2F;add&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;而在 VS Code 里，通过 GitHub Copilot 扩展调用 Claude（是的，Copilot 现在支持选择 Claude 模型），你可以获得：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;CLI&lt;&#x2F;th&gt;&lt;th&gt;VS Code&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;代码高亮&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文件内编辑预览&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;自动上下文感知&lt;&#x2F;td&gt;&lt;td&gt;部分&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;快捷键触发&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;与 Copilot 无缝切换&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;更重要的是，通过合理配置，你可以让 Claude &lt;strong&gt;记住&lt;&#x2F;strong&gt;你的项目偏好、编码风格，甚至过去的对话内容。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;pei-zhi-yi-claude-md-xiang-mu-shang-xia-wen&quot;&gt;配置一：CLAUDE.md 项目上下文&lt;&#x2F;h2&gt;
+&lt;p&gt;这是最基础也最重要的配置。在项目根目录创建 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# CLAUDE.md
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Project Overview
+&lt;&#x2F;span&gt;&lt;span&gt;这是 Polly 的个人网站，使用 Zola 静态站点生成器...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Commands
+&lt;&#x2F;span&gt;&lt;span&gt;zola serve    # 本地开发
+&lt;&#x2F;span&gt;&lt;span&gt;zola build    # 构建发布
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Architecture
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;content&#x2F;blog&#x2F;  - 博客文章
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;templates&#x2F;     - Tera 模板
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;static&#x2F;        - 静态资源
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## Coding Style
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 使用中文注释
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 函数命名用 snake_case
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 博客文件命名：YYYYMMDD-slug&#x2F;index.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Claude Code 会自动读取这个文件作为项目上下文。每次对话，它都知道：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;这是什么项目&lt;&#x2F;li&gt;
+&lt;li&gt;怎么运行和构建&lt;&#x2F;li&gt;
+&lt;li&gt;代码规范是什么&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;效果&lt;&#x2F;strong&gt;：问&amp;quot;帮我写个博客文章&amp;quot;时，Claude 会自动使用正确的 frontmatter 格式和文件位置。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;pei-zhi-er-skills-xi-tong&quot;&gt;配置二：Skills 系统&lt;&#x2F;h2&gt;
+&lt;p&gt;CLAUDE.md 解决了&amp;quot;项目是什么&amp;quot;，但没解决&amp;quot;任务怎么做&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是 Skills 的作用——&lt;strong&gt;让 Claude 学会特定领域的专业知识&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;在 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录下，每个文件夹是一个 Skill：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;.claude&#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── blog-writer&#x2F;          # 博客写作专家
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── paper-writer&#x2F;         # 论文写作专家
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── memory-keeper&#x2F;        # 记忆管理
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;└── mcp-builder&#x2F;          # MCP 服务器开发
+&lt;&#x2F;span&gt;&lt;span&gt;    └── SKILL.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;以 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; 为例，SKILL.md 里定义了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;触发词：&amp;quot;写博文&amp;quot;、&amp;quot;记录项目&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;写作流程：理解需求 → 生成大纲 → 撰写正文 → 输出文件&lt;&#x2F;li&gt;
+&lt;li&gt;Frontmatter 规范&lt;&#x2F;li&gt;
+&lt;li&gt;写作风格指南&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;当你说&amp;quot;帮我写篇博客&amp;quot;，Claude 会自动加载这个 Skill，按照预设流程执行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这就像给 Claude 安装了&amp;quot;职业培训模块&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;pei-zhi-san-memory-ji-yi-xi-tong&quot;&gt;配置三：Memory 记忆系统&lt;&#x2F;h2&gt;
+&lt;p&gt;Skills 让 Claude 知道&amp;quot;怎么做&amp;quot;，但它还是不&amp;quot;认识&amp;quot;你。&lt;&#x2F;p&gt;
+&lt;p&gt;每次对话，Claude 都是从零开始。它不知道：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;你上周在做什么项目&lt;&#x2F;li&gt;
+&lt;li&gt;你之前做过什么决策&lt;&#x2F;li&gt;
+&lt;li&gt;你有什么长期目标&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我的解决方案是建立一个 &lt;strong&gt;双轨记忆系统&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;memory&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── daily&#x2F;              # 编年体：按日期记录
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── 2026&#x2F;01&#x2F;30.md   # 今天的对话记录
+&lt;&#x2F;span&gt;&lt;span&gt;├── topics&#x2F;             # 纪传体：按主题追踪
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── voicepilot&#x2F;     # VoicePilot 项目的完整历史
+&lt;&#x2F;span&gt;&lt;span&gt;└── index.md            # 记忆索引
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每次对话结束时，我会说&amp;quot;记录一下&amp;quot;，Claude 会：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;提取今天的重要内容，追加到 &lt;code&gt;daily&#x2F;2026&#x2F;01&#x2F;30.md&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;识别关联主题，更新对应的 topic 文件&lt;&#x2F;li&gt;
+&lt;li&gt;刷新索引&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;下次对话时，Claude 可以通过这些文件&amp;quot;回忆&amp;quot;过去的上下文。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这让 Claude 从&amp;quot;失忆症患者&amp;quot;变成了能持续陪伴的&amp;quot;老朋友&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;pei-zhi-si-yu-copilot-gong-xiang-zhi-ling&quot;&gt;配置四：与 Copilot 共享指令&lt;&#x2F;h2&gt;
+&lt;p&gt;一个实用的小技巧：让 Claude Code 和 GitHub Copilot 共用同一份指令文件。&lt;&#x2F;p&gt;
+&lt;p&gt;GitHub Copilot 使用 &lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt; 作为自定义指令。我们可以创建一个符号链接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; .github
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ln -sf&lt;&#x2F;span&gt;&lt;span&gt; ..&#x2F;CLAUDE.md copilot-instructions.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;现在：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Claude Code 读取 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Copilot 读取 &lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt;（实际指向 CLAUDE.md）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;一份文档，两个 AI 助手都能用。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wan-zheng-gong-zuo-liu-yan-shi&quot;&gt;完整工作流演示&lt;&#x2F;h2&gt;
+&lt;p&gt;假设我要写一篇博文记录今天的 VoicePilot 开发经历：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;触发 Skill&lt;&#x2F;strong&gt;：在 Chat 里说&amp;quot;写篇博文记录 VoicePilot&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Claude 加载 blog-writer Skill&lt;&#x2F;strong&gt;，按流程询问细节&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;生成大纲&lt;&#x2F;strong&gt;，我确认后开始写作&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;输出完整文件&lt;&#x2F;strong&gt;，包含正确的 frontmatter 和文件路径&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;说&amp;quot;记录一下&amp;quot;&lt;&#x2F;strong&gt;，Claude 把今天的经历存入 Memory&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;下次对话&lt;&#x2F;strong&gt;，Claude 知道我在做什么项目&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;整个过程，&lt;strong&gt;Claude 就像一个了解我的私人助理&lt;&#x2F;strong&gt;，而不是每次都需要从头介绍的陌生人。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;claude-code-vs-copilot-wo-de-xuan-ze&quot;&gt;Claude Code vs Copilot：我的选择&lt;&#x2F;h2&gt;
+&lt;p&gt;两者我都在用，但场景不同：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;选择&lt;&#x2F;th&gt;&lt;th&gt;原因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;快速代码补全&lt;&#x2F;td&gt;&lt;td&gt;Copilot&lt;&#x2F;td&gt;&lt;td&gt;Tab 补全更快&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;复杂任务&#x2F;多步骤&lt;&#x2F;td&gt;&lt;td&gt;Claude&lt;&#x2F;td&gt;&lt;td&gt;推理能力更强&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;写文档&#x2F;博客&lt;&#x2F;td&gt;&lt;td&gt;Claude&lt;&#x2F;td&gt;&lt;td&gt;自然语言更优&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;代码解释&lt;&#x2F;td&gt;&lt;td&gt;都行&lt;&#x2F;td&gt;&lt;td&gt;各有千秋&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;项目级重构&lt;&#x2F;td&gt;&lt;td&gt;Claude&lt;&#x2F;td&gt;&lt;td&gt;上下文理解更好&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;最佳实践&lt;&#x2F;strong&gt;：用 Copilot 做 inline 补全，用 Claude 做 Chat 对话。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;zong-jie-rang-ai-cheng-wei-lao-peng-you&quot;&gt;总结：让 AI 成为&amp;quot;老朋友&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;传统的 AI 编程助手是&amp;quot;工具&amp;quot;——你问，它答，然后遗忘一切。&lt;&#x2F;p&gt;
+&lt;p&gt;通过 CLAUDE.md、Skills、Memory 这套配置，Claude 变成了&amp;quot;老朋友&amp;quot;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;知道你的项目&lt;&#x2F;strong&gt;（CLAUDE.md）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;掌握专业技能&lt;&#x2F;strong&gt;（Skills）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;记住过去的对话&lt;&#x2F;strong&gt;（Memory）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;风格保持一致&lt;&#x2F;strong&gt;（共享指令）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这不需要复杂的配置，只需要几个 Markdown 文件。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你也在用 Claude Code，不妨试试这套方案。相信我，体验会完全不同。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xiang-guan-zi-yuan&quot;&gt;相关资源&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.anthropic.com&#x2F;en&#x2F;docs&#x2F;claude-code&quot;&gt;Claude Code 官方文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;docs&#x2F;copilot&#x2F;customization&#x2F;custom-instructions&quot;&gt;VS Code Copilot 自定义指令&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;www.polly.com&#x2F;blob&#x2F;main&#x2F;CLAUDE.md&quot;&gt;我的 CLAUDE.md 模板&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;下次 AI 忘记你是谁的时候，记得给它建个 Memory 系统。&lt;&#x2F;em&gt; 😄&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
