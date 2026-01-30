@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - TTS</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/tts/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-01-30T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/tts/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件</title>
+        <published>2026-01-30T00:00:00+00:00</published>
+        <updated>2026-01-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/voicepilot-unnecessary-plugin/" type="text/html"/>
+        <id>https://polly.wang/voicepilot-unnecessary-plugin/</id>
+        
+        <content type="html">&lt;h2 id=&quot;gei-ta-up-kao-pan-zi&quot;&gt;&amp;quot;给他 up 烤盘子&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;在测试语音识别功能时，我对着麦克风说了一句&amp;quot;GitHub Copilot&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;屏幕上显示的是：&lt;strong&gt;给他 up 烤盘子&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻，我对语音识别技术产生了深深的敬畏——敬畏它在某些时刻的离谱程度。&lt;&#x2F;p&gt;
+&lt;p&gt;但更离谱的事情还在后面：我花了一整天开发的语音插件，在即将完成时，发现 Copilot 本身就已经支持语音输入和朗读了。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一篇关于&amp;quot;白忙活&amp;quot;的记录。但正如老话说的——&lt;strong&gt;过程比结果重要&lt;&#x2F;strong&gt;（至少我是这么安慰自己的）。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xiang-mu-bei-jing-hackathon-de-chong-dong&quot;&gt;项目背景：Hackathon 的冲动&lt;&#x2F;h2&gt;
+&lt;p&gt;公司举办内部 Hackathon，主题是围绕 AI 编程工具做创新。我脑海里冒出一个&amp;quot;很酷&amp;quot;的想法：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果能用语音和 Copilot 对话，然后让它把回答念出来，岂不是很方便？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;想象一下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🎤 对着麦克风说：&amp;quot;帮我解释这段代码&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;🤖 Copilot 分析后给出解释&lt;&#x2F;li&gt;
+&lt;li&gt;🔊 解释内容被朗读出来&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;解放双手，闭眼编程，完美！&lt;&#x2F;p&gt;
+&lt;p&gt;于是，&lt;strong&gt;VoicePilot&lt;&#x2F;strong&gt; 诞生了——一个旨在为 GitHub Copilot Chat 添加语音交互能力的 VS Code 扩展。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ji-zhu-tan-suo-zhi-lu&quot;&gt;技术探索之旅&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;jia-gou-she-ji&quot;&gt;架构设计&lt;&#x2F;h3&gt;
+&lt;p&gt;经过一番 brainstorming，我确定了技术栈：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                      VoicePilot 架构                         │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│   🎤 语音输入                    🔊 语音输出                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│   ─────────                    ─────────                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│   Azure Speech SDK             Azure Speech SDK             │
+&lt;&#x2F;span&gt;&lt;span&gt;│   (STT: 语音转文字)              (TTS: 文字转语音)             │
+&lt;&#x2F;span&gt;&lt;span&gt;│         │                            ▲                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│         ▼                            │                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│   ┌─────────────────────────────────────────────┐          │
+&lt;&#x2F;span&gt;&lt;span&gt;│   │           @voice Chat Participant            │          │
+&lt;&#x2F;span&gt;&lt;span&gt;│   │         (VS Code Chat API 集成)              │          │
+&lt;&#x2F;span&gt;&lt;span&gt;│   └─────────────────────────────────────────────┘          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                        ▼                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│              GitHub Copilot 处理                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;核心技术选型：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Azure Speech SDK&lt;&#x2F;strong&gt; (&lt;code&gt;microsoft-cognitiveservices-speech-sdk&lt;&#x2F;code&gt;)：负责语音识别和语音合成&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;VS Code Chat Participant API&lt;&#x2F;strong&gt; (&lt;code&gt;vscode.chat.createChatParticipant&lt;&#x2F;code&gt;)：创建 &lt;code&gt;@voice&lt;&#x2F;code&gt; 聊天参与者&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;esbuild&lt;&#x2F;strong&gt;：打包依赖，避免 node_modules 体积问题&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;di-yi-ge-keng-window-is-not-defined&quot;&gt;第一个坑：window is not defined&lt;&#x2F;h3&gt;
+&lt;p&gt;满怀信心地写完代码，打包，安装，运行——&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Error: window is not defined
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;怎么回事？&lt;&#x2F;p&gt;
+&lt;p&gt;原来 Azure Speech SDK 的麦克风输入 API (&lt;code&gt;AudioConfig.fromDefaultMicrophoneInput()&lt;&#x2F;code&gt;) 依赖浏览器环境的 &lt;code&gt;window&lt;&#x2F;code&gt; 对象。而 VS Code 扩展运行在 &lt;strong&gt;Node.js 环境&lt;&#x2F;strong&gt;中，根本没有 &lt;code&gt;window&lt;&#x2F;code&gt;！&lt;&#x2F;p&gt;
+&lt;p&gt;这是一个典型的&amp;quot;环境不匹配&amp;quot;问题。SDK 文档里那些漂亮的示例代码，都是给浏览器用的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;解决方案尝试&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用文件输入替代麦克风（录音 → 识别）—— 太麻烦&lt;&#x2F;li&gt;
+&lt;li&gt;创建 WebView 来捕获音频 —— 复杂度爆炸&lt;&#x2F;li&gt;
+&lt;li&gt;寻找替代方案...&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;di-er-ge-keng-vs-code-speech-kuo-zhan&quot;&gt;第二个坑：VS Code Speech 扩展&lt;&#x2F;h3&gt;
+&lt;p&gt;在搜索解决方案时，我发现了 &lt;strong&gt;VS Code Speech&lt;&#x2F;strong&gt; 扩展 (&lt;code&gt;ms-vscode.vscode-speech&lt;&#x2F;code&gt;)——微软官方出品，提供本地语音识别能力。&lt;&#x2F;p&gt;
+&lt;p&gt;更关键的是，我检查了一下自己的 VS Code：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code --list-extensions &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;grep -i&lt;&#x2F;span&gt;&lt;span&gt; speech
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;输出：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;ms-vscode.vscode-speech
+&lt;&#x2F;span&gt;&lt;span&gt;ms-vscode.vscode-speech-language-pack-zh-cn
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;我早就安装了它&lt;&#x2F;strong&gt;，只是从来没用过。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我开始怀疑：Copilot 是不是已经集成了语音功能？&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;huang-ran-da-wu-shi-ke&quot;&gt;恍然大悟时刻&lt;&#x2F;h2&gt;
+&lt;p&gt;抱着试试看的心态，我按下了 &lt;code&gt;Cmd+I&lt;&#x2F;code&gt;（macOS）。&lt;&#x2F;p&gt;
+&lt;p&gt;一个语音输入界面出现了。我说了句话，文字自动出现在 Copilot Chat 的输入框里。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我又搜索了设置，找到了这个：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;jsonc&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-jsonc &quot;&gt;&lt;code class=&quot;language-jsonc&quot; data-lang=&quot;jsonc&quot;&gt;&lt;span&gt;&amp;quot;accessibility.voice.autoSynthesize&amp;quot;: &amp;quot;on&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;开启后，当我用语音提问时，&lt;strong&gt;Copilot 的回复会自动被朗读出来&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我坐在电脑前，沉默了三秒。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我花了一天时间开发的功能，VS Code 早就有了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shou-huo-yu-fan-si&quot;&gt;收获与反思&lt;&#x2F;h2&gt;
+&lt;p&gt;虽然 VoicePilot 最终被判定为&amp;quot;没必要&amp;quot;，但这次探索让我收获颇丰：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;books-ji-zhu-shou-huo&quot;&gt;📚 技术收获&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;VS Code 扩展开发全流程&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;TypeScript 项目结构&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;package.json&lt;&#x2F;code&gt; 中的 &lt;code&gt;contributes&lt;&#x2F;code&gt; 配置&lt;&#x2F;li&gt;
+&lt;li&gt;命令注册、状态栏管理、快捷键绑定&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Chat Participant API&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;创建自定义的 &lt;code&gt;@xxx&lt;&#x2F;code&gt; 聊天参与者&lt;&#x2F;li&gt;
+&lt;li&gt;与 Copilot 模型交互&lt;&#x2F;li&gt;
+&lt;li&gt;处理流式响应&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;esbuild 打包&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;将 node_modules 打包进扩展&lt;&#x2F;li&gt;
+&lt;li&gt;解决 &lt;code&gt;.vsix&lt;&#x2F;code&gt; 文件过大问题&lt;&#x2F;li&gt;
+&lt;li&gt;处理外部依赖的 require&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Azure Speech SDK 的局限性&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;麦克风 API 需要浏览器环境&lt;&#x2F;li&gt;
+&lt;li&gt;文件输入是 Node.js 环境的替代方案&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;bulb-jing-yan-jiao-xun&quot;&gt;💡 经验教训&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;做项目前，先调研现有方案！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果我一开始就搜索&amp;quot;VS Code Copilot voice&amp;quot;，可能 5 分钟就能发现答案，而不是花一天去重复造轮子。&lt;&#x2F;p&gt;
+&lt;p&gt;但话说回来，如果不亲自踩坑，我也不会真正理解 VS Code 扩展开发的方方面面。有时候，弯路也是一种学习。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fu-lu-copilot-yu-yin-gong-neng-wan-quan-zhi-nan&quot;&gt;附录：Copilot 语音功能完全指南&lt;&#x2F;h2&gt;
+&lt;p&gt;既然 VoicePilot 没必要做了，那就把 Copilot 自带的语音功能整理清楚，造福后人：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;qian-zhi-tiao-jian&quot;&gt;前置条件&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;安装 &lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=ms-vscode.vscode-speech&quot;&gt;VS Code Speech&lt;&#x2F;a&gt; 扩展&lt;&#x2F;li&gt;
+&lt;li&gt;安装对应语言包（如中文：&lt;code&gt;ms-vscode.vscode-speech-language-pack-zh-cn&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;确保麦克风权限已授予 VS Code&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;yu-yin-shu-ru&quot;&gt;语音输入&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;Mac 快捷键&lt;&#x2F;th&gt;&lt;th&gt;Windows 快捷键&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;语音输入到 Chat&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Cmd+I&lt;&#x2F;code&gt;（按住说话，松开提交）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Ctrl+I&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;编辑器听写模式&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Cmd+Alt+V&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Ctrl+Alt+V&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;使用技巧&lt;&#x2F;strong&gt;：按住 &lt;code&gt;Cmd+I&lt;&#x2F;code&gt; 不放，对着麦克风说话，松开后自动提交到 Copilot。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yu-yin-shu-chu-lang-du&quot;&gt;语音输出（朗读）&lt;&#x2F;h3&gt;
+&lt;p&gt;在设置中开启：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;jsonc&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-jsonc &quot;&gt;&lt;code class=&quot;language-jsonc&quot; data-lang=&quot;jsonc&quot;&gt;&lt;span&gt;&#x2F;&#x2F; 当用语音输入时，自动朗读 Copilot 的回复
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;accessibility.voice.autoSynthesize&amp;quot;: &amp;quot;on&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&#x2F; 朗读时跳过代码块（推荐开启）
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;accessibility.voice.ignoreCodeBlocks&amp;quot;: true
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yu-yan-she-zhi&quot;&gt;语言设置&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;jsonc&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-jsonc &quot;&gt;&lt;code class=&quot;language-jsonc&quot; data-lang=&quot;jsonc&quot;&gt;&lt;span&gt;&#x2F;&#x2F; 设置语音识别的语言
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;accessibility.voice.speechLanguage&amp;quot;: &amp;quot;zh-CN&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;支持 26 种语言，包括中文、英文、日文、法文等。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-sheng&quot;&gt;尾声&lt;&#x2F;h2&gt;
+&lt;p&gt;VoicePilot 项目虽然&amp;quot;失败&amp;quot;了，但我收获了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;一套完整的 VS Code 扩展开发经验&lt;&#x2F;li&gt;
+&lt;li&gt;对 Azure Speech SDK 的深入理解&lt;&#x2F;li&gt;
+&lt;li&gt;以及这篇博文&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最重要的是，我终于知道怎么让 Copilot &amp;quot;开口说话&amp;quot;了。&lt;&#x2F;p&gt;
+&lt;p&gt;下次 Hackathon，我一定会先花 10 分钟调研。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;——大概吧。&lt;&#x2F;strong&gt; 😅&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,76 @@
+<!doctype html><html><head><title>🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件</title><meta content="公司 Hackathon 期间，我花了一天时间开发一个语音控制 Copilot 的 VS Code 插件，结果发现... Copilot 早就自带这功能了。但这次白忙活让我学到了 VS Code 扩展开发的核心技术，以及如何正确开启 Copilot 的语音交互。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/voicepilot-unnecessary-plugin/ property=og:url><meta content="🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件" property=og:title><meta content="公司 Hackathon 期间，我花了一天时间开发一个语音控制 Copilot 的 VS Code 插件，结果发现... Copilot 早就自带这功能了。但这次白忙活让我学到了 VS Code 扩展开发的核心技术，以及如何正确开启 Copilot 的语音交互。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/voicepilot-unnecessary-plugin/ name=twitter:url><meta content="🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件" name=twitter:title><meta content="公司 Hackathon 期间，我花了一天时间开发一个语音控制 Copilot 的 VS Code 插件，结果发现... Copilot 早就自带这功能了。但这次白忙活让我学到了 VS Code 扩展开发的核心技术，以及如何正确开启 Copilot 的语音交互。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-01-30T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="VS Code" property=article:tag><meta content=Extension property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content=语音识别 property=article:tag><meta content=TTS property=article:tag><meta content=踩坑记录 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件</h1><div class=cover-image><img alt="🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件" loading=lazy src=cover.jpg></div><div class=content><h2 id=gei-ta-up-kao-pan-zi>"给他 up 烤盘子"</h2><p>在测试语音识别功能时，我对着麦克风说了一句"GitHub Copilot"。<p>屏幕上显示的是：<strong>给他 up 烤盘子</strong>。<p>那一刻，我对语音识别技术产生了深深的敬畏——敬畏它在某些时刻的离谱程度。<p>但更离谱的事情还在后面：我花了一整天开发的语音插件，在即将完成时，发现 Copilot 本身就已经支持语音输入和朗读了。<p>这是一篇关于"白忙活"的记录。但正如老话说的——<strong>过程比结果重要</strong>（至少我是这么安慰自己的）。<hr><h2 id=xiang-mu-bei-jing-hackathon-de-chong-dong>项目背景：Hackathon 的冲动</h2><p>公司举办内部 Hackathon，主题是围绕 AI 编程工具做创新。我脑海里冒出一个"很酷"的想法：<blockquote><p>如果能用语音和 Copilot 对话，然后让它把回答念出来，岂不是很方便？</blockquote><p>想象一下：<ul><li>🎤 对着麦克风说："帮我解释这段代码"<li>🤖 Copilot 分析后给出解释<li>🔊 解释内容被朗读出来</ul><p>解放双手，闭眼编程，完美！<p>于是，<strong>VoicePilot</strong> 诞生了——一个旨在为 GitHub Copilot Chat 添加语音交互能力的 VS Code 扩展。<hr><h2 id=ji-zhu-tan-suo-zhi-lu>技术探索之旅</h2><h3 id=jia-gou-she-ji>架构设计</h3><p>经过一番 brainstorming，我确定了技术栈：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────┐
+</span><span>│                      VoicePilot 架构                         │
+</span><span>├─────────────────────────────────────────────────────────────┤
+</span><span>│                                                             │
+</span><span>│   🎤 语音输入                    🔊 语音输出                  │
+</span><span>│   ─────────                    ─────────                   │
+</span><span>│   Azure Speech SDK             Azure Speech SDK             │
+</span><span>│   (STT: 语音转文字)              (TTS: 文字转语音)             │
+</span><span>│         │                            ▲                      │
+</span><span>│         ▼                            │                      │
+</span><span>│   ┌─────────────────────────────────────────────┐          │
+</span><span>│   │           @voice Chat Participant            │          │
+</span><span>│   │         (VS Code Chat API 集成)              │          │
+</span><span>│   └─────────────────────────────────────────────┘          │
+</span><span>│                        │                                    │
+</span><span>│                        ▼                                    │
+</span><span>│              GitHub Copilot 处理                            │
+</span><span>│                                                             │
+</span><span>└─────────────────────────────────────────────────────────────┘
+</span></code></pre><p>核心技术选型：<ul><li><strong>Azure Speech SDK</strong> (<code>microsoft-cognitiveservices-speech-sdk</code>)：负责语音识别和语音合成<li><strong>VS Code Chat Participant API</strong> (<code>vscode.chat.createChatParticipant</code>)：创建 <code>@voice</code> 聊天参与者<li><strong>esbuild</strong>：打包依赖，避免 node_modules 体积问题</ul><h3 id=di-yi-ge-keng-window-is-not-defined>第一个坑：window is not defined</h3><p>满怀信心地写完代码，打包，安装，运行——<pre style=background:#2b303b;color:#c0c5ce><code><span>Error: window is not defined
+</span></code></pre><p>怎么回事？<p>原来 Azure Speech SDK 的麦克风输入 API (<code>AudioConfig.fromDefaultMicrophoneInput()</code>) 依赖浏览器环境的 <code>window</code> 对象。而 VS Code 扩展运行在 <strong>Node.js 环境</strong>中，根本没有 <code>window</code>！<p>这是一个典型的"环境不匹配"问题。SDK 文档里那些漂亮的示例代码，都是给浏览器用的。<p><strong>解决方案尝试</strong>：<ol><li>使用文件输入替代麦克风（录音 → 识别）—— 太麻烦<li>创建 WebView 来捕获音频 —— 复杂度爆炸<li>寻找替代方案...</ol><h3 id=di-er-ge-keng-vs-code-speech-kuo-zhan>第二个坑：VS Code Speech 扩展</h3><p>在搜索解决方案时，我发现了 <strong>VS Code Speech</strong> 扩展 (<code>ms-vscode.vscode-speech</code>)——微软官方出品，提供本地语音识别能力。<p>更关键的是，我检查了一下自己的 VS Code：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>code --list-extensions </span><span>| </span><span style=color:#bf616a>grep -i</span><span> speech
+</span></code></pre><p>输出：<pre style=background:#2b303b;color:#c0c5ce><code><span>ms-vscode.vscode-speech
+</span><span>ms-vscode.vscode-speech-language-pack-zh-cn
+</span></code></pre><p><strong>我早就安装了它</strong>，只是从来没用过。<p>这让我开始怀疑：Copilot 是不是已经集成了语音功能？<hr><h2 id=huang-ran-da-wu-shi-ke>恍然大悟时刻</h2><p>抱着试试看的心态，我按下了 <code>Cmd+I</code>（macOS）。<p>一个语音输入界面出现了。我说了句话，文字自动出现在 Copilot Chat 的输入框里。<p>然后我又搜索了设置，找到了这个：<pre class=language-jsonc data-lang=jsonc style=background:#2b303b;color:#c0c5ce><code class=language-jsonc data-lang=jsonc><span>"accessibility.voice.autoSynthesize": "on"
+</span></code></pre><p>开启后，当我用语音提问时，<strong>Copilot 的回复会自动被朗读出来</strong>。<p>我坐在电脑前，沉默了三秒。<p><strong>我花了一天时间开发的功能，VS Code 早就有了。</strong><hr><h2 id=shou-huo-yu-fan-si>收获与反思</h2><p>虽然 VoicePilot 最终被判定为"没必要"，但这次探索让我收获颇丰：<h3 id=books-ji-zhu-shou-huo>📚 技术收获</h3><ol><li><p><strong>VS Code 扩展开发全流程</strong></p> <ul><li>TypeScript 项目结构<li><code>package.json</code> 中的 <code>contributes</code> 配置<li>命令注册、状态栏管理、快捷键绑定</ul><li><p><strong>Chat Participant API</strong></p> <ul><li>创建自定义的 <code>@xxx</code> 聊天参与者<li>与 Copilot 模型交互<li>处理流式响应</ul><li><p><strong>esbuild 打包</strong></p> <ul><li>将 node_modules 打包进扩展<li>解决 <code>.vsix</code> 文件过大问题<li>处理外部依赖的 require</ul><li><p><strong>Azure Speech SDK 的局限性</strong></p> <ul><li>麦克风 API 需要浏览器环境<li>文件输入是 Node.js 环境的替代方案</ul></ol><h3 id=bulb-jing-yan-jiao-xun>💡 经验教训</h3><p><strong>做项目前，先调研现有方案！</strong><p>如果我一开始就搜索"VS Code Copilot voice"，可能 5 分钟就能发现答案，而不是花一天去重复造轮子。<p>但话说回来，如果不亲自踩坑，我也不会真正理解 VS Code 扩展开发的方方面面。有时候，弯路也是一种学习。<hr><h2 id=fu-lu-copilot-yu-yin-gong-neng-wan-quan-zhi-nan>附录：Copilot 语音功能完全指南</h2><p>既然 VoicePilot 没必要做了，那就把 Copilot 自带的语音功能整理清楚，造福后人：<h3 id=qian-zhi-tiao-jian>前置条件</h3><ol><li>安装 <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-speech">VS Code Speech</a> 扩展<li>安装对应语言包（如中文：<code>ms-vscode.vscode-speech-language-pack-zh-cn</code>）<li>确保麦克风权限已授予 VS Code</ol><h3 id=yu-yin-shu-ru>语音输入</h3><table><thead><tr><th>功能<th>Mac 快捷键<th>Windows 快捷键<tbody><tr><td>语音输入到 Chat<td><code>Cmd+I</code>（按住说话，松开提交）<td><code>Ctrl+I</code><tr><td>编辑器听写模式<td><code>Cmd+Alt+V</code><td><code>Ctrl+Alt+V</code></table><p><strong>使用技巧</strong>：按住 <code>Cmd+I</code> 不放，对着麦克风说话，松开后自动提交到 Copilot。<h3 id=yu-yin-shu-chu-lang-du>语音输出（朗读）</h3><p>在设置中开启：<pre class=language-jsonc data-lang=jsonc style=background:#2b303b;color:#c0c5ce><code class=language-jsonc data-lang=jsonc><span>// 当用语音输入时，自动朗读 Copilot 的回复
+</span><span>"accessibility.voice.autoSynthesize": "on",
+</span><span>
+</span><span>// 朗读时跳过代码块（推荐开启）
+</span><span>"accessibility.voice.ignoreCodeBlocks": true
+</span></code></pre><h3 id=yu-yan-she-zhi>语言设置</h3><pre class=language-jsonc data-lang=jsonc style=background:#2b303b;color:#c0c5ce><code class=language-jsonc data-lang=jsonc><span>// 设置语音识别的语言
+</span><span>"accessibility.voice.speechLanguage": "zh-CN"
+</span></code></pre><p>支持 26 种语言，包括中文、英文、日文、法文等。<hr><h2 id=wei-sheng>尾声</h2><p>VoicePilot 项目虽然"失败"了，但我收获了：<ul><li>一套完整的 VS Code 扩展开发经验<li>对 Azure Speech SDK 的深入理解<li>以及这篇博文</ul><p>最重要的是，我终于知道怎么让 Copilot "开口说话"了。<p>下次 Hackathon，我一定会先花 10 分钟调研。<p><strong>——大概吧。</strong> 😅</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
