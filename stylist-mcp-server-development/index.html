@@ -1,0 +1,237 @@
+<!doctype html><html><head><title>从零构建AI时尚顾问：Stylist MCP Server开发全记录</title><meta content="本文详细记录了我如何构建一个AI驱动的时尚推荐MCP Server，从ChromaDB向量索引、多模型LLM支持、到SSE远程访问和API认证，完整呈现一个生产级MCP服务的开发历程。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/stylist-mcp-server-development/ property=og:url><meta content="从零构建AI时尚顾问：Stylist MCP Server开发全记录" property=og:title><meta content="本文详细记录了我如何构建一个AI驱动的时尚推荐MCP Server，从ChromaDB向量索引、多模型LLM支持、到SSE远程访问和API认证，完整呈现一个生产级MCP服务的开发历程。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/stylist-mcp-server-development/ name=twitter:url><meta content="从零构建AI时尚顾问：Stylist MCP Server开发全记录" name=twitter:title><meta content="本文详细记录了我如何构建一个AI驱动的时尚推荐MCP Server，从ChromaDB向量索引、多模型LLM支持、到SSE远程访问和API认证，完整呈现一个生产级MCP服务的开发历程。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-01-31T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=MCP property=article:tag><meta content="Model Context Protocol" property=article:tag><meta content=ChromaDB property=article:tag><meta content=向量数据库 property=article:tag><meta content=时尚AI property=article:tag><meta content=Claude property=article:tag><meta content=GPT-4o-mini property=article:tag><meta content=SSE property=article:tag><meta content=Python property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8JD13N7PHS')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>从零构建AI时尚顾问：Stylist MCP Server开发全记录</h1><div class=cover-image><img alt="从零构建AI时尚顾问：Stylist MCP Server开发全记录" loading=lazy src=cover.jpg></div><div class=content><h2 id=yin-yan-dang-aiyu-jian-shi-shang>引言：当AI遇见时尚</h2><p>"推荐3套适合约会的优雅穿搭"——这样一句简单的自然语言请求，背后需要怎样的技术栈来实现？<p>最近我完成了一个有趣的项目：<strong>Stylist MCP Server</strong>，一个AI驱动的时尚推荐服务。它能理解用户的穿搭需求（支持中英文），从53,789件服装数据库中智能检索，并给出专业的搭配建议。更重要的是，它遵循Anthropic的Model Context Protocol (MCP)标准，可以无缝集成到Claude Desktop、Cursor等AI工具中。<p>今天，我想分享整个开发过程中的设计思路、技术选型和踩坑经验。</p><span id=continue-reading></span><h2 id=xiang-mu-jia-gou-zong-lan>项目架构总览</h2><p>在深入细节之前，先看看整体架构：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+</span><span>│  Claude Desktop │────▶│  MCP Server      │────▶│  ChromaDB       │
+</span><span>│  / Cursor       │ SSE │  (Starlette)     │     │  (53,789 items) │
+</span><span>└─────────────────┘     └────────┬─────────┘     └─────────────────┘
+</span><span>                                 │
+</span><span>                        ┌────────▼─────────┐
+</span><span>                        │  LLM Client      │
+</span><span>                        │  ├─ Anthropic    │
+</span><span>                        │  ├─ Azure OpenAI │
+</span><span>                        │  └─ OpenAI       │
+</span><span>                        └──────────────────┘
+</span></code></pre><p>核心组件包括：<ul><li><strong>MCP Server</strong>: 基于Starlette的异步HTTP服务，支持stdio和SSE两种传输模式<li><strong>ChromaDB</strong>: 向量数据库，存储服装的语义嵌入和元数据<li><strong>LLM Client</strong>: 统一的大模型接口层，支持多provider切换<li><strong>Nginx + Let's Encrypt</strong>: 生产环境的HTTPS反向代理</ul><h2 id=di-yi-bu-gou-jian-fu-zhuang-xiang-liang-suo-yin>第一步：构建服装向量索引</h2><h3 id=shu-ju-yuan-dresscodeshu-ju-ji>数据源：DressCode数据集</h3><p>我使用的是DressCode数据集，包含约54,000张高质量服装图片，分为三个类别：<ul><li><code>upper_body</code>: 上装（T恤、衬衫、外套等）<li><code>lower_body</code>: 下装（裤子、裙子、短裤等）<li><code>dresses</code>: 连衣裙</ul><p>每件服装都有详细的属性标注，包括颜色、风格、适用场合、季节等。<h3 id=chromadbsuo-yin-gou-jian>ChromaDB索引构建</h3><p>ChromaDB的优势在于开箱即用的向量搜索能力，同时支持元数据过滤。我的索引策略是：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 将服装属性转换为自然语言描述
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>build_description</span><span>(</span><span style=color:#bf616a>attrs</span><span>: dict) -> str:
+</span><span>    parts = []
+</span><span>    </span><span style=color:#b48ead>if </span><span>attrs.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>colors</span><span>"):
+</span><span>        parts.</span><span style=color:#bf616a>append</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>Colors: </span><span>{'</span><span style=color:#a3be8c>, </span><span>'.</span><span style=color:#bf616a>join</span><span>(attrs['</span><span style=color:#a3be8c>colors</span><span>'])}")
+</span><span>    </span><span style=color:#b48ead>if </span><span>attrs.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>styles</span><span>"):
+</span><span>        parts.</span><span style=color:#bf616a>append</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>Styles: </span><span>{'</span><span style=color:#a3be8c>, </span><span>'.</span><span style=color:#bf616a>join</span><span>(attrs['</span><span style=color:#a3be8c>styles</span><span>'])}")
+</span><span>    </span><span style=color:#b48ead>if </span><span>attrs.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>occasions</span><span>"):
+</span><span>        parts.</span><span style=color:#bf616a>append</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>Occasions: </span><span>{'</span><span style=color:#a3be8c>, </span><span>'.</span><span style=color:#bf616a>join</span><span>(attrs['</span><span style=color:#a3be8c>occasions</span><span>'])}")
+</span><span>    </span><span style=color:#65737e># ... 更多属性
+</span><span>    </span><span style=color:#b48ead>return </span><span>"</span><span style=color:#a3be8c> | </span><span>".</span><span style=color:#bf616a>join</span><span>(parts)
+</span><span>
+</span><span style=color:#65737e># 添加到ChromaDB
+</span><span>collection.</span><span style=color:#bf616a>add</span><span>(
+</span><span>    </span><span style=color:#bf616a>ids</span><span>=[garment_id],
+</span><span>    </span><span style=color:#bf616a>documents</span><span>=[description],  </span><span style=color:#65737e># 用于语义搜索
+</span><span>    </span><span style=color:#bf616a>metadatas</span><span>=[{
+</span><span>        "</span><span style=color:#a3be8c>category</span><span>": "</span><span style=color:#a3be8c>upper_body</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>garment_type</span><span>": "</span><span style=color:#a3be8c>t-shirt</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>colors</span><span>": json.</span><span style=color:#bf616a>dumps</span><span>(["</span><span style=color:#a3be8c>white</span><span>", "</span><span style=color:#a3be8c>blue</span><span>"]),
+</span><span>        </span><span style=color:#65737e># ... 结构化元数据用于过滤
+</span><span>    }]
+</span><span>)
+</span></code></pre><p>关键设计决策：<ol><li><strong>描述文本用于语义搜索</strong>：将属性拼接成自然语言，让嵌入模型理解语义<li><strong>元数据用于精确过滤</strong>：category、garment_type等字段支持精确匹配<li><strong>混合检索策略</strong>：先用元数据缩小范围，再用向量相似度排序</ol><p>构建完成后，53,789件服装被索引到ChromaDB，支持毫秒级检索。<h2 id=di-er-bu-llmyi-tu-jie-xi>第二步：LLM意图解析</h2><p>用户的自然语言请求需要被解析为结构化的搜索参数。这是整个系统的"大脑"。<h3 id=promptgong-cheng-kua-mo-xing-jian-rong-xing>Prompt工程：跨模型兼容性</h3><p>最初我的prompt是这样的：<pre style=background:#2b303b;color:#c0c5ce><code><span>Extract the following parameters:
+</span><span>
+</span><span>1. LANGUAGE & MODE DETECTION:
+</span><span>   - language: "zh" | "en"
+</span><span>   - recommendation_mode: "single_item" | "full_outfit"
+</span><span>   ...
+</span><span>
+</span><span>2. GARMENT FILTERS:
+</span><span>   - garment_type: ...
+</span><span>   ...
+</span></code></pre><p>这个prompt在Claude Haiku上工作完美，但切换到GPT-4o-mini时出问题了——GPT返回了<strong>嵌套的JSON结构</strong>，完全按照prompt中的分类标题组织：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>LANGUAGE & MODE DETECTION</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>language</span><span>": "</span><span style=color:#a3be8c>en</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>recommendation_mode</span><span>": "</span><span style=color:#a3be8c>single_item</span><span>"
+</span><span>  },
+</span><span>  "</span><span style=color:#a3be8c>GARMENT FILTERS</span><span>": { </span><span style=background:#bf616a;color:#2b303b>...</span><span> }
+</span><span>}
+</span></code></pre><p>而我的代码期望的是扁平结构：<code>intent.get("recommendation_mode")</code>直接返回None！<p><strong>教训</strong>：不同LLM对prompt的理解方式不同。GPT更"忠实"地遵循格式，Claude更"聪明"地推断意图。<p><strong>解决方案</strong>：重写prompt，明确要求扁平JSON：<pre style=background:#2b303b;color:#c0c5ce><code><span>Extract these parameters and return a FLAT JSON object (no nested objects):
+</span><span>
+</span><span>- language: "zh" | "en"
+</span><span>- recommendation_mode: "single_item" | "full_outfit"
+</span><span>- garment_type: one of ["dress", "t-shirt", ...] or null
+</span><span>...
+</span><span>
+</span><span>IMPORTANT: Return ONLY a flat JSON object with all fields at the top level.
+</span><span>Do NOT use nested structures or category headers.
+</span></code></pre><p>修改后，两个模型都能正确返回扁平JSON，测试全部通过（14/14）。<h2 id=di-san-bu-duo-mo-xing-llmzhi-chi>第三步：多模型LLM支持</h2><p>为了同时支持开发环境（本地Agent Maestro代理Claude）和生产环境（Azure OpenAI GPT-4o-mini），我设计了一个统一的LLM抽象层：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># src/llm_client.py
+</span><span style=color:#b48ead>from </span><span>abc </span><span style=color:#b48ead>import </span><span style=color:#bf616a>ABC</span><span>, abstractmethod
+</span><span>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>LLMClient</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>ABC</span><span style=color:#eff1f5>):
+</span><span>    @</span><span style=color:#bf616a>abstractmethod
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>chat</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>messages</span><span>: list, </span><span style=color:#bf616a>max_tokens</span><span>: int, </span><span style=color:#bf616a>timeout</span><span>: int) -> str:
+</span><span>        </span><span style=color:#b48ead>pass
+</span><span>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>AnthropicClient</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>LLMClient</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#65737e>"""支持Agent Maestro代理或直接Anthropic API"""
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>chat</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>messages</span><span>, </span><span style=color:#bf616a>max_tokens</span><span>=</span><span style=color:#d08770>1024</span><span>, </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>60</span><span>):
+</span><span>        response = httpx.</span><span style=color:#bf616a>post</span><span>(
+</span><span>            </span><span style=color:#bf616a>self</span><span>.endpoint,
+</span><span>            </span><span style=color:#bf616a>json</span><span>={"</span><span style=color:#a3be8c>model</span><span>": </span><span style=color:#bf616a>self</span><span>.model, "</span><span style=color:#a3be8c>messages</span><span>": messages, "</span><span style=color:#a3be8c>max_tokens</span><span>": max_tokens},
+</span><span>            </span><span style=color:#bf616a>timeout</span><span>=timeout
+</span><span>        )
+</span><span>        </span><span style=color:#b48ead>return </span><span>response.</span><span style=color:#bf616a>json</span><span>()["</span><span style=color:#a3be8c>content</span><span>"][</span><span style=color:#d08770>0</span><span>]["</span><span style=color:#a3be8c>text</span><span>"]
+</span><span>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>AzureOpenAIClient</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>LLMClient</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#65737e>"""Azure OpenAI服务"""
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>chat</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>messages</span><span>, </span><span style=color:#bf616a>max_tokens</span><span>=</span><span style=color:#d08770>1024</span><span>, </span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>60</span><span>):
+</span><span>        </span><span style=color:#65737e># 转换消息格式（Anthropic -> OpenAI）
+</span><span>        openai_messages = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_convert_messages</span><span>(messages)
+</span><span>        response = </span><span style=color:#bf616a>self</span><span>.client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>            </span><span style=color:#bf616a>model</span><span>=</span><span style=color:#bf616a>self</span><span>.deployment,
+</span><span>            </span><span style=color:#bf616a>messages</span><span>=openai_messages,
+</span><span>            </span><span style=color:#bf616a>max_tokens</span><span>=max_tokens
+</span><span>        )
+</span><span>        </span><span style=color:#b48ead>return </span><span>response.choices[</span><span style=color:#d08770>0</span><span>].message.content
+</span><span>
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>get_llm_client</span><span>() -> LLMClient:
+</span><span>    </span><span style=color:#65737e>"""工厂函数，根据环境变量选择provider"""
+</span><span>    provider = os.</span><span style=color:#bf616a>getenv</span><span>("</span><span style=color:#a3be8c>LLM_PROVIDER</span><span>", "</span><span style=color:#a3be8c>anthropic</span><span>")
+</span><span>    </span><span style=color:#b48ead>if </span><span>provider == "</span><span style=color:#a3be8c>azure_openai</span><span>":
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>AzureOpenAIClient</span><span>()
+</span><span>    </span><span style=color:#b48ead>elif </span><span>provider == "</span><span style=color:#a3be8c>openai</span><span>":
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>OpenAIClient</span><span>()
+</span><span>    </span><span style=color:#b48ead>else</span><span>:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>AnthropicClient</span><span>()
+</span></code></pre><p>配置切换只需修改环境变量：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 开发模式（Agent Maestro代理Claude）
+</span><span style=color:#bf616a>LLM_PROVIDER</span><span>=</span><span style=color:#a3be8c>anthropic
+</span><span style=color:#bf616a>LLM_API_ENDPOINT</span><span>=</span><span style=color:#a3be8c>http://localhost:23333/api/anthropic/v1/messages
+</span><span>
+</span><span style=color:#65737e># 生产模式（Azure OpenAI）
+</span><span style=color:#bf616a>LLM_PROVIDER</span><span>=</span><span style=color:#a3be8c>azure_openai
+</span><span style=color:#bf616a>AZURE_OPENAI_ENDPOINT</span><span>=</span><span style=color:#a3be8c>https://xxx.openai.azure.com
+</span><span style=color:#bf616a>AZURE_OPENAI_DEPLOYMENT</span><span>=</span><span style=color:#a3be8c>gpt-4o-mini
+</span></code></pre><p>性能对比： | 模型 | 完整穿搭推荐耗时 | 测试通过率 | |------|-----------------|-----------| | Claude Haiku | ~22秒 | 14/14 | | GPT-4o-mini | ~9秒 | 14/14 |<p>GPT-4o-mini在响应速度上明显更快，非常适合生产环境。<h2 id=di-si-bu-sseyuan-cheng-fang-wen-yu-ren-zheng>第四步：SSE远程访问与认证</h2><p>MCP协议支持两种传输模式：<ul><li><strong>stdio</strong>: 本地进程通信，适合Claude Desktop直接集成<li><strong>SSE (Server-Sent Events)</strong>: HTTP长连接，适合远程访问</ul><p>对于跨机器访问（比如从我的MacBook连接到Azure VM上的服务），SSE是必须的。<h3 id=starletteyi-bu-fu-wu-qi>Starlette异步服务器</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>starlette.applications </span><span style=color:#b48ead>import </span><span>Starlette
+</span><span style=color:#b48ead>from </span><span>starlette.routing </span><span style=color:#b48ead>import </span><span>Route, Mount
+</span><span style=color:#b48ead>from </span><span>mcp.server.sse </span><span style=color:#b48ead>import </span><span>SseServerTransport
+</span><span>
+</span><span>app = </span><span style=color:#bf616a>Starlette</span><span>(
+</span><span>    </span><span style=color:#bf616a>routes</span><span>=[
+</span><span>        </span><span style=color:#bf616a>Route</span><span>("</span><span style=color:#a3be8c>/health</span><span>", health_check),
+</span><span>        </span><span style=color:#bf616a>Route</span><span>("</span><span style=color:#a3be8c>/sse</span><span>", sse_handler),
+</span><span>        </span><span style=color:#bf616a>Route</span><span>("</span><span style=color:#a3be8c>/messages/</span><span>", message_handler, </span><span style=color:#bf616a>methods</span><span>=["</span><span style=color:#a3be8c>POST</span><span>"]),
+</span><span>        </span><span style=color:#bf616a>Mount</span><span>("</span><span style=color:#a3be8c>/images</span><span>", </span><span style=color:#bf616a>StaticFiles</span><span>(</span><span style=color:#bf616a>directory</span><span>=</span><span style=color:#bf616a>DRESSCODE_ROOT</span><span>)),
+</span><span>    ],
+</span><span>    </span><span style=color:#bf616a>middleware</span><span>=[</span><span style=color:#bf616a>Middleware</span><span>(APIKeyMiddleware)]
+</span><span>)
+</span></code></pre><h3 id=api-keyren-zheng>API Key认证</h3><p>为了安全性，我实现了API Key认证中间件：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>APIKeyMiddleware</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#bf616a>PUBLIC_PATHS </span><span>= {"</span><span style=color:#a3be8c>/health</span><span>", "</span><span style=color:#a3be8c>/favicon.ico</span><span>"}
+</span><span>    </span><span style=color:#bf616a>PUBLIC_PREFIXES </span><span>= ("</span><span style=color:#a3be8c>/images/</span><span>",)  </span><span style=color:#65737e># 图片不需要认证
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#96b5b4>__call__</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>scope</span><span>, </span><span style=color:#bf616a>receive</span><span>, </span><span style=color:#bf616a>send</span><span>):
+</span><span>        </span><span style=color:#b48ead>if </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_is_public_path</span><span>(scope["</span><span style=color:#a3be8c>path</span><span>"]):
+</span><span>            </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>app</span><span>(scope, receive, send)
+</span><span>        
+</span><span>        api_key = </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_extract_api_key</span><span>(scope)
+</span><span>        </span><span style=color:#b48ead>if </span><span>api_key != </span><span style=color:#bf616a>self</span><span>.expected_key:
+</span><span>            response = </span><span style=color:#bf616a>Response</span><span>("</span><span style=color:#a3be8c>Unauthorized</span><span>", </span><span style=color:#bf616a>status_code</span><span>=</span><span style=color:#d08770>401</span><span>)
+</span><span>            </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>response</span><span>(scope, receive, send)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>app</span><span>(scope, receive, send)
+</span></code></pre><p>支持三种认证方式：<ul><li>Query参数：<code>?apiKey=xxx</code><li>Header：<code>X-API-Key: xxx</code><li>Bearer Token：<code>Authorization: Bearer xxx</code></ul><h3 id=nginx-let-s-encrypt>Nginx + Let's Encrypt</h3><p>生产环境使用Nginx作为反向代理，Let's Encrypt提供免费SSL证书：<pre class=language-nginx data-lang=nginx style=background:#2b303b;color:#c0c5ce><code class=language-nginx data-lang=nginx><span>server {
+</span><span>    listen 443 ssl;
+</span><span>    server_name stylist.polly.wang;
+</span><span>    
+</span><span>    ssl_certificate /etc/letsencrypt/live/stylist.polly.wang/fullchain.pem;
+</span><span>    ssl_certificate_key /etc/letsencrypt/live/stylist.polly.wang/privkey.pem;
+</span><span>    
+</span><span>    location / {
+</span><span>        proxy_pass http://127.0.0.1:8888;
+</span><span>        proxy_http_version 1.1;
+</span><span>        proxy_set_header Upgrade $http_upgrade;
+</span><span>        proxy_set_header Connection "upgrade";
+</span><span>        proxy_buffering off;  # SSE必须禁用缓冲
+</span><span>        proxy_read_timeout 86400;  # 长连接超时
+</span><span>    }
+</span><span>}
+</span></code></pre><p>关键配置：<ul><li><code>proxy_buffering off</code>: SSE必须禁用响应缓冲<li><code>proxy_read_timeout 86400</code>: 保持长连接24小时</ul><h2 id=di-wu-bu-fu-zhuang-tu-pian-zhi-jie-fang-wen>第五步：服装图片直接访问</h2><p>MCP协议的一个限制是不支持直接传输二进制数据。最初我设计了一个<code>get_garment_image</code>工具返回base64编码的图片，但这既低效又不优雅。<p><strong>更好的方案</strong>：直接在推荐结果中返回图片URL。<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_format_garment</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>garment</span><span>, </span><span style=color:#bf616a>include_image_url</span><span>=</span><span style=color:#d08770>True</span><span>):
+</span><span>    result = {
+</span><span>        "</span><span style=color:#a3be8c>garment_id</span><span>": garment["</span><span style=color:#a3be8c>garment_id</span><span>"],
+</span><span>        "</span><span style=color:#a3be8c>category</span><span>": garment["</span><span style=color:#a3be8c>category</span><span>"],
+</span><span>        "</span><span style=color:#a3be8c>description</span><span>": garment["</span><span style=color:#a3be8c>description</span><span>"],
+</span><span>        </span><span style=color:#65737e># ...
+</span><span>    }
+</span><span>    </span><span style=color:#b48ead>if </span><span>include_image_url:
+</span><span>        </span><span style=color:#65737e># 生成HTTPS图片URL
+</span><span>        result["</span><span style=color:#a3be8c>image_url</span><span>"] = </span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>https://</span><span>{</span><span style=color:#bf616a>MCP_EXTERNAL_HOST</span><span>}</span><span style=color:#a3be8c>/images/</span><span>{category}</span><span style=color:#a3be8c>/images/</span><span>{garment_id}</span><span style=color:#a3be8c>_1.jpg</span><span>"
+</span><span>    </span><span style=color:#b48ead>return </span><span>result
+</span></code></pre><p>这样客户端可以直接在浏览器中打开图片链接，无需额外的API调用。<h2 id=ce-shi-tao-jian>测试套件</h2><p>为了确保系统稳定性，我编写了一个综合测试脚本（14个测试用例）：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> scripts/test_mcp.py
+</span></code></pre><p>测试覆盖：<ul><li>📦 <strong>数据库测试</strong>: 基本搜索、过滤器、多类别<li>👕 <strong>单品模式</strong>: T恤、连衣裙、中文查询<li>👔 <strong>全套穿搭</strong>: 基础、正式场合、中文、男装（无连衣裙）<li>🧠 <strong>LLM推理</strong>: 评分、理由、搭配建议<li>🌐 <strong>远程服务</strong>: Health端点、Tools端点、图片访问</ul><p>输出示例：<pre style=background:#2b303b;color:#c0c5ce><code><span>======================================================================
+</span><span>  Test Summary
+</span><span>======================================================================
+</span><span>  ✅ GarmentDatabase Basic (53789 garments)
+</span><span>  ✅ GarmentDatabase Filters (All filters work)
+</span><span>  ✅ Single Item: T-shirt (5 results)
+</span><span>  ✅ Single Item: Dress (5 results, category=dresses)
+</span><span>  ✅ Full Outfit: Basic (3 outfits)
+</span><span>  ✅ Full Outfit with Reasoning (3 outfits, 8.7s)
+</span><span>  ...
+</span><span>  ==============================
+</span><span>  14/14 tests passed
+</span><span>  🎉 All tests passed!
+</span></code></pre><h2 id=cheng-guo-zhan-shi>成果展示</h2><p>最终的系统支持这样的交互：<p><strong>用户查询</strong>：<code>"推荐3套适合约会的优雅穿搭"</code><p><strong>系统响应</strong>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>full_outfit</span><span>",
+</span><span>  "</span><span style=color:#a3be8c>num_outfits</span><span>": </span><span style=color:#d08770>3</span><span>,
+</span><span>  "</span><span style=color:#a3be8c>outfits</span><span>": [
+</span><span>    {
+</span><span>      "</span><span style=color:#a3be8c>type</span><span>": "</span><span style=color:#a3be8c>dress</span><span>",
+</span><span>      "</span><span style=color:#a3be8c>dress</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>garment_id</span><span>": "</span><span style=color:#a3be8c>033207</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>description</span><span>": "</span><span style=color:#a3be8c>Elegant midi dress with subtle texture</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>image_url</span><span>": "</span><span style=color:#a3be8c>https://stylist.polly.wang/images/dresses/images/033207_1.jpg</span><span>"
+</span><span>      },
+</span><span>      "</span><span style=color:#a3be8c>score</span><span>": </span><span style=color:#d08770>9.2</span><span>,
+</span><span>      "</span><span style=color:#a3be8c>reason</span><span>": "</span><span style=color:#a3be8c>经典的中长连衣裙，完美适合约会场合...</span><span>"
+</span><span>    }
+</span><span>  ],
+</span><span>  "</span><span style=color:#a3be8c>stylist_advice</span><span>": "</span><span style=color:#a3be8c>这些穿搭都非常适合约会场合。连衣裙展现优雅气质，而上衣+裙子的组合则更加灵活多变...</span><span>"
+</span><span>}
+</span></code></pre><h2 id=zong-jie-yu-fan-si>总结与反思</h2><h3 id=ji-zhu-shou-huo>技术收获</h3><ol><li><strong>MCP协议的实践</strong>：从stdio到SSE，从本地到远程，深入理解了MCP的设计哲学<li><strong>跨模型兼容性</strong>：不同LLM对prompt的理解差异，需要针对性优化<li><strong>向量检索+LLM推理</strong>：混合架构在时尚推荐场景的有效应用<li><strong>生产级部署</strong>：Nginx反向代理、SSL证书、API认证的完整实践</ol><h3 id=wei-lai-gai-jin-fang-xiang>未来改进方向</h3><ul><li><strong>多模态输入</strong>：支持用户上传图片，实现"找相似"功能<li><strong>用户画像</strong>：记住用户偏好，提供个性化推荐<li><strong>实时库存</strong>：对接电商平台，显示可购买状态<li><strong>A/B测试</strong>：对比不同LLM的推荐质量</ul><h3 id=xiang-mu-di-zhi>项目地址</h3><p>GitHub: <a href=https://github.com/Polly2014/Stylist-MCP-Server>Polly2014/Stylist-MCP-Server</a><p>如果你对MCP Server开发或AI时尚应用感兴趣，欢迎Star和交流！<hr><p><em>写作这篇博文的过程，也是对整个项目的一次复盘。从最初的想法到生产可用，涉及的技术点远比预想的要多。但正是这些细节的打磨，才让最终的产品既稳定又优雅。</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
