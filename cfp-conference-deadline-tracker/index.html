@@ -1,0 +1,152 @@
+<!doctype html><html><head><title>DDL 焦虑症患者的自救：我给博客加了个 CFP</title><meta content="搞学术的都知道 ddl 的痛。今天给博客加了个 /cfp 页面，实时追踪 AI/数据库/安全等领域顶会的投稿截止日期，数据来自 ccfddl 社区，纯前端实现，极简黑白风格。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/cfp-conference-deadline-tracker/ property=og:url><meta content="DDL 焦虑症患者的自救：我给博客加了个 CFP" property=og:title><meta content="搞学术的都知道 ddl 的痛。今天给博客加了个 /cfp 页面，实时追踪 AI/数据库/安全等领域顶会的投稿截止日期，数据来自 ccfddl 社区，纯前端实现，极简黑白风格。" property=og:description><meta content=https://polly.wang/cover.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/cfp-conference-deadline-tracker/ name=twitter:url><meta content="DDL 焦虑症患者的自救：我给博客加了个 CFP" name=twitter:title><meta content="搞学术的都知道 ddl 的痛。今天给博客加了个 /cfp 页面，实时追踪 AI/数据库/安全等领域顶会的投稿截止日期，数据来自 ccfddl 社区，纯前端实现，极简黑白风格。" name=twitter:description><meta content=https://polly.wang/cover.png name=twitter:image><meta content=2026-02-04T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=Zola property=article:tag><meta content=JavaScript property=article:tag><meta content=前端开发 property=article:tag><meta content=学术会议 property=article:tag><meta content=CFP property=article:tag><meta content=ccfddl property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>DDL 焦虑症患者的自救：我给博客加了个 CFP</h1><div class=cover-image><img alt="DDL 焦虑症患者的自救：我给博客加了个 CFP" loading=lazy src=cover.png></div><div class=content><p>搞学术的都知道，错过一个顶会 deadline 意味着什么——再等一年。<p>之前一直用 <a href=https://aideadlin.es/>aideadlin.es</a> 查会议截止日期，UI 挺好看，但有个致命问题：<strong>数据更新不及时</strong>。打开一看，2025 年的会议还挂在上面，2026 年的反而没几条。对于需要精确规划投稿的人来说，这不太能接受。<p>所以，我决定给自己的博客加一个会议追踪页面。<h2 id=dart-xu-qiu-fen-xi>🎯 需求分析</h2><p>在动手之前，我先明确了几个核心需求：<ol><li><strong>数据要新</strong>：必须有 2025-2026 年的会议<li><strong>领域覆盖</strong>：AI、数据库、软件工程、网络安全、系统、图形学、HCI<li><strong>筛选能力</strong>：按领域、按时间（30/60/90天内）<li><strong>极简风格</strong>：与博客整体黑白调性一致<li><strong>纯前端</strong>：不需要后端，静态托管即可</ol><h2 id=bar-chart-shu-ju-yuan-xuan-xing>📊 数据源选型</h2><p>最初尝试直接爬 aideadlin.es 的数据，发现它用的是一个 JSON 文件，但确实很久没更新了。<p>后来找到了 <strong><a href=https://github.com/ccfddl/ccf-deadlines>ccfddl/ccf-deadlines</a></strong> —— 这是一个由中国学术社区维护的开源项目，专门追踪 CCF 推荐会议的截止日期。优势明显：<ul><li>✅ <strong>活跃维护</strong>：几乎每天都有更新<li>✅ <strong>结构清晰</strong>：按领域分类的 YAML 文件<li>✅ <strong>信息完整</strong>：包含 CCF 等级、会议地点、多个截止日期<li>✅ <strong>覆盖广</strong>：10 个领域，数百个会议</ul><p>数据结构长这样：<pre class=language-yaml data-lang=yaml style=background:#2b303b;color:#c0c5ce><code class=language-yaml data-lang=yaml><span>- </span><span style=color:#bf616a>title</span><span>: </span><span style=color:#a3be8c>NeurIPS
+</span><span>  </span><span style=color:#bf616a>description</span><span>: </span><span style=color:#a3be8c>Conference on Neural Information Processing Systems
+</span><span>  </span><span style=color:#bf616a>sub</span><span>: </span><span style=color:#a3be8c>ML
+</span><span>  </span><span style=color:#bf616a>rank</span><span>:
+</span><span>    </span><span style=color:#bf616a>ccf</span><span>: </span><span style=color:#a3be8c>A
+</span><span>  </span><span style=color:#bf616a>dblp</span><span>: </span><span style=color:#a3be8c>neurips
+</span><span>  </span><span style=color:#bf616a>confs</span><span>:
+</span><span>    - </span><span style=color:#bf616a>year</span><span>: </span><span style=color:#d08770>2026
+</span><span>      </span><span style=color:#bf616a>id</span><span>: </span><span style=color:#a3be8c>neurips26
+</span><span>      </span><span style=color:#bf616a>link</span><span>: </span><span style=color:#a3be8c>https://neurips.cc/
+</span><span>      </span><span style=color:#bf616a>timeline</span><span>:
+</span><span>        - </span><span style=color:#bf616a>abstract_deadline</span><span>: '</span><span style=color:#a3be8c>2026-05-11 23:59:59</span><span>'
+</span><span>          </span><span style=color:#bf616a>deadline</span><span>: '</span><span style=color:#a3be8c>2026-05-18 23:59:59</span><span>'
+</span><span>      </span><span style=color:#bf616a>timezone</span><span>: </span><span style=color:#a3be8c>UTC-12
+</span><span>      </span><span style=color:#bf616a>date</span><span>: </span><span style=color:#a3be8c>December 7-13, 2026
+</span><span>      </span><span style=color:#bf616a>place</span><span>: </span><span style=color:#a3be8c>San Diego, CA, USA
+</span></code></pre><p>完美契合我的需求。<h2 id=ji-zhu-shi-xian>🏗️ 技术实现</h2><h3 id=zheng-ti-jia-gou>整体架构</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>Zola 静态站点
+</span><span>├── content/cfp/_index.md     # 页面入口
+</span><span>├── templates/cfp.html        # 页面模板
+</span><span>├── static/js/cfp.js          # 核心逻辑（~500行）
+</span><span>└── static/css/cfp.css        # 样式
+</span></code></pre><p>核心思路：<strong>Zola 生成静态 HTML 壳，JavaScript 运行时从 GitHub 拉取数据渲染</strong>。<h3 id=shu-ju-huo-qu-liu-cheng>数据获取流程</h3><pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// 1. 获取各领域的 YAML 文件列表
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>categories </span><span>= ['</span><span style=color:#a3be8c>AI</span><span>', '</span><span style=color:#a3be8c>DB</span><span>', '</span><span style=color:#a3be8c>NW</span><span>', '</span><span style=color:#a3be8c>SC</span><span>', '</span><span style=color:#a3be8c>SE</span><span>', '</span><span style=color:#a3be8c>DS</span><span>', '</span><span style=color:#a3be8c>CT</span><span>', '</span><span style=color:#a3be8c>CG</span><span>', '</span><span style=color:#a3be8c>HI</span><span>', '</span><span style=color:#a3be8c>MX</span><span>'];
+</span><span>
+</span><span style=color:#b48ead>async function </span><span style=color:#8fa1b3>fetchCategoryConferences</span><span>(</span><span style=color:#bf616a>category</span><span>) {
+</span><span>    </span><span style=color:#65737e>// 通过 GitHub API 获取目录下所有 YAML 文件
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>apiUrl </span><span>= `</span><span style=color:#a3be8c>https://api.github.com/repos/ccfddl/ccf-deadlines/contents/conference/${</span><span style=color:#bf616a>category</span><span style=color:#a3be8c>}</span><span>`;
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>files </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>fetch</span><span>(</span><span style=color:#bf616a>apiUrl</span><span>).</span><span style=color:#96b5b4>then</span><span>(</span><span style=color:#bf616a>r </span><span style=color:#b48ead>=> </span><span style=color:#bf616a>r</span><span>.</span><span style=color:#8fa1b3>json</span><span>());
+</span><span>    
+</span><span>    </span><span style=color:#65737e>// 并行获取所有 YAML 文件内容
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>conferences </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#ebcb8b>Promise</span><span>.</span><span style=color:#96b5b4>all</span><span>(
+</span><span>        </span><span style=color:#bf616a>files</span><span>.</span><span style=color:#8fa1b3>filter</span><span>(</span><span style=color:#bf616a>f </span><span style=color:#b48ead>=> </span><span style=color:#bf616a>f</span><span>.name.</span><span style=color:#8fa1b3>endsWith</span><span>('</span><span style=color:#a3be8c>.yml</span><span>'))
+</span><span>             .</span><span style=color:#8fa1b3>map</span><span>(</span><span style=color:#bf616a>f </span><span style=color:#b48ead>=> </span><span style=color:#8fa1b3>fetchAndParseYaml</span><span>(</span><span style=color:#bf616a>f</span><span>.</span><span style=color:#bf616a>download_url</span><span>))
+</span><span>    );
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>conferences</span><span>.</span><span style=color:#8fa1b3>flat</span><span>();
+</span><span>}
+</span></code></pre><h3 id=jie-zhi-ri-qi-jie-xi>截止日期解析</h3><p>ccfddl 的时间格式比较灵活，需要处理多种情况：<pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#b48ead>function </span><span style=color:#8fa1b3>parseDeadline</span><span>(</span><span style=color:#bf616a>timeline</span><span>, </span><span style=color:#bf616a>timezone</span><span>) {
+</span><span>    </span><span style=color:#65737e>// 优先使用 abstract_deadline，没有则用 deadline
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>deadlineStr </span><span>= </span><span style=color:#bf616a>timeline</span><span>.</span><span style=color:#bf616a>abstract_deadline </span><span>|| </span><span style=color:#bf616a>timeline</span><span>.</span><span style=color:#bf616a>deadline</span><span>;
+</span><span>    
+</span><span>    </span><span style=color:#65737e>// 处理时区（如 UTC-12 表示 AoE - Anywhere on Earth）
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>date </span><span>= new Date(</span><span style=color:#bf616a>deadlineStr</span><span>);
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>timezone </span><span>=== '</span><span style=color:#a3be8c>UTC-12</span><span>') {
+</span><span>        </span><span style=color:#bf616a>date</span><span>.</span><span style=color:#96b5b4>setHours</span><span>(</span><span style=color:#bf616a>date</span><span>.</span><span style=color:#96b5b4>getHours</span><span>() + </span><span style=color:#d08770>12</span><span>); </span><span style=color:#65737e>// 转换为本地时间
+</span><span>    }
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>date</span><span>;
+</span><span>}
+</span></code></pre><h3 id=ben-di-huan-cun>本地缓存</h3><p>为了减少 API 调用，实现了 6 小时缓存：<pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#b48ead>const </span><span style=color:#bf616a>CACHE_KEY </span><span>= '</span><span style=color:#a3be8c>cfp_conferences_cache</span><span>';
+</span><span style=color:#b48ead>const </span><span style=color:#bf616a>CACHE_DURATION </span><span>= </span><span style=color:#d08770>6 </span><span>* </span><span style=color:#d08770>60 </span><span>* </span><span style=color:#d08770>60 </span><span>* </span><span style=color:#d08770>1000</span><span>; </span><span style=color:#65737e>// 6 hours
+</span><span>
+</span><span style=color:#b48ead>function </span><span style=color:#8fa1b3>getCachedData</span><span>() {
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>cached </span><span>= </span><span style=color:#bf616a>localStorage</span><span>.</span><span style=color:#96b5b4>getItem</span><span>(</span><span style=color:#bf616a>CACHE_KEY</span><span>);
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>cached</span><span>) {
+</span><span>        </span><span style=color:#b48ead>const </span><span>{ </span><span style=color:#bf616a>data</span><span>, </span><span style=color:#bf616a>timestamp </span><span>} = JSON.</span><span style=color:#96b5b4>parse</span><span>(</span><span style=color:#bf616a>cached</span><span>);
+</span><span>        </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#ebcb8b>Date</span><span>.</span><span style=color:#8fa1b3>now</span><span>() - </span><span style=color:#bf616a>timestamp </span><span>< </span><span style=color:#bf616a>CACHE_DURATION</span><span>) {
+</span><span>            </span><span style=color:#b48ead>return </span><span style=color:#bf616a>data</span><span>;
+</span><span>        }
+</span><span>    }
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#d08770>null</span><span>;
+</span><span>}
+</span></code></pre><h2 id=dart-ui-she-ji-die-dai>🎨 UI 设计迭代</h2><h3 id=di-yi-ban-tai-hua-shao>第一版：太花哨</h3><p>最初照着 aideadlin.es 的风格做了个"Premium Academic Design"——渐变背景、大色块倒计时、hover 阴影...<p>结果一看效果，和博客的黑白极简风格完全不搭，用户反馈"辣眼睛"。<h3 id=di-er-ban-editorial-minimalism>第二版：Editorial Minimalism</h3><p>推倒重来，遵循几个原则：<ol><li><strong>无色块</strong>：背景透明，只用边框和文字颜色区分<li><strong>Typography-first</strong>：倒计时不再是大色块，而是纯粹的数字<li><strong>胶囊徽章</strong>：CCF 等级和领域标签用空心胶囊样式</ol><p>核心 CSS：<pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#65737e>/* 卡片 - 简约边框 + 细左侧条 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>cfp-card </span><span>{
+</span><span>    background: </span><span style=color:#96b5b4>#fff</span><span>;
+</span><span>    border: </span><span style=color:#d08770>1px </span><span>solid </span><span style=color:#96b5b4>#e8e8ef</span><span>;
+</span><span>    border-radius: </span><span style=color:#d08770>8px</span><span>;
+</span><span>    position: relative;
+</span><span>}
+</span><span>
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>cfp-card</span><span style=color:#8fa1b3>::</span><span style=color:#b48ead>before </span><span>{
+</span><span>    content: '';
+</span><span>    position: absolute;
+</span><span>    left: </span><span style=color:#d08770>0</span><span>;
+</span><span>    top: </span><span style=color:#d08770>0</span><span>;
+</span><span>    bottom: </span><span style=color:#d08770>0</span><span>;
+</span><span>    width: </span><span style=color:#d08770>3px</span><span>;
+</span><span>    background: </span><span style=color:#96b5b4>#8b8ba7</span><span>;
+</span><span>    border-radius: </span><span style=color:#d08770>3px 0 0 3px</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>/* 倒计时 - 纯 typography，颜色表达紧急程度 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>countdown-value </span><span>{
+</span><span>    font-family: '</span><span style=color:#a3be8c>SF Mono</span><span>', monospace;
+</span><span>    font-size: </span><span style=color:#d08770>1.75rem</span><span>;
+</span><span>    font-weight: </span><span style=color:#d08770>700</span><span>;
+</span><span>    color: </span><span style=color:#96b5b4>#1a1a2e</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>urgency-critical </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>countdown-value </span><span>{ color: </span><span style=color:#96b5b4>#dc3545</span><span>; }
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>urgency-warning </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>countdown-value </span><span>{ color: </span><span style=color:#96b5b4>#fd7e14</span><span>; }
+</span><span>
+</span><span style=color:#65737e>/* 徽章 - 空心胶囊 */
+</span><span style=color:#8fa1b3>.</span><span style=color:#d08770>cfp-card-rank </span><span>{
+</span><span>    padding: </span><span style=color:#d08770>3px 10px</span><span>;
+</span><span>    background: transparent;
+</span><span>    border: </span><span style=color:#d08770>1.5px </span><span>solid;
+</span><span>    border-radius: </span><span style=color:#d08770>50px</span><span>;
+</span><span>    font-size: </span><span style=color:#d08770>0.65rem</span><span>;
+</span><span>    font-weight: </span><span style=color:#d08770>600</span><span>;
+</span><span>}
+</span></code></pre><h3 id=xiang-ying-shi-bu-ju>响应式布局</h3><p>根据屏幕宽度自适应列数：<table><thead><tr><th>屏幕宽度<th>列数<tbody><tr><td>< 640px<td>1 列<tr><td>640-1023px<td>2 列<tr><td>1024-1279px<td>3 列<tr><td>≥ 1280px<td>4 列</table><pre class=language-css data-lang=css style=background:#2b303b;color:#c0c5ce><code class=language-css data-lang=css><span style=color:#b48ead>@media </span><span>(min-width: </span><span style=color:#d08770>1280px</span><span>) {
+</span><span>    </span><span style=color:#8fa1b3>.</span><span style=color:#d08770>cfp-grid </span><span>{
+</span><span>        grid-template-columns: </span><span style=color:#96b5b4>repeat</span><span>(</span><span style=color:#d08770>4</span><span>, </span><span style=color:#d08770>1fr</span><span>);
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=iphone-zui-zhong-xiao-guo>📱 最终效果</h2><p>访问 <a href=/cfp>polly.wang/cfp</a> 可以看到：<ul><li>🔍 <strong>搜索</strong>：按会议名称、描述、地点搜索<li>📂 <strong>领域筛选</strong>：AI / Database / Software / Network / Security / Graphics / HCI / Systems<li>⏰ <strong>时间筛选</strong>：30天内 / 60天内 / 90天内 / 全部<li>🏷️ <strong>CCF 等级</strong>：A / B / C / N 用不同颜色的胶囊徽章标识<li>📍 <strong>会议信息</strong>：日期、地点、官网链接、CFP 链接</ul><h2 id=bulb-jing-yan-zong-jie>💡 经验总结</h2><ol><li><strong>数据源选择很重要</strong>：与其自己维护，不如找一个活跃的社区项目<li><strong>设计要服务于内容</strong>：极简不是目的，让用户快速获取信息才是<li><strong>纯前端方案的好处</strong>：无需服务器，静态托管即可，维护成本为零<li><strong>缓存是必需的</strong>：GitHub API 有频率限制，本地缓存既省流量又提升体验</ol><h2 id=link-xiang-guan-lian-jie>🔗 相关链接</h2><ul><li><a href=/cfp>CFP 页面</a><li><a href=https://github.com/ccfddl/ccf-deadlines>ccfddl/ccf-deadlines</a> - 数据源<li><a href=https://aideadlin.es/>aideadlin.es</a> - 设计参考</ul><hr><p>下次再也不用担心错过 NeurIPS 的 deadline 了。😎</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
