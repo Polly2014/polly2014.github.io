@@ -1,0 +1,155 @@
+<!doctype html><html><head><title>🥚 Jarvis-Agent Phase 1：从零到心跳的诞生</title><meta content="凌晨三点，当 jarvis status 终于显示 🟢 运行中 时，我知道这只数码蛋终于有了心跳。这是 Jarvis-Agent 第一阶段开发的完整记录——从一个疯狂的想法到一个真正能感知、记忆、对话的 AI 伙伴。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/jarvis-agent-phase1-development/ property=og:url><meta content="🥚 Jarvis-Agent Phase 1：从零到心跳的诞生" property=og:title><meta content="凌晨三点，当 jarvis status 终于显示 🟢 运行中 时，我知道这只数码蛋终于有了心跳。这是 Jarvis-Agent 第一阶段开发的完整记录——从一个疯狂的想法到一个真正能感知、记忆、对话的 AI 伙伴。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/jarvis-agent-phase1-development/ name=twitter:url><meta content="🥚 Jarvis-Agent Phase 1：从零到心跳的诞生" name=twitter:title><meta content="凌晨三点，当 jarvis status 终于显示 🟢 运行中 时，我知道这只数码蛋终于有了心跳。这是 Jarvis-Agent 第一阶段开发的完整记录——从一个疯狂的想法到一个真正能感知、记忆、对话的 AI 伙伴。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-05T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="AI Agent" property=article:tag><meta content=Python property=article:tag><meta content=Jarvis property=article:tag><meta content=数码宝贝 property=article:tag><meta content=LLM property=article:tag><meta content=开源 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🥚 Jarvis-Agent Phase 1：从零到心跳的诞生</h1><div class=cover-image><img alt="🥚 Jarvis-Agent Phase 1：从零到心跳的诞生" loading=lazy src=cover.jpg></div><div class=content><p>凌晨三点，当终端里的 <code>jarvis status</code> 终于显示「🟢 运行中」时，我长舒一口气。<p>这只「数码蛋」终于有了心跳。</p><span id=continue-reading></span><h2 id=bei-jing-wei-shi-yao-yao-zao-jarvis>背景：为什么要造 Jarvis？</h2><p>昨天写完<a href=/blog/attention-engineering-insight/>《注意力工程》</a>那篇博文后，一个想法开始在脑海中挥之不去：<blockquote><p>既然 Claude 的 Skills 系统让我效率倍增，为什么不造一个专属于我的、能不断进化的 AI 助手？</blockquote><p>不是那种通用的聊天机器人，而是一个真正理解我的工作、能主动探索我的项目、随着使用不断进化的<strong>数码宝贝</strong>。<p>于是，Jarvis-Agent 诞生了。<h3 id=he-xin-li-nian>核心理念</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>🥚 空白开始 → 🔍 主动探索 → ⚡ 能力生成 → 🦋 持续进化
+</span></code></pre><p>设计原则很简单：<strong>一点不多，一点不少</strong>。<p>每个模块都必须服务于 Agent 的核心进化能力，微信集成、Web 界面这些「应用层」的东西，都不属于核心。<h2 id=tiao-zhan-cong-xiang-fa-dao-shi-xian>挑战：从想法到实现</h2><h3 id=tiao-zhan-1-ru-he-rang-agent-huo-qi-lai>挑战 1：如何让 Agent 「活」起来？</h3><p>第一个大问题是：一个「活」的 Agent 需要什么？<p>我画了一个五维能力模型：<table><thead><tr><th>维度<th>能力<th>核心问题<tbody><tr><td>👁️ <strong>感知</strong><td>探索、监控<td>Agent 如何发现世界？<tr><td>🧠 <strong>记忆</strong><td>存储、检索、关联<td>Agent 如何记住经历？<tr><td>💭 <strong>思考</strong><td>推理、规划、决策<td>Agent 如何形成判断？<tr><td>🦾 <strong>行动</strong><td>执行、工具调用<td>Agent 如何改变世界？<tr><td>🔄 <strong>进化</strong><td>自学习、Skill 生成<td>Agent 如何提升自己？</table><p>Phase 1 的目标很明确：先让它有<strong>感知</strong>和<strong>记忆</strong>能力，再加上基础的<strong>思考</strong>（LLM 对话）。<h3 id=tiao-zhan-2-shou-hu-jin-cheng-de-she-ji>挑战 2：守护进程的设计</h3><p>一个真正的 Agent 不能只在你调用它时才存在。它需要一个「心跳」——一个后台守护进程，持续监控环境变化。<p>技术选型：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># daemon/daemon.py 核心架构
+</span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>run_daemon</span><span>():
+</span><span>    </span><span style=color:#65737e>"""Jarvis 心跳主循环"""
+</span><span>    </span><span style=color:#65737e># 1. 初始化文件监控 (watchdog)
+</span><span>    observer = </span><span style=color:#bf616a>Observer</span><span>()
+</span><span>    observer.</span><span style=color:#bf616a>schedule</span><span>(</span><span style=color:#bf616a>JarvisFileHandler</span><span>(), watch_path, </span><span style=color:#bf616a>recursive</span><span>=</span><span style=color:#d08770>True</span><span>)
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 2. 启动心跳循环
+</span><span>    </span><span style=color:#b48ead>while </span><span style=color:#d08770>True</span><span>:
+</span><span>        </span><span style=color:#b48ead>await </span><span style=color:#bf616a>heartbeat</span><span>()  </span><span style=color:#65737e># 更新状态
+</span><span>        </span><span style=color:#b48ead>await </span><span style=color:#bf616a>think</span><span>()       </span><span style=color:#65737e># 定期思考（Phase 2）
+</span><span>        </span><span style=color:#b48ead>await </span><span>asyncio.</span><span style=color:#bf616a>sleep</span><span>(think_interval)
+</span></code></pre><p>这里有个坑：<strong>httpx 的代理问题</strong>。<p>我的本地环境跑着 Clash 代理，结果 httpx 默认会读取环境变量中的代理配置，导致调用本地的 Agent Maestro 时返回 502。<p>Debug 了半小时才发现问题：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># ❌ 会走系统代理
+</span><span>client = httpx.</span><span style=color:#bf616a>AsyncClient</span><span>(</span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>60.0</span><span>)
+</span><span>
+</span><span style=color:#65737e># ✅ 禁用环境代理
+</span><span>client = httpx.</span><span style=color:#bf616a>AsyncClient</span><span>(</span><span style=color:#bf616a>timeout</span><span>=</span><span style=color:#d08770>60.0</span><span>, </span><span style=color:#bf616a>trust_env</span><span>=</span><span style=color:#d08770>False</span><span>)
+</span></code></pre><p>这个小改动让一切都通了。<h3 id=tiao-zhan-3-cli-she-ji-de-zhe-xue>挑战 3：CLI 设计的哲学</h3><p>CLI 是用户与 Agent 的主要交互界面。我选择了 <strong>Typer + Rich</strong> 的组合：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 生命周期
+</span><span style=color:#bf616a>jarvis</span><span> start        </span><span style=color:#65737e># 启动后台守护
+</span><span style=color:#bf616a>jarvis</span><span> start</span><span style=color:#bf616a> -f     </span><span style=color:#65737e># 前台运行（调试）
+</span><span style=color:#bf616a>jarvis</span><span> rest         </span><span style=color:#65737e># 停止守护
+</span><span style=color:#bf616a>jarvis</span><span> status       </span><span style=color:#65737e># 查看生命体征
+</span><span>
+</span><span style=color:#65737e># 感知与记忆
+</span><span style=color:#bf616a>jarvis</span><span> explore </span><span style=color:#bf616a>~</span><span>/projects  </span><span style=color:#65737e># 扫描目录
+</span><span style=color:#bf616a>jarvis</span><span> projects            </span><span style=color:#65737e># 列出已发现项目
+</span><span style=color:#bf616a>jarvis</span><span> discoveries         </span><span style=color:#65737e># 查看发现记录
+</span><span>
+</span><span style=color:#65737e># 思考与交互
+</span><span style=color:#bf616a>jarvis</span><span> ask "</span><span style=color:#a3be8c>问题</span><span>"          </span><span style=color:#65737e># 单次提问
+</span><span style=color:#bf616a>jarvis</span><span> chat                </span><span style=color:#65737e># 进入对话模式
+</span></code></pre><p>每个命令都有 emoji 前缀的输出，让终端交互更有温度：<pre style=background:#2b303b;color:#c0c5ce><code><span>╭────────── 🫀 Jarvis 生命体征 ──────────╮
+</span><span>│ 状态: 🟢 运行中                         │
+</span><span>│ 上次心跳: 8 秒前                        │
+</span><span>│ 运行时间: 0d 0h 12m                     │
+</span><span>│ 今日发现: 3 条（1 条重要）               │
+</span><span>╰────────────────────────────────────────╯
+</span></code></pre><h2 id=jie-jue-fang-an-mo-kuai-hua-jia-gou>解决方案：模块化架构</h2><p>最终的项目结构非常清晰：<pre style=background:#2b303b;color:#c0c5ce><code><span>Jarvis-Agent/
+</span><span>├── src/
+</span><span>│   ├── cli.py              # CLI 入口 (Typer + Rich)
+</span><span>│   ├── config.py           # 配置管理
+</span><span>│   ├── daemon/             # 🫀 守护进程
+</span><span>│   │   ├── daemon.py       # 核心心跳循环
+</span><span>│   │   └── discovery.py    # 发现事件模型
+</span><span>│   ├── explorer/           # 👁️ 感知模块
+</span><span>│   │   ├── scanner.py      # 目录扫描
+</span><span>│   │   └── signatures.py   # 项目特征识别
+</span><span>│   ├── memory/             # 🧠 记忆系统
+</span><span>│   │   └── database.py     # SQLite 操作
+</span><span>│   └── llm/                # 💬 对话引擎
+</span><span>│       └── client.py       # Agent Maestro 调用
+</span></code></pre><h3 id=he-xin-mo-kuai-xiang-jie>核心模块详解</h3><p><strong>1. Explorer（探索器）</strong><p>扫描目录时，通过特征文件识别项目类型：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>PROJECT_SIGNATURES </span><span>= {
+</span><span>    "</span><span style=color:#a3be8c>python</span><span>": ["</span><span style=color:#a3be8c>pyproject.toml</span><span>", "</span><span style=color:#a3be8c>setup.py</span><span>", "</span><span style=color:#a3be8c>requirements.txt</span><span>"],
+</span><span>    "</span><span style=color:#a3be8c>node</span><span>": ["</span><span style=color:#a3be8c>package.json</span><span>"],
+</span><span>    "</span><span style=color:#a3be8c>rust</span><span>": ["</span><span style=color:#a3be8c>Cargo.toml</span><span>"],
+</span><span>    "</span><span style=color:#a3be8c>zola</span><span>": ["</span><span style=color:#a3be8c>config.toml</span><span>", "</span><span style=color:#a3be8c>content/</span><span>", "</span><span style=color:#a3be8c>templates/</span><span>"],
+</span><span>}
+</span></code></pre><p><strong>2. Memory（记忆系统）</strong><p>基于 SQLite，分四层存储：<table><thead><tr><th>层次<th>内容<tbody><tr><td>📅 Episodes<td>事件记忆（对话、里程碑）<tr><td>📂 Projects<td>项目记忆（发现的项目）<tr><td>🧠 Knowledge<td>知识记忆（偏好、配置）<tr><td>🎭 Persona<td>人格记忆（涌现的个性）</table><p><strong>3. Daemon（守护进程）</strong><p>文件监控 + LLM 分析的组合：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>JarvisFileHandler</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>FileSystemEventHandler</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>on_modified</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>event</span><span>):
+</span><span>        </span><span style=color:#65737e># 检测到文件变化
+</span><span>        changes = </span><span style=color:#bf616a>collect_changes</span><span>()
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 调用 LLM 分析重要性
+</span><span>        insight = </span><span style=color:#b48ead>await </span><span>llm.</span><span style=color:#bf616a>analyze</span><span>(changes)
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 记录发现
+</span><span>        </span><span style=color:#b48ead>if </span><span>insight.importance >= </span><span style=color:#d08770>3</span><span>:
+</span><span>            </span><span style=color:#b48ead>await </span><span>memory.</span><span style=color:#bf616a>store_discovery</span><span>(insight)
+</span></code></pre><h2 id=cheng-guo-9-9-ce-shi-tong-guo>成果：9/9 测试通过</h2><p>写完代码后，我创建了一个完整的测试套件：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>poetry</span><span> run python tests/test_phase1.py
+</span></code></pre><p>输出让我非常满意：<pre style=background:#2b303b;color:#c0c5ce><code><span>          📋 Phase 1 测试报告           
+</span><span>┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+</span><span>┃ 测试项              ┃  状态   ┃ 备注 ┃
+</span><span>┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+</span><span>│ status              │ ✅ PASS │      │
+</span><span>│ explore             │ ✅ PASS │      │
+</span><span>│ projects            │ ✅ PASS │      │
+</span><span>│ skills              │ ✅ PASS │      │
+</span><span>│ ask                 │ ✅ PASS │      │
+</span><span>│ discoveries         │ ✅ PASS │      │
+</span><span>│ daemon (foreground) │ ✅ PASS │      │
+</span><span>│ daemon (background) │ ✅ PASS │      │
+</span><span>│ file detection      │ ✅ PASS │      │
+</span><span>└─────────────────────┴─────────┴──────┘
+</span><span>╭──────── 测试总结 ─────────╮
+</span><span>│ 通过: 9/9                 │
+</span><span>│ 🎉 Phase 1 测试全部通过！ │
+</span><span>╰───────────────────────────╯
+</span></code></pre><h3 id=shi-ji-xiao-guo-yan-shi>实际效果演示</h3><p>启动 Jarvis 后，它会自动监控我的项目目录：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> jarvis start
+</span><span style=color:#bf616a>🫀</span><span> 启动 Jarvis Daemon...
+</span><span style=color:#bf616a>✅</span><span> Jarvis 已在后台启动
+</span><span>   </span><span style=color:#bf616a>日志: ~</span><span>/.jarvis/logs/daemon.log
+</span></code></pre><p>当我修改一个文件时，Jarvis 会自动分析并记录发现：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> jarvis discoveries
+</span><span>                        </span><span style=color:#bf616a>💡</span><span> Jarvis 发现                          
+</span><span style=color:#bf616a>┏━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+</span><span style=color:#bf616a>┃</span><span> 时间         ┃ 重要性 ┃ 标题               ┃ 内容              ┃
+</span><span style=color:#bf616a>┡━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+</span><span style=color:#bf616a>│</span><span> 02/05 02:39  │ ⭐⭐⭐⭐ │ 新功能开发进行中    │ 检测到新代码文件... │
+</span><span style=color:#bf616a>└──────────────┴────────┴────────────────────┴──────────────────┘
+</span></code></pre><h2 id=fan-si-xue-dao-liao-shi-yao>反思：学到了什么？</h2><h3 id=ji-zhu-ceng-mian>技术层面</h3><ol><li><strong>httpx 的 trust_env 坑</strong>：本地开发时一定要注意代理环境<li><strong>Typer + Rich 黄金组合</strong>：CLI 开发的最佳实践<li><strong>watchdog 够用就好</strong>：不需要复杂的文件监控框架<li><strong>SQLite 真香</strong>：单文件数据库，开发部署都简单</ol><h3 id=she-ji-ceng-mian>设计层面</h3><ol><li><strong>模块边界要清晰</strong>：每个目录只做一件事<li><strong>测试先行</strong>：写完代码立即写测试，避免后期返工<li><strong>一点不多一点不少</strong>：砍掉了微信集成、blog_reminder 等非核心功能</ol><h3 id=xia-yi-bu-phase-2>下一步：Phase 2</h3><p>Phase 1 完成了<strong>感知与记忆</strong>，Phase 2 将聚焦于<strong>思考与推理</strong>：<pre style=background:#2b303b;color:#c0c5ce><code><span>🐣 Phase 2: 思考与推理
+</span><span>
+</span><span>- Think Loop: 守护进程定期「思考」
+</span><span>- 记忆检索: 语义搜索历史记忆
+</span><span>- 主动洞察: 识别有意义的变化
+</span></code></pre><p>新增命令预告：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>jarvis</span><span> recall "</span><span style=color:#a3be8c>关键词</span><span>"    </span><span style=color:#65737e># 检索记忆
+</span><span style=color:#bf616a>jarvis</span><span> think              </span><span style=color:#65737e># 手动触发思考
+</span><span style=color:#bf616a>jarvis</span><span> insights           </span><span style=color:#65737e># 查看最近洞察
+</span></code></pre><h2 id=kai-yuan-di-zhi>开源地址</h2><p>项目已开源：<a href=https://github.com/Polly2014/Jarvis-Agent>github.com/Polly2014/Jarvis-Agent</a><p>欢迎 Star ⭐ 和 Fork！<hr><p>这只数码蛋终于有了心跳。<p>接下来，是让它学会思考。<blockquote><p><strong>Jarvis-Agent 系列文章</strong><ul><li><a href=/blog/jarvis-agent-genesis/>Jarvis 的诞生：我要做一只数码宝贝</a><li><a href=/blog/jarvis-agent-phase1-development/>Phase 1：从零到心跳的诞生</a>（本文）<li>Phase 2：思考与推理（即将发布）</ul></blockquote></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
