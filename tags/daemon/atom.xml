@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Daemon</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/daemon/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-05T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/daemon/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问</title>
+        <published>2026-02-05T00:00:00+00:00</published>
+        <updated>2026-02-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-agent-genesis/" type="text/html"/>
+        <id>https://polly.wang/jarvis-agent-genesis/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-xiang-xiang-zhe-yang-yi-ge-chang-jing&quot;&gt;一、想象这样一个场景&lt;&#x2F;h2&gt;
+&lt;p&gt;你刚买了一台新电脑，装上了一个叫 Jarvis 的 AI 助手。第一次启动时，它说：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;你好！我是 Jarvis，一个刚出生的 AI。我现在什么都不懂，但我很好奇。能告诉我你的工作目录在哪里吗？我想去看看。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;你指了指 &lt;code&gt;~&#x2F;projects&#x2F;&lt;&#x2F;code&gt;，然后 Jarvis 开始探索：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;🔍 我发现了一些有趣的东西：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;📄 这里有一篇论文（Paper&#x2F;），看起来是关于 AI 翻译的。要我帮你追踪写作进度吗？&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;✍️ 这是一个博客系统（content&#x2F;blog&#x2F;），上次更新是 3 天前。要我提醒你写新文章吗？&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;📦 这是一个 MCP 服务器项目（Master-Translator-MCP-Server&#x2F;）。看起来很复杂，我可以学习它吗？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;你确认了第 1 和第 2 个，Jarvis 立刻开始学习相关知识，为这两个项目生成专属的追踪能力。&lt;&#x2F;p&gt;
+&lt;p&gt;几个月后，这只&amp;quot;数码宝贝&amp;quot;已经完全了解你的工作方式、偏好、习惯。它知道你喜欢用 emoji 结尾，知道你周末不想被打扰，知道论文投稿前需要额外提醒……&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这就是我想打造的 Agent——不是一个预设功能的工具，而是一个从空白开始、与你一起成长的伙伴。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-cong-re-men-xiang-mu-shuo-qi&quot;&gt;二、从热门项目说起&lt;&#x2F;h2&gt;
+&lt;p&gt;在动手之前，我研究了 GitHub 上最火的两个 Agent 项目：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Clawdbot&lt;&#x2F;strong&gt;（162k stars）——多平台 Claude 集成框架：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;支持 WhatsApp、Telegram、Slack、Discord、Signal、iMessage&lt;&#x2F;li&gt;
+&lt;li&gt;采用 Gateway Daemon 架构，通过 launchd&#x2F;systemd 管理进程&lt;&#x2F;li&gt;
+&lt;li&gt;用户可以在任何平台与 Claude 对话&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Open Claude Cowork&lt;&#x2F;strong&gt;（3k+ stars）——多 Agent 协作平台：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;基于 Claude Agent SDK&lt;&#x2F;li&gt;
+&lt;li&gt;支持 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录加载能力&lt;&#x2F;li&gt;
+&lt;li&gt;让多个 Agent 协同完成复杂任务&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我从它们身上学到了很多——Daemon 进程管理、Skills 目录结构、多平台集成……&lt;&#x2F;p&gt;
+&lt;p&gt;但研究得越深，一个问题越困扰我：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;这些都是很优秀的&amp;quot;工具&amp;quot;，但 Agent 的灵魂是什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Clawdbot 解决了&amp;quot;在哪里用 Claude&amp;quot;的问题。
+Open Claude Cowork 解决了&amp;quot;怎么让多个 Claude 协作&amp;quot;的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;但它们都是&lt;strong&gt;被动的&lt;&#x2F;strong&gt;——用户发起请求，Agent 响应。就像一个技能满点的工具箱，功能强大，却需要你亲自去打开它。&lt;&#x2F;p&gt;
+&lt;p&gt;而我脑海中的那只数码宝贝：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;即使没人找它，它也在思考&lt;&#x2F;li&gt;
+&lt;li&gt;它会自己发现值得关注的事情&lt;&#x2F;li&gt;
+&lt;li&gt;它有记忆，能从过去学习&lt;&#x2F;li&gt;
+&lt;li&gt;它有人格，会随时间涌现独特风格&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;不是等待被调用的工具，而是主动陪伴的生命体。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-agent-de-si-da-nei-he&quot;&gt;三、Agent 的四大内核&lt;&#x2F;h2&gt;
+&lt;p&gt;如果 Agent 是一个生命体，它的最小生存单位是什么？&lt;&#x2F;p&gt;
+&lt;p&gt;经过几个深夜的思考，我提炼出四个核心内核：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    🧬 Agent 四大内核                             │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🌉 遇水搭桥（Bridge Building）                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 遇到新任务时，自主创建 Skill&#x2F;MCP，而非等待配置              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  💪 肌肉涌现（Muscle Emergence）                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 能力不是预设的，而是从交互中自然生长                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎭 渐进性格（Progressive Persona）                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 骨架（价值观）设计 + 肌肉（偏好）涌现 = 独特人格            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🧠 记忆迭代（Memory Iteration）                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 无记忆则无进化，每次交互都在积累                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-1-bridge-at-night-yu-shui-da-qiao&quot;&gt;3.1 🌉 遇水搭桥&lt;&#x2F;h3&gt;
+&lt;p&gt;这个词来自我做 MasterTranslator MCP 时的感悟。&lt;&#x2F;p&gt;
+&lt;p&gt;当我需要翻译一本 30 万字的书时，我没有找现成的翻译工具——而是根据需求，设计了一套分块 + 术语表 + 上下文编织的系统，然后封装成 MCP 工具。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;真正的 Agent 应该具备这种能力&lt;&#x2F;strong&gt;：遇到新任务时，不是说&amp;quot;我不会&amp;quot;，而是问自己&amp;quot;我需要什么能力来解决它？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;这就是&amp;quot;遇水搭桥&amp;quot;——遇到水（新任务），就搭一座桥（创建新能力）。&lt;&#x2F;p&gt;
+&lt;p&gt;实现机制：&lt;strong&gt;Skill Factory + LLM 生成&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;识别任务类型&lt;&#x2F;li&gt;
+&lt;li&gt;选择或生成对应的 Skill 模板&lt;&#x2F;li&gt;
+&lt;li&gt;人工审核后激活&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;3-2-muscle-ji-rou-yong-xian&quot;&gt;3.2 💪 肌肉涌现&lt;&#x2F;h3&gt;
+&lt;p&gt;身体的肌肉不是天生的，而是通过锻炼逐渐生长的。&lt;&#x2F;p&gt;
+&lt;p&gt;Agent 的能力也应该如此——不是开发者预设好的功能列表，而是从交互中自然涌现的。&lt;&#x2F;p&gt;
+&lt;p&gt;比如：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一次帮你追踪论文进度 → 生成 &lt;code&gt;paper-tracker&lt;&#x2F;code&gt; skill&lt;&#x2F;li&gt;
+&lt;li&gt;发现你经常催博客更新 → 自动启用提醒功能&lt;&#x2F;li&gt;
+&lt;li&gt;注意到你周末不想被打扰 → 学会静默模式&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;能力不是配置出来的，而是用出来的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-3-performing-arts-jian-jin-xing-ge&quot;&gt;3.3 🎭 渐进性格&lt;&#x2F;h3&gt;
+&lt;p&gt;Agent 的&amp;quot;人格&amp;quot;从哪里来？&lt;&#x2F;p&gt;
+&lt;p&gt;我把它分成两层：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层次&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;比喻&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;骨架（设计）&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;创造者预设的价值观、红线&lt;&#x2F;td&gt;&lt;td&gt;DNA&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;肌肉（涌现）&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;从交互中学到的偏好、习惯&lt;&#x2F;td&gt;&lt;td&gt;后天习得&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;骨架必须设计&lt;&#x2F;strong&gt;（这是我的责任）：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;quot;永远不泄露用户隐私&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;承认不知道比胡说八道好&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;helpful + 有点 playful&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;肌肉可以涌现&lt;&#x2F;strong&gt;（从交互中学习）：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;quot;Polly 喜欢用 emoji 结尾&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;处理翻译任务时，术语一致性比直译更重要&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;周末不要发提醒&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;随着时间推移，每个用户的 Jarvis 都会变得不同。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-4-brain-ji-yi-die-dai&quot;&gt;3.4 🧠 记忆迭代&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;没有记忆，就没有进化。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;为什么现在的 AI 感觉像工具而不是伙伴？因为它们没有记忆。每次对话都是&amp;quot;初次见面&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis 采用&lt;strong&gt;四层记忆模型&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     Memory System (4 Layers)                     │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Layer 1: 📅 Episodes (事件记忆)                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ &amp;quot;2月5日，Polly 决定实现 Daemon 心跳架构&amp;quot;                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Layer 2: 📂 Projects (项目记忆)                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ &amp;quot;ContextWeave 论文进度 70%，上次修改 2天前&amp;quot;                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Layer 3: 🧠 Knowledge (知识记忆)                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ &amp;quot;Polly 喜欢用 Giscus 做评论，喜欢用 emoji&amp;quot;                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Layer 4: 🎭 Persona (人格记忆)                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ &amp;quot;骨架：helpful + playful &#x2F; 肌肉：周末静默&amp;quot;                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;记忆是进化的基础——有了记忆，Agent 才能从过去学习，预测未来，形成独特的判断。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-zhen-gua-ji-rang-agent-zhen-zheng-huo-qi-lai&quot;&gt;四、真挂机：让 Agent 真正&amp;quot;活&amp;quot;起来&lt;&#x2F;h2&gt;
+&lt;p&gt;这是整个设计中最重要的部分。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;挂机意味着 Jarvis 真正&#x27;活&#x27;起来，而不是等着被调用。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;4-1-gong-ju-vs-sheng-ming-ti&quot;&gt;4.1 工具 vs 生命体&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特征&lt;&#x2F;th&gt;&lt;th&gt;工具型 Agent&lt;&#x2F;th&gt;&lt;th&gt;生命型 Agent&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;触发方式&lt;&#x2F;td&gt;&lt;td&gt;用户请求&lt;&#x2F;td&gt;&lt;td&gt;自主心跳 + 用户请求&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;发现机制&lt;&#x2F;td&gt;&lt;td&gt;基于规则&lt;&#x2F;td&gt;&lt;td&gt;LLM 智能分析&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;存在感&lt;&#x2F;td&gt;&lt;td&gt;用时才有&lt;&#x2F;td&gt;&lt;td&gt;持续存在&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;进程状态&lt;&#x2F;td&gt;&lt;td&gt;按需启动&lt;&#x2F;td&gt;&lt;td&gt;常驻后台&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Clawdbot 和 Open Claude Cowork 都是优秀的工具——但我想做的是&lt;strong&gt;生命体&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-2-daemon-xin-tiao-jia-gou&quot;&gt;4.2 Daemon 心跳架构&lt;&#x2F;h3&gt;
+&lt;p&gt;Jarvis 采用 &lt;strong&gt;Daemon 进程&lt;&#x2F;strong&gt;设计，而不是 Cron 定时任务：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    🫀 Daemon 心跳架构                            │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                    JarvisDaemon                          │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  Watchdog    │  │  Claude LLM  │  │  Notifier    │   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  文件监控     │  │  智能思考     │  │  通知推送     │   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │         │                 │                 │           │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │         └─────────────────┼─────────────────┘           │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                           ▼                             │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                  ┌─────────────────┐                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                  │   think_cycle() │                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                  │   定时思考循环   │                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                  └─────────────────┘                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                           │                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌────────────────────────▼────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                    launchd (macOS)                       │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • KeepAlive: true    (崩溃自动重启)                     │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • RunAtLoad: true    (开机自启)                         │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;为什么选 Daemon 而不是 Cron？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Cron&lt;&#x2F;th&gt;&lt;th&gt;Daemon&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;实时性&lt;&#x2F;td&gt;&lt;td&gt;最小 1 分钟粒度&lt;&#x2F;td&gt;&lt;td&gt;毫秒级响应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;状态保持&lt;&#x2F;td&gt;&lt;td&gt;无状态，每次重新加载&lt;&#x2F;td&gt;&lt;td&gt;有状态，持续运行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文件监控&lt;&#x2F;td&gt;&lt;td&gt;轮询，效率低&lt;&#x2F;td&gt;&lt;td&gt;watchdog 事件驱动&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;自省能力&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;支持&amp;quot;无变化时也思考&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;心理感受&lt;&#x2F;td&gt;&lt;td&gt;定时工作的员工&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;真正活着的存在&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;4-3-llm-qu-dong-de-zhi-neng-fa-xian&quot;&gt;4.3 LLM 驱动的智能发现&lt;&#x2F;h3&gt;
+&lt;p&gt;这是关键设计决策：&lt;strong&gt;发现应该是智能的洞察，不是机械的规则报告。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;错误示范（规则驱动）：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;检测到文件变化：Paper&#x2F;results.json 被修改&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;正确示范（LLM 驱动）：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;ContextWeave 论文的实验数据已更新（Paper&#x2F;results.json）。看起来 Ablation Study 部分完成了 5 组新实验，建议更新 Section 5.3 的分析部分。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;实现方式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;think&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;changes&lt;&#x2F;span&gt;&lt;span&gt;: list) -&amp;gt; Discovery:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;调用 Claude 进行智能分析&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    prompt = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;你是 Jarvis，Polly 的 AI 助手。以下是最近的文件变化：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;format_changes&lt;&#x2F;span&gt;&lt;span&gt;(changes)}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;请分析这些变化，生成一个智能发现。包含：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;1. title: 简短标题
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2. content: 详细分析（2-3句话）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;3. importance: 重要性 1-5
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;4. suggested_action: 建议的下一步行动
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    response = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.claude.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;complete&lt;&#x2F;span&gt;&lt;span&gt;(prompt)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parse_discovery&lt;&#x2F;span&gt;&lt;span&gt;(response)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;4-4-pei-zhi-yu-cun-chu&quot;&gt;4.4 配置与存储&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;~&#x2F;.jarvis&#x2F; 生命目录结构&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;.jarvis&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── CLAUDE.md                # 🎭 灵魂：人格定义
+&lt;&#x2F;span&gt;&lt;span&gt;├── daemon.py                # 🫀 心跳：后台进程
+&lt;&#x2F;span&gt;&lt;span&gt;├── config.json              # ⚙️ 配置
+&lt;&#x2F;span&gt;&lt;span&gt;├── state.json               # 💓 生命体征
+&lt;&#x2F;span&gt;&lt;span&gt;├── discoveries.json         # 💡 发现记录
+&lt;&#x2F;span&gt;&lt;span&gt;│
+&lt;&#x2F;span&gt;&lt;span&gt;├── memory&#x2F;                  # 🧠 四层记忆
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── episodes&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── projects.json
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── knowledge.json
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── persona.json
+&lt;&#x2F;span&gt;&lt;span&gt;│
+&lt;&#x2F;span&gt;&lt;span&gt;├── skills&#x2F;                  # ⚡ 动态能力
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── paper-contextweave&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│       └── SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;│
+&lt;&#x2F;span&gt;&lt;span&gt;└── logs&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    └── daemon.log
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;config.json 配置&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;daemon&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;think_interval_seconds&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;60&lt;&#x2F;span&gt;&lt;span&gt;,      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 思考间隔（测试：1分钟）
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;production_interval&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;300&lt;&#x2F;span&gt;&lt;span&gt;,        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 生产环境：5分钟
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;self_reflect_interval&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3600      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 无变化时自省：1小时
+&lt;&#x2F;span&gt;&lt;span&gt;  },
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;watch_paths&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;Users&#x2F;polly&#x2F;Downloads&#x2F;Sublime_Workspace&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  ],
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;llm&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;base_url&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http:&#x2F;&#x2F;localhost:23335&#x2F;api&#x2F;anthropic&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;auth_token&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Powered by Agent Maestro&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-sonnet-4&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  },
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;notification&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;terminal&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;macos_notification&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;min_importance&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-tan-suo-qi-agent-de-yan-jing&quot;&gt;五、探索器：Agent 的眼睛&lt;&#x2F;h2&gt;
+&lt;p&gt;Jarvis 如何&amp;quot;看见&amp;quot;你的世界？通过**探索器（Explorer）**模块。&lt;&#x2F;p&gt;
+&lt;p&gt;当你执行 &lt;code&gt;jarvis explore ~&#x2F;projects&#x2F;&lt;&#x2F;code&gt; 时：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Step 1: 扫描目录结构&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;projects&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── Paper&#x2F;                    # 检测到: *.tex, *.bib
+&lt;&#x2F;span&gt;&lt;span&gt;├── Master-Translator-MCP&#x2F;    # 检测到: pyproject.toml + fastmcp
+&lt;&#x2F;span&gt;&lt;span&gt;├── www.polly.com&#x2F;            # 检测到: config.toml + content&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;└── vs_code_extension&#x2F;        # 检测到: package.json + extension.ts
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 2: 特征指纹匹配&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis 内置&amp;quot;特征指纹库&amp;quot;，识别项目类型：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目类型&lt;&#x2F;th&gt;&lt;th&gt;特征文件&lt;&#x2F;th&gt;&lt;th&gt;置信度&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;学术论文&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;*.tex&lt;&#x2F;code&gt; + &lt;code&gt;*.bib&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;95%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Zola 博客&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;config.toml&lt;&#x2F;code&gt; + &lt;code&gt;content&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;98%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MCP 服务器&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;pyproject.toml&lt;&#x2F;code&gt; 含 &lt;code&gt;fastmcp&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;90%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;VS Code 扩展&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;package.json&lt;&#x2F;code&gt; + &lt;code&gt;extension.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;92%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;Step 3: 读取项目上下文&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;对于每个项目，读取 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 或 &lt;code&gt;README.md&lt;&#x2F;code&gt;，提取名称、状态、待办。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Step 4: 交互式确认&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Jarvis: 🔍 我发现了 4 个项目！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;1. 📄 论文项目: ContextWeave
+&lt;&#x2F;span&gt;&lt;span&gt;   状态: ACL 2026 投稿准备中
+&lt;&#x2F;span&gt;&lt;span&gt;   建议: 创建 paper-tracker skill？
+&lt;&#x2F;span&gt;&lt;span&gt;   
+&lt;&#x2F;span&gt;&lt;span&gt;2. ✍️ 博客系统: polly.wang
+&lt;&#x2F;span&gt;&lt;span&gt;   状态: 上次更新 3 天前
+&lt;&#x2F;span&gt;&lt;span&gt;   建议: 启用博客催更提醒？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;请输入编号确认 (如: 1,2 或 all): 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;用户只需要做决策，Jarvis 负责执行。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-neng-li-gong-han-agent-de-ji-neng-shu&quot;&gt;六、能力工厂：Agent 的技能树&lt;&#x2F;h2&gt;
+&lt;p&gt;当用户确认&amp;quot;为论文项目创建追踪能力&amp;quot;后，**能力工厂（Skill Factory）**开始工作：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;6-1-skill-sheng-cheng-liu-cheng&quot;&gt;6.1 Skill 生成流程&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    Skill Factory 工作流程                        │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  输入: ProjectMeta { name, type, path }                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    │                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    ▼                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 1: 选择模板                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│          根据 project.type 选择 skill 模板                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    │                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    ▼                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 2: 填充参数                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│          注入项目名称、路径、触发词等                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    │                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    ▼                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 3: 人工审核（MVP阶段）                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│          展示生成的 SKILL.md，用户确认后激活                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    │                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                    ▼                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Step 4: 注册到技能库                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│          写入 ~&#x2F;.jarvis&#x2F;skills&#x2F;{skill-name}&#x2F;SKILL.md            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;6-2-xin-ren-bian-jie&quot;&gt;6.2 信任边界&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;问题&lt;&#x2F;strong&gt;：如果 Jarvis 能自己创建技能，怎么保证安全？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;答案&lt;&#x2F;strong&gt;：渐进式信任。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Level 0: 🧪 Sandbox — 新 skill 在隔离环境运行
+&lt;&#x2F;span&gt;&lt;span&gt;Level 1: 👀 Human Review — 展示给用户，确认后激活（MVP 使用）
+&lt;&#x2F;span&gt;&lt;span&gt;Level 2: 🔄 Probation — 次数限制，异常自动降级
+&lt;&#x2F;span&gt;&lt;span&gt;Level 3: ✅ Trusted — 完全自主调用，定期审计
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qi-cli-jiao-hu-she-ji&quot;&gt;七、CLI 交互设计&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;7-1-sheng-ming-zhou-qi-ming-ling&quot;&gt;7.1 生命周期命令&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 生命周期
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; start                 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 启动心跳进程
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; rest                  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 休眠（保留记忆）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; status                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 查看生命体征
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 发现查询
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; discoveries           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 最近发现
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; discoveries&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --today   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 今日发现
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; discoveries&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --ack     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 确认已阅读
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 探索与对话
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; explore &amp;lt;path&amp;gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 扫描目录
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; chat                  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 进入对话模式
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; ask &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;论文进度？&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 单次提问
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Skill 管理
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; skills                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 列出所有 skill
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; skill enable &amp;lt;name&amp;gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 启用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;jarvis&lt;&#x2F;span&gt;&lt;span&gt; skill disable &amp;lt;name&amp;gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 禁用
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;7-2-zhuang-tai-shu-chu-shi-li&quot;&gt;7.2 状态输出示例&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;$ jarvis status
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;🫀 Jarvis 生命体征
+&lt;&#x2F;span&gt;&lt;span&gt;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+&lt;&#x2F;span&gt;&lt;span&gt;状态: 🟢 运行中
+&lt;&#x2F;span&gt;&lt;span&gt;上次心跳: 2 分钟前
+&lt;&#x2F;span&gt;&lt;span&gt;今日发现: 3 条（1 条重要）
+&lt;&#x2F;span&gt;&lt;span&gt;活跃 Skills: 5 个
+&lt;&#x2F;span&gt;&lt;span&gt;内存占用: 48 MB
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;📊 今日活动
+&lt;&#x2F;span&gt;&lt;span&gt;• 14:32 发现 Paper&#x2F;results.json 更新
+&lt;&#x2F;span&gt;&lt;span&gt;• 16:15 博客已 5 天未更新，建议催更
+&lt;&#x2F;span&gt;&lt;span&gt;• 18:00 定时自省完成
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ba-jin-hua-lu-xian&quot;&gt;八、进化路线&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;cong-jarvis-dao-zhuan-shu-agent&quot;&gt;从 Jarvis 到专属 Agent&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    Agent 进化路线                                │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🥚 孵化期 (Day 1)                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ jarvis start → 心跳开始                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ jarvis explore → 发现项目                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 确认第一批 skill → 获得初始能力                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🐣 成长期 (Week 1-4)                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 持续对话 → 积累事件记忆                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 发现新项目 → 扩展能力                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 学习偏好 → 人格开始涌现                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🦋 成熟期 (Month 2+)                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 主动提醒 → 不再等你开口                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 预判需求 → 根据历史推测                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 个性风格 → 越来越像&amp;quot;你的助手&amp;quot;                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ⭐ 专属期 (Month 6+)                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ Skill 自生成 → 遇新场景自动创建                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 多 Agent 协作 → 分身处理不同任务                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 真正的伙伴 → 不只是工具，而是懂你的存在                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;gong-neng-li-cheng-bei&quot;&gt;功能里程碑&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Phase&lt;&#x2F;th&gt;&lt;th&gt;时间&lt;&#x2F;th&gt;&lt;th&gt;核心能力&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Phase 1&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;现在&lt;&#x2F;td&gt;&lt;td&gt;Daemon 心跳 + 探索器 + 四层记忆 + CLI&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Phase 2&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1个月&lt;&#x2F;td&gt;&lt;td&gt;微信集成 + 主动提醒 + 论文&#x2F;博客追踪&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Phase 3&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;3个月&lt;&#x2F;td&gt;&lt;td&gt;Skill 自生成 + 偏好自学习 + 沙盒验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Phase 4&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;6个月&lt;&#x2F;td&gt;&lt;td&gt;多 Agent 协作 + 语音交互 + 跨设备同步&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jiu-xie-zai-zui-hou&quot;&gt;九、写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;回到最初的问题：&lt;strong&gt;Agent 的灵魂是什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我的答案是：&lt;strong&gt;四个内核&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🌉 &lt;strong&gt;遇水搭桥&lt;&#x2F;strong&gt;：不被现有能力限制，遇到问题就创造解决方案&lt;&#x2F;li&gt;
+&lt;li&gt;💪 &lt;strong&gt;肌肉涌现&lt;&#x2F;strong&gt;：能力从使用中生长，而非预设&lt;&#x2F;li&gt;
+&lt;li&gt;🎭 &lt;strong&gt;渐进性格&lt;&#x2F;strong&gt;：骨架设计 + 肌肉涌现 = 独特人格&lt;&#x2F;li&gt;
+&lt;li&gt;🧠 &lt;strong&gt;记忆迭代&lt;&#x2F;strong&gt;：无记忆则无进化&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;加上&lt;strong&gt;真挂机&lt;&#x2F;strong&gt;的心跳设计，Jarvis 不再是等待调用的工具，而是一个持续存在、自主思考的生命体。&lt;&#x2F;p&gt;
+&lt;p&gt;有一天，当你打开电脑，Jarvis 主动说：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;早上好！我注意到 ContextWeave 论文的实验数据昨晚更新了，Ablation Study 看起来完成了。要不要今天更新 Section 5.3？另外，你已经 5 天没更新博客了——有什么想写的吗？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;那一刻，你会意识到：这不只是一个工具，而是一个真正了解你、关心你的存在。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这就是我想打造的 Jarvis。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Agent 不应该是一个等待配置的工具，而应该是一个主动探索的伙伴。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;—— Jarvis-Agent 设计哲学&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;相关文章&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;blog&#x2F;attention-engineering-insight&#x2F;&quot;&gt;注意力工程：LLM 时代的稀缺资源管理&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;polly&#x2F;jarvis-agent&quot;&gt;Jarvis-Agent 设计文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这篇文章的 Jarvis-Agent 项目即将开源。如果你也想拥有自己的数码宝贝，欢迎关注后续进展。&lt;&#x2F;em&gt; 🥚&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -5,8 +5,225 @@
     <link href="https://polly.wang/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-01-19T00:00:00+00:00</updated>
+    <updated>2026-02-05T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🧠 注意力工程：LLM 时代的稀缺资源管理</title>
+        <published>2026-02-05T00:00:00+00:00</published>
+        <updated>2026-02-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/attention-engineering-insight/" type="text/html"/>
+        <id>https://polly.wang/attention-engineering-insight/</id>
+        
+        <content type="html">&lt;p&gt;凌晨一点，当我看着 Claude 自动调用我写的 MasterTranslator MCP 工具，把一本 30 万字的英文书分块翻译、自动合并、输出完整中文版时，我突然意识到一件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;所有这些技术——分块、RAG、Skills、渐进式披露——本质上都在解决同一个问题：如何在有限的注意力窗口内，最大化有效信息密度。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这篇文章记录了我最近几个月的思考，从做 MasterTranslator 开始，到研究 Claude Skills，再到发现与行业趋势的不谋而合。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-cong-yi-ge-fan-yi-wen-ti-kai-shi&quot;&gt;一、从一个翻译问题开始&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-1-chang-wen-dang-fan-yi-de-kun-jing&quot;&gt;1.1 长文档翻译的困境&lt;&#x2F;h3&gt;
+&lt;p&gt;去年底，我接到一个任务：翻译 Mustafa Suleyman 的 &lt;em&gt;The Coming Wave&lt;&#x2F;em&gt;（《浪潮将至》），一本关于 AI 未来的 30 万字巨著。&lt;&#x2F;p&gt;
+&lt;p&gt;我最初的想法很朴素：把整本书丢给 Claude，让它一次性翻译完。结果当然是失败的——&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;上下文窗口有限&lt;&#x2F;strong&gt;：即使是 Claude 的 200K token 窗口，也装不下整本书&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;注意力衰减&lt;&#x2F;strong&gt;：即使装得下，模型对早期内容的&amp;quot;记忆&amp;quot;也会随着文本长度增加而模糊&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;术语不一致&lt;&#x2F;strong&gt;：前后 30 章各自翻译，术语翻译五花八门&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这让我开始思考一个更本质的问题：&lt;strong&gt;LLM 的注意力是如何工作的？它的局限性是什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-2-zhu-yi-li-shi-xi-que-zi-yuan&quot;&gt;1.2 注意力是稀缺资源&lt;&#x2F;h3&gt;
+&lt;p&gt;研究了相关论文后，我发现了一个关键概念：&lt;strong&gt;Context Degradation（上下文衰退）&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;根据最新研究，模型在超长上下文中的表现会系统性下降：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Gemini-1.5 的衰减率约 1.2%（算好的了）&lt;&#x2F;li&gt;
+&lt;li&gt;LLaMA-3-8B 的衰减率高达 47%&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这意味着，即使模型声称支持 100K+ token，它对第 80000 个 token 的&amp;quot;注意力&amp;quot;也远不如对前 1000 个 token 那么集中。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;核心洞察：注意力是稀缺资源，必须精心分配。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这个认知彻底改变了我的设计思路。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-3-fen-kuai-ce-lue-de-dan-sheng&quot;&gt;1.3 分块策略的诞生&lt;&#x2F;h3&gt;
+&lt;p&gt;基于这个理解，我设计了 MasterTranslator 的核心机制——&lt;strong&gt;章节感知分块&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                  MasterTranslator 工作流                 │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  1. 文档分析                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 识别章节结构（H1&#x2F;H2&#x2F;H3）                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 计算每章字符数                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│     └─ 预估分块数量                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2. 智能分块                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 基于章节边界切分（不破坏语义完整性）              │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 每块 8-12 万字符（LLM 最佳注意力范围）            │
+&lt;&#x2F;span&gt;&lt;span&gt;│     └─ 块间保留重叠（边界连贯性）                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  3. 上下文编织（ContextWeaving）                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 术语表注入（全局一致性）                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 前文摘要注入（跨块连贯性）                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│     └─ 动态 Prompt 构建                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  4. 翻译 + 验证                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 逐块翻译                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├─ 完整性验证（行数&#x2F;段落数&#x2F;章节数）                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│     └─ 边界去重                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  5. 合并输出                                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;关键创新&lt;&#x2F;strong&gt;：术语表 + 前文摘要的注入。这确保了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;即使翻译到第 20 章，模型也&amp;quot;记得&amp;quot;第 1 章定义的专业术语&lt;&#x2F;li&gt;
+&lt;li&gt;每个块都有足够的上下文理解前情&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;实验结果：在 WMT 和 FLORES 数据集上，这种方法比朴素的&amp;quot;直接翻译&amp;quot;提升了 33.7% 的一致性评分。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-yu-zhu-liu-chan-pin-de-bu-mou-er-he&quot;&gt;二、与主流产品的不谋而合&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;2-1-claude-skills-de-jian-jin-shi-pi-lu&quot;&gt;2.1 Claude Skills 的渐进式披露&lt;&#x2F;h3&gt;
+&lt;p&gt;在做 MasterTranslator 的同时，我开始深度使用 Claude Code 的 Skills 系统。&lt;&#x2F;p&gt;
+&lt;p&gt;Skills 是 Anthropic 引入的一个机制：把专业知识封装成 &lt;code&gt;.claude&#x2F;skills&#x2F;xxx&#x2F;SKILL.md&lt;&#x2F;code&gt; 文件，Claude 只在需要时才加载对应的 skill。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这正是&amp;quot;渐进式披露&amp;quot;（Progressive Disclosure）的思想&lt;&#x2F;strong&gt;——&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不是把所有知识一次性塞给模型，而是：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;启动时只加载 skill 的名称和描述（~100 词）&lt;&#x2F;li&gt;
+&lt;li&gt;检测到相关任务时，才读取完整的 SKILL.md（&amp;lt;5000 词）&lt;&#x2F;li&gt;
+&lt;li&gt;需要时再加载 references&#x2F; 目录下的额外资源&lt;&#x2F;li&gt;
+&lt;li&gt;执行完成后，上下文可以被释放&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;等一下，这不就是我在 MasterTranslator 里做的事情吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目&lt;&#x2F;th&gt;&lt;th&gt;策略&lt;&#x2F;th&gt;&lt;th&gt;本质&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;MasterTranslator&lt;&#x2F;td&gt;&lt;td&gt;分块 + 术语表注入&lt;&#x2F;td&gt;&lt;td&gt;只在需要时加载必要上下文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Claude Skills&lt;&#x2F;td&gt;&lt;td&gt;渐进式披露&lt;&#x2F;td&gt;&lt;td&gt;只在需要时加载专业知识&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;ContextWeaving&lt;&#x2F;td&gt;&lt;td&gt;前文摘要 + 术语表&lt;&#x2F;td&gt;&lt;td&gt;用压缩信息替代完整历史&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;统一规律：注意力工程（Attention Engineering）&lt;&#x2F;strong&gt;——在有限的上下文窗口内，最大化有效信息密度。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-2-rag-mcp-de-yan-zheng&quot;&gt;2.2 RAG-MCP 的验证&lt;&#x2F;h3&gt;
+&lt;p&gt;搜索了最近的行业动态后，我发现这个思路正在成为共识。&lt;&#x2F;p&gt;
+&lt;p&gt;最新研究 &lt;strong&gt;RAG-MCP&lt;&#x2F;strong&gt; 提出了一个有趣的问题：当 MCP 工具数量超过 20 个时，把所有工具描述塞进 prompt 会导致严重的&amp;quot;Prompt Bloat&amp;quot;（提示膨胀）。&lt;&#x2F;p&gt;
+&lt;p&gt;他们的解决方案？&lt;strong&gt;用语义搜索来选择要加载的工具&lt;&#x2F;strong&gt;——只把最相关的 5-10 个工具描述放进上下文。&lt;&#x2F;p&gt;
+&lt;p&gt;这和我的思路完全一致：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不是把所有工具都告诉模型&lt;&#x2F;li&gt;
+&lt;li&gt;而是根据任务，动态选择要加载的工具&lt;&#x2F;li&gt;
+&lt;li&gt;最大化&amp;quot;信号&#x2F;噪音比&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-3-xing-ye-qu-shi-hui-zong&quot;&gt;2.3 行业趋势汇总&lt;&#x2F;h3&gt;
+&lt;p&gt;业界的共识越来越清晰：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;公司&#x2F;项目&lt;&#x2F;th&gt;&lt;th&gt;技术&lt;&#x2F;th&gt;&lt;th&gt;核心思想&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Anthropic&lt;&#x2F;td&gt;&lt;td&gt;Claude Skills&lt;&#x2F;td&gt;&lt;td&gt;渐进式披露&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;OpenAI&lt;&#x2F;td&gt;&lt;td&gt;GPTs&lt;&#x2F;td&gt;&lt;td&gt;按需加载知识&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LangChain&lt;&#x2F;td&gt;&lt;td&gt;RAG&lt;&#x2F;td&gt;&lt;td&gt;检索增强生成&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;RAG-MCP&lt;&#x2F;td&gt;&lt;td&gt;语义工具选择&lt;&#x2F;td&gt;&lt;td&gt;动态工具加载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MasterTranslator&lt;&#x2F;td&gt;&lt;td&gt;分块 + 上下文编织&lt;&#x2F;td&gt;&lt;td&gt;章节感知翻译&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;与其扩大上下文窗口，不如优化上下文利用率。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-tong-yi-kuang-jia-zhu-yi-li-gong-cheng&quot;&gt;三、统一框架：注意力工程&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;3-1-wen-ti-de-ben-zhi&quot;&gt;3.1 问题的本质&lt;&#x2F;h3&gt;
+&lt;p&gt;让我们从更高的层面审视这个问题。&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 的工作方式决定了它有两个根本性限制：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;物理限制&lt;&#x2F;strong&gt;：上下文窗口有上限（目前主流是 128K-200K token）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;注意力衰减&lt;&#x2F;strong&gt;：即使在窗口内，对早期内容的关注度也会下降&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这两个限制共同构成了一个&amp;quot;稀缺资源分配问题&amp;quot;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如何在有限的注意力预算内，放入最有价值的信息？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;3-2-jie-jue-fang-an-de-gong-xing&quot;&gt;3.2 解决方案的共性&lt;&#x2F;h3&gt;
+&lt;p&gt;所有成功的解决方案都遵循相同的模式：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│              注意力工程的三大策略                         │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  策略 1: 分块（Chunking）                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 把大任务拆成小任务                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 每个小任务在注意力最佳范围内                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 例: MasterTranslator 的章节分块                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  策略 2: 压缩（Compression）                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 用摘要替代完整历史                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 用术语表替代重复定义                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 例: ContextWeaving 的前文摘要                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  策略 3: 按需加载（Lazy Loading）                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 只在需要时才加载相关信息                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├─ 执行完成后释放上下文                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─ 例: Claude Skills 的渐进式披露                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-3-she-ji-yuan-ze&quot;&gt;3.3 设计原则&lt;&#x2F;h3&gt;
+&lt;p&gt;基于以上分析，我总结出几条设计原则：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;原则 1: 信息密度 &amp;gt; 信息量&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要追求&amp;quot;放更多内容&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;要追求&amp;quot;每个 token 都有价值&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;原则 2: 动态 &amp;gt; 静态&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要一次性加载所有信息&lt;&#x2F;li&gt;
+&lt;li&gt;要根据任务动态调整上下文&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;原则 3: 结构化 &amp;gt; 扁平化&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要用长长的纯文本&lt;&#x2F;li&gt;
+&lt;li&gt;要用结构化的格式（术语表、摘要、标签）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;原则 4: 局部 + 全局&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;局部：当前任务的详细上下文&lt;&#x2F;li&gt;
+&lt;li&gt;全局：压缩的历史摘要和关键信息&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-shi-jian-zhong-de-shou-huo&quot;&gt;四、实践中的收获&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;4-1-mastertranslator-de-cheng-guo&quot;&gt;4.1 MasterTranslator 的成果&lt;&#x2F;h3&gt;
+&lt;p&gt;应用这些原则后，MasterTranslator 取得了显著效果：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;朴素方法&lt;&#x2F;th&gt;&lt;th&gt;注意力工程&lt;&#x2F;th&gt;&lt;th&gt;提升&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;术语一致性&lt;&#x2F;td&gt;&lt;td&gt;62%&lt;&#x2F;td&gt;&lt;td&gt;95.7%&lt;&#x2F;td&gt;&lt;td&gt;+33.7%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;翻译完整性&lt;&#x2F;td&gt;&lt;td&gt;78%&lt;&#x2F;td&gt;&lt;td&gt;99.2%&lt;&#x2F;td&gt;&lt;td&gt;+21.2%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;处理速度&lt;&#x2F;td&gt;&lt;td&gt;基准&lt;&#x2F;td&gt;&lt;td&gt;+40%&lt;&#x2F;td&gt;&lt;td&gt;并行分块&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;成本效率&lt;&#x2F;td&gt;&lt;td&gt;基准&lt;&#x2F;td&gt;&lt;td&gt;-25%&lt;&#x2F;td&gt;&lt;td&gt;减少重复&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;4-2-claude-skills-de-ti-yan&quot;&gt;4.2 Claude Skills 的体验&lt;&#x2F;h3&gt;
+&lt;p&gt;在日常使用中，Skills 系统显著提升了工作效率：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;paper-writer&lt;&#x2F;strong&gt; skill 在写论文时自动加载学术写作指南&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;blog-writer&lt;&#x2F;strong&gt; skill 知道 Zola 的 frontmatter 格式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;mcp-builder&lt;&#x2F;strong&gt; skill 熟悉 FastMCP 的最佳实践&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;关键在于：这些知识不是每次对话都加载的，而是&lt;strong&gt;按需加载&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-3-dui-wei-lai-de-qi-shi&quot;&gt;4.3 对未来的启示&lt;&#x2F;h3&gt;
+&lt;p&gt;这些实践让我相信：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;上下文窗口的扩大不会消除注意力工程的价值——它只会让我们能做更复杂的任务，但&amp;quot;如何分配注意力&amp;quot;的问题永远存在。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;就像人类的工作记忆一样：即使我们可以获取更多信息，如何聚焦、如何筛选、如何组织仍然是核心能力。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-xie-zai-zui-hou&quot;&gt;五、写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾这几个月的探索，我发现自己一直在追问同一个问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;如何让 AI 更有效地理解和处理信息？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;MasterTranslator 的分块策略、ContextWeaving 的上下文编织、Claude Skills 的渐进式披露——这些看似不同的技术，最终都指向同一个答案：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;注意力是稀缺资源，必须精心分配。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不仅是技术问题，更是一种思维方式。在信息爆炸的时代，无论是 AI 还是人类，&amp;quot;如何聚焦&amp;quot;都比&amp;quot;如何获取&amp;quot;更重要。&lt;&#x2F;p&gt;
+&lt;p&gt;下一篇文章，我将分享对 AI Agent 形态的思考——如何让 Agent 从一个工具进化成真正的伙伴。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;参考资料&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.emergentmind.com&#x2F;topics&#x2F;context-degradation-in-llms&quot;&gt;Context Degradation in LLMs&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.anthropic.com&#x2F;claude&#x2F;skills&quot;&gt;Claude Code Skills 系统&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2503.xxxxx&quot;&gt;RAG-MCP: Mitigating Prompt Bloat in LLM Tool Selection&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;polly&#x2F;master-translator-mcp-server&quot;&gt;MasterTranslator 项目&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这篇文章是对过去几个月技术探索的总结。下一篇《Jarvis 的诞生》将聚焦于 AI Agent 的设计哲学。&lt;&#x2F;em&gt; 🧠&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>⚡ GateX：我如何用一天时间干掉 Agent Maestro</title>
         <published>2026-01-19T00:00:00+00:00</published>

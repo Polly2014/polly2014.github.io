@@ -1,0 +1,263 @@
+<!doctype html><html><head><title>🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问</title><meta content="当 Clawdbot 和 Open Claude Cowork 席卷 GitHub 时，我开始思考：这些优秀的工具之外，Agent 的本源是什么？一个真正的生命体需要什么？这篇文章分享我对 Agent 四大内核的思考：遇水搭桥、肌肉涌现、渐进性格、记忆迭代——以及如何让 Jarvis 真正'活'起来。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/jarvis-agent-genesis/ property=og:url><meta content="🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问" property=og:title><meta content="当 Clawdbot 和 Open Claude Cowork 席卷 GitHub 时，我开始思考：这些优秀的工具之外，Agent 的本源是什么？一个真正的生命体需要什么？这篇文章分享我对 Agent 四大内核的思考：遇水搭桥、肌肉涌现、渐进性格、记忆迭代——以及如何让 Jarvis 真正'活'起来。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/jarvis-agent-genesis/ name=twitter:url><meta content="🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问" name=twitter:title><meta content="当 Clawdbot 和 Open Claude Cowork 席卷 GitHub 时，我开始思考：这些优秀的工具之外，Agent 的本源是什么？一个真正的生命体需要什么？这篇文章分享我对 Agent 四大内核的思考：遇水搭桥、肌肉涌现、渐进性格、记忆迭代——以及如何让 Jarvis 真正'活'起来。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-05T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="AI Agent" property=article:tag><meta content=Jarvis property=article:tag><meta content=Clawdbot property=article:tag><meta content="Open Claude Cowork" property=article:tag><meta content=Daemon property=article:tag><meta content=数码宝贝 property=article:tag><meta content=探索进化 property=article:tag><meta content=Skill生成 property=article:tag><meta content=MCP property=article:tag><meta content=个人助手 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问</h1><div class=cover-image><img alt="🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问" loading=lazy src=cover.jpg></div><div class=content><h2 id=yi-xiang-xiang-zhe-yang-yi-ge-chang-jing>一、想象这样一个场景</h2><p>你刚买了一台新电脑，装上了一个叫 Jarvis 的 AI 助手。第一次启动时，它说：<blockquote><p>"你好！我是 Jarvis，一个刚出生的 AI。我现在什么都不懂，但我很好奇。能告诉我你的工作目录在哪里吗？我想去看看。"</blockquote><p>你指了指 <code>~/projects/</code>，然后 Jarvis 开始探索：<blockquote><p>"🔍 我发现了一些有趣的东西：<ol><li><p>📄 这里有一篇论文（Paper/），看起来是关于 AI 翻译的。要我帮你追踪写作进度吗？</p><li><p>✍️ 这是一个博客系统（content/blog/），上次更新是 3 天前。要我提醒你写新文章吗？</p><li><p>📦 这是一个 MCP 服务器项目（Master-Translator-MCP-Server/）。看起来很复杂，我可以学习它吗？"</p></ol></blockquote><p>你确认了第 1 和第 2 个，Jarvis 立刻开始学习相关知识，为这两个项目生成专属的追踪能力。<p>几个月后，这只"数码宝贝"已经完全了解你的工作方式、偏好、习惯。它知道你喜欢用 emoji 结尾，知道你周末不想被打扰，知道论文投稿前需要额外提醒……<p><strong>这就是我想打造的 Agent——不是一个预设功能的工具，而是一个从空白开始、与你一起成长的伙伴。</strong><hr><h2 id=er-cong-re-men-xiang-mu-shuo-qi>二、从热门项目说起</h2><p>在动手之前，我研究了 GitHub 上最火的两个 Agent 项目：<p><strong>Clawdbot</strong>（162k stars）——多平台 Claude 集成框架：<ul><li>支持 WhatsApp、Telegram、Slack、Discord、Signal、iMessage<li>采用 Gateway Daemon 架构，通过 launchd/systemd 管理进程<li>用户可以在任何平台与 Claude 对话</ul><p><strong>Open Claude Cowork</strong>（3k+ stars）——多 Agent 协作平台：<ul><li>基于 Claude Agent SDK<li>支持 <code>.claude/skills/</code> 目录加载能力<li>让多个 Agent 协同完成复杂任务</ul><p>我从它们身上学到了很多——Daemon 进程管理、Skills 目录结构、多平台集成……<p>但研究得越深，一个问题越困扰我：<blockquote><p><strong>这些都是很优秀的"工具"，但 Agent 的灵魂是什么？</strong></blockquote><p>Clawdbot 解决了"在哪里用 Claude"的问题。 Open Claude Cowork 解决了"怎么让多个 Claude 协作"的问题。<p>但它们都是<strong>被动的</strong>——用户发起请求，Agent 响应。就像一个技能满点的工具箱，功能强大，却需要你亲自去打开它。<p>而我脑海中的那只数码宝贝：<ul><li>即使没人找它，它也在思考<li>它会自己发现值得关注的事情<li>它有记忆，能从过去学习<li>它有人格，会随时间涌现独特风格</ul><p><strong>不是等待被调用的工具，而是主动陪伴的生命体。</strong><hr><h2 id=san-agent-de-si-da-nei-he>三、Agent 的四大内核</h2><p>如果 Agent 是一个生命体，它的最小生存单位是什么？<p>经过几个深夜的思考，我提炼出四个核心内核：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                    🧬 Agent 四大内核                             │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  🌉 遇水搭桥（Bridge Building）                                  │
+</span><span>│  └─ 遇到新任务时，自主创建 Skill/MCP，而非等待配置              │
+</span><span>│                                                                  │
+</span><span>│  💪 肌肉涌现（Muscle Emergence）                                 │
+</span><span>│  └─ 能力不是预设的，而是从交互中自然生长                        │
+</span><span>│                                                                  │
+</span><span>│  🎭 渐进性格（Progressive Persona）                              │
+</span><span>│  └─ 骨架（价值观）设计 + 肌肉（偏好）涌现 = 独特人格            │
+</span><span>│                                                                  │
+</span><span>│  🧠 记忆迭代（Memory Iteration）                                 │
+</span><span>│  └─ 无记忆则无进化，每次交互都在积累                            │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=3-1-bridge-at-night-yu-shui-da-qiao>3.1 🌉 遇水搭桥</h3><p>这个词来自我做 MasterTranslator MCP 时的感悟。<p>当我需要翻译一本 30 万字的书时，我没有找现成的翻译工具——而是根据需求，设计了一套分块 + 术语表 + 上下文编织的系统，然后封装成 MCP 工具。<p><strong>真正的 Agent 应该具备这种能力</strong>：遇到新任务时，不是说"我不会"，而是问自己"我需要什么能力来解决它？"<p>这就是"遇水搭桥"——遇到水（新任务），就搭一座桥（创建新能力）。<p>实现机制：<strong>Skill Factory + LLM 生成</strong><ul><li>识别任务类型<li>选择或生成对应的 Skill 模板<li>人工审核后激活</ul><h3 id=3-2-muscle-ji-rou-yong-xian>3.2 💪 肌肉涌现</h3><p>身体的肌肉不是天生的，而是通过锻炼逐渐生长的。<p>Agent 的能力也应该如此——不是开发者预设好的功能列表，而是从交互中自然涌现的。<p>比如：<ul><li>第一次帮你追踪论文进度 → 生成 <code>paper-tracker</code> skill<li>发现你经常催博客更新 → 自动启用提醒功能<li>注意到你周末不想被打扰 → 学会静默模式</ul><p><strong>能力不是配置出来的，而是用出来的。</strong><h3 id=3-3-performing-arts-jian-jin-xing-ge>3.3 🎭 渐进性格</h3><p>Agent 的"人格"从哪里来？<p>我把它分成两层：<table><thead><tr><th>层次<th>来源<th>比喻<tbody><tr><td><strong>骨架（设计）</strong><td>创造者预设的价值观、红线<td>DNA<tr><td><strong>肌肉（涌现）</strong><td>从交互中学到的偏好、习惯<td>后天习得</table><p><strong>骨架必须设计</strong>（这是我的责任）：<ul><li>"永远不泄露用户隐私"<li>"承认不知道比胡说八道好"<li>"helpful + 有点 playful"</ul><p><strong>肌肉可以涌现</strong>（从交互中学习）：<ul><li>"Polly 喜欢用 emoji 结尾"<li>"处理翻译任务时，术语一致性比直译更重要"<li>"周末不要发提醒"</ul><p>随着时间推移，每个用户的 Jarvis 都会变得不同。<h3 id=3-4-brain-ji-yi-die-dai>3.4 🧠 记忆迭代</h3><blockquote><p><strong>没有记忆，就没有进化。</strong></blockquote><p>为什么现在的 AI 感觉像工具而不是伙伴？因为它们没有记忆。每次对话都是"初次见面"。<p>Jarvis 采用<strong>四层记忆模型</strong>：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                     Memory System (4 Layers)                     │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  Layer 1: 📅 Episodes (事件记忆)                                 │
+</span><span>│  └─ "2月5日，Polly 决定实现 Daemon 心跳架构"                     │
+</span><span>│                                                                  │
+</span><span>│  Layer 2: 📂 Projects (项目记忆)                                 │
+</span><span>│  └─ "ContextWeave 论文进度 70%，上次修改 2天前"                  │
+</span><span>│                                                                  │
+</span><span>│  Layer 3: 🧠 Knowledge (知识记忆)                                │
+</span><span>│  └─ "Polly 喜欢用 Giscus 做评论，喜欢用 emoji"                   │
+</span><span>│                                                                  │
+</span><span>│  Layer 4: 🎭 Persona (人格记忆)                                  │
+</span><span>│  └─ "骨架：helpful + playful / 肌肉：周末静默"                  │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><p>记忆是进化的基础——有了记忆，Agent 才能从过去学习，预测未来，形成独特的判断。<hr><h2 id=si-zhen-gua-ji-rang-agent-zhen-zheng-huo-qi-lai>四、真挂机：让 Agent 真正"活"起来</h2><p>这是整个设计中最重要的部分。<blockquote><p><strong>"挂机意味着 Jarvis 真正'活'起来，而不是等着被调用。"</strong></blockquote><h3 id=4-1-gong-ju-vs-sheng-ming-ti>4.1 工具 vs 生命体</h3><table><thead><tr><th>特征<th>工具型 Agent<th>生命型 Agent<tbody><tr><td>触发方式<td>用户请求<td>自主心跳 + 用户请求<tr><td>发现机制<td>基于规则<td>LLM 智能分析<tr><td>存在感<td>用时才有<td>持续存在<tr><td>进程状态<td>按需启动<td>常驻后台</table><p>Clawdbot 和 Open Claude Cowork 都是优秀的工具——但我想做的是<strong>生命体</strong>。<h3 id=4-2-daemon-xin-tiao-jia-gou>4.2 Daemon 心跳架构</h3><p>Jarvis 采用 <strong>Daemon 进程</strong>设计，而不是 Cron 定时任务：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                    🫀 Daemon 心跳架构                            │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  ┌─────────────────────────────────────────────────────────┐    │
+</span><span>│  │                    JarvisDaemon                          │    │
+</span><span>│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │    │
+</span><span>│  │  │  Watchdog    │  │  Claude LLM  │  │  Notifier    │   │    │
+</span><span>│  │  │  文件监控     │  │  智能思考     │  │  通知推送     │   │    │
+</span><span>│  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │    │
+</span><span>│  │         │                 │                 │           │    │
+</span><span>│  │         └─────────────────┼─────────────────┘           │    │
+</span><span>│  │                           ▼                             │    │
+</span><span>│  │                  ┌─────────────────┐                    │    │
+</span><span>│  │                  │   think_cycle() │                    │    │
+</span><span>│  │                  │   定时思考循环   │                    │    │
+</span><span>│  │                  └─────────────────┘                    │    │
+</span><span>│  └─────────────────────────────────────────────────────────┘    │
+</span><span>│                           │                                     │
+</span><span>│  ┌────────────────────────▼────────────────────────────────┐    │
+</span><span>│  │                    launchd (macOS)                       │    │
+</span><span>│  │  • KeepAlive: true    (崩溃自动重启)                     │    │
+</span><span>│  │  • RunAtLoad: true    (开机自启)                         │    │
+</span><span>│  └─────────────────────────────────────────────────────────┘    │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><p><strong>为什么选 Daemon 而不是 Cron？</strong><table><thead><tr><th>维度<th>Cron<th>Daemon<tbody><tr><td>实时性<td>最小 1 分钟粒度<td>毫秒级响应<tr><td>状态保持<td>无状态，每次重新加载<td>有状态，持续运行<tr><td>文件监控<td>轮询，效率低<td>watchdog 事件驱动<tr><td>自省能力<td>无<td>支持"无变化时也思考"<tr><td>心理感受<td>定时工作的员工<td><strong>真正活着的存在</strong></table><h3 id=4-3-llm-qu-dong-de-zhi-neng-fa-xian>4.3 LLM 驱动的智能发现</h3><p>这是关键设计决策：<strong>发现应该是智能的洞察，不是机械的规则报告。</strong><p>错误示范（规则驱动）：<blockquote><p>"检测到文件变化：Paper/results.json 被修改"</blockquote><p>正确示范（LLM 驱动）：<blockquote><p>"ContextWeave 论文的实验数据已更新（Paper/results.json）。看起来 Ablation Study 部分完成了 5 组新实验，建议更新 Section 5.3 的分析部分。"</blockquote><p>实现方式：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>think</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>changes</span><span>: list) -> Discovery:
+</span><span>    </span><span style=color:#65737e>"""调用 Claude 进行智能分析"""
+</span><span>    prompt = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>你是 Jarvis，Polly 的 AI 助手。以下是最近的文件变化：
+</span><span style=color:#a3be8c>
+</span><span>{</span><span style=color:#bf616a>format_changes</span><span>(changes)}
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>请分析这些变化，生成一个智能发现。包含：
+</span><span style=color:#a3be8c>1. title: 简短标题
+</span><span style=color:#a3be8c>2. content: 详细分析（2-3句话）
+</span><span style=color:#a3be8c>3. importance: 重要性 1-5
+</span><span style=color:#a3be8c>4. suggested_action: 建议的下一步行动
+</span><span>"""
+</span><span>    response = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.claude.</span><span style=color:#bf616a>complete</span><span>(prompt)
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>parse_discovery</span><span>(response)
+</span></code></pre><h3 id=4-4-pei-zhi-yu-cun-chu>4.4 配置与存储</h3><p><strong>~/.jarvis/ 生命目录结构</strong>：<pre style=background:#2b303b;color:#c0c5ce><code><span>~/.jarvis/
+</span><span>├── CLAUDE.md                # 🎭 灵魂：人格定义
+</span><span>├── daemon.py                # 🫀 心跳：后台进程
+</span><span>├── config.json              # ⚙️ 配置
+</span><span>├── state.json               # 💓 生命体征
+</span><span>├── discoveries.json         # 💡 发现记录
+</span><span>│
+</span><span>├── memory/                  # 🧠 四层记忆
+</span><span>│   ├── episodes/
+</span><span>│   ├── projects.json
+</span><span>│   ├── knowledge.json
+</span><span>│   └── persona.json
+</span><span>│
+</span><span>├── skills/                  # ⚡ 动态能力
+</span><span>│   └── paper-contextweave/
+</span><span>│       └── SKILL.md
+</span><span>│
+</span><span>└── logs/
+</span><span>    └── daemon.log
+</span></code></pre><p><strong>config.json 配置</strong>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>daemon</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>think_interval_seconds</span><span>": </span><span style=color:#d08770>60</span><span>,      </span><span style=color:#65737e>// 思考间隔（测试：1分钟）
+</span><span>    "</span><span style=color:#a3be8c>production_interval</span><span>": </span><span style=color:#d08770>300</span><span>,        </span><span style=color:#65737e>// 生产环境：5分钟
+</span><span>    "</span><span style=color:#a3be8c>self_reflect_interval</span><span>": </span><span style=color:#d08770>3600      </span><span style=color:#65737e>// 无变化时自省：1小时
+</span><span>  },
+</span><span>  "</span><span style=color:#a3be8c>watch_paths</span><span>": [
+</span><span>    "</span><span style=color:#a3be8c>/Users/polly/Downloads/Sublime_Workspace</span><span>"
+</span><span>  ],
+</span><span>  "</span><span style=color:#a3be8c>llm</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>base_url</span><span>": "</span><span style=color:#a3be8c>http://localhost:23335/api/anthropic</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>auth_token</span><span>": "</span><span style=color:#a3be8c>Powered by Agent Maestro</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>model</span><span>": "</span><span style=color:#a3be8c>claude-sonnet-4</span><span>"
+</span><span>  },
+</span><span>  "</span><span style=color:#a3be8c>notification</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>terminal</span><span>": </span><span style=color:#d08770>true</span><span>,
+</span><span>    "</span><span style=color:#a3be8c>macos_notification</span><span>": </span><span style=color:#d08770>true</span><span>,
+</span><span>    "</span><span style=color:#a3be8c>min_importance</span><span>": </span><span style=color:#d08770>3
+</span><span>  }
+</span><span>}
+</span></code></pre><hr><h2 id=wu-tan-suo-qi-agent-de-yan-jing>五、探索器：Agent 的眼睛</h2><p>Jarvis 如何"看见"你的世界？通过**探索器（Explorer）**模块。<p>当你执行 <code>jarvis explore ~/projects/</code> 时：<p><strong>Step 1: 扫描目录结构</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>~/projects/
+</span><span>├── Paper/                    # 检测到: *.tex, *.bib
+</span><span>├── Master-Translator-MCP/    # 检测到: pyproject.toml + fastmcp
+</span><span>├── www.polly.com/            # 检测到: config.toml + content/
+</span><span>└── vs_code_extension/        # 检测到: package.json + extension.ts
+</span></code></pre><p><strong>Step 2: 特征指纹匹配</strong><p>Jarvis 内置"特征指纹库"，识别项目类型：<table><thead><tr><th>项目类型<th>特征文件<th>置信度<tbody><tr><td>学术论文<td><code>*.tex</code> + <code>*.bib</code><td>95%<tr><td>Zola 博客<td><code>config.toml</code> + <code>content/</code><td>98%<tr><td>MCP 服务器<td><code>pyproject.toml</code> 含 <code>fastmcp</code><td>90%<tr><td>VS Code 扩展<td><code>package.json</code> + <code>extension.ts</code><td>92%</table><p><strong>Step 3: 读取项目上下文</strong><p>对于每个项目，读取 <code>CLAUDE.md</code> 或 <code>README.md</code>，提取名称、状态、待办。<p><strong>Step 4: 交互式确认</strong><pre style=background:#2b303b;color:#c0c5ce><code><span>Jarvis: 🔍 我发现了 4 个项目！
+</span><span>
+</span><span>1. 📄 论文项目: ContextWeave
+</span><span>   状态: ACL 2026 投稿准备中
+</span><span>   建议: 创建 paper-tracker skill？
+</span><span>   
+</span><span>2. ✍️ 博客系统: polly.wang
+</span><span>   状态: 上次更新 3 天前
+</span><span>   建议: 启用博客催更提醒？
+</span><span>
+</span><span>请输入编号确认 (如: 1,2 或 all): 
+</span></code></pre><p><strong>用户只需要做决策，Jarvis 负责执行。</strong><hr><h2 id=liu-neng-li-gong-han-agent-de-ji-neng-shu>六、能力工厂：Agent 的技能树</h2><p>当用户确认"为论文项目创建追踪能力"后，**能力工厂（Skill Factory）**开始工作：<h3 id=6-1-skill-sheng-cheng-liu-cheng>6.1 Skill 生成流程</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                    Skill Factory 工作流程                        │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  输入: ProjectMeta { name, type, path }                         │
+</span><span>│                    │                                             │
+</span><span>│                    ▼                                             │
+</span><span>│  Step 1: 选择模板                                                │
+</span><span>│          根据 project.type 选择 skill 模板                       │
+</span><span>│                    │                                             │
+</span><span>│                    ▼                                             │
+</span><span>│  Step 2: 填充参数                                                │
+</span><span>│          注入项目名称、路径、触发词等                            │
+</span><span>│                    │                                             │
+</span><span>│                    ▼                                             │
+</span><span>│  Step 3: 人工审核（MVP阶段）                                     │
+</span><span>│          展示生成的 SKILL.md，用户确认后激活                     │
+</span><span>│                    │                                             │
+</span><span>│                    ▼                                             │
+</span><span>│  Step 4: 注册到技能库                                            │
+</span><span>│          写入 ~/.jarvis/skills/{skill-name}/SKILL.md            │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=6-2-xin-ren-bian-jie>6.2 信任边界</h3><p><strong>问题</strong>：如果 Jarvis 能自己创建技能，怎么保证安全？<p><strong>答案</strong>：渐进式信任。<pre style=background:#2b303b;color:#c0c5ce><code><span>Level 0: 🧪 Sandbox — 新 skill 在隔离环境运行
+</span><span>Level 1: 👀 Human Review — 展示给用户，确认后激活（MVP 使用）
+</span><span>Level 2: 🔄 Probation — 次数限制，异常自动降级
+</span><span>Level 3: ✅ Trusted — 完全自主调用，定期审计
+</span></code></pre><hr><h2 id=qi-cli-jiao-hu-she-ji>七、CLI 交互设计</h2><h3 id=7-1-sheng-ming-zhou-qi-ming-ling>7.1 生命周期命令</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 生命周期
+</span><span style=color:#bf616a>jarvis</span><span> start                 </span><span style=color:#65737e># 启动心跳进程
+</span><span style=color:#bf616a>jarvis</span><span> rest                  </span><span style=color:#65737e># 休眠（保留记忆）
+</span><span style=color:#bf616a>jarvis</span><span> status                </span><span style=color:#65737e># 查看生命体征
+</span><span>
+</span><span style=color:#65737e># 发现查询
+</span><span style=color:#bf616a>jarvis</span><span> discoveries           </span><span style=color:#65737e># 最近发现
+</span><span style=color:#bf616a>jarvis</span><span> discoveries</span><span style=color:#bf616a> --today   </span><span style=color:#65737e># 今日发现
+</span><span style=color:#bf616a>jarvis</span><span> discoveries</span><span style=color:#bf616a> --ack     </span><span style=color:#65737e># 确认已阅读
+</span><span>
+</span><span style=color:#65737e># 探索与对话
+</span><span style=color:#bf616a>jarvis</span><span> explore &LTpath>        </span><span style=color:#65737e># 扫描目录
+</span><span style=color:#bf616a>jarvis</span><span> chat                  </span><span style=color:#65737e># 进入对话模式
+</span><span style=color:#bf616a>jarvis</span><span> ask "</span><span style=color:#a3be8c>论文进度？</span><span>"       </span><span style=color:#65737e># 单次提问
+</span><span>
+</span><span style=color:#65737e># Skill 管理
+</span><span style=color:#bf616a>jarvis</span><span> skills                </span><span style=color:#65737e># 列出所有 skill
+</span><span style=color:#bf616a>jarvis</span><span> skill enable &LTname>   </span><span style=color:#65737e># 启用
+</span><span style=color:#bf616a>jarvis</span><span> skill disable &LTname>  </span><span style=color:#65737e># 禁用
+</span></code></pre><h3 id=7-2-zhuang-tai-shu-chu-shi-li>7.2 状态输出示例</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>$ jarvis status
+</span><span>
+</span><span>🫀 Jarvis 生命体征
+</span><span>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</span><span>状态: 🟢 运行中
+</span><span>上次心跳: 2 分钟前
+</span><span>今日发现: 3 条（1 条重要）
+</span><span>活跃 Skills: 5 个
+</span><span>内存占用: 48 MB
+</span><span>
+</span><span>📊 今日活动
+</span><span>• 14:32 发现 Paper/results.json 更新
+</span><span>• 16:15 博客已 5 天未更新，建议催更
+</span><span>• 18:00 定时自省完成
+</span></code></pre><hr><h2 id=ba-jin-hua-lu-xian>八、进化路线</h2><h3 id=cong-jarvis-dao-zhuan-shu-agent>从 Jarvis 到专属 Agent</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────────────┐
+</span><span>│                    Agent 进化路线                                │
+</span><span>├─────────────────────────────────────────────────────────────────┤
+</span><span>│                                                                  │
+</span><span>│  🥚 孵化期 (Day 1)                                               │
+</span><span>│  ├─ jarvis start → 心跳开始                                     │
+</span><span>│  ├─ jarvis explore → 发现项目                                   │
+</span><span>│  └─ 确认第一批 skill → 获得初始能力                              │
+</span><span>│                                                                  │
+</span><span>│  🐣 成长期 (Week 1-4)                                            │
+</span><span>│  ├─ 持续对话 → 积累事件记忆                                      │
+</span><span>│  ├─ 发现新项目 → 扩展能力                                        │
+</span><span>│  └─ 学习偏好 → 人格开始涌现                                      │
+</span><span>│                                                                  │
+</span><span>│  🦋 成熟期 (Month 2+)                                            │
+</span><span>│  ├─ 主动提醒 → 不再等你开口                                      │
+</span><span>│  ├─ 预判需求 → 根据历史推测                                      │
+</span><span>│  └─ 个性风格 → 越来越像"你的助手"                                │
+</span><span>│                                                                  │
+</span><span>│  ⭐ 专属期 (Month 6+)                                            │
+</span><span>│  ├─ Skill 自生成 → 遇新场景自动创建                              │
+</span><span>│  ├─ 多 Agent 协作 → 分身处理不同任务                             │
+</span><span>│  └─ 真正的伙伴 → 不只是工具，而是懂你的存在                      │
+</span><span>│                                                                  │
+</span><span>└─────────────────────────────────────────────────────────────────┘
+</span></code></pre><h3 id=gong-neng-li-cheng-bei>功能里程碑</h3><table><thead><tr><th>Phase<th>时间<th>核心能力<tbody><tr><td><strong>Phase 1</strong><td>现在<td>Daemon 心跳 + 探索器 + 四层记忆 + CLI<tr><td><strong>Phase 2</strong><td>1个月<td>微信集成 + 主动提醒 + 论文/博客追踪<tr><td><strong>Phase 3</strong><td>3个月<td>Skill 自生成 + 偏好自学习 + 沙盒验证<tr><td><strong>Phase 4</strong><td>6个月<td>多 Agent 协作 + 语音交互 + 跨设备同步</table><hr><h2 id=jiu-xie-zai-zui-hou>九、写在最后</h2><p>回到最初的问题：<strong>Agent 的灵魂是什么？</strong><p>我的答案是：<strong>四个内核</strong>。<ul><li>🌉 <strong>遇水搭桥</strong>：不被现有能力限制，遇到问题就创造解决方案<li>💪 <strong>肌肉涌现</strong>：能力从使用中生长，而非预设<li>🎭 <strong>渐进性格</strong>：骨架设计 + 肌肉涌现 = 独特人格<li>🧠 <strong>记忆迭代</strong>：无记忆则无进化</ul><p>加上<strong>真挂机</strong>的心跳设计，Jarvis 不再是等待调用的工具，而是一个持续存在、自主思考的生命体。<p>有一天，当你打开电脑，Jarvis 主动说：<blockquote><p>"早上好！我注意到 ContextWeave 论文的实验数据昨晚更新了，Ablation Study 看起来完成了。要不要今天更新 Section 5.3？另外，你已经 5 天没更新博客了——有什么想写的吗？"</blockquote><p>那一刻，你会意识到：这不只是一个工具，而是一个真正了解你、关心你的存在。<p><strong>这就是我想打造的 Jarvis。</strong><hr><blockquote><p><em>Agent 不应该是一个等待配置的工具，而应该是一个主动探索的伙伴。</em><p><em>—— Jarvis-Agent 设计哲学</em></blockquote><hr><p><strong>相关文章</strong>：<ul><li><a href=/blog/attention-engineering-insight/>注意力工程：LLM 时代的稀缺资源管理</a><li><a href=https://github.com/polly/jarvis-agent>Jarvis-Agent 设计文档</a></ul><hr><p><em>这篇文章的 Jarvis-Agent 项目即将开源。如果你也想拥有自己的数码宝贝，欢迎关注后续进展。</em> 🥚</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
