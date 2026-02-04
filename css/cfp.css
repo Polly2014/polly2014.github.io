@@ -1,0 +1,650 @@
+/**
+ * CFP (Call for Papers) - Premium Academic Design
+ * 
+ * Design Direction: Editorial Magazine + Refined Minimalism
+ * - Typography: Elegant serif for headings, clean sans for body
+ * - Color: Deep charcoal base with accent colors for urgency
+ * - Layout: Generous whitespace, asymmetric grid, sophisticated cards
+ * - Motion: Subtle, purposeful animations
+ */
+
+/* ===== CSS Variables ===== */
+:root {
+    /* Core Palette - matches blog's dark sidebar aesthetic */
+    --cfp-bg: #f8f9fa;
+    --cfp-card-bg: #ffffff;
+    --cfp-text-primary: #1a1a2e;
+    --cfp-text-secondary: #4a4a68;
+    --cfp-text-muted: #8b8ba7;
+    --cfp-border: #e8e8ef;
+    --cfp-border-light: #f0f0f5;
+    
+    /* Accent Colors */
+    --cfp-accent: #3d92c9;
+    --cfp-accent-hover: #2d7db5;
+    
+    /* Urgency Spectrum */
+    --cfp-urgent: #dc3545;
+    --cfp-urgent-glow: rgba(220, 53, 69, 0.15);
+    --cfp-warning: #fd7e14;
+    --cfp-warning-glow: rgba(253, 126, 20, 0.12);
+    --cfp-safe: #20c997;
+    --cfp-safe-glow: rgba(32, 201, 151, 0.1);
+    
+    /* CCF Rank Colors */
+    --ccf-a: #dc3545;
+    --ccf-b: #fd7e14;
+    --ccf-c: #3d92c9;
+    --ccf-n: #8b8ba7;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 5px 10px rgba(0,0,0,0.04);
+    --shadow-hover: 0 14px 35px rgba(0,0,0,0.08), 0 6px 15px rgba(0,0,0,0.04);
+    
+    /* Typography */
+    --font-display: 'Georgia', 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', monospace;
+    
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.5rem;
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Container ===== */
+.cfp-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg) var(--space-xl);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Header - Editorial Style ===== */
+.cfp-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--cfp-border);
+    position: relative;
+}
+
+.cfp-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cfp-accent), var(--cfp-urgent));
+    border-radius: 2px;
+}
+
+.cfp-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 400;
+    color: var(--cfp-text-primary);
+    margin: 0 0 var(--space-sm);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.cfp-header h1 i {
+    display: none; /* Hide icon for cleaner look */
+}
+
+.cfp-subtitle {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--cfp-text-muted);
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+/* ===== Search - Refined Input ===== */
+.cfp-search {
+    margin-bottom: var(--space-lg);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#cfp-search-input {
+    width: 100%;
+    padding: 14px 20px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    border: 1px solid var(--cfp-border);
+    border-radius: 50px;
+    outline: none;
+    background: var(--cfp-card-bg);
+    color: var(--cfp-text-primary);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+#cfp-search-input:hover {
+    border-color: #d0d0dd;
+}
+
+#cfp-search-input:focus {
+    border-color: var(--cfp-accent);
+    box-shadow: var(--shadow-md), 0 0 0 3px rgba(61, 146, 201, 0.08);
+}
+
+#cfp-search-input::placeholder {
+    color: var(--cfp-text-muted);
+}
+
+/* ===== Filters - Clean inline style ===== */
+.cfp-filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md) 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid var(--cfp-border-light);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.filter-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cfp-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    min-width: 80px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-btn {
+    padding: 6px 14px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--cfp-text-muted);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.filter-btn:hover {
+    color: var(--cfp-text-primary);
+}
+
+.filter-btn.active {
+    background: var(--cfp-text-primary);
+    color: #fff;
+}
+
+.filter-btn.active:hover {
+    background: var(--cfp-text-secondary);
+}
+
+/* ===== Loading State ===== */
+.cfp-loading {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--cfp-text-muted);
+    font-size: 0.95rem;
+}
+
+.cfp-loading i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+    color: var(--cfp-accent);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ===== Grid Layout ===== */
+.cfp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+}
+
+/* ===== Card - Minimalist Editorial Design ===== */
+.cfp-card {
+    background: var(--cfp-card-bg);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    box-shadow: none;
+    border: 1px solid var(--cfp-border);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-base);
+    position: relative;
+}
+
+.cfp-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--cfp-text-muted);
+    border-radius: 3px 0 0 3px;
+    transition: var(--transition-fast);
+}
+
+.cfp-card:hover {
+    border-color: var(--cfp-border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Urgency Indicator - Subtle left border */
+.cfp-card.urgency-critical::before {
+    background: var(--cfp-urgent);
+}
+
+.cfp-card.urgency-warning::before {
+    background: var(--cfp-warning);
+}
+
+.cfp-card.urgency-normal::before {
+    background: var(--cfp-safe);
+}
+
+/* Card Header */
+.cfp-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.cfp-card-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.cfp-card-title a {
+    color: var(--cfp-text-primary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.cfp-card-title a:hover {
+    color: var(--cfp-accent);
+}
+
+/* Badges - Minimal outline style */
+.cfp-card-badges {
+    display: flex;
+    flex-shrink: 0;
+    gap: 6px;
+}
+
+.cfp-card-rank {
+    padding: 3px 10px;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: transparent;
+    border: 1.5px solid;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cfp-card-sub {
+    padding: 3px 10px;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    background: transparent;
+    border: 1.5px solid;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Full Name */
+.cfp-card-fullname {
+    margin: 0 0 var(--space-md);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cfp-text-muted);
+    line-height: 1.4;
+}
+
+/* Countdown - Typography-focused, no background block */
+.cfp-card-countdown {
+    margin-bottom: var(--space-md);
+    padding: 0;
+    background: none;
+}
+
+.countdown-icon {
+    display: none;
+}
+
+.countdown-value {
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--cfp-text-primary);
+    line-height: 1;
+}
+
+/* Urgency colors for countdown text only */
+.urgency-critical .countdown-value {
+    color: var(--cfp-urgent);
+}
+
+.urgency-warning .countdown-value {
+    color: var(--cfp-warning);
+}
+
+/* Deadline Info */
+.cfp-card-deadline {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cfp-text-secondary);
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.cfp-card-deadline i {
+    color: var(--cfp-accent);
+    font-size: 0.9rem;
+}
+
+.cfp-card-deadline .timezone {
+    color: var(--cfp-text-muted);
+    font-size: 0.8rem;
+}
+
+/* Info Section */
+.cfp-card-info {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cfp-text-muted);
+    margin-bottom: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cfp-card-date,
+.cfp-card-place {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.cfp-card-info i {
+    width: 16px;
+    color: var(--cfp-text-muted);
+    opacity: 0.7;
+}
+
+/* Note - Simpler */
+.cfp-card-note {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--cfp-text-muted);
+    font-style: italic;
+    padding: 0;
+    margin-bottom: var(--space-sm);
+}
+
+.cfp-card-note i {
+    display: none;
+}
+
+/* Actions - Text links, no buttons */
+.cfp-card-actions {
+    margin-top: auto;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--cfp-border-light);
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.cfp-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--cfp-text-muted);
+    background: none;
+    border: none;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.cfp-card-link:hover {
+    color: var(--cfp-text-primary);
+    text-decoration: none;
+}
+
+.cfp-card-link-secondary {
+    color: var(--cfp-text-muted);
+}
+
+.cfp-card-link-secondary:hover {
+    color: var(--cfp-text-primary);
+}
+
+/* ===== Empty State ===== */
+.cfp-no-results {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--cfp-text-muted);
+}
+
+.cfp-no-results i {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-md);
+    display: block;
+    opacity: 0.3;
+}
+
+.cfp-no-results p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ===== Error State ===== */
+.cfp-error {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--cfp-urgent);
+}
+
+.cfp-error i {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+    display: block;
+}
+
+.cfp-retry-btn {
+    margin-top: var(--space-md);
+    padding: 10px 24px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: var(--cfp-accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.cfp-retry-btn:hover {
+    background: var(--cfp-accent-hover);
+}
+
+/* ===== Footer ===== */
+.cfp-footer {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--cfp-border);
+    text-align: center;
+}
+
+.cfp-footer p {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--cfp-text-muted);
+    margin: 0;
+}
+
+.cfp-footer a {
+    color: var(--cfp-accent);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.cfp-footer a:hover {
+    color: var(--cfp-accent-hover);
+    text-decoration: underline;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .cfp-container {
+        padding: var(--space-md);
+    }
+
+    .cfp-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .cfp-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .cfp-search {
+        max-width: 100%;
+    }
+
+    .cfp-filters {
+        padding: var(--space-md);
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-label {
+        margin-bottom: var(--space-xs);
+    }
+
+    .cfp-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .cfp-card {
+        padding: var(--space-md);
+    }
+
+    .cfp-card-title {
+        font-size: 1.1rem;
+    }
+
+    .countdown-value {
+        font-size: 1.25rem;
+    }
+
+    .cfp-card-badges {
+        flex-wrap: wrap;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .cfp-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+    .cfp-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .cfp-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+    .cfp-search,
+    .cfp-filters,
+    .cfp-card-actions {
+        display: none;
+    }
+
+    .cfp-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
