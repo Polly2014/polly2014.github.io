@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Jarvis-Agent</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/jarvis-agent/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-05T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/jarvis-agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🧠 Jarvis Phase 2：从被动问答到主动思考</title>
+        <published>2026-02-05T00:00:00+00:00</published>
+        <updated>2026-02-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-agent-phase2-memory-system/" type="text/html"/>
+        <id>https://polly.wang/jarvis-agent-phase2-memory-system/</id>
+        
+        <content type="html">&lt;p&gt;凌晨五点，当 &lt;code&gt;jarvis recall&lt;&#x2F;code&gt; 成功返回刚才 Daemon 自动记录的发现时，我知道 Phase 2 终于完成了。&lt;&#x2F;p&gt;
+&lt;p&gt;这是 &lt;a href=&quot;&#x2F;blog&#x2F;jarvis-agent-genesis&#x2F;&quot;&gt;Jarvis-Agent&lt;&#x2F;a&gt; 的第二阶段——让 Agent 从「你问我答」进化到「主动思考」。听起来简单，但当我真正开始设计记忆系统时，才发现这是一个充满取舍的过程。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;clipboard-phase-2-de-he-xin-mu-biao&quot;&gt;📋 Phase 2 的核心目标&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 1 完成后，Jarvis 已经能：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;扫描目录，发现项目&lt;&#x2F;li&gt;
+&lt;li&gt;后台监控文件变化&lt;&#x2F;li&gt;
+&lt;li&gt;与用户正常对话&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但它有一个致命问题：&lt;strong&gt;没有记忆&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;每次对话都是从零开始。昨天告诉它的偏好，今天就忘了。更关键的是，它不会主动思考——只能被动等待用户提问。&lt;&#x2F;p&gt;
+&lt;p&gt;Phase 2 的目标很明确：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;能力&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;💭 &lt;strong&gt;Think Loop&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;守护进程定期&amp;quot;思考&amp;quot;，不只是监控&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🧠 &lt;strong&gt;持久记忆&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;对话、发现、决策都能被记住&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔍 &lt;strong&gt;记忆检索&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;能快速找到相关记忆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;thinking-di-yi-ge-nan-ti-markdown-vs-sqlite&quot;&gt;🤔 第一个难题：Markdown vs SQLite&lt;&#x2F;h2&gt;
+&lt;p&gt;记忆存在哪里？这是第一个要回答的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;我列出了两个候选方案：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-an-a-chun-sqlite&quot;&gt;方案 A：纯 SQLite&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;CREATE TABLE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;memories&lt;&#x2F;span&gt;&lt;span&gt; (
+&lt;&#x2F;span&gt;&lt;span&gt;    id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;TEXT PRIMARY KEY&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    content &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    tags &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    importance &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;INTEGER&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    created_at &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;DATETIME
+&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;优点：查询快、结构化、FTS5 支持全文搜索&lt;&#x2F;p&gt;
+&lt;p&gt;缺点：&lt;strong&gt;LLM 不友好&lt;&#x2F;strong&gt;。当 Agent 需要&amp;quot;回顾记忆&amp;quot;时，我得把 SQLite 的数据转成 Prompt，这个过程很 hacky。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-an-b-chun-markdown&quot;&gt;方案 B：纯 Markdown&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;# 2026-02-05 日志
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 10:30 发现
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 检测到 Jarvis-Agent&#x2F;src&#x2F;cli.py 被修改
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;font-weight:bold;color:#ebcb8b;&quot;&gt;**重要性**&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;: ⭐⭐⭐
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 14:20 对话
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 用户询问了...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;优点：人类可读、Git 友好、&lt;strong&gt;LLM 原生格式&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;缺点：搜索慢。当记忆积累到几百条时，遍历 Markdown 文件会很痛苦。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zui-zhong-xuan-ze-hun-he-jia-gou&quot;&gt;最终选择：混合架构&lt;&#x2F;h3&gt;
+&lt;p&gt;纠结了一会儿后，我意识到两者不是互斥的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Markdown 存内容，SQLite 做索引&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;.jarvis&#x2F;memory&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── daily&#x2F;           # 📅 编年体日志
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── 2026-02-05.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── topics&#x2F;          # 📚 纪传体主题
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── jarvis-development.md
+&lt;&#x2F;span&gt;&lt;span&gt;└── persona.md       # 🎭 人格定义
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;~&#x2F;.jarvis&#x2F;index.db   # 🔍 FTS5 全文索引
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样两边的优点都保留了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;LLM 思考时，直接读 Markdown&lt;&#x2F;li&gt;
+&lt;li&gt;用户搜索时，走 SQLite FTS5&lt;&#x2F;li&gt;
+&lt;li&gt;人类想看记忆？打开文件夹就行&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;floppy-disk-ji-yi-xie-ru-memorywriter&quot;&gt;💾 记忆写入：MemoryWriter&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;MemoryWriter&lt;&#x2F;code&gt; 负责把记忆写入 Markdown：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;MemoryWriter&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;append_to_daily&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entry&lt;&#x2F;span&gt;&lt;span&gt;: MemoryEntry) -&amp;gt; Path:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;追加到今日日志&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        daily_file = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.daily_dir &#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;{date.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;today&lt;&#x2F;span&gt;&lt;span&gt;()}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 如果是新文件，写入标题
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not daily_file.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;exists&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;            daily_file.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;write_text&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;# &lt;&#x2F;span&gt;&lt;span&gt;{date.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;today&lt;&#x2F;span&gt;&lt;span&gt;()}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; 日志&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 追加记忆条目
+&lt;&#x2F;span&gt;&lt;span&gt;        importance_stars = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;⭐&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; * entry.importance
+&lt;&#x2F;span&gt;&lt;span&gt;        content = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## &lt;&#x2F;span&gt;&lt;span&gt;{entry.timestamp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strftime&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%H&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%M&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)} {importance_stars}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; **&lt;&#x2F;span&gt;&lt;span&gt;{entry.title}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;**
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{entry.content}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;daily_file.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;f:
+&lt;&#x2F;span&gt;&lt;span&gt;            f.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;write&lt;&#x2F;span&gt;&lt;span&gt;(content)
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;daily_file
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每条记忆都有重要性评级（1-5 星），这是 LLM 根据内容自动判断的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mag-ji-yi-jian-suo-fts5-de-wei-li&quot;&gt;🔍 记忆检索：FTS5 的威力&lt;&#x2F;h2&gt;
+&lt;p&gt;SQLite 的 FTS5 扩展是个宝藏。它支持：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;全文搜索&lt;&#x2F;li&gt;
+&lt;li&gt;前缀匹配&lt;&#x2F;li&gt;
+&lt;li&gt;相关性排序&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;MemoryIndex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;__init__&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;db_path&lt;&#x2F;span&gt;&lt;span&gt;: Path):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.conn = sqlite3.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;connect&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;(db_path))
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.conn.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            CREATE VIRTUAL TABLE IF NOT &lt;&#x2F;span&gt;&lt;span&gt;EXISTS&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; memory_index 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;USING&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; fts5(
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;                id, title, content, tags, importance, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;date&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;                tokenize&lt;&#x2F;span&gt;&lt;span&gt;=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;unicode61&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            )
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;search&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;query&lt;&#x2F;span&gt;&lt;span&gt;: str, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;limit&lt;&#x2F;span&gt;&lt;span&gt;: int = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; List[IndexEntry]:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 添加通配符支持前缀匹配
+&lt;&#x2F;span&gt;&lt;span&gt;        fts_query = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;{query}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not query.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;endswith&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;query
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        cursor = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.conn.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;SELECT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; id, title, importance, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;date
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; memory_index
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;WHERE&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; memory_index MATCH ?
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;ORDER BY&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; rank
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;LIMIT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ?
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;, (fts_query, limit))
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IndexEntry&lt;&#x2F;span&gt;&lt;span&gt;(*row) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;row &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;cursor.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fetchall&lt;&#x2F;span&gt;&lt;span&gt;()]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键细节：&lt;strong&gt;前缀匹配&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;用户输入 &lt;code&gt;jarvis recall test&lt;&#x2F;code&gt;，FTS5 需要搜索 &lt;code&gt;test*&lt;&#x2F;code&gt; 才能匹配到 &amp;quot;testing&amp;quot;、&amp;quot;test-file&amp;quot; 等结果。这个小细节让我 debug 了 20 分钟。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;thought-balloon-think-loop-rang-agent-hui-xiang&quot;&gt;💭 Think Loop：让 Agent 会想&lt;&#x2F;h2&gt;
+&lt;p&gt;记忆只是基础，更重要的是让 Agent &lt;strong&gt;使用&lt;&#x2F;strong&gt;记忆来思考。&lt;&#x2F;p&gt;
+&lt;p&gt;守护进程的核心循环加入了 Think 逻辑：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_think_cycle&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;定期思考循环&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 收集最近的发现
+&lt;&#x2F;span&gt;&lt;span&gt;    recent_discoveries = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.discoveries[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;:]
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 读取今日记忆
+&lt;&#x2F;span&gt;&lt;span&gt;    daily_memory = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.memory_writer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;read_today&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 构造思考 Prompt
+&lt;&#x2F;span&gt;&lt;span&gt;    prompt = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    你是 Jarvis，Polly 的 AI 助手。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    ## 最近发现
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;format_discoveries&lt;&#x2F;span&gt;&lt;span&gt;(recent_discoveries)}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    ## 今日记忆
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span&gt;{daily_memory}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    基于以上信息，有什么值得注意的洞察吗？
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    如果有，请简洁描述。如果没有特别的，回复&amp;quot;无&amp;quot;。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    insight = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.llm.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chat&lt;&#x2F;span&gt;&lt;span&gt;(prompt)
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;insight != &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 记录洞察
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.memory_writer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append_to_daily&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MemoryEntry&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;思考洞察&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;=insight,
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;importance&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3
+&lt;&#x2F;span&gt;&lt;span&gt;        ))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段代码实现了一个简单但有效的思考循环：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;收集上下文（发现 + 记忆）&lt;&#x2F;li&gt;
+&lt;li&gt;让 LLM 分析&lt;&#x2F;li&gt;
+&lt;li&gt;如果有洞察，记录下来&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;duan-dao-duan-yan-zheng-yi-bo-san-zhe&quot;&gt;🧪 端到端验证：一波三折&lt;&#x2F;h2&gt;
+&lt;p&gt;写完代码，我开始了端到端测试。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-ci-chang-shi-shi-bai&quot;&gt;第一次尝试：失败&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis recall &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;test&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🔍&lt;&#x2F;span&gt;&lt;span&gt; 搜索: test
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;📭&lt;&#x2F;span&gt;&lt;span&gt; 没有找到相关记忆
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;SQLite 表是空的。检查后发现 &lt;code&gt;MemoryIndex.add()&lt;&#x2F;code&gt; 没有被调用。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ci-chang-shi-bu-fen-cheng-gong&quot;&gt;第二次尝试：部分成功&lt;&#x2F;h3&gt;
+&lt;p&gt;修复后，记忆能写入 SQLite 了，但 Markdown 文件没更新。&lt;&#x2F;p&gt;
+&lt;p&gt;原因：我在 &lt;code&gt;daemon.py&lt;&#x2F;code&gt; 里先写了 SQLite，但 Markdown 的逻辑被我注释掉忘了取消注释... 🤦&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-san-ci-chang-shi-mu-lu-gao-cuo-liao&quot;&gt;第三次尝试：目录搞错了&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; cat &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.jarvis&#x2F;memory&#x2F;daily&#x2F;2026-02-05.md
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2026-02-05 日志
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;## 03:15 ⭐⭐⭐ **测试发现**
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Markdown 有记录！但我在 &lt;code&gt;Jarvis-Agent&#x2F;&lt;&#x2F;code&gt; 目录创建的测试文件没有触发新记录。&lt;&#x2F;p&gt;
+&lt;p&gt;查看配置才发现，Daemon 监控的是 &lt;code&gt;jarvis-test-ground&#x2F;&lt;&#x2F;code&gt; 目录，不是 &lt;code&gt;Jarvis-Agent&#x2F;&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;watch_paths&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;Users&#x2F;polly&#x2F;...&#x2F;jarvis-test-ground&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;di-si-ci-chang-shi-cheng-gong&quot;&gt;第四次尝试：成功！&lt;&#x2F;h3&gt;
+&lt;p&gt;在正确的目录创建文件，等待 60 秒（Think 周期），查看结果：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis recall
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🧠&lt;&#x2F;span&gt;&lt;span&gt; 最近记忆:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;[2026-02-05]&lt;&#x2F;span&gt;&lt;span&gt; 创建验证测试文档 ⭐⭐⭐
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;[2026-02-05]&lt;&#x2F;span&gt;&lt;span&gt; 测试发现 ⭐⭐⭐
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis insights
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;📊&lt;&#x2F;span&gt;&lt;span&gt; 最近洞察 (共 2 条记录)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;全链路打通&lt;&#x2F;strong&gt;：文件变化 → Daemon 检测 → LLM 分析 → 写入 Markdown → 索引到 SQLite → 可搜索。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bar-chart-phase-2-jiao-fu-wu&quot;&gt;📊 Phase 2 交付物&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组件&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;MemoryWriter&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;Markdown 写入&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;MemoryIndex&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;SQLite FTS5 索引&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;jarvis recall&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;搜索记忆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;jarvis think&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;手动触发思考&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;jarvis insights&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;查看洞察&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Daemon 集成&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;自动记录发现&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;两次 Git 提交：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;feat(memory): Phase 2.0 混合记忆系统 - Markdown + SQLite FTS5
+&lt;&#x2F;span&gt;&lt;span&gt;feat(cli): Phase 2 完成 - think&#x2F;insights 命令 + CLAUDE.md 更新
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;bulb-she-ji-yuan-ze-hui-gu&quot;&gt;💡 设计原则回顾&lt;&#x2F;h2&gt;
+&lt;p&gt;整个 Phase 2 的开发过程，我一直在提醒自己 Jarvis 的设计原则：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;一点不多，一点不少&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这个原则帮我做了几个关键决策：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;混合架构而非纯 SQLite&lt;&#x2F;strong&gt;：LLM 需要读 Markdown，这是刚需，不能省&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;FTS5 而非 Elasticsearch&lt;&#x2F;strong&gt;：搜索几百条记忆，SQLite 够用，不需要上重型方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Think Loop 而非复杂调度&lt;&#x2F;strong&gt;：简单的定时循环就够了，不需要 Celery 那套&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;crystal-ball-phase-3-yu-gao&quot;&gt;🔮 Phase 3 预告&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 2 让 Jarvis 有了记忆和思考能力。但它仍然「只能说，不能做」。&lt;&#x2F;p&gt;
+&lt;p&gt;Phase 3 的目标是&lt;strong&gt;行动&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Tool Registry：工具注册和调用&lt;&#x2F;li&gt;
+&lt;li&gt;MCP 集成：复用现有 MCP Server&lt;&#x2F;li&gt;
+&lt;li&gt;任务执行：从对话到实际操作&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;预计 2-3 周完成。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;凌晨五点的成功验证，让这一夜的折腾变得值得。&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis 现在不仅能看见变化，还能记住它们，并在合适的时候回想起来。这种感觉就像——你的 AI 助手终于开始「活」起来了。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步，让它学会动手。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;相关文章：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;blog&#x2F;jarvis-agent-genesis&#x2F;&quot;&gt;Jarvis 的诞生：从零开始构建数码宝贝式 AI Agent&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;blog&#x2F;attention-engineering-insight&#x2F;&quot;&gt;注意力工程：一种新的 AI 协作范式&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+</feed>

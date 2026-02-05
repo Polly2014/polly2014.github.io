@@ -1,0 +1,169 @@
+<!doctype html><html><head><title>🧠 Jarvis Phase 2：从被动问答到主动思考</title><meta content="Jarvis-Agent 第二阶段开发记录：设计混合记忆系统（Markdown + SQLite FTS5），实现 Think Loop 让 Agent 能主动思考。从架构抉择到凌晨五点的端到端验证，记录一个 AI Agent 学会「记忆」的全过程。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/jarvis-agent-phase2-memory-system/ property=og:url><meta content="🧠 Jarvis Phase 2：从被动问答到主动思考" property=og:title><meta content="Jarvis-Agent 第二阶段开发记录：设计混合记忆系统（Markdown + SQLite FTS5），实现 Think Loop 让 Agent 能主动思考。从架构抉择到凌晨五点的端到端验证，记录一个 AI Agent 学会「记忆」的全过程。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/jarvis-agent-phase2-memory-system/ name=twitter:url><meta content="🧠 Jarvis Phase 2：从被动问答到主动思考" name=twitter:title><meta content="Jarvis-Agent 第二阶段开发记录：设计混合记忆系统（Markdown + SQLite FTS5），实现 Think Loop 让 Agent 能主动思考。从架构抉择到凌晨五点的端到端验证，记录一个 AI Agent 学会「记忆」的全过程。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-05T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=Jarvis-Agent property=article:tag><meta content="AI Agent" property=article:tag><meta content=记忆系统 property=article:tag><meta content=SQLite property=article:tag><meta content=FTS5 property=article:tag><meta content=Claude property=article:tag><meta content=个人项目 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🧠 Jarvis Phase 2：从被动问答到主动思考</h1><div class=cover-image><img alt="🧠 Jarvis Phase 2：从被动问答到主动思考" loading=lazy src=cover.jpg></div><div class=content><p>凌晨五点，当 <code>jarvis recall</code> 成功返回刚才 Daemon 自动记录的发现时，我知道 Phase 2 终于完成了。<p>这是 <a href=/blog/jarvis-agent-genesis/>Jarvis-Agent</a> 的第二阶段——让 Agent 从「你问我答」进化到「主动思考」。听起来简单，但当我真正开始设计记忆系统时，才发现这是一个充满取舍的过程。<h2 id=clipboard-phase-2-de-he-xin-mu-biao>📋 Phase 2 的核心目标</h2><p>Phase 1 完成后，Jarvis 已经能：<ul><li>扫描目录，发现项目<li>后台监控文件变化<li>与用户正常对话</ul><p>但它有一个致命问题：<strong>没有记忆</strong>。<p>每次对话都是从零开始。昨天告诉它的偏好，今天就忘了。更关键的是，它不会主动思考——只能被动等待用户提问。<p>Phase 2 的目标很明确：<table><thead><tr><th>能力<th>说明<tbody><tr><td>💭 <strong>Think Loop</strong><td>守护进程定期"思考"，不只是监控<tr><td>🧠 <strong>持久记忆</strong><td>对话、发现、决策都能被记住<tr><td>🔍 <strong>记忆检索</strong><td>能快速找到相关记忆</table><h2 id=thinking-di-yi-ge-nan-ti-markdown-vs-sqlite>🤔 第一个难题：Markdown vs SQLite</h2><p>记忆存在哪里？这是第一个要回答的问题。<p>我列出了两个候选方案：<h3 id=fang-an-a-chun-sqlite>方案 A：纯 SQLite</h3><pre class=language-sql data-lang=sql style=background:#2b303b;color:#c0c5ce><code class=language-sql data-lang=sql><span style=color:#b48ead>CREATE TABLE </span><span style=color:#8fa1b3>memories</span><span> (
+</span><span>    id </span><span style=color:#b48ead>TEXT PRIMARY KEY</span><span>,
+</span><span>    content </span><span style=color:#b48ead>TEXT</span><span>,
+</span><span>    tags </span><span style=color:#b48ead>TEXT</span><span>,
+</span><span>    importance </span><span style=color:#b48ead>INTEGER</span><span>,
+</span><span>    created_at </span><span style=color:#b48ead>DATETIME
+</span><span>);
+</span></code></pre><p>优点：查询快、结构化、FTS5 支持全文搜索<p>缺点：<strong>LLM 不友好</strong>。当 Agent 需要"回顾记忆"时，我得把 SQLite 的数据转成 Prompt，这个过程很 hacky。<h3 id=fang-an-b-chun-markdown>方案 B：纯 Markdown</h3><pre class=language-markdown data-lang=markdown style=background:#2b303b;color:#c0c5ce><code class=language-markdown data-lang=markdown><span style=color:#8fa1b3># 2026-02-05 日志
+</span><span>
+</span><span style=color:#8fa1b3>## 10:30 发现
+</span><span style=color:#bf616a>- 检测到 Jarvis-Agent/src/cli.py 被修改
+</span><span style=color:#bf616a>- </span><span style=font-weight:700;color:#ebcb8b>**重要性**</span><span style=color:#bf616a>: ⭐⭐⭐
+</span><span style=color:#bf616a>
+</span><span style=color:#8fa1b3>## 14:20 对话
+</span><span style=color:#bf616a>- 用户询问了...
+</span></code></pre><p>优点：人类可读、Git 友好、<strong>LLM 原生格式</strong><p>缺点：搜索慢。当记忆积累到几百条时，遍历 Markdown 文件会很痛苦。<h3 id=zui-zhong-xuan-ze-hun-he-jia-gou>最终选择：混合架构</h3><p>纠结了一会儿后，我意识到两者不是互斥的：<blockquote><p><strong>Markdown 存内容，SQLite 做索引</strong></blockquote><pre style=background:#2b303b;color:#c0c5ce><code><span>~/.jarvis/memory/
+</span><span>├── daily/           # 📅 编年体日志
+</span><span>│   └── 2026-02-05.md
+</span><span>├── topics/          # 📚 纪传体主题
+</span><span>│   └── jarvis-development.md
+</span><span>└── persona.md       # 🎭 人格定义
+</span><span>
+</span><span>~/.jarvis/index.db   # 🔍 FTS5 全文索引
+</span></code></pre><p>这样两边的优点都保留了：<ul><li>LLM 思考时，直接读 Markdown<li>用户搜索时，走 SQLite FTS5<li>人类想看记忆？打开文件夹就行</ul><h2 id=floppy-disk-ji-yi-xie-ru-memorywriter>💾 记忆写入：MemoryWriter</h2><p><code>MemoryWriter</code> 负责把记忆写入 Markdown：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>MemoryWriter</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>append_to_daily</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>entry</span><span>: MemoryEntry) -> Path:
+</span><span>        </span><span style=color:#65737e>"""追加到今日日志"""
+</span><span>        daily_file = </span><span style=color:#bf616a>self</span><span>.daily_dir / </span><span style=color:#b48ead>f</span><span>"{date.</span><span style=color:#bf616a>today</span><span>()}</span><span style=color:#a3be8c>.md</span><span>"
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 如果是新文件，写入标题
+</span><span>        </span><span style=color:#b48ead>if </span><span>not daily_file.</span><span style=color:#bf616a>exists</span><span>():
+</span><span>            daily_file.</span><span style=color:#bf616a>write_text</span><span>(</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c># </span><span>{date.</span><span style=color:#bf616a>today</span><span>()}</span><span style=color:#a3be8c> 日志</span><span style=color:#96b5b4>\n\n</span><span>")
+</span><span>        
+</span><span>        </span><span style=color:#65737e># 追加记忆条目
+</span><span>        importance_stars = "</span><span style=color:#a3be8c>⭐</span><span>" * entry.importance
+</span><span>        content = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>## </span><span>{entry.timestamp.</span><span style=color:#bf616a>strftime</span><span>('</span><span style=color:#d08770>%H</span><span style=color:#a3be8c>:</span><span style=color:#d08770>%M</span><span>')} {importance_stars}</span><span style=color:#a3be8c> **</span><span>{entry.title}</span><span style=color:#a3be8c>**
+</span><span style=color:#a3be8c>
+</span><span>{entry.content}
+</span><span style=color:#a3be8c>
+</span><span style=color:#a3be8c>---
+</span><span>"""
+</span><span>        </span><span style=color:#b48ead>with </span><span>daily_file.</span><span style=color:#bf616a>open</span><span>("</span><span style=color:#a3be8c>a</span><span>") </span><span style=color:#b48ead>as </span><span>f:
+</span><span>            f.</span><span style=color:#bf616a>write</span><span>(content)
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>daily_file
+</span></code></pre><p>每条记忆都有重要性评级（1-5 星），这是 LLM 根据内容自动判断的。<h2 id=mag-ji-yi-jian-suo-fts5-de-wei-li>🔍 记忆检索：FTS5 的威力</h2><p>SQLite 的 FTS5 扩展是个宝藏。它支持：<ul><li>全文搜索<li>前缀匹配<li>相关性排序</ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>MemoryIndex</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#96b5b4>__init__</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>db_path</span><span>: Path):
+</span><span>        </span><span style=color:#bf616a>self</span><span>.conn = sqlite3.</span><span style=color:#bf616a>connect</span><span>(</span><span style=color:#bf616a>str</span><span>(db_path))
+</span><span>        </span><span style=color:#bf616a>self</span><span>.conn.</span><span style=color:#bf616a>execute</span><span>("""
+</span><span style=color:#a3be8c>            CREATE VIRTUAL TABLE IF NOT </span><span>EXISTS</span><span style=color:#a3be8c> memory_index 
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>USING</span><span style=color:#a3be8c> fts5(
+</span><span style=color:#a3be8c>                id, title, content, tags, importance, </span><span style=color:#b48ead>date</span><span style=color:#a3be8c>,
+</span><span style=color:#a3be8c>                tokenize</span><span>='</span><span style=color:#a3be8c>unicode61</span><span>'
+</span><span style=color:#a3be8c>            )
+</span><span style=color:#a3be8c>        </span><span>""")
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>search</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>query</span><span>: str, </span><span style=color:#bf616a>limit</span><span>: int = </span><span style=color:#d08770>10</span><span>) -> List[IndexEntry]:
+</span><span>        </span><span style=color:#65737e># 添加通配符支持前缀匹配
+</span><span>        fts_query = </span><span style=color:#b48ead>f</span><span>"{query}</span><span style=color:#a3be8c>*</span><span>" </span><span style=color:#b48ead>if </span><span>not query.</span><span style=color:#bf616a>endswith</span><span>("</span><span style=color:#a3be8c>*</span><span>") </span><span style=color:#b48ead>else </span><span>query
+</span><span>        
+</span><span>        cursor = </span><span style=color:#bf616a>self</span><span>.conn.</span><span style=color:#bf616a>execute</span><span>("""
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>SELECT</span><span style=color:#a3be8c> id, title, importance, </span><span style=color:#b48ead>date
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>FROM</span><span style=color:#a3be8c> memory_index
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>WHERE</span><span style=color:#a3be8c> memory_index MATCH ?
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>ORDER BY</span><span style=color:#a3be8c> rank
+</span><span style=color:#a3be8c>            </span><span style=color:#b48ead>LIMIT</span><span style=color:#a3be8c> ?
+</span><span style=color:#a3be8c>        </span><span>""", (fts_query, limit))
+</span><span>        
+</span><span>        </span><span style=color:#b48ead>return </span><span>[</span><span style=color:#bf616a>IndexEntry</span><span>(*row) </span><span style=color:#b48ead>for </span><span>row </span><span style=color:#b48ead>in </span><span>cursor.</span><span style=color:#bf616a>fetchall</span><span>()]
+</span></code></pre><p>关键细节：<strong>前缀匹配</strong>。<p>用户输入 <code>jarvis recall test</code>，FTS5 需要搜索 <code>test*</code> 才能匹配到 "testing"、"test-file" 等结果。这个小细节让我 debug 了 20 分钟。<h2 id=thought-balloon-think-loop-rang-agent-hui-xiang>💭 Think Loop：让 Agent 会想</h2><p>记忆只是基础，更重要的是让 Agent <strong>使用</strong>记忆来思考。<p>守护进程的核心循环加入了 Think 逻辑：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>_think_cycle</span><span>(</span><span style=color:#bf616a>self</span><span>):
+</span><span>    </span><span style=color:#65737e>"""定期思考循环"""
+</span><span>    </span><span style=color:#65737e># 收集最近的发现
+</span><span>    recent_discoveries = </span><span style=color:#bf616a>self</span><span>.discoveries[-</span><span style=color:#d08770>5</span><span>:]
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 读取今日记忆
+</span><span>    daily_memory = </span><span style=color:#bf616a>self</span><span>.memory_writer.</span><span style=color:#bf616a>read_today</span><span>()
+</span><span>    
+</span><span>    </span><span style=color:#65737e># 构造思考 Prompt
+</span><span>    prompt = </span><span style=color:#b48ead>f</span><span>"""
+</span><span style=color:#a3be8c>    你是 Jarvis，Polly 的 AI 助手。
+</span><span style=color:#a3be8c>    
+</span><span style=color:#a3be8c>    ## 最近发现
+</span><span style=color:#a3be8c>    </span><span>{</span><span style=color:#bf616a>format_discoveries</span><span>(recent_discoveries)}
+</span><span style=color:#a3be8c>    
+</span><span style=color:#a3be8c>    ## 今日记忆
+</span><span style=color:#a3be8c>    </span><span>{daily_memory}
+</span><span style=color:#a3be8c>    
+</span><span style=color:#a3be8c>    基于以上信息，有什么值得注意的洞察吗？
+</span><span style=color:#a3be8c>    如果有，请简洁描述。如果没有特别的，回复"无"。
+</span><span style=color:#a3be8c>    </span><span>"""
+</span><span>    
+</span><span>    insight = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.llm.</span><span style=color:#bf616a>chat</span><span>(prompt)
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>if </span><span>insight != "</span><span style=color:#a3be8c>无</span><span>":
+</span><span>        </span><span style=color:#65737e># 记录洞察
+</span><span>        </span><span style=color:#bf616a>self</span><span>.memory_writer.</span><span style=color:#bf616a>append_to_daily</span><span>(</span><span style=color:#bf616a>MemoryEntry</span><span>(
+</span><span>            </span><span style=color:#bf616a>title</span><span>="</span><span style=color:#a3be8c>思考洞察</span><span>",
+</span><span>            </span><span style=color:#bf616a>content</span><span>=insight,
+</span><span>            </span><span style=color:#bf616a>importance</span><span>=</span><span style=color:#d08770>3
+</span><span>        ))
+</span></code></pre><p>这段代码实现了一个简单但有效的思考循环：<ol><li>收集上下文（发现 + 记忆）<li>让 LLM 分析<li>如果有洞察，记录下来</ol><h2 id=duan-dao-duan-yan-zheng-yi-bo-san-zhe>🧪 端到端验证：一波三折</h2><p>写完代码，我开始了端到端测试。<h3 id=di-yi-ci-chang-shi-shi-bai>第一次尝试：失败</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> jarvis recall "</span><span style=color:#a3be8c>test</span><span>"
+</span><span style=color:#bf616a>🔍</span><span> 搜索: test
+</span><span style=color:#bf616a>📭</span><span> 没有找到相关记忆
+</span></code></pre><p>SQLite 表是空的。检查后发现 <code>MemoryIndex.add()</code> 没有被调用。<h3 id=di-er-ci-chang-shi-bu-fen-cheng-gong>第二次尝试：部分成功</h3><p>修复后，记忆能写入 SQLite 了，但 Markdown 文件没更新。<p>原因：我在 <code>daemon.py</code> 里先写了 SQLite，但 Markdown 的逻辑被我注释掉忘了取消注释... 🤦<h3 id=di-san-ci-chang-shi-mu-lu-gao-cuo-liao>第三次尝试：目录搞错了</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> cat </span><span style=color:#bf616a>~</span><span>/.jarvis/memory/daily/2026-02-05.md
+</span><span style=color:#65737e># 2026-02-05 日志
+</span><span>
+</span><span style=color:#65737e>## 03:15 ⭐⭐⭐ **测试发现**
+</span><span style=color:#bf616a>...
+</span></code></pre><p>Markdown 有记录！但我在 <code>Jarvis-Agent/</code> 目录创建的测试文件没有触发新记录。<p>查看配置才发现，Daemon 监控的是 <code>jarvis-test-ground/</code> 目录，不是 <code>Jarvis-Agent/</code>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>watch_paths</span><span>": ["</span><span style=color:#a3be8c>/Users/polly/.../jarvis-test-ground</span><span>"]
+</span><span>}
+</span></code></pre><h3 id=di-si-ci-chang-shi-cheng-gong>第四次尝试：成功！</h3><p>在正确的目录创建文件，等待 60 秒（Think 周期），查看结果：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>$</span><span> jarvis recall
+</span><span style=color:#bf616a>🧠</span><span> 最近记忆:
+</span><span style=color:#bf616a>[2026-02-05]</span><span> 创建验证测试文档 ⭐⭐⭐
+</span><span style=color:#bf616a>[2026-02-05]</span><span> 测试发现 ⭐⭐⭐
+</span><span>
+</span><span style=color:#bf616a>$</span><span> jarvis insights
+</span><span style=color:#bf616a>📊</span><span> 最近洞察 (共 2 条记录)</span><span style=color:#96b5b4>:
+</span><span style=color:#bf616a>...
+</span></code></pre><p><strong>全链路打通</strong>：文件变化 → Daemon 检测 → LLM 分析 → 写入 Markdown → 索引到 SQLite → 可搜索。<h2 id=bar-chart-phase-2-jiao-fu-wu>📊 Phase 2 交付物</h2><table><thead><tr><th>组件<th>状态<th>说明<tbody><tr><td><code>MemoryWriter</code><td>✅<td>Markdown 写入<tr><td><code>MemoryIndex</code><td>✅<td>SQLite FTS5 索引<tr><td><code>jarvis recall</code><td>✅<td>搜索记忆<tr><td><code>jarvis think</code><td>✅<td>手动触发思考<tr><td><code>jarvis insights</code><td>✅<td>查看洞察<tr><td>Daemon 集成<td>✅<td>自动记录发现</table><p>两次 Git 提交：<pre style=background:#2b303b;color:#c0c5ce><code><span>feat(memory): Phase 2.0 混合记忆系统 - Markdown + SQLite FTS5
+</span><span>feat(cli): Phase 2 完成 - think/insights 命令 + CLAUDE.md 更新
+</span></code></pre><h2 id=bulb-she-ji-yuan-ze-hui-gu>💡 设计原则回顾</h2><p>整个 Phase 2 的开发过程，我一直在提醒自己 Jarvis 的设计原则：<blockquote><p><strong>一点不多，一点不少</strong></blockquote><p>这个原则帮我做了几个关键决策：<ol><li><strong>混合架构而非纯 SQLite</strong>：LLM 需要读 Markdown，这是刚需，不能省<li><strong>FTS5 而非 Elasticsearch</strong>：搜索几百条记忆，SQLite 够用，不需要上重型方案<li><strong>Think Loop 而非复杂调度</strong>：简单的定时循环就够了，不需要 Celery 那套</ol><h2 id=crystal-ball-phase-3-yu-gao>🔮 Phase 3 预告</h2><p>Phase 2 让 Jarvis 有了记忆和思考能力。但它仍然「只能说，不能做」。<p>Phase 3 的目标是<strong>行动</strong>：<ul><li>Tool Registry：工具注册和调用<li>MCP 集成：复用现有 MCP Server<li>任务执行：从对话到实际操作</ul><p>预计 2-3 周完成。<hr><p>凌晨五点的成功验证，让这一夜的折腾变得值得。<p>Jarvis 现在不仅能看见变化，还能记住它们，并在合适的时候回想起来。这种感觉就像——你的 AI 助手终于开始「活」起来了。<p>下一步，让它学会动手。<blockquote><p>相关文章：<ul><li><a href=/blog/jarvis-agent-genesis/>Jarvis 的诞生：从零开始构建数码宝贝式 AI Agent</a><li><a href=/blog/attention-engineering-insight/>注意力工程：一种新的 AI 协作范式</a></ul></blockquote></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
