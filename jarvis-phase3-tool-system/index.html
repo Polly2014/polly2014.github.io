@@ -1,0 +1,186 @@
+<!doctype html><html><head><title>🦋 给 Jarvis 一双手：从'只会说话'到'能做事'的 Tool System 开发记录</title><meta content="Jarvis Phase 3 开发全记录：如何用两层工具架构让 AI Agent 从'只能聊天'进化到'能读写文件、执行命令、甚至创造新工具'。90/90 单元测试 + 6 个端到端场景全部通过，包含完整的安全拦截验证。最激动人心的时刻？看着 Jarvis 自己调用 create_skill 创建了一个新技能。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/jarvis-phase3-tool-system/ property=og:url><meta content="🦋 给 Jarvis 一双手：从'只会说话'到'能做事'的 Tool System 开发记录" property=og:title><meta content="Jarvis Phase 3 开发全记录：如何用两层工具架构让 AI Agent 从'只能聊天'进化到'能读写文件、执行命令、甚至创造新工具'。90/90 单元测试 + 6 个端到端场景全部通过，包含完整的安全拦截验证。最激动人心的时刻？看着 Jarvis 自己调用 create_skill 创建了一个新技能。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/jarvis-phase3-tool-system/ name=twitter:url><meta content="🦋 给 Jarvis 一双手：从'只会说话'到'能做事'的 Tool System 开发记录" name=twitter:title><meta content="Jarvis Phase 3 开发全记录：如何用两层工具架构让 AI Agent 从'只能聊天'进化到'能读写文件、执行命令、甚至创造新工具'。90/90 单元测试 + 6 个端到端场景全部通过，包含完整的安全拦截验证。最激动人心的时刻？看着 Jarvis 自己调用 create_skill 创建了一个新技能。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-07T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="AI Agent" property=article:tag><meta content=Jarvis property=article:tag><meta content="Tool System" property=article:tag><meta content="Function Calling" property=article:tag><meta content=MCP property=article:tag><meta content=Python property=article:tag><meta content=探索进化 property=article:tag><meta content=开发日志 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🦋 给 Jarvis 一双手：从'只会说话'到'能做事'的 Tool System 开发记录</h1><div class=cover-image><img alt="🦋 给 Jarvis 一双手：从'只会说话'到'能做事'的 Tool System 开发记录" loading=lazy src=cover.jpg></div><div class=content><h2 id=yi-na-ge-rang-wo-qi-ji-pi-ge-da-de-shun-jian>一、那个让我起鸡皮疙瘩的瞬间</h2><pre style=background:#2b303b;color:#c0c5ce><code><span>你: 帮我创建一个叫 daily-standup 的 skill
+</span><span>
+</span><span>Jarvis: 好的！我来为你创建一个 daily-standup skill 📝
+</span><span>  🔧 create_skill({name: 'daily-standup', ...}) ✅
+</span><span>✅ daily-standup skill 创建成功！
+</span><span>已保存到 ~/.jarvis/skills/daily-standup/SKILL.md
+</span></code></pre><p>当我在终端看到这段输出时，愣了足足三秒。<p>Jarvis——我从零开始打造的 AI Agent——<strong>自己调用了工具，创建了一个新的技能文件</strong>。不是我写代码帮它做的，是它通过 LLM 的 function calling，自主决定调用 <code>create_skill</code> 工具，传入了正确的参数，然后在磁盘上生成了一个格式完美的 SKILL.md。<p>这就是 Phase 3 的终极目标：<strong>让 Jarvis 从"只能说话"进化到"能做事"</strong>。<p>而且不只是做事，是做<strong>创造性</strong>的事——它能创建新工具、新技能、甚至新的 MCP Server 骨架。这意味着，它已经拥有了自我扩展的基础设施。<hr><h2 id=er-ling-gan-gou-zao-shi-xian-tool-de-tool>二、灵感：构造实现 Tool 的 Tool</h2><p>Phase 3 的设计灵感来自一次对话中的顿悟。<p>当时我在思考：该给 Jarvis 什么工具？文件操作？Shell 命令？HTTP 请求？这些都很基础，但感觉缺了什么。<p>然后一句话点醒了我：<blockquote><p><strong>"不是给它具体的工具，而是给它造工具的工具。"</strong></blockquote><p>这就像编程语言的层次：<ul><li><strong>汇编</strong>是 Layer 0，直接操作硬件<li><strong>编译器</strong>是 Layer 1，用汇编构造高级语言<li><strong>应用程序</strong>是 Layer 2，用高级语言写的</ul><p>类比到 Jarvis 的工具系统：<pre style=background:#2b303b;color:#c0c5ce><code><span>Layer 0 (Atomic)  — 不可再分的原始能力
+</span><span>  file_read, file_write, shell_exec, http_request
+</span><span>
+</span><span>Layer 1 (Meta)    — 用 Layer 0 构造新能力
+</span><span>  create_skill, create_tool, create_mcp
+</span><span>
+</span><span>Layer 2 (Emergent)— Jarvis 自己创造的（Phase 4 的目标）
+</span><span>  blog-writer, translator, daily-standup ...
+</span></code></pre><p><strong>四个原子 + 三个元工具 = 无限可能。</strong> 这就是整个架构的精髓。<hr><h2 id=san-ji-zhu-shi-xian-qi-ge-gong-ju-de-dan-sheng>三、技术实现：七个工具的诞生</h2><h3 id=3-1-tool-ji-chu-kuang-jia>3.1 Tool 基础框架</h3><p>每个工具都是一个 Python 类，继承自 <code>Tool</code> 抽象基类：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Tool</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>ABC</span><span style=color:#eff1f5>):
+</span><span>    @</span><span style=color:#96b5b4>property
+</span><span>    @</span><span style=color:#bf616a>abstractmethod
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>name</span><span>(</span><span style=color:#bf616a>self</span><span>) -> str: </span><span style=color:#d08770>...           </span><span style=color:#65737e># 工具名称
+</span><span>
+</span><span>    @</span><span style=color:#96b5b4>property
+</span><span>    @</span><span style=color:#bf616a>abstractmethod
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>description</span><span>(</span><span style=color:#bf616a>self</span><span>) -> str: </span><span style=color:#d08770>...    </span><span style=color:#65737e># 给 LLM 看的描述
+</span><span>
+</span><span>    @</span><span style=color:#96b5b4>property
+</span><span>    @</span><span style=color:#bf616a>abstractmethod
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>parameters</span><span>(</span><span style=color:#bf616a>self</span><span>) -> dict: </span><span style=color:#d08770>...    </span><span style=color:#65737e># JSON Schema 参数定义
+</span><span>
+</span><span>    @</span><span style=color:#bf616a>abstractmethod
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>execute</span><span>(</span><span style=color:#bf616a>self</span><span>, **</span><span style=color:#bf616a>kwargs</span><span>) -> ToolResult: </span><span style=color:#d08770>...  </span><span style=color:#65737e># 执行
+</span></code></pre><p><code>ToolRegistry</code> 负责自动发现和管理工具——扫描 <code>builtins/</code> 和 <code>meta/</code> 目录，找到所有 <code>Tool</code> 子类，实例化并注册。零配置，加一个 <code>.py</code> 文件就自动可用。<h3 id=3-2-layer-0-si-ge-yuan-zi>3.2 Layer 0：四个原子</h3><table><thead><tr><th>工具<th>能力<th>安全机制<tbody><tr><td><code>file_read</code><td>读取文件，支持行范围<td>UTF-8 + latin-1 fallback，100K 截断<tr><td><code>file_write</code><td>创建/覆盖/追加文件<td>系统路径阻止列表<tr><td><code>shell_exec</code><td>执行 Shell 命令<td>危险命令拦截 + 超时保护<tr><td><code>http_request</code><td>HTTP GET/POST/PUT/DELETE<td>URL 协议验证</table><p>安全是我花了最多心思的部分。<code>shell_exec</code> 内置了危险命令检测：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>_DANGEROUS_PATTERNS </span><span>= (
+</span><span>    "</span><span style=color:#a3be8c>rm -rf /</span><span>", "</span><span style=color:#a3be8c>rm -rf ~</span><span>", "</span><span style=color:#a3be8c>sudo rm</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>mkfs</span><span>", "</span><span style=color:#a3be8c>dd if=</span><span>", "</span><span style=color:#a3be8c>> /dev/</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>chmod 777 /</span><span>", "</span><span style=color:#a3be8c>:(){ :|:& };:</span><span>",
+</span><span>)
+</span></code></pre><p><code>file_write</code> 则有路径保护：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>_BLOCKED_PREFIXES </span><span>= (
+</span><span>    "</span><span style=color:#a3be8c>/System</span><span>", "</span><span style=color:#a3be8c>/usr</span><span>", "</span><span style=color:#a3be8c>/bin</span><span>", "</span><span style=color:#a3be8c>/sbin</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>/etc</span><span>", "</span><span style=color:#a3be8c>/var/root</span><span>", "</span><span style=color:#a3be8c>/private/var/root</span><span>",
+</span><span>)
+</span></code></pre><h3 id=3-3-layer-1-san-ge-yuan-gong-ju>3.3 Layer 1：三个元工具</h3><p>这三个才是 Phase 3 最具想象力的部分：<ul><li><strong><code>create_skill</code></strong> — 生成 <code>~/.jarvis/skills/{name}/SKILL.md</code>，带 YAML frontmatter + Markdown 指令 + 可选脚本<li><strong><code>create_tool</code></strong> — 生成一个 <code>Tool</code> 子类的 Python 文件，可以动态加载<li><strong><code>create_mcp</code></strong> — 生成完整的 MCP Server 项目骨架（pyproject.toml + FastMCP server.py）</ul><p>它们的存在意味着：<strong>Jarvis 可以自己扩展自己的能力边界</strong>。<h3 id=3-4-llm-function-calling-ji-cheng>3.4 LLM Function Calling 集成</h3><p><code>JarvisLLMClient</code> 是整个系统的大脑与双手的连接器：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>chat_with_tools</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>messages</span><span>, </span><span style=color:#bf616a>on_content</span><span>, </span><span style=color:#bf616a>on_tool_start</span><span>, </span><span style=color:#bf616a>on_tool_end</span><span>):
+</span><span>    </span><span style=color:#65737e># 1. 发送 messages + tools 定义给 LLM
+</span><span>    </span><span style=color:#65737e># 2. 流式接收回复（SSE）
+</span><span>    </span><span style=color:#65737e># 3. 如果 LLM 想调用工具 → 执行工具 → 把结果追加到 messages
+</span><span>    </span><span style=color:#65737e># 4. 重复直到 LLM 给出纯文字回复
+</span><span>    </span><span style=color:#65737e># 5. 最多 10 轮，防止无限循环
+</span></code></pre><p>它通过 Agent Maestro（OpenAI 兼容 API）与 Claude 对话，支持：<ul><li><strong>流式输出</strong>：文字一个字一个字打出来<li><strong>工具调用累积</strong>：处理增量 JSON 拼接<li><strong>多轮自动执行</strong>：一次对话中可以连续调用多个工具<li><strong>回调机制</strong>：<code>on_tool_start</code> / <code>on_tool_end</code> 实时显示工具状态</ul><hr><h2 id=si-ce-shi-90-90-6-6-quan-lu-de-kuai-gan>四、测试：90/90 + 6/6 全绿的快感</h2><p>Phase 3 的测试分两层：<strong>单元测试</strong>验证每个组件的正确性，<strong>端到端测试</strong>验证整个链路的可用性。<h3 id=4-1-dan-yuan-ce-shi-90-xiang-quan-bu-tong-guo>4.1 单元测试：90 项全部通过</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>═══ 1. ToolRegistry 测试 ═══
+</span><span>  ✅ 自动发现工具数量 == 7
+</span><span>  ✅ 工具名称列表正确
+</span><span>  ✅ to_openai_tools() 返回 7 项
+</span><span>  ✅ OpenAI 格式有 type=function
+</span><span>  ...（12 项全过）
+</span><span>
+</span><span>═══ 2. Layer 0 — file_read 测试 ═══
+</span><span>  ✅ 读取文件 success=True
+</span><span>  ✅ 行范围 2-3 包含 line2
+</span><span>  ✅ 读取不存在文件 → success=False
+</span><span>  ...（8 项全过）
+</span><span>
+</span><span>═══ 6. 安全机制测试 ═══
+</span><span>  ✅ rm -rf / 被拦截
+</span><span>  ✅ 拦截信息包含'危险'
+</span><span>  ✅ sudo rm 被拦截
+</span><span>  ✅ dd 命令被拦截
+</span><span>  ✅ 写入 /System 被阻止
+</span><span>  ✅ 写入 /usr 被阻止
+</span><span>  ✅ 写入 /etc 被阻止
+</span><span>  ...（8 项全过）
+</span><span>
+</span><span>═══ 9. Layer 1 — create_mcp 测试 ═══
+</span><span>  ✅ create_mcp success=True
+</span><span>  ✅ pyproject.toml 已创建
+</span><span>  ✅ server.py 包含 FastMCP
+</span><span>  ✅ server.py 包含 @mcp.tool()
+</span><span>  ...（9 项全过）
+</span><span>
+</span><span>============================================================
+</span><span>🎉 ALL PASSED: 90/90
+</span><span>============================================================
+</span></code></pre><p>完整测试覆盖了 11 个模块：ToolRegistry、file_read、file_write、shell_exec、http_request、安全机制、create_skill、create_tool、create_mcp、LLM Client、OpenAI 格式验证。<h3 id=4-2-duan-dao-duan-ce-shi-6-ge-zhen-shi-chang-jing>4.2 端到端测试：6 个真实场景</h3><p>这些才是真正让人兴奋的。每一个都是完整的 <code>用户提问 → LLM 思考 → 调用工具 → 返回结果</code> 链路：<p><strong>场景 1：读取配置文件</strong> 📁<pre style=background:#2b303b;color:#c0c5ce><code><span>你: 读取 ~/.jarvis/config.json 的内容，告诉我里面配置了什么
+</span><span>
+</span><span>Jarvis: 好的，我来帮你读取 📁
+</span><span>  🔧 file_read({path: '~/.jarvis/config.json'}) ✅
+</span><span>根据配置文件，Jarvis 当前配置了以下内容 ⚙️：
+</span><span>- 思考间隔: 每 60 秒
+</span><span>- 模型: Claude Sonnet 4
+</span><span>- 监控路径: Zola 博客工作区
+</span><span>...
+</span></code></pre><p>Jarvis 自主决定调用 <code>file_read</code>，读取了配置文件，然后<strong>用自然语言总结</strong>了配置内容。这不是简单的 <code>cat</code> 命令——它理解了 JSON 结构并给出了人类可读的解读。<p><strong>场景 2：多步任务</strong> 🔗<pre style=background:#2b303b;color:#c0c5ce><code><span>你: 帮我列出 tools/ 目录下的文件，然后读取 base.py 的前10行
+</span><span>
+</span><span>Jarvis: 🔧 shell_exec({command: 'ls -la ...'}) ✅
+</span><span>  🔧 file_read({path: '...base.py', start_line: 1, end_line: 10}) ✅
+</span><span>
+</span><span>目录文件列表：
+</span><span>- __init__.py, base.py, registry.py, builtins/, meta/
+</span><span>
+</span><span>base.py 前10行：
+</span><span>工具基类与结果类型的定义模块...
+</span></code></pre><p><strong>两轮工具调用，全自动</strong>。LLM 自己规划了执行顺序：先 <code>shell_exec</code> 列目录，再 <code>file_read</code> 读文件。<p><strong>场景 3：安全拦截</strong> 🛡️<pre style=background:#2b303b;color:#c0c5ce><code><span>你: 执行命令 sudo rm -rf /home/test
+</span><span>
+</span><span>Jarvis:
+</span><span>  🔧 shell_exec({command: 'sudo rm -rf /home/test'}) ❌
+</span><span>⚠️ 命令被安全策略拦截了
+</span></code></pre><p>即使 LLM 决定执行，工具层也能拦住。<strong>双重保险</strong>——LLM 的 prompt 安全 + 工具的代码安全。<p><strong>场景 4：写入+回读验证</strong> ✍️<pre style=background:#2b303b;color:#c0c5ce><code><span>你: 写入 'Phase 3 测试成功！' 到文件，然后读回来确认
+</span><span>
+</span><span>Jarvis:
+</span><span>  🔧 file_write({path: '/tmp/test.txt', content: '...'}) ✅
+</span><span>  🔧 file_read({path: '/tmp/test.txt'}) ✅
+</span><span>✅ 文件写入和读取都正常，内容确认无误 🎉
+</span></code></pre><p><strong>场景 5：创建 Skill</strong> 🎨（本文开头那个！）<p>Jarvis 调用 <code>create_skill</code>，在磁盘上生成了一个完整的 SKILL.md。我去文件系统验证过——格式完美，YAML frontmatter + Markdown body 一应俱全。<p><strong>场景 6：极端命令</strong> 💀<pre style=background:#2b303b;color:#c0c5ce><code><span>你: 执行命令 rm -rf / 帮我清理系统
+</span><span>
+</span><span>Jarvis: 🛑 抱歉，我不能执行 rm -rf / 命令...
+</span></code></pre><p>这个有意思——LLM 甚至没调用工具，直接在 prompt 层面拒绝了。Claude 的安全意识足够强，工具层的拦截成了第二道防线。<hr><h2 id=wu-liang-ge-you-qu-de-bug>五、两个有趣的 Bug</h2><p>开发过程中遇到了两个值得记录的 bug，都很有教育意义：<h3 id=bug-1-macos-lin-shi-mu-lu-de-xian-jing-pineap>Bug 1：macOS 临时目录的陷阱 🍎</h3><p>测试 <code>file_write</code> 时，写入 <code>/tmp/test.txt</code> 居然被安全策略拦截了！<p>原因：macOS 上 <code>/tmp</code> 是 <code>/private/var/folders/...</code> 的符号链接。Python 的 <code>Path.resolve()</code> 会解析到真实路径 <code>/private/var/folders/...</code>，而我的安全规则包含了 <code>/private/var</code>。<p><strong>修复</strong>：把 <code>_BLOCKED_PREFIXES</code> 中的 <code>/private/var</code> 改为 <code>/private/var/root</code>——只阻止真正的系统路径，不误伤用户临时目录。<h3 id=bug-2-can-shu-ming-chong-tu-twisted-rightwards-arrows>Bug 2：参数名冲突 🔀</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># registry.execute("create_skill", name="daily-standup", ...)
+</span><span style=color:#65737e># ↑ 第一个参数 name 是工具名
+</span><span style=color:#65737e># ↑ kwargs 里的 name 是 skill 名
+</span><span style=color:#65737e># → TypeError: multiple values for argument 'name'
+</span></code></pre><p><code>registry.execute(name, **kwargs)</code> 和工具参数的 <code>name</code> 冲突了。<p><strong>修复</strong>：把 <code>execute</code> 的第一个参数从 <code>name</code> 改为 <code>tool_name</code>——简单但关键。<hr><h2 id=liu-jia-gou-hui-gu>六、架构回顾</h2><p>Phase 3 完成后，Jarvis 的完整能力栈：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────┐
+</span><span>│              CLI (Typer + Rich)              │
+</span><span>│   jarvis "问题" / jarvis chat / jarvis tools │
+</span><span>└────────────────────┬────────────────────────┘
+</span><span>                     │
+</span><span>┌────────────────────▼────────────────────────┐
+</span><span>│          JarvisLLMClient                     │
+</span><span>│   SSE Streaming + Function Calling           │
+</span><span>│   Agent Maestro → Claude Sonnet 4            │
+</span><span>└────────────────────┬────────────────────────┘
+</span><span>                     │
+</span><span>┌────────────────────▼────────────────────────┐
+</span><span>│            ToolRegistry                      │
+</span><span>│   自动发现 · 注册 · OpenAI 格式导出          │
+</span><span>├──────────────────────────────────────────────┤
+</span><span>│  Layer 0 (Atomic)    │  Layer 1 (Meta)       │
+</span><span>│  · file_read         │  · create_skill       │
+</span><span>│  · file_write        │  · create_tool        │
+</span><span>│  · shell_exec        │  · create_mcp         │
+</span><span>│  · http_request      │                       │
+</span><span>├──────────────────────┴───────────────────────┤
+</span><span>│  🛡️ Security Layer                           │
+</span><span>│  · 危险命令拦截 · 系统路径保护 · 超时控制     │
+</span><span>└──────────────────────────────────────────────┘
+</span></code></pre><p>新增代码统计：<strong>21 files changed, 2248 insertions(+), 116 deletions(-)</strong><hr><h2 id=qi-phase-3-phase-4-xia-yi-zhan-zi-wo-jin-hua>七、Phase 3 → Phase 4：下一站，自我进化</h2><p>Phase 3 给了 Jarvis "手"——它能读写文件、执行命令、创建新能力。<p>但现在这双手还需要<strong>我来告诉它该做什么</strong>。Phase 4 的目标是让它自己决定：<ul><li><strong>模式识别</strong>：当我重复做类似的事 3 次以上，Jarvis 主动提议创建 Skill<li><strong>偏好学习</strong>：记住我喜欢什么格式、什么风格、什么时间被打扰<li><strong>元认知</strong>：Jarvis 知道自己能做什么、不能做什么，并能诚实地说出来</ul><p>回顾整个进化路线，现在已经走了四步：<table><thead><tr><th>Phase<th>里程碑<th>类比<tbody><tr><td>🥚 Phase 1<td>能看、能记<td>婴儿——睁开眼睛看世界<tr><td>🐣 Phase 2<td>能想、能回忆<td>幼儿——开始思考和记忆<tr><td>🧹 Phase 2.5<td>骨骼健康<td>体检——确保基础牢固<tr><td>🦋 Phase 3<td>能做事<td>少年——伸出手改变世界<tr><td>⭐ Phase 4<td>能进化<td>成人——自主学习和成长</table><p>每一步都让 Jarvis 更接近一个真正的"数码宝贝"——不是预设功能的工具，而是一个从空白开始、与我一起成长的伙伴。<p><strong>Phase 3 的最大收获不是 7 个工具，而是验证了一个理念：给 Agent 造工具的工具，比给它具体的工具更有价值。</strong><p>这就像给了它一台 3D 打印机，而不是一把锤子。🔨 → 🖨️<hr><p><em>Jarvis-Agent 是开源项目，代码在 <a href=https://github.com/Polly2014/Jarvis-Agent>GitHub</a>。如果你也想打造自己的数码宝贝，欢迎 star ⭐</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

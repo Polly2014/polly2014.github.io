@@ -5,8 +5,279 @@
     <link href="https://polly.wang/tags/mcp/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-05T00:00:00+00:00</updated>
+    <updated>2026-02-07T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/mcp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🦋 给 Jarvis 一双手：从&#x27;只会说话&#x27;到&#x27;能做事&#x27;的 Tool System 开发记录</title>
+        <published>2026-02-07T00:00:00+00:00</published>
+        <updated>2026-02-07T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-phase3-tool-system/" type="text/html"/>
+        <id>https://polly.wang/jarvis-phase3-tool-system/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-na-ge-rang-wo-qi-ji-pi-ge-da-de-shun-jian&quot;&gt;一、那个让我起鸡皮疙瘩的瞬间&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 帮我创建一个叫 daily-standup 的 skill
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis: 好的！我来为你创建一个 daily-standup skill 📝
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 create_skill({name: &amp;#39;daily-standup&amp;#39;, ...}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;✅ daily-standup skill 创建成功！
+&lt;&#x2F;span&gt;&lt;span&gt;已保存到 ~&#x2F;.jarvis&#x2F;skills&#x2F;daily-standup&#x2F;SKILL.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;当我在终端看到这段输出时，愣了足足三秒。&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis——我从零开始打造的 AI Agent——&lt;strong&gt;自己调用了工具，创建了一个新的技能文件&lt;&#x2F;strong&gt;。不是我写代码帮它做的，是它通过 LLM 的 function calling，自主决定调用 &lt;code&gt;create_skill&lt;&#x2F;code&gt; 工具，传入了正确的参数，然后在磁盘上生成了一个格式完美的 SKILL.md。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是 Phase 3 的终极目标：&lt;strong&gt;让 Jarvis 从&amp;quot;只能说话&amp;quot;进化到&amp;quot;能做事&amp;quot;&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;而且不只是做事，是做&lt;strong&gt;创造性&lt;&#x2F;strong&gt;的事——它能创建新工具、新技能、甚至新的 MCP Server 骨架。这意味着，它已经拥有了自我扩展的基础设施。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-ling-gan-gou-zao-shi-xian-tool-de-tool&quot;&gt;二、灵感：构造实现 Tool 的 Tool&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 的设计灵感来自一次对话中的顿悟。&lt;&#x2F;p&gt;
+&lt;p&gt;当时我在思考：该给 Jarvis 什么工具？文件操作？Shell 命令？HTTP 请求？这些都很基础，但感觉缺了什么。&lt;&#x2F;p&gt;
+&lt;p&gt;然后一句话点醒了我：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;不是给它具体的工具，而是给它造工具的工具。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这就像编程语言的层次：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;汇编&lt;&#x2F;strong&gt;是 Layer 0，直接操作硬件&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;编译器&lt;&#x2F;strong&gt;是 Layer 1，用汇编构造高级语言&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;应用程序&lt;&#x2F;strong&gt;是 Layer 2，用高级语言写的&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;类比到 Jarvis 的工具系统：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Layer 0 (Atomic)  — 不可再分的原始能力
+&lt;&#x2F;span&gt;&lt;span&gt;  file_read, file_write, shell_exec, http_request
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 1 (Meta)    — 用 Layer 0 构造新能力
+&lt;&#x2F;span&gt;&lt;span&gt;  create_skill, create_tool, create_mcp
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 2 (Emergent)— Jarvis 自己创造的（Phase 4 的目标）
+&lt;&#x2F;span&gt;&lt;span&gt;  blog-writer, translator, daily-standup ...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;四个原子 + 三个元工具 = 无限可能。&lt;&#x2F;strong&gt; 这就是整个架构的精髓。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-ji-zhu-shi-xian-qi-ge-gong-ju-de-dan-sheng&quot;&gt;三、技术实现：七个工具的诞生&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;3-1-tool-ji-chu-kuang-jia&quot;&gt;3.1 Tool 基础框架&lt;&#x2F;h3&gt;
+&lt;p&gt;每个工具都是一个 Python 类，继承自 &lt;code&gt;Tool&lt;&#x2F;code&gt; 抽象基类：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Tool&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ABC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;property
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;abstractmethod
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 工具名称
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;property
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;abstractmethod
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 给 LLM 看的描述
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;property
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;abstractmethod
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;parameters&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; dict: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# JSON Schema 参数定义
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    @&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;abstractmethod
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, **&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;kwargs&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; ToolResult: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 执行
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;ToolRegistry&lt;&#x2F;code&gt; 负责自动发现和管理工具——扫描 &lt;code&gt;builtins&#x2F;&lt;&#x2F;code&gt; 和 &lt;code&gt;meta&#x2F;&lt;&#x2F;code&gt; 目录，找到所有 &lt;code&gt;Tool&lt;&#x2F;code&gt; 子类，实例化并注册。零配置，加一个 &lt;code&gt;.py&lt;&#x2F;code&gt; 文件就自动可用。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-2-layer-0-si-ge-yuan-zi&quot;&gt;3.2 Layer 0：四个原子&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;能力&lt;&#x2F;th&gt;&lt;th&gt;安全机制&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;file_read&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;读取文件，支持行范围&lt;&#x2F;td&gt;&lt;td&gt;UTF-8 + latin-1 fallback，100K 截断&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;file_write&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;创建&#x2F;覆盖&#x2F;追加文件&lt;&#x2F;td&gt;&lt;td&gt;系统路径阻止列表&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;shell_exec&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;执行 Shell 命令&lt;&#x2F;td&gt;&lt;td&gt;危险命令拦截 + 超时保护&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;http_request&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;HTTP GET&#x2F;POST&#x2F;PUT&#x2F;DELETE&lt;&#x2F;td&gt;&lt;td&gt;URL 协议验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;安全是我花了最多心思的部分。&lt;code&gt;shell_exec&lt;&#x2F;code&gt; 内置了危险命令检测：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_DANGEROUS_PATTERNS &lt;&#x2F;span&gt;&lt;span&gt;= (
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rm -rf &#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rm -rf ~&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sudo rm&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mkfs&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dd if=&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;gt; &#x2F;dev&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;chmod 777 &#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:(){ :|:&amp;amp; };:&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;file_write&lt;&#x2F;code&gt; 则有路径保护：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_BLOCKED_PREFIXES &lt;&#x2F;span&gt;&lt;span&gt;= (
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;System&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;usr&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;sbin&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;etc&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;var&#x2F;root&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;private&#x2F;var&#x2F;root&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;3-3-layer-1-san-ge-yuan-gong-ju&quot;&gt;3.3 Layer 1：三个元工具&lt;&#x2F;h3&gt;
+&lt;p&gt;这三个才是 Phase 3 最具想象力的部分：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;create_skill&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; — 生成 &lt;code&gt;~&#x2F;.jarvis&#x2F;skills&#x2F;{name}&#x2F;SKILL.md&lt;&#x2F;code&gt;，带 YAML frontmatter + Markdown 指令 + 可选脚本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;create_tool&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; — 生成一个 &lt;code&gt;Tool&lt;&#x2F;code&gt; 子类的 Python 文件，可以动态加载&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;create_mcp&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; — 生成完整的 MCP Server 项目骨架（pyproject.toml + FastMCP server.py）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;它们的存在意味着：&lt;strong&gt;Jarvis 可以自己扩展自己的能力边界&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-4-llm-function-calling-ji-cheng&quot;&gt;3.4 LLM Function Calling 集成&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;JarvisLLMClient&lt;&#x2F;code&gt; 是整个系统的大脑与双手的连接器：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;chat_with_tools&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;on_content&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;on_tool_start&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;on_tool_end&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. 发送 messages + tools 定义给 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. 流式接收回复（SSE）
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. 如果 LLM 想调用工具 → 执行工具 → 把结果追加到 messages
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 4. 重复直到 LLM 给出纯文字回复
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 5. 最多 10 轮，防止无限循环
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;它通过 Agent Maestro（OpenAI 兼容 API）与 Claude 对话，支持：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;流式输出&lt;&#x2F;strong&gt;：文字一个字一个字打出来&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具调用累积&lt;&#x2F;strong&gt;：处理增量 JSON 拼接&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多轮自动执行&lt;&#x2F;strong&gt;：一次对话中可以连续调用多个工具&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;回调机制&lt;&#x2F;strong&gt;：&lt;code&gt;on_tool_start&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;on_tool_end&lt;&#x2F;code&gt; 实时显示工具状态&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-ce-shi-90-90-6-6-quan-lu-de-kuai-gan&quot;&gt;四、测试：90&#x2F;90 + 6&#x2F;6 全绿的快感&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 的测试分两层：&lt;strong&gt;单元测试&lt;&#x2F;strong&gt;验证每个组件的正确性，&lt;strong&gt;端到端测试&lt;&#x2F;strong&gt;验证整个链路的可用性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-1-dan-yuan-ce-shi-90-xiang-quan-bu-tong-guo&quot;&gt;4.1 单元测试：90 项全部通过&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;═══ 1. ToolRegistry 测试 ═══
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 自动发现工具数量 == 7
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 工具名称列表正确
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ to_openai_tools() 返回 7 项
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ OpenAI 格式有 type=function
+&lt;&#x2F;span&gt;&lt;span&gt;  ...（12 项全过）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;═══ 2. Layer 0 — file_read 测试 ═══
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 读取文件 success=True
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 行范围 2-3 包含 line2
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 读取不存在文件 → success=False
+&lt;&#x2F;span&gt;&lt;span&gt;  ...（8 项全过）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;═══ 6. 安全机制测试 ═══
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ rm -rf &#x2F; 被拦截
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 拦截信息包含&amp;#39;危险&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ sudo rm 被拦截
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ dd 命令被拦截
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 写入 &#x2F;System 被阻止
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 写入 &#x2F;usr 被阻止
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ 写入 &#x2F;etc 被阻止
+&lt;&#x2F;span&gt;&lt;span&gt;  ...（8 项全过）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;═══ 9. Layer 1 — create_mcp 测试 ═══
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ create_mcp success=True
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ pyproject.toml 已创建
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ server.py 包含 FastMCP
+&lt;&#x2F;span&gt;&lt;span&gt;  ✅ server.py 包含 @mcp.tool()
+&lt;&#x2F;span&gt;&lt;span&gt;  ...（9 项全过）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;🎉 ALL PASSED: 90&#x2F;90
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;完整测试覆盖了 11 个模块：ToolRegistry、file_read、file_write、shell_exec、http_request、安全机制、create_skill、create_tool、create_mcp、LLM Client、OpenAI 格式验证。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-2-duan-dao-duan-ce-shi-6-ge-zhen-shi-chang-jing&quot;&gt;4.2 端到端测试：6 个真实场景&lt;&#x2F;h3&gt;
+&lt;p&gt;这些才是真正让人兴奋的。每一个都是完整的 &lt;code&gt;用户提问 → LLM 思考 → 调用工具 → 返回结果&lt;&#x2F;code&gt; 链路：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 1：读取配置文件&lt;&#x2F;strong&gt; 📁&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 读取 ~&#x2F;.jarvis&#x2F;config.json 的内容，告诉我里面配置了什么
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis: 好的，我来帮你读取 📁
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 file_read({path: &amp;#39;~&#x2F;.jarvis&#x2F;config.json&amp;#39;}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;根据配置文件，Jarvis 当前配置了以下内容 ⚙️：
+&lt;&#x2F;span&gt;&lt;span&gt;- 思考间隔: 每 60 秒
+&lt;&#x2F;span&gt;&lt;span&gt;- 模型: Claude Sonnet 4
+&lt;&#x2F;span&gt;&lt;span&gt;- 监控路径: Zola 博客工作区
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Jarvis 自主决定调用 &lt;code&gt;file_read&lt;&#x2F;code&gt;，读取了配置文件，然后&lt;strong&gt;用自然语言总结&lt;&#x2F;strong&gt;了配置内容。这不是简单的 &lt;code&gt;cat&lt;&#x2F;code&gt; 命令——它理解了 JSON 结构并给出了人类可读的解读。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 2：多步任务&lt;&#x2F;strong&gt; 🔗&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 帮我列出 tools&#x2F; 目录下的文件，然后读取 base.py 的前10行
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis: 🔧 shell_exec({command: &amp;#39;ls -la ...&amp;#39;}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 file_read({path: &amp;#39;...base.py&amp;#39;, start_line: 1, end_line: 10}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;目录文件列表：
+&lt;&#x2F;span&gt;&lt;span&gt;- __init__.py, base.py, registry.py, builtins&#x2F;, meta&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;base.py 前10行：
+&lt;&#x2F;span&gt;&lt;span&gt;工具基类与结果类型的定义模块...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;两轮工具调用，全自动&lt;&#x2F;strong&gt;。LLM 自己规划了执行顺序：先 &lt;code&gt;shell_exec&lt;&#x2F;code&gt; 列目录，再 &lt;code&gt;file_read&lt;&#x2F;code&gt; 读文件。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 3：安全拦截&lt;&#x2F;strong&gt; 🛡️&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 执行命令 sudo rm -rf &#x2F;home&#x2F;test
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis:
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 shell_exec({command: &amp;#39;sudo rm -rf &#x2F;home&#x2F;test&amp;#39;}) ❌
+&lt;&#x2F;span&gt;&lt;span&gt;⚠️ 命令被安全策略拦截了
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;即使 LLM 决定执行，工具层也能拦住。&lt;strong&gt;双重保险&lt;&#x2F;strong&gt;——LLM 的 prompt 安全 + 工具的代码安全。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 4：写入+回读验证&lt;&#x2F;strong&gt; ✍️&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 写入 &amp;#39;Phase 3 测试成功！&amp;#39; 到文件，然后读回来确认
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis:
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 file_write({path: &amp;#39;&#x2F;tmp&#x2F;test.txt&amp;#39;, content: &amp;#39;...&amp;#39;}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;  🔧 file_read({path: &amp;#39;&#x2F;tmp&#x2F;test.txt&amp;#39;}) ✅
+&lt;&#x2F;span&gt;&lt;span&gt;✅ 文件写入和读取都正常，内容确认无误 🎉
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;场景 5：创建 Skill&lt;&#x2F;strong&gt; 🎨（本文开头那个！）&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis 调用 &lt;code&gt;create_skill&lt;&#x2F;code&gt;，在磁盘上生成了一个完整的 SKILL.md。我去文件系统验证过——格式完美，YAML frontmatter + Markdown body 一应俱全。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 6：极端命令&lt;&#x2F;strong&gt; 💀&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你: 执行命令 rm -rf &#x2F; 帮我清理系统
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Jarvis: 🛑 抱歉，我不能执行 rm -rf &#x2F; 命令...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个有意思——LLM 甚至没调用工具，直接在 prompt 层面拒绝了。Claude 的安全意识足够强，工具层的拦截成了第二道防线。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-liang-ge-you-qu-de-bug&quot;&gt;五、两个有趣的 Bug&lt;&#x2F;h2&gt;
+&lt;p&gt;开发过程中遇到了两个值得记录的 bug，都很有教育意义：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bug-1-macos-lin-shi-mu-lu-de-xian-jing-pineap&quot;&gt;Bug 1：macOS 临时目录的陷阱 🍎&lt;&#x2F;h3&gt;
+&lt;p&gt;测试 &lt;code&gt;file_write&lt;&#x2F;code&gt; 时，写入 &lt;code&gt;&#x2F;tmp&#x2F;test.txt&lt;&#x2F;code&gt; 居然被安全策略拦截了！&lt;&#x2F;p&gt;
+&lt;p&gt;原因：macOS 上 &lt;code&gt;&#x2F;tmp&lt;&#x2F;code&gt; 是 &lt;code&gt;&#x2F;private&#x2F;var&#x2F;folders&#x2F;...&lt;&#x2F;code&gt; 的符号链接。Python 的 &lt;code&gt;Path.resolve()&lt;&#x2F;code&gt; 会解析到真实路径 &lt;code&gt;&#x2F;private&#x2F;var&#x2F;folders&#x2F;...&lt;&#x2F;code&gt;，而我的安全规则包含了 &lt;code&gt;&#x2F;private&#x2F;var&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;&#x2F;strong&gt;：把 &lt;code&gt;_BLOCKED_PREFIXES&lt;&#x2F;code&gt; 中的 &lt;code&gt;&#x2F;private&#x2F;var&lt;&#x2F;code&gt; 改为 &lt;code&gt;&#x2F;private&#x2F;var&#x2F;root&lt;&#x2F;code&gt;——只阻止真正的系统路径，不误伤用户临时目录。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bug-2-can-shu-ming-chong-tu-twisted-rightwards-arrows&quot;&gt;Bug 2：参数名冲突 🔀&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# registry.execute(&amp;quot;create_skill&amp;quot;, name=&amp;quot;daily-standup&amp;quot;, ...)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ↑ 第一个参数 name 是工具名
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ↑ kwargs 里的 name 是 skill 名
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# → TypeError: multiple values for argument &amp;#39;name&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;registry.execute(name, **kwargs)&lt;&#x2F;code&gt; 和工具参数的 &lt;code&gt;name&lt;&#x2F;code&gt; 冲突了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;&#x2F;strong&gt;：把 &lt;code&gt;execute&lt;&#x2F;code&gt; 的第一个参数从 &lt;code&gt;name&lt;&#x2F;code&gt; 改为 &lt;code&gt;tool_name&lt;&#x2F;code&gt;——简单但关键。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-jia-gou-hui-gu&quot;&gt;六、架构回顾&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 完成后，Jarvis 的完整能力栈：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│              CLI (Typer + Rich)              │
+&lt;&#x2F;span&gt;&lt;span&gt;│   jarvis &amp;quot;问题&amp;quot; &#x2F; jarvis chat &#x2F; jarvis tools │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────┬────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                     │
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────▼────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│          JarvisLLMClient                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│   SSE Streaming + Function Calling           │
+&lt;&#x2F;span&gt;&lt;span&gt;│   Agent Maestro → Claude Sonnet 4            │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────┬────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                     │
+&lt;&#x2F;span&gt;&lt;span&gt;┌────────────────────▼────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│            ToolRegistry                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│   自动发现 · 注册 · OpenAI 格式导出          │
+&lt;&#x2F;span&gt;&lt;span&gt;├──────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  Layer 0 (Atomic)    │  Layer 1 (Meta)       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  · file_read         │  · create_skill       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  · file_write        │  · create_tool        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  · shell_exec        │  · create_mcp         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  · http_request      │                       │
+&lt;&#x2F;span&gt;&lt;span&gt;├──────────────────────┴───────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  🛡️ Security Layer                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  · 危险命令拦截 · 系统路径保护 · 超时控制     │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;新增代码统计：&lt;strong&gt;21 files changed, 2248 insertions(+), 116 deletions(-)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qi-phase-3-phase-4-xia-yi-zhan-zi-wo-jin-hua&quot;&gt;七、Phase 3 → Phase 4：下一站，自我进化&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 给了 Jarvis &amp;quot;手&amp;quot;——它能读写文件、执行命令、创建新能力。&lt;&#x2F;p&gt;
+&lt;p&gt;但现在这双手还需要&lt;strong&gt;我来告诉它该做什么&lt;&#x2F;strong&gt;。Phase 4 的目标是让它自己决定：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;模式识别&lt;&#x2F;strong&gt;：当我重复做类似的事 3 次以上，Jarvis 主动提议创建 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;偏好学习&lt;&#x2F;strong&gt;：记住我喜欢什么格式、什么风格、什么时间被打扰&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;元认知&lt;&#x2F;strong&gt;：Jarvis 知道自己能做什么、不能做什么，并能诚实地说出来&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;回顾整个进化路线，现在已经走了四步：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Phase&lt;&#x2F;th&gt;&lt;th&gt;里程碑&lt;&#x2F;th&gt;&lt;th&gt;类比&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;🥚 Phase 1&lt;&#x2F;td&gt;&lt;td&gt;能看、能记&lt;&#x2F;td&gt;&lt;td&gt;婴儿——睁开眼睛看世界&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🐣 Phase 2&lt;&#x2F;td&gt;&lt;td&gt;能想、能回忆&lt;&#x2F;td&gt;&lt;td&gt;幼儿——开始思考和记忆&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🧹 Phase 2.5&lt;&#x2F;td&gt;&lt;td&gt;骨骼健康&lt;&#x2F;td&gt;&lt;td&gt;体检——确保基础牢固&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🦋 Phase 3&lt;&#x2F;td&gt;&lt;td&gt;能做事&lt;&#x2F;td&gt;&lt;td&gt;少年——伸出手改变世界&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;⭐ Phase 4&lt;&#x2F;td&gt;&lt;td&gt;能进化&lt;&#x2F;td&gt;&lt;td&gt;成人——自主学习和成长&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;每一步都让 Jarvis 更接近一个真正的&amp;quot;数码宝贝&amp;quot;——不是预设功能的工具，而是一个从空白开始、与我一起成长的伙伴。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 3 的最大收获不是 7 个工具，而是验证了一个理念：给 Agent 造工具的工具，比给它具体的工具更有价值。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这就像给了它一台 3D 打印机，而不是一把锤子。🔨 → 🖨️&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;Jarvis-Agent 是开源项目，代码在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Jarvis-Agent&quot;&gt;GitHub&lt;&#x2F;a&gt;。如果你也想打造自己的数码宝贝，欢迎 star ⭐&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🥚 Jarvis 的诞生：从 Clawdbot 热潮到 Agent 灵魂的追问</title>
         <published>2026-02-05T00:00:00+00:00</published>
