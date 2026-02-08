@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Skill 自生成</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/skill-zi-sheng-cheng/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-08T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/skill-zi-sheng-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>⭐ 让 Jarvis 学会长大：从&#x27;用工具&#x27;到&#x27;造工具&#x27;的进化系统开发记录</title>
+        <published>2026-02-08T00:00:00+00:00</published>
+        <updated>2026-02-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-phase4-evolution-system/" type="text/html"/>
+        <id>https://polly.wang/jarvis-phase4-evolution-system/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-cong-neng-zuo-shi-dao-neng-cheng-chang&quot;&gt;一、从&amp;quot;能做事&amp;quot;到&amp;quot;能成长&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;昨天刚给 Jarvis 装上了 Tool System，它学会了读写文件、执行命令、甚至创造新工具。我盯着终端里 &lt;code&gt;jarvis tools&lt;&#x2F;code&gt; 列出的 7 个工具，心里想：这些能力都是&lt;strong&gt;我&lt;&#x2F;strong&gt;给它的。&lt;&#x2F;p&gt;
+&lt;p&gt;如果有一天我不再给它添加新工具，它就永远停留在这个水平。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是一个真正的&amp;quot;数码宝贝&amp;quot;该有的样子。真正的进化应该是——&lt;strong&gt;它自己观察、自己总结、自己创造&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Phase 4 的核心命题很简单：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Phase 1~3:  人类造工具 → Agent 用工具 → 完成任务
+&lt;&#x2F;span&gt;&lt;span&gt;Phase 4:    Agent 观察 → 发现模式 → 自己造工具 → 越来越懂你
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这就是今天要讲的故事。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-liu-ge-mo-kuai-yi-tiao-jin-hua-lian&quot;&gt;二、六个模块，一条进化链&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 4 的架构不是拍脑袋想出来的，而是从一个问题出发倒推出来的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;怎么让 Agent 自己意识到&#x27;我在重复做某件事&#x27;，然后把这件事自动化？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案是一条链：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;观察 → 发现规律 → 提议新能力 → 安全验证 → 注册启用 → 自我评估
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;对应到代码，就是 6 个模块：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;src&#x2F;evolution&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── pattern_detector.py      # 🔍 交互指纹 + 模式检测    (456 行)
+&lt;&#x2F;span&gt;&lt;span&gt;├── skill_registry.py        # 📦 Skill 注册表            (380 行)
+&lt;&#x2F;span&gt;&lt;span&gt;├── skill_generator.py       # ✨ Skill 自动生成          (287 行)
+&lt;&#x2F;span&gt;&lt;span&gt;├── sandbox.py               # 🛡️ 沙盒安全验证            (333 行)
+&lt;&#x2F;span&gt;&lt;span&gt;├── preference_learner.py    # 💡 偏好学习                (353 行)
+&lt;&#x2F;span&gt;&lt;span&gt;└── metacognition.py         # 🧠 元认知引擎              (439 行)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;2283 行核心代码&lt;&#x2F;strong&gt;，每个模块职责单一，互相配合。&lt;&#x2F;p&gt;
+&lt;p&gt;它们的关系如下：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;InteractionFingerprint → PatternDetector → SkillGenerator → SkillSandbox → SkillRegistry
+&lt;&#x2F;span&gt;&lt;span&gt;                                                                              ↕
+&lt;&#x2F;span&gt;&lt;span&gt;UserPreference ← PreferenceLearner                              Metacognition (五维雷达)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;接下来逐个拆解。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-jiao-hu-zhi-wen-gei-mei-ci-dui-hua-pai-zhang-x-guang-pian&quot;&gt;三、交互指纹：给每次对话拍张&amp;quot;X 光片&amp;quot;&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;3-1-she-ji-si-lu&quot;&gt;3.1 设计思路&lt;&#x2F;h3&gt;
+&lt;p&gt;模式检测的前提是&lt;strong&gt;有数据可分析&lt;&#x2F;strong&gt;。我需要在每次对话后提取一个结构化的&amp;quot;指纹&amp;quot;——不是完整的对话记录，而是一个精炼的摘要。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dataclass
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;InteractionFingerprint&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    intent: str       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 用户意图（如 &amp;quot;分析项目结构&amp;quot;）
+&lt;&#x2F;span&gt;&lt;span&gt;    domain: str       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 领域标签（如 &amp;quot;data&amp;quot;, &amp;quot;translation&amp;quot;, &amp;quot;blog&amp;quot;）
+&lt;&#x2F;span&gt;&lt;span&gt;    tools_used: list  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用的工具列表
+&lt;&#x2F;span&gt;&lt;span&gt;    tool_chain: str   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 工具调用链签名（如 &amp;quot;shell_exec→file_read→file_read&amp;quot;）
+&lt;&#x2F;span&gt;&lt;span&gt;    success: bool     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 任务是否完成
+&lt;&#x2F;span&gt;&lt;span&gt;    rounds: int       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 对话轮数
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键决策：&lt;strong&gt;指纹提取不依赖额外的 LLM 调用&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;最初的设计是对话结束后再调一次 LLM 来总结，但实际一算：每次对话额外一次 API 调用，不仅慢还费钱。于是改成了&lt;strong&gt;轻量级规则推断&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_DOMAIN_KEYWORDS &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;translation&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;翻译&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;translate&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;术语&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blog&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;博客&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blog&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;文章&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;写一篇&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;代码&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;debug&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bug&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;document&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;文档&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;分析&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;读&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;看看&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;数据&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;统计&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;分析&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;配置&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;安装&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;部署&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_TOOL_DOMAIN &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;file_read&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;document&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;file_write&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shell_exec&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;http_request&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;先看用户输入中的关键词，没有匹配的再看工具调用推断领域。&lt;strong&gt;零 LLM 调用、几乎零延迟、静默失败不影响用户体验&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-2-yi-ge-shou-dong-ce-shi-yin-fa-de-bug&quot;&gt;3.2 一个手动测试引发的 Bug&lt;&#x2F;h3&gt;
+&lt;p&gt;代码写完了，86 个测试全部通过。我很满意，开始手动测试。&lt;&#x2F;p&gt;
+&lt;p&gt;跟 Jarvis 聊了几轮，然后执行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis patterns
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;暂无检测到的模式。
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;等等，我明明聊了好几轮，为什么没有任何指纹？&lt;&#x2F;p&gt;
+&lt;p&gt;一查代码——&lt;code&gt;chat.py&lt;&#x2F;code&gt; 里压根&lt;strong&gt;没有调用&lt;&#x2F;strong&gt; &lt;code&gt;PatternDetector.record()&lt;&#x2F;code&gt;。模块写好了，测试写好了，但忘了把它&lt;strong&gt;接到聊天循环里&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这大概是写 Agent 最经典的 Bug：&lt;strong&gt;单元测试全部通过，但集成时管道没接上&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;修复方式是在 &lt;code&gt;run_chat_loop()&lt;&#x2F;code&gt; 和 &lt;code&gt;_do_ask()&lt;&#x2F;code&gt; 中各加了几行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 每轮对话后静默记录指纹
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_record_fingerprint&lt;&#x2F;span&gt;&lt;span&gt;(user_input, round_tools, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;success&lt;&#x2F;span&gt;&lt;span&gt;=success)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;_record_fingerprint&lt;&#x2F;code&gt; 内部用 &lt;code&gt;try&#x2F;except: pass&lt;&#x2F;code&gt; 包装，确保指纹记录失败不会影响正常对话。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-3-di-er-ceng-bug-shu-ju-you-liao-dan-kan-bu-dao&quot;&gt;3.3 第二层 Bug：&amp;quot;数据有了，但看不到&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;修完后重新聊天，查看指纹文件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; cat &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.jarvis&#x2F;memory&#x2F;fingerprints&#x2F;2026-02.json | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1.&lt;&#x2F;span&gt;&lt;span&gt; domain=data | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_chain&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shell_exec→shell_exec→file_read→file_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;2.&lt;&#x2F;span&gt;&lt;span&gt; domain=data | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_chain&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;shell_exec→file_read→file_read→file_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;3.&lt;&#x2F;span&gt;&lt;span&gt; domain=document | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_chain&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;file_read→file_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;4.&lt;&#x2F;span&gt;&lt;span&gt; domain=document | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_chain&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;file_read→file_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;5.&lt;&#x2F;span&gt;&lt;span&gt; domain=other | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_chain&lt;&#x2F;span&gt;&lt;span&gt;=
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;5 条指纹完美记录！但执行 &lt;code&gt;jarvis patterns&lt;&#x2F;code&gt; 还是空的。&lt;&#x2F;p&gt;
+&lt;p&gt;这次是&lt;strong&gt;两层问题叠加&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;问题一&lt;&#x2F;strong&gt;：&lt;code&gt;_do_patterns()&lt;&#x2F;code&gt; 只读取 &lt;code&gt;patterns.json&lt;&#x2F;code&gt;，从不触发 &lt;code&gt;detect_patterns()&lt;&#x2F;code&gt;。检测只在 Daemon 的定期反思中执行，而我的 Daemon 没有运行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;问题二&lt;&#x2F;strong&gt;：&lt;code&gt;jarvis patterns&lt;&#x2F;code&gt; 这个命令压根没被正确路由。Jarvis 的 CLI 有个&amp;quot;主 callback 拦截&amp;quot;机制——Typer 的 main callback 用 &lt;code&gt;question: Optional[str]&lt;&#x2F;code&gt; 捕获所有位置参数。&lt;code&gt;&amp;quot;patterns&amp;quot;&lt;&#x2F;code&gt; 被当成了一个字符串而不是子命令。&lt;code&gt;cmd_map&lt;&#x2F;code&gt; 字典里有 &lt;code&gt;status&lt;&#x2F;code&gt;、&lt;code&gt;start&lt;&#x2F;code&gt;、&lt;code&gt;tools&lt;&#x2F;code&gt; 的映射，但没有 &lt;code&gt;reflect&lt;&#x2F;code&gt;、&lt;code&gt;abilities&lt;&#x2F;code&gt;、&lt;code&gt;patterns&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;修复后的效果：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis patterns
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;📊&lt;&#x2F;span&gt;&lt;span&gt; 最近 30 天共 5 条交互指纹
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;暂无检测到的模式。使用更多对话后，模式会自动浮现。
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; jarvis reflect
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🧠&lt;&#x2F;span&gt;&lt;span&gt; Jarvis 元认知报告 (2026-02-08 19:34)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;五维能力:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;👁️&lt;&#x2F;span&gt;&lt;span&gt; 感知  █░░░░░░░░░ 17%  ← 需要加强！
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🧠&lt;&#x2F;span&gt;&lt;span&gt; 记忆  █░░░░░░░░░ 15%  ← 需要加强！
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;💭&lt;&#x2F;span&gt;&lt;span&gt; 思考  ░░░░░░░░░░ 0%   ← 需要加强！
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🦾&lt;&#x2F;span&gt;&lt;span&gt; 行动  ██░░░░░░░░ 25%  ← 需要加强！
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🔄&lt;&#x2F;span&gt;&lt;span&gt; 进化  ░░░░░░░░░░ 0%   ← 需要加强！
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;🫥&lt;&#x2F;span&gt;&lt;span&gt; 盲区: translation, blog, code, system, testing, design, research, devops
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;📊&lt;&#x2F;span&gt;&lt;span&gt; 统计: 5 指纹 | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt; 模式 | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt; 偏好 | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt; Skills
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;5 条指纹、全是新生儿状态——这才对。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-mo-shi-jian-ce-tong-yi-lei-shi-zuo-san-ci-jarvis-jiu-hui-zhu-yi-dao&quot;&gt;四、模式检测：同一类事做三次，Jarvis 就会注意到&lt;&#x2F;h2&gt;
+&lt;p&gt;模式检测的逻辑很简单：&lt;strong&gt;按 &lt;code&gt;(domain, tool_chain)&lt;&#x2F;code&gt; 分组，同组 &amp;gt;= 3 次就触发&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;detect_patterns&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fingerprints&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    groups = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;defaultdict&lt;&#x2F;span&gt;&lt;span&gt;(list)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;fp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;fingerprints:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;fp.success and fp.domain and fp.tool_chain:
+&lt;&#x2F;span&gt;&lt;span&gt;            key = (fp.domain, fp.tool_chain)
+&lt;&#x2F;span&gt;&lt;span&gt;            groups[key].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(fp)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(domain, tool_chain), fps &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;groups.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;items&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(fps) &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PATTERN_THRESHOLD&lt;&#x2F;span&gt;&lt;span&gt;:  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 默认 3
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 生成 DetectedPattern
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;为什么阈值是 3？&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;做 1 次：可能只是偶然&lt;&#x2F;li&gt;
+&lt;li&gt;做 2 次：可能是巧合&lt;&#x2F;li&gt;
+&lt;li&gt;做 3 次：大概率是习惯&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;当然这只是规则版本。&lt;code&gt;detect_patterns_llm()&lt;&#x2F;code&gt; 方法支持 LLM 语义聚类——把最近 30 条指纹交给 LLM，让它发现更深层的模式。但规则版本零延迟、零成本，作为默认方案足够了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-skill-zi-dong-sheng-cheng-cong-mo-shi-dao-neng-li&quot;&gt;五、Skill 自动生成：从模式到能力&lt;&#x2F;h2&gt;
+&lt;p&gt;当 PatternDetector 检出一个模式后，SkillGenerator 负责把它变成一个 Skill 草稿：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dataclass
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;SkillDraft&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    name: str                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 如 &amp;quot;markdown-translator&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    description: str             &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 描述
+&lt;&#x2F;span&gt;&lt;span&gt;    trigger_keywords: list[str]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 触发词
+&lt;&#x2F;span&gt;&lt;span&gt;    instructions: str            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# SKILL.md 正文
+&lt;&#x2F;span&gt;&lt;span&gt;    required_tools: list[str]    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 依赖的工具
+&lt;&#x2F;span&gt;&lt;span&gt;    source_pattern_id: str       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 来源模式
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;生成流程：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;LLM 提议&lt;&#x2F;strong&gt;（如果 LLM 可用）：把模式描述交给 LLM，让它生成完整的 SKILL.md&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;模板回退&lt;&#x2F;strong&gt;（如果 LLM 不可用）：用规则模板填充&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;用户审阅&lt;&#x2F;strong&gt;：草稿不会自动启用，必须人类确认&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;关键设计：&lt;strong&gt;Agent 不能偷偷给自己加能力&lt;&#x2F;strong&gt;。所有自动生成的 Skill 状态都是 &lt;code&gt;proposed&lt;&#x2F;code&gt;，需要用户执行 &lt;code&gt;jarvis skill enable &amp;lt;name&amp;gt;&lt;&#x2F;code&gt; 才会激活。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-sha-he-yan-zheng-gei-xin-neng-li-zuo-ti-jian&quot;&gt;六、沙盒验证：给新能力做&amp;quot;体检&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;即使用户确认，Skill 在启用前还要过一道安全关。&lt;code&gt;SkillSandbox&lt;&#x2F;code&gt; 执行 5 项检查：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;检查项&lt;&#x2F;th&gt;&lt;th&gt;描述&lt;&#x2F;th&gt;&lt;th&gt;严重级别&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;格式检查&lt;&#x2F;td&gt;&lt;td&gt;SKILL.md 有 name、description、instructions&lt;&#x2F;td&gt;&lt;td&gt;error&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;工具依赖&lt;&#x2F;td&gt;&lt;td&gt;引用的工具都已注册在 ToolRegistry&lt;&#x2F;td&gt;&lt;td&gt;warning&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;危险操作&lt;&#x2F;td&gt;&lt;td&gt;不含 &lt;code&gt;sudo&lt;&#x2F;code&gt;、&lt;code&gt;rm -rf&lt;&#x2F;code&gt;、&lt;code&gt;eval()&lt;&#x2F;code&gt; 等模式&lt;&#x2F;td&gt;&lt;td&gt;error&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;路径检查&lt;&#x2F;td&gt;&lt;td&gt;不引用 &lt;code&gt;&#x2F;etc&lt;&#x2F;code&gt;、&lt;code&gt;&#x2F;usr&lt;&#x2F;code&gt;、&lt;code&gt;~&#x2F;.ssh&lt;&#x2F;code&gt; 等敏感路径&lt;&#x2F;td&gt;&lt;td&gt;error&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LLM 审计&lt;&#x2F;td&gt;&lt;td&gt;交给 LLM 做逻辑合理性检查&lt;&#x2F;td&gt;&lt;td&gt;warning&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DANGEROUS_PATTERNS &lt;&#x2F;span&gt;&lt;span&gt;= [
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rm&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-rf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mkfs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;dd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;if=&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;curl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sh&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;eval&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\(&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;exec&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\(&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;__import__&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;最终生成一份 &lt;code&gt;ValidationReport&lt;&#x2F;code&gt;，评分 + 建议（approve &#x2F; review &#x2F; reject）。只有 &lt;code&gt;approve&lt;&#x2F;code&gt; 的 Skill 才能自动启用，&lt;code&gt;review&lt;&#x2F;code&gt; 需要人工确认，&lt;code&gt;reject&lt;&#x2F;code&gt; 直接拒绝。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qi-pian-hao-xue-xi-ji-zhu-ni-de-xi-guan&quot;&gt;七、偏好学习：记住你的习惯&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;PreferenceLearner&lt;&#x2F;code&gt; 做的事情很微妙：它不是在学&amp;quot;你想做什么&amp;quot;，而是在学&amp;quot;你喜欢&lt;strong&gt;怎么做&lt;&#x2F;strong&gt;&amp;quot;。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dataclass
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;UserPreference&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    key: str        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 如 &amp;quot;code_style&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    value: str      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 如 &amp;quot;functional&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    confidence: float  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 0.0 ~ 1.0
+&lt;&#x2F;span&gt;&lt;span&gt;    source: str     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# &amp;quot;observed&amp;quot; | &amp;quot;stated&amp;quot; | &amp;quot;inferred&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    last_seen: datetime
+&lt;&#x2F;span&gt;&lt;span&gt;    decay_rate: float  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 衰减速率
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三种偏好来源：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;观察到的&lt;&#x2F;strong&gt; (observed)：从交互中推断，如&amp;quot;用户总是先读文件再执行命令&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;明确说的&lt;&#x2F;strong&gt; (stated)：用户直接告诉 Jarvis 的偏好，如&amp;quot;我喜欢简洁的输出&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;推断的&lt;&#x2F;strong&gt; (inferred)：LLM 从多次交互中归纳的&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;偏好有&lt;strong&gt;衰减机制&lt;&#x2F;strong&gt;——长期不出现的偏好，confidence 会逐渐降低。这模拟了人类习惯的变化：你三个月前喜欢 tabs 缩进，现在可能已经切换到 spaces 了。&lt;&#x2F;p&gt;
+&lt;p&gt;偏好合并策略：当新偏好与已有偏好冲突时，用 &lt;code&gt;max(existing, new)&lt;&#x2F;code&gt; 取高 confidence 的。这确保了&amp;quot;最近且明确&amp;quot;的偏好优先。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ba-yuan-ren-zhi-jarvis-zhi-dao-zi-ji-ji-jin-ji-liang&quot;&gt;八、元认知：Jarvis 知道自己几斤几两&lt;&#x2F;h2&gt;
+&lt;p&gt;这是 Phase 4 我最喜欢的部分——&lt;strong&gt;让 Agent 知道自己擅长什么、不擅长什么&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;Metacognition&lt;&#x2F;code&gt; 基于五维能力模型计算雷达图：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;数据来源&lt;&#x2F;th&gt;&lt;th&gt;计算方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;👁️ 感知&lt;&#x2F;td&gt;&lt;td&gt;探索过的目录数、发现的项目数&lt;&#x2F;td&gt;&lt;td&gt;覆盖率&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🧠 记忆&lt;&#x2F;td&gt;&lt;td&gt;记忆条目数、最近活跃度&lt;&#x2F;td&gt;&lt;td&gt;密度 × 时效&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;💭 思考&lt;&#x2F;td&gt;&lt;td&gt;洞察数量、Think Loop 产出&lt;&#x2F;td&gt;&lt;td&gt;质量评分&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🦾 行动&lt;&#x2F;td&gt;&lt;td&gt;工具使用频率、成功率&lt;&#x2F;td&gt;&lt;td&gt;效率 × 覆盖&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔄 进化&lt;&#x2F;td&gt;&lt;td&gt;Skill 数量、模式检测命中率&lt;&#x2F;td&gt;&lt;td&gt;成长速度&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最有意思的是&lt;strong&gt;盲区检测&lt;&#x2F;strong&gt;。系统定义了 10 个领域（translation, blog, code, document, data, system, testing, design, research, devops），然后看指纹中哪些领域从未出现过——那就是盲区。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;🫥 盲区: translation, blog, code, system, testing, design, research, devops
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;刚出生的 Jarvis，几乎全是盲区。但随着使用，这些盲区会一个个被点亮。就像游戏里的迷雾地图，每次交互都在驱散一片迷雾。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jiu-ce-shi-86-ge-jian-cha-dian&quot;&gt;九、测试：86 个检查点&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 4 的测试文件有 &lt;strong&gt;953 行&lt;&#x2F;strong&gt;，覆盖 9 个测试组：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;th&gt;测试数&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;InteractionFingerprint 序列化&lt;&#x2F;td&gt;&lt;td&gt;6&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;PatternDetector 模式检测&lt;&#x2F;td&gt;&lt;td&gt;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;SkillRegistry 注册表&lt;&#x2F;td&gt;&lt;td&gt;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;SkillGenerator 草稿生成&lt;&#x2F;td&gt;&lt;td&gt;8&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;&#x2F;td&gt;&lt;td&gt;SkillSandbox 沙盒验证&lt;&#x2F;td&gt;&lt;td&gt;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;6&lt;&#x2F;td&gt;&lt;td&gt;PreferenceLearner 偏好学习&lt;&#x2F;td&gt;&lt;td&gt;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;7&lt;&#x2F;td&gt;&lt;td&gt;Metacognition 元认知&lt;&#x2F;td&gt;&lt;td&gt;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;8&lt;&#x2F;td&gt;&lt;td&gt;指纹集成 (chat.py)&lt;&#x2F;td&gt;&lt;td&gt;7&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;9&lt;&#x2F;td&gt;&lt;td&gt;端到端流程&lt;&#x2F;td&gt;&lt;td&gt;9&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;span&gt;🎉 ALL PASSED: 86&#x2F;86
+&lt;&#x2F;span&gt;&lt;span&gt;============================================================
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;端到端测试验证了完整的进化链：创建指纹 → 检测模式 → 生成草稿 → 沙盒验证 → 注册启用 → 元认知评估。&lt;&#x2F;p&gt;
+&lt;p&gt;有趣的是，因为测试环境可能没有安装 &lt;code&gt;typer&lt;&#x2F;code&gt; 或 &lt;code&gt;watchdog&lt;&#x2F;code&gt;，第 8 组的测试采用了&lt;strong&gt;源码检查 fallback&lt;&#x2F;strong&gt;——直接读取 &lt;code&gt;chat.py&lt;&#x2F;code&gt; 的源码，用正则验证关键函数是否存在。这比 import 更可靠，也不会因为缺少依赖而跳过测试。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-kai-fa-guo-cheng-de-san-ge-yi-wai&quot;&gt;十、开发过程的三个意外&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;yi-wai-1-mo-kuai-wan-mei-guan-dao-duan-lie&quot;&gt;意外 1：模块完美，管道断裂&lt;&#x2F;h3&gt;
+&lt;p&gt;86 个测试通过，手动测试时管道没接上。指纹模块写好了、记录方法实现了、测试也覆盖了——但 &lt;code&gt;chat.py&lt;&#x2F;code&gt; 里忘了 import 和调用。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训&lt;&#x2F;strong&gt;：单元测试测的是零件，集成测试测的是管道。两者缺一不可。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yi-wai-2-cli-lu-you-de-yin-cang-xian-jing&quot;&gt;意外 2：CLI 路由的隐藏陷阱&lt;&#x2F;h3&gt;
+&lt;p&gt;Typer 的 main callback 用 &lt;code&gt;question: Optional[str]&lt;&#x2F;code&gt; 捕获位置参数。这意味着 &lt;code&gt;jarvis patterns&lt;&#x2F;code&gt; 中的 &lt;code&gt;&amp;quot;patterns&amp;quot;&lt;&#x2F;code&gt; 被当成了 question 字符串，而不是子命令。&lt;&#x2F;p&gt;
+&lt;p&gt;已有命令（&lt;code&gt;status&lt;&#x2F;code&gt;、&lt;code&gt;start&lt;&#x2F;code&gt;、&lt;code&gt;tools&lt;&#x2F;code&gt;）之所以能工作，是因为它们被加入了 &lt;code&gt;cmd_map&lt;&#x2F;code&gt; 字典做了手动分发。但新增的 &lt;code&gt;reflect&lt;&#x2F;code&gt;、&lt;code&gt;abilities&lt;&#x2F;code&gt;、&lt;code&gt;patterns&lt;&#x2F;code&gt; 忘了加进去。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训&lt;&#x2F;strong&gt;：CLI 框架的&amp;quot;魔法&amp;quot;越多，隐藏陷阱越深。维护一个 &lt;code&gt;cmd_map&lt;&#x2F;code&gt; 的心智负担比想象中高。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yi-wai-3-yu-zhi-yu-xian-shi-de-chai-ju&quot;&gt;意外 3：阈值与现实的差距&lt;&#x2F;h3&gt;
+&lt;p&gt;模式检测需要 &lt;code&gt;(domain, tool_chain)&lt;&#x2F;code&gt; 完全相同且 &amp;gt;= 3 次。但实际使用中，同一类任务的 tool_chain 常常有细微差异：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;data | shell_exec→shell_exec→file_read→file_read    # 2 次 shell
+&lt;&#x2F;span&gt;&lt;span&gt;data | shell_exec→file_read→file_read→file_read      # 1 次 shell
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这两条很明显是同一类任务，但因为 tool_chain 不同，不会被分到一组。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是 &lt;code&gt;detect_patterns_llm()&lt;&#x2F;code&gt; 存在的意义——让 LLM 做语义聚类，而不是精确匹配。规则版本是起步，LLM 版本是进化方向。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-yi-dai-ma-tong-ji-yu-jia-gou-quan-jing&quot;&gt;十一、代码统计与架构全景&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 4 的变更：&lt;strong&gt;15 files changed, +3,752 lines&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                       Jarvis v0.4.0                          │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────────────────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │              CLI (Typer + Rich)                       │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    chat · ask · reflect · abilities · patterns       │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    skill list&#x2F;enable&#x2F;disable&#x2F;delete&#x2F;test              │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───────────────────────┬──────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                          │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────▼──────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │           JarvisLLMClient (SSE + FC)                  │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │         Agent Maestro → Claude Sonnet 4               │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───────────────────────┬──────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                          │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────▼──────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │   ToolRegistry  │  Memory  │  Explorer  │  Daemon    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │   7 tools       │  FTS5    │  Scanner   │  Heartbeat │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                          │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌───────────────────────▼──────────────────────────────┐    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                 Evolution (Phase 4)                    │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  PatternDetector → SkillGenerator → Sandbox           │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  PreferenceLearner    Metacognition    SkillRegistry   │    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────────────────────────────────────────┘    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-er-phase-4-de-zhe-xue-neng-li-ying-gai-cong-jiao-hu-zhong-yong-xian&quot;&gt;十二、Phase 4 的哲学：能力应该从交互中涌现&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾整个进化路线：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Phase&lt;&#x2F;th&gt;&lt;th&gt;里程碑&lt;&#x2F;th&gt;&lt;th&gt;类比&lt;&#x2F;th&gt;&lt;th&gt;核心能力&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;🥚 Phase 1&lt;&#x2F;td&gt;&lt;td&gt;能看、能记&lt;&#x2F;td&gt;&lt;td&gt;婴儿睁开眼睛&lt;&#x2F;td&gt;&lt;td&gt;Explorer + Memory&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🐣 Phase 2&lt;&#x2F;td&gt;&lt;td&gt;能想、能回忆&lt;&#x2F;td&gt;&lt;td&gt;幼儿开始思考&lt;&#x2F;td&gt;&lt;td&gt;Think Loop + FTS5&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🧹 Phase 2.5&lt;&#x2F;td&gt;&lt;td&gt;骨骼健康&lt;&#x2F;td&gt;&lt;td&gt;体检&lt;&#x2F;td&gt;&lt;td&gt;CLI 模块化 + 清理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🦋 Phase 3&lt;&#x2F;td&gt;&lt;td&gt;能做事&lt;&#x2F;td&gt;&lt;td&gt;少年伸出手&lt;&#x2F;td&gt;&lt;td&gt;7 Tools + Function Calling&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;⭐ &lt;strong&gt;Phase 4&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;能进化&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;成人自主学习&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;模式检测 + Skill 自生成 + 元认知&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Phase 4 的设计原则是&amp;quot;&lt;strong&gt;涌现 &amp;gt; 预设&lt;&#x2F;strong&gt;&amp;quot;。我不预设 Jarvis 应该会什么，而是让它从真实交互中自己发现：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;你经常翻译 Markdown？→ 它会提议创建 &lt;code&gt;markdown-translator&lt;&#x2F;code&gt; Skill&lt;&#x2F;li&gt;
+&lt;li&gt;你每天早上查项目状态？→ 它会提议创建 &lt;code&gt;daily-standup&lt;&#x2F;code&gt; Skill&lt;&#x2F;li&gt;
+&lt;li&gt;你喜欢简洁的输出？→ 它会记住这个偏好&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这种&amp;quot;用着用着就变强了&amp;quot;的体验，才是&amp;quot;数码宝贝&amp;quot;这个比喻的精髓。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-san-xia-yi-bu&quot;&gt;十三、下一步？&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 4 完成后，Jarvis 的五维能力全部在线了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;👁️ 感知 ✅&lt;&#x2F;li&gt;
+&lt;li&gt;🧠 记忆 ✅&lt;&#x2F;li&gt;
+&lt;li&gt;💭 思考 ✅&lt;&#x2F;li&gt;
+&lt;li&gt;🦾 行动 ✅&lt;&#x2F;li&gt;
+&lt;li&gt;🔄 进化 ✅&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但现在所有维度的数值都很低——因为它才刚&amp;quot;出生&amp;quot;。接下来不是再加新 Phase，而是&lt;strong&gt;真正去用它&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;让它扫描我的所有项目、记住我的工作习惯、在我重复做某件事三次的时候主动说：&amp;quot;Hey，要不要我帮你自动化这个？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;代码已经就绪，进化才刚刚开始。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;Jarvis-Agent 是开源项目，代码在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;Jarvis-Agent&quot;&gt;GitHub&lt;&#x2F;a&gt;。如果你也想打造自己的数码宝贝，欢迎 star ⭐&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
