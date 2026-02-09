@@ -1,0 +1,141 @@
+<!doctype html><html><head><title>🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化</title><meta content="CopilotX v1.0 只能在本机用。今天我花了一个下午，给它加上了 API Key 认证、远程模式检测、Caddy 反向代理模板，让它可以部署在 Azure VM 上通过 HTTPS 远程访问。从 localhost 到 api.polly.wang，代码只增加了 225 行。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/copilotx-v2-remote-deployment/ property=og:url><meta content="🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化" property=og:title><meta content="CopilotX v1.0 只能在本机用。今天我花了一个下午，给它加上了 API Key 认证、远程模式检测、Caddy 反向代理模板，让它可以部署在 Azure VM 上通过 HTTPS 远程访问。从 localhost 到 api.polly.wang，代码只增加了 225 行。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/copilotx-v2-remote-deployment/ name=twitter:url><meta content="🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化" name=twitter:title><meta content="CopilotX v1.0 只能在本机用。今天我花了一个下午，给它加上了 API Key 认证、远程模式检测、Caddy 反向代理模板，让它可以部署在 Azure VM 上通过 HTTPS 远程访问。从 localhost 到 api.polly.wang，代码只增加了 225 行。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-09T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=CopilotX property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content=Python property=article:tag><meta content=FastAPI property=article:tag><meta content=远程部署 property=article:tag><meta content=API安全 property=article:tag><meta content=Caddy property=article:tag><meta content="Azure VM" property=article:tag><meta content=开源 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化</h1><div class=cover-image><img alt="🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化" loading=lazy src=cover.jpg></div><div class=content><p>今天早上发布了 <a href=/copilotx-turn-copilot-into-local-api>CopilotX v1.0</a>，一个把 GitHub Copilot 变成本地 API 的工具。中午吃饭时我想了一个问题：<p><strong>如果我出门了，笔记本不在身边，还能用这些模型吗？</strong><p>答案是——放一台云服务器上不就行了？<p>但 v1.0 完全没有安全防护。它默认绑定 <code>127.0.0.1</code>，只能本机访问。如果直接改成 <code>0.0.0.0</code> 暴露到公网，任何人都能白嫖你的 Copilot 订阅。<p>于是我花了一个下午，把 CopilotX 从"本地工具"进化成了"可远程部署的服务"。<hr><h2 id=xu-qiu-fen-xi-san-fen-zhong-xiang-qing-chu>需求分析：三分钟想清楚</h2><p>我的需求其实很简单：<ol><li><strong>本地用户零影响</strong> —— 之前怎么用，现在还怎么用<li><strong>远程需要密钥</strong> —— 没有 API Key 的请求直接拒绝<li><strong>localhost 免认证</strong> —— 在服务器本机调试不用带 Key<li><strong>HTTPS</strong> —— API Key 不能明文传输</ol><p>写成表格就一目了然：<table><thead><tr><th>场景<th>Host<th>API Key<th>行为<tbody><tr><td>本地开发（v1 用户）<td><code>127.0.0.1</code><td>不设<td>全开，向后兼容<tr><td>远程部署（有保护）<td><code>0.0.0.0</code><td>设了<td>localhost 免认证，远程需要 Bearer Token<tr><td>远程部署（裸奔）<td><code>0.0.0.0</code><td>没设<td>⚠️ 启动时警告，但允许运行</table><p>核心设计原则：<strong>"Local Trust, Remote Verify"</strong> —— 本地信任，远程验证。<hr><h2 id=shi-xian-225-xing-dai-ma-de-jing-zhun-shou-zhu>实现：225 行代码的精准手术</h2><p>整个 v2.0 只改了 5 个文件，新增 3 个部署模板，总共 +225 行。<h3 id=1-an-quan-chang-liang-config-py-8-xing>1. 安全常量（config.py，+8 行）</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># ── Security ───────────────────────────────────────────────────────
+</span><span style=color:#bf616a>COPILOTX_API_KEY </span><span>= os.environ.</span><span style=color:#bf616a>get</span><span>("</span><span style=color:#a3be8c>COPILOTX_API_KEY</span><span>", "")
+</span><span style=color:#bf616a>LOCALHOST_ADDRS </span><span>= {"</span><span style=color:#a3be8c>127.0.0.1</span><span>", "</span><span style=color:#a3be8c>::1</span><span>", "</span><span style=color:#a3be8c>localhost</span><span>"}
+</span><span style=color:#bf616a>PUBLIC_PATHS </span><span>= {"</span><span style=color:#a3be8c>/health</span><span>", "</span><span style=color:#a3be8c>/</span><span>"}
+</span></code></pre><p>三个变量，三个决策：<ul><li><code>COPILOTX_API_KEY</code>：<strong>环境变量驱动</strong>，不是配置文件。因为密钥不该提交到代码里<li><code>LOCALHOST_ADDRS</code>：同时覆盖 IPv4、IPv6 和主机名<li><code>PUBLIC_PATHS</code>：健康检查和根路径永远可访问，方便监控探活</ul><h3 id=2-api-key-zhong-jian-jian-app-py-he-xin-50-xing>2. API Key 中间件（app.py，核心 50 行）</h3><p>这是整个 v2 的灵魂——一个 Starlette BaseHTTPMiddleware：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>class </span><span style=color:#ebcb8b>ApiKeyMiddleware</span><span style=color:#eff1f5>(</span><span style=color:#a3be8c>BaseHTTPMiddleware</span><span style=color:#eff1f5>):
+</span><span>    </span><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>dispatch</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>request</span><span>: Request, </span><span style=color:#bf616a>call_next</span><span>) -> Response:
+</span><span>        </span><span style=color:#65737e># 没设 Key → 全放行（向后兼容 v1）
+</span><span>        </span><span style=color:#b48ead>if </span><span>not </span><span style=color:#bf616a>COPILOTX_API_KEY</span><span>:
+</span><span>            </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>call_next</span><span>(request)
+</span><span>
+</span><span>        </span><span style=color:#65737e># 公开路径 → 放行
+</span><span>        </span><span style=color:#b48ead>if </span><span>request.url.path in </span><span style=color:#bf616a>PUBLIC_PATHS</span><span>:
+</span><span>            </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>call_next</span><span>(request)
+</span><span>
+</span><span>        </span><span style=color:#65737e># localhost → 放行（本地信任）
+</span><span>        client_host = request.client.host </span><span style=color:#b48ead>if </span><span>request.client </span><span style=color:#b48ead>else </span><span>""
+</span><span>        </span><span style=color:#b48ead>if </span><span>client_host in </span><span style=color:#bf616a>LOCALHOST_ADDRS</span><span>:
+</span><span>            </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>call_next</span><span>(request)
+</span><span>
+</span><span>        </span><span style=color:#65737e># 远程请求 → 验证 Bearer Token
+</span><span>        token = </span><span style=color:#bf616a>extract_token</span><span>(request)  </span><span style=color:#65737e># 支持 3 种 header 格式
+</span><span>        </span><span style=color:#b48ead>if </span><span>token != </span><span style=color:#bf616a>COPILOTX_API_KEY</span><span>:
+</span><span>            </span><span style=color:#b48ead>return </span><span style=color:#bf616a>JSONResponse</span><span>(</span><span style=color:#bf616a>status_code</span><span>=</span><span style=color:#d08770>401</span><span>, </span><span style=color:#bf616a>content</span><span>={</span><span style=color:#d08770>...</span><span>})
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return await </span><span style=color:#bf616a>call_next</span><span>(request)
+</span></code></pre><p>决策链很清晰：<strong>没 Key → 公开路径 → localhost → 验证 Token</strong>。每一步都是短路判断，命中就放行，到最后一步才真正验证。<p>为什么支持三种 header 格式？因为不同的 SDK 用不同的方式传 API Key：<table><thead><tr><th>SDK<th>Header 格式<tbody><tr><td>OpenAI SDK<td><code>Authorization: Bearer sk-xxx</code><tr><td>Anthropic SDK<td><code>x-api-key: sk-xxx</code><tr><td>Azure OpenAI SDK<td><code>api-key: xxx</code></table><p>一个中间件兼容三大生态，省得用户查文档。<h3 id=3-cli-yuan-cheng-mo-shi-gan-zhi-cli-py-15-xing>3. CLI 远程模式感知（cli.py，+15 行）</h3><p>启动时自动检测模式并给出提醒：<pre style=background:#2b303b;color:#c0c5ce><code><span>🚀 CopilotX v2.0.0
+</span><span>✅ Copilot Token valid (28m remaining, auto-refresh)
+</span><span>🔐 API Key protection: ON (localhost exempt)     ← 远程+有保护
+</span><span>📋 Models: gpt-4o, claude-sonnet-4, gemini-2.0-flash
+</span></code></pre><p>或者当你 <code>0.0.0.0</code> 启动但忘了设 Key：<pre style=background:#2b303b;color:#c0c5ce><code><span>⚠️  WARNING: Remote mode without API key!
+</span><span>   Anyone can access your Copilot subscription.
+</span><span>   Set COPILOTX_API_KEY env var to enable protection.
+</span></code></pre><p>这个黄色警告够醒目，但不阻止启动——也许你确实在内网环境不需要 Key。<strong>提醒但不强制</strong>。<h3 id=4-bu-shu-mo-ban-deploy-3-ge-xin-wen-jian>4. 部署模板（deploy/，3 个新文件）</h3><h4 id=caddyfile-3-xing-he-xin-pei-zhi>Caddyfile（3 行核心配置）</h4><pre style=background:#2b303b;color:#c0c5ce><code><span>api.polly.wang {
+</span><span>    reverse_proxy localhost:24680
+</span><span>}
+</span></code></pre><p>就这么多。Caddy 看到域名就会自动：<ul><li>向 Let's Encrypt 申请 TLS 证书<li>配置 HTTPS（443）<li>HTTP → HTTPS 重定向<li>证书到期前自动续期</ul><p>对比 Nginx 需要 25 行配置 + 手动跑 certbot + 配 cron 续期。<strong>3 行 vs 25 行 + 运维</strong>。<h4 id=systemd-fu-wu-wen-jian>systemd 服务文件</h4><pre class=language-ini data-lang=ini style=background:#2b303b;color:#c0c5ce><code class=language-ini data-lang=ini><span style=color:#b48ead>[Service]
+</span><span style=color:#bf616a>Type</span><span>=simple
+</span><span style=color:#bf616a>User</span><span>=copilotx
+</span><span style=color:#bf616a>EnvironmentFile</span><span>=/home/copilotx/.env
+</span><span style=color:#bf616a>ExecStart</span><span>=/home/copilotx/.local/bin/copilotx serve --host </span><span style=color:#d08770>0.0.0.0
+</span><span style=color:#bf616a>Restart</span><span>=always
+</span><span style=color:#bf616a>NoNewPrivileges</span><span>=</span><span style=color:#d08770>true
+</span><span style=color:#bf616a>ProtectSystem</span><span>=strict
+</span></code></pre><p>几个安全加固细节：<ul><li><code>NoNewPrivileges=true</code>：进程不能提权<li><code>ProtectSystem=strict</code>：只读挂载系统目录<li><code>Restart=always</code>：崩了自动重启<li><code>EnvironmentFile</code>：密钥从 <code>.env</code> 文件加载，不写在 service 里</ul><hr><h2 id=jia-gou-yan-jin-cong-dan-ji-dao-liang-ceng>架构演进：从单机到两层</h2><p>v1.0 的架构是一条直线：<pre style=background:#2b303b;color:#c0c5ce><code><span>你的工具 → CopilotX (localhost:24680) → api.githubcopilot.com
+</span></code></pre><p>v2.0 变成两层：<pre style=background:#2b303b;color:#c0c5ce><code><span>你的笔记本 / 手机 / 任意设备
+</span><span>    │
+</span><span>    │  HTTPS (443)
+</span><span>    ▼
+</span><span>┌─────────────────────────────┐
+</span><span>│  Caddy (api.polly.wang)     │  ← 自动 HTTPS，零运维
+</span><span>│  Let's Encrypt 证书          │
+</span><span>└────────────┬────────────────┘
+</span><span>             │  HTTP (24680)     ← 内网通信，不出网
+</span><span>             ▼
+</span><span>┌─────────────────────────────┐
+</span><span>│  CopilotX (0.0.0.0:24680)  │
+</span><span>│  API Key 验证 + Token 管理   │
+</span><span>└────────────┬────────────────┘
+</span><span>             │  OpenAI 格式 + Copilot JWT
+</span><span>             ▼
+</span><span>    api.githubcopilot.com
+</span><span>    → GPT-4o, Claude, Gemini...
+</span></code></pre><p>CopilotX 本身不管 HTTPS —— 交给专业的 Caddy 处理。这是 <strong>Unix 哲学</strong>：每个程序做好一件事。<hr><h2 id=wei-shi-yao-xuan-caddy-er-bu-shi-nginx>为什么选 Caddy 而不是 Nginx？</h2><p>这个问题我认真想了一下。结论是：<strong>在个人项目的场景下，Caddy 完胜</strong>。<table><thead><tr><th>维度<th>Caddy<th>Nginx<tbody><tr><td>HTTPS 配置<td>零配置，自动 Let's Encrypt<td>手动 certbot + cron 续期<tr><td>配置量<td>3 行<td>~25 行<tr><td>证书续期<td>自动（内置）<td>需要 cron 或 certbot timer<tr><td>性能<td>万级 QPS（够了）<td>十万级 QPS（用不上）</table><p>CopilotX 是个人用的 API 代理，又不是服务百万用户的网关。<strong>Caddy 的自动 HTTPS 才是杀手锏</strong> —— 忘了续期证书导致服务挂掉？Caddy 不存在这个问题。<hr><h2 id=bu-shu-liu-cheng-5-fen-zhong-gao-ding>部署流程：5 分钟搞定</h2><p>实际在 Azure VM 上部署的完整流程：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 1. 安装
+</span><span style=color:#bf616a>pip</span><span> install copilotx
+</span><span>
+</span><span style=color:#65737e># 2. 认证
+</span><span style=color:#bf616a>copilotx</span><span> auth login
+</span><span style=color:#65737e># → 浏览器授权，和本地用一模一样
+</span><span>
+</span><span style=color:#65737e># 3. 设置 API Key
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>COPILOTX_API_KEY</span><span>=$</span><span style=color:#a3be8c>(</span><span style=color:#bf616a>openssl</span><span style=color:#a3be8c> rand</span><span style=color:#bf616a> -hex</span><span style=color:#a3be8c> 32)
+</span><span style=color:#96b5b4>echo </span><span>"</span><span style=color:#a3be8c>记住这个 Key: </span><span>$</span><span style=color:#bf616a>COPILOTX_API_KEY</span><span>"
+</span><span>
+</span><span style=color:#65737e># 4. 启动
+</span><span style=color:#bf616a>copilotx</span><span> serve</span><span style=color:#bf616a> --host</span><span> 0.0.0.0
+</span><span>
+</span><span style=color:#65737e># 5. 安装 Caddy（一次性）
+</span><span style=color:#bf616a>sudo</span><span> apt install caddy
+</span><span style=color:#96b5b4>echo </span><span>'</span><span style=color:#a3be8c>api.polly.wang { reverse_proxy localhost:24680 }</span><span>' | </span><span style=color:#bf616a>sudo</span><span> tee /etc/caddy/Caddyfile
+</span><span style=color:#bf616a>sudo</span><span> systemctl reload caddy
+</span></code></pre><p>然后从任何地方：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>openai </span><span style=color:#b48ead>import </span><span>OpenAI
+</span><span>
+</span><span>client = </span><span style=color:#bf616a>OpenAI</span><span>(
+</span><span>    </span><span style=color:#bf616a>base_url</span><span>="</span><span style=color:#a3be8c>https://api.polly.wang/v1</span><span>",
+</span><span>    </span><span style=color:#bf616a>api_key</span><span>="</span><span style=color:#a3be8c>你的COPILOTX_API_KEY</span><span>",
+</span><span>)
+</span><span>
+</span><span>response = client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>    </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>gpt-4o</span><span>",
+</span><span>    </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": "</span><span style=color:#a3be8c>Hello from remote!</span><span>"}],
+</span><span>)
+</span><span style=color:#96b5b4>print</span><span>(response.choices[</span><span style=color:#d08770>0</span><span>].message.content)
+</span></code></pre><p><strong>和调 OpenAI 官方 API 完全一样的体验</strong>，只是 base_url 换成了你自己的域名。<hr><h2 id=ban-ben-lu-xian-tu>版本路线图</h2><table><thead><tr><th>版本<th>代号<th>特性<th>状态<tbody><tr><td>v1.0.0<td>Local<td>OAuth、双 API 格式、流式响应、模型发现<td>✅ 已发布<tr><td><strong>v2.0.0</strong><td><strong>Remote</strong><td><strong>API Key 认证、远程部署、Caddy/systemd 模板</strong><td><strong>✅ 今天发布</strong><tr><td>v3.0.0<td>Multi-User<td>Token Pool、用户数据库、OpenRouter 模式<td>🔜 规划中</table><p>v3.0.0 的愿景是把 CopilotX 变成一个<strong>多用户的 AI API 网关</strong>——多个 GitHub 账号的 Token 组成池子，像 OpenRouter 一样按需分配。但那是更远的事了。<hr><h2 id=fan-si-225-xing-de-xin-zao-bi>反思：225 行的信噪比</h2><p>回顾这个下午的工作，我最满意的一点是<strong>克制</strong>。<p>远程部署这个需求，一般人可能会想加：<ul><li>用户注册系统<li>JWT 签发和验证<li>速率限制中间件<li>数据库存 API Key<li>管理面板</ul><p>这些都是"合理"的功能，但对于"个人远程访问自己的 Copilot"这个场景，全是过度设计。<p>一个环境变量（<code>COPILOTX_API_KEY</code>）+ 一个中间件（50 行）+ 一个 Caddy 配置（3 行），就解决了所有问题。<p>这让我想起今天早上写的 <a href=/blog/gatex-v2-from-bloat-to-lean>GateX v2 博文</a>里的那句话：<strong>Less is More</strong>。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— <strong>代码的价值不在于行数，在于每一行都解决真实问题</strong>。<p>v1.0 → v2.0，从 <code>localhost</code> 到 <code>api.polly.wang</code>，225 行代码的距离。<hr><h2 id=lian-jie>链接</h2><ul><li><strong>PyPI</strong>: <a href=https://pypi.org/project/copilotx/>pypi.org/project/copilotx</a> （v2.0.0）<li><strong>GitHub</strong>: <a href=https://github.com/Polly2014/CopilotX>github.com/Polly2014/CopilotX</a><li><strong>前篇</strong>: <a href=/blog/copilotx-turn-copilot-into-local-api>CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器</a></ul><p>升级只需一行：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pip</span><span> install</span><span style=color:#bf616a> --upgrade</span><span> copilotx
+</span></code></pre><p>从本地到远程，三行命令的距离又近了一步。🌐</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

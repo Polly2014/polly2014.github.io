@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - API安全</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/apian-quan/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-09T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/apian-quan/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🌐 CopilotX v2.0：从本地工具到远程服务，一个下午的进化</title>
+        <published>2026-02-09T00:00:00+00:00</published>
+        <updated>2026-02-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/copilotx-v2-remote-deployment/" type="text/html"/>
+        <id>https://polly.wang/copilotx-v2-remote-deployment/</id>
+        
+        <content type="html">&lt;p&gt;今天早上发布了 &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0&lt;&#x2F;a&gt;，一个把 GitHub Copilot 变成本地 API 的工具。中午吃饭时我想了一个问题：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;如果我出门了，笔记本不在身边，还能用这些模型吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;答案是——放一台云服务器上不就行了？&lt;&#x2F;p&gt;
+&lt;p&gt;但 v1.0 完全没有安全防护。它默认绑定 &lt;code&gt;127.0.0.1&lt;&#x2F;code&gt;，只能本机访问。如果直接改成 &lt;code&gt;0.0.0.0&lt;&#x2F;code&gt; 暴露到公网，任何人都能白嫖你的 Copilot 订阅。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我花了一个下午，把 CopilotX 从&amp;quot;本地工具&amp;quot;进化成了&amp;quot;可远程部署的服务&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xu-qiu-fen-xi-san-fen-zhong-xiang-qing-chu&quot;&gt;需求分析：三分钟想清楚&lt;&#x2F;h2&gt;
+&lt;p&gt;我的需求其实很简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;本地用户零影响&lt;&#x2F;strong&gt; —— 之前怎么用，现在还怎么用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;远程需要密钥&lt;&#x2F;strong&gt; —— 没有 API Key 的请求直接拒绝&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;localhost 免认证&lt;&#x2F;strong&gt; —— 在服务器本机调试不用带 Key&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;HTTPS&lt;&#x2F;strong&gt; —— API Key 不能明文传输&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;写成表格就一目了然：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;Host&lt;&#x2F;th&gt;&lt;th&gt;API Key&lt;&#x2F;th&gt;&lt;th&gt;行为&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;本地开发（v1 用户）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;127.0.0.1&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;不设&lt;&#x2F;td&gt;&lt;td&gt;全开，向后兼容&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;远程部署（有保护）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;0.0.0.0&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;设了&lt;&#x2F;td&gt;&lt;td&gt;localhost 免认证，远程需要 Bearer Token&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;远程部署（裸奔）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;0.0.0.0&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;没设&lt;&#x2F;td&gt;&lt;td&gt;⚠️ 启动时警告，但允许运行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;核心设计原则：&lt;strong&gt;&amp;quot;Local Trust, Remote Verify&amp;quot;&lt;&#x2F;strong&gt; —— 本地信任，远程验证。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-xian-225-xing-dai-ma-de-jing-zhun-shou-zhu&quot;&gt;实现：225 行代码的精准手术&lt;&#x2F;h2&gt;
+&lt;p&gt;整个 v2.0 只改了 5 个文件，新增 3 个部署模板，总共 +225 行。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-an-quan-chang-liang-config-py-8-xing&quot;&gt;1. 安全常量（config.py，+8 行）&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ── Security ───────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;COPILOTX_API_KEY &lt;&#x2F;span&gt;&lt;span&gt;= os.environ.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOCALHOST_ADDRS &lt;&#x2F;span&gt;&lt;span&gt;= {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;127.0.0.1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;::1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;localhost&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PUBLIC_PATHS &lt;&#x2F;span&gt;&lt;span&gt;= {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;health&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个变量，三个决策：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;COPILOTX_API_KEY&lt;&#x2F;code&gt;：&lt;strong&gt;环境变量驱动&lt;&#x2F;strong&gt;，不是配置文件。因为密钥不该提交到代码里&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;LOCALHOST_ADDRS&lt;&#x2F;code&gt;：同时覆盖 IPv4、IPv6 和主机名&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;PUBLIC_PATHS&lt;&#x2F;code&gt;：健康检查和根路径永远可访问，方便监控探活&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;2-api-key-zhong-jian-jian-app-py-he-xin-50-xing&quot;&gt;2. API Key 中间件（app.py，核心 50 行）&lt;&#x2F;h3&gt;
+&lt;p&gt;这是整个 v2 的灵魂——一个 Starlette BaseHTTPMiddleware：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;ApiKeyMiddleware&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;BaseHTTPMiddleware&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;dispatch&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;request&lt;&#x2F;span&gt;&lt;span&gt;: Request, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_next&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; Response:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 没设 Key → 全放行（向后兼容 v1）
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_next&lt;&#x2F;span&gt;&lt;span&gt;(request)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 公开路径 → 放行
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;request.url.path in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PUBLIC_PATHS&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_next&lt;&#x2F;span&gt;&lt;span&gt;(request)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# localhost → 放行（本地信任）
+&lt;&#x2F;span&gt;&lt;span&gt;        client_host = request.client.host &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;request.client &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;client_host in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOCALHOST_ADDRS&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_next&lt;&#x2F;span&gt;&lt;span&gt;(request)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 远程请求 → 验证 Bearer Token
+&lt;&#x2F;span&gt;&lt;span&gt;        token = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;extract_token&lt;&#x2F;span&gt;&lt;span&gt;(request)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 支持 3 种 header 格式
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;token != &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;JSONResponse&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;status_code&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;401&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_next&lt;&#x2F;span&gt;&lt;span&gt;(request)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;决策链很清晰：&lt;strong&gt;没 Key → 公开路径 → localhost → 验证 Token&lt;&#x2F;strong&gt;。每一步都是短路判断，命中就放行，到最后一步才真正验证。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么支持三种 header 格式？因为不同的 SDK 用不同的方式传 API Key：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;SDK&lt;&#x2F;th&gt;&lt;th&gt;Header 格式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;OpenAI SDK&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Authorization: Bearer sk-xxx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Anthropic SDK&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;x-api-key: sk-xxx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Azure OpenAI SDK&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;api-key: xxx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;一个中间件兼容三大生态，省得用户查文档。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-cli-yuan-cheng-mo-shi-gan-zhi-cli-py-15-xing&quot;&gt;3. CLI 远程模式感知（cli.py，+15 行）&lt;&#x2F;h3&gt;
+&lt;p&gt;启动时自动检测模式并给出提醒：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;🚀 CopilotX v2.0.0
+&lt;&#x2F;span&gt;&lt;span&gt;✅ Copilot Token valid (28m remaining, auto-refresh)
+&lt;&#x2F;span&gt;&lt;span&gt;🔐 API Key protection: ON (localhost exempt)     ← 远程+有保护
+&lt;&#x2F;span&gt;&lt;span&gt;📋 Models: gpt-4o, claude-sonnet-4, gemini-2.0-flash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;或者当你 &lt;code&gt;0.0.0.0&lt;&#x2F;code&gt; 启动但忘了设 Key：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;⚠️  WARNING: Remote mode without API key!
+&lt;&#x2F;span&gt;&lt;span&gt;   Anyone can access your Copilot subscription.
+&lt;&#x2F;span&gt;&lt;span&gt;   Set COPILOTX_API_KEY env var to enable protection.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个黄色警告够醒目，但不阻止启动——也许你确实在内网环境不需要 Key。&lt;strong&gt;提醒但不强制&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-bu-shu-mo-ban-deploy-3-ge-xin-wen-jian&quot;&gt;4. 部署模板（deploy&#x2F;，3 个新文件）&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;caddyfile-3-xing-he-xin-pei-zhi&quot;&gt;Caddyfile（3 行核心配置）&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;api.polly.wang {
+&lt;&#x2F;span&gt;&lt;span&gt;    reverse_proxy localhost:24680
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;就这么多。Caddy 看到域名就会自动：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;向 Let&#x27;s Encrypt 申请 TLS 证书&lt;&#x2F;li&gt;
+&lt;li&gt;配置 HTTPS（443）&lt;&#x2F;li&gt;
+&lt;li&gt;HTTP → HTTPS 重定向&lt;&#x2F;li&gt;
+&lt;li&gt;证书到期前自动续期&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;对比 Nginx 需要 25 行配置 + 手动跑 certbot + 配 cron 续期。&lt;strong&gt;3 行 vs 25 行 + 运维&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;systemd-fu-wu-wen-jian&quot;&gt;systemd 服务文件&lt;&#x2F;h4&gt;
+&lt;pre data-lang=&quot;ini&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ini &quot;&gt;&lt;code class=&quot;language-ini&quot; data-lang=&quot;ini&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;[Service]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Type&lt;&#x2F;span&gt;&lt;span&gt;=simple
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;User&lt;&#x2F;span&gt;&lt;span&gt;=copilotx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;EnvironmentFile&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;home&#x2F;copilotx&#x2F;.env
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ExecStart&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;home&#x2F;copilotx&#x2F;.local&#x2F;bin&#x2F;copilotx serve --host &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.0.0.0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Restart&lt;&#x2F;span&gt;&lt;span&gt;=always
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NoNewPrivileges&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ProtectSystem&lt;&#x2F;span&gt;&lt;span&gt;=strict
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;几个安全加固细节：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;NoNewPrivileges=true&lt;&#x2F;code&gt;：进程不能提权&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;ProtectSystem=strict&lt;&#x2F;code&gt;：只读挂载系统目录&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;Restart=always&lt;&#x2F;code&gt;：崩了自动重启&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;EnvironmentFile&lt;&#x2F;code&gt;：密钥从 &lt;code&gt;.env&lt;&#x2F;code&gt; 文件加载，不写在 service 里&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jia-gou-yan-jin-cong-dan-ji-dao-liang-ceng&quot;&gt;架构演进：从单机到两层&lt;&#x2F;h2&gt;
+&lt;p&gt;v1.0 的架构是一条直线：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你的工具 → CopilotX (localhost:24680) → api.githubcopilot.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;v2.0 变成两层：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你的笔记本 &#x2F; 手机 &#x2F; 任意设备
+&lt;&#x2F;span&gt;&lt;span&gt;    │
+&lt;&#x2F;span&gt;&lt;span&gt;    │  HTTPS (443)
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  Caddy (api.polly.wang)     │  ← 自动 HTTPS，零运维
+&lt;&#x2F;span&gt;&lt;span&gt;│  Let&amp;#39;s Encrypt 证书          │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────┬────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;             │  HTTP (24680)     ← 内网通信，不出网
+&lt;&#x2F;span&gt;&lt;span&gt;             ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  CopilotX (0.0.0.0:24680)  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  API Key 验证 + Token 管理   │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────┬────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;             │  OpenAI 格式 + Copilot JWT
+&lt;&#x2F;span&gt;&lt;span&gt;             ▼
+&lt;&#x2F;span&gt;&lt;span&gt;    api.githubcopilot.com
+&lt;&#x2F;span&gt;&lt;span&gt;    → GPT-4o, Claude, Gemini...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;CopilotX 本身不管 HTTPS —— 交给专业的 Caddy 处理。这是 &lt;strong&gt;Unix 哲学&lt;&#x2F;strong&gt;：每个程序做好一件事。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-shi-yao-xuan-caddy-er-bu-shi-nginx&quot;&gt;为什么选 Caddy 而不是 Nginx？&lt;&#x2F;h2&gt;
+&lt;p&gt;这个问题我认真想了一下。结论是：&lt;strong&gt;在个人项目的场景下，Caddy 完胜&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Caddy&lt;&#x2F;th&gt;&lt;th&gt;Nginx&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;HTTPS 配置&lt;&#x2F;td&gt;&lt;td&gt;零配置，自动 Let&#x27;s Encrypt&lt;&#x2F;td&gt;&lt;td&gt;手动 certbot + cron 续期&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;配置量&lt;&#x2F;td&gt;&lt;td&gt;3 行&lt;&#x2F;td&gt;&lt;td&gt;~25 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;证书续期&lt;&#x2F;td&gt;&lt;td&gt;自动（内置）&lt;&#x2F;td&gt;&lt;td&gt;需要 cron 或 certbot timer&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;性能&lt;&#x2F;td&gt;&lt;td&gt;万级 QPS（够了）&lt;&#x2F;td&gt;&lt;td&gt;十万级 QPS（用不上）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;CopilotX 是个人用的 API 代理，又不是服务百万用户的网关。&lt;strong&gt;Caddy 的自动 HTTPS 才是杀手锏&lt;&#x2F;strong&gt; —— 忘了续期证书导致服务挂掉？Caddy 不存在这个问题。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bu-shu-liu-cheng-5-fen-zhong-gao-ding&quot;&gt;部署流程：5 分钟搞定&lt;&#x2F;h2&gt;
+&lt;p&gt;实际在 Azure VM 上部署的完整流程：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. 安装
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install copilotx
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. 认证
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;copilotx&lt;&#x2F;span&gt;&lt;span&gt; auth login
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# → 浏览器授权，和本地用一模一样
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. 设置 API Key
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;=$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openssl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; rand&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -hex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; 32)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;记住这个 Key: &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 4. 启动
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;copilotx&lt;&#x2F;span&gt;&lt;span&gt; serve&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --host&lt;&#x2F;span&gt;&lt;span&gt; 0.0.0.0
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 5. 安装 Caddy（一次性）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt install caddy
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;api.polly.wang { reverse_proxy localhost:24680 }&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; tee &#x2F;etc&#x2F;caddy&#x2F;Caddyfile
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl reload caddy
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后从任何地方：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;openai &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;OpenAI
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;client = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;OpenAI&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;base_url&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;api.polly.wang&#x2F;v1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api_key&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;你的COPILOTX_API_KEY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;response = client.chat.completions.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;create&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gpt-4o&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;=[{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Hello from remote!&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}],
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(response.choices[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].message.content)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;和调 OpenAI 官方 API 完全一样的体验&lt;&#x2F;strong&gt;，只是 base_url 换成了你自己的域名。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ban-ben-lu-xian-tu&quot;&gt;版本路线图&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;代号&lt;&#x2F;th&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;v1.0.0&lt;&#x2F;td&gt;&lt;td&gt;Local&lt;&#x2F;td&gt;&lt;td&gt;OAuth、双 API 格式、流式响应、模型发现&lt;&#x2F;td&gt;&lt;td&gt;✅ 已发布&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;v2.0.0&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Remote&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;API Key 认证、远程部署、Caddy&#x2F;systemd 模板&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;✅ 今天发布&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v3.0.0&lt;&#x2F;td&gt;&lt;td&gt;Multi-User&lt;&#x2F;td&gt;&lt;td&gt;Token Pool、用户数据库、OpenRouter 模式&lt;&#x2F;td&gt;&lt;td&gt;🔜 规划中&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;v3.0.0 的愿景是把 CopilotX 变成一个&lt;strong&gt;多用户的 AI API 网关&lt;&#x2F;strong&gt;——多个 GitHub 账号的 Token 组成池子，像 OpenRouter 一样按需分配。但那是更远的事了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fan-si-225-xing-de-xin-zao-bi&quot;&gt;反思：225 行的信噪比&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾这个下午的工作，我最满意的一点是&lt;strong&gt;克制&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;远程部署这个需求，一般人可能会想加：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户注册系统&lt;&#x2F;li&gt;
+&lt;li&gt;JWT 签发和验证&lt;&#x2F;li&gt;
+&lt;li&gt;速率限制中间件&lt;&#x2F;li&gt;
+&lt;li&gt;数据库存 API Key&lt;&#x2F;li&gt;
+&lt;li&gt;管理面板&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些都是&amp;quot;合理&amp;quot;的功能，但对于&amp;quot;个人远程访问自己的 Copilot&amp;quot;这个场景，全是过度设计。&lt;&#x2F;p&gt;
+&lt;p&gt;一个环境变量（&lt;code&gt;COPILOTX_API_KEY&lt;&#x2F;code&gt;）+ 一个中间件（50 行）+ 一个 Caddy 配置（3 行），就解决了所有问题。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我想起今天早上写的 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-v2-from-bloat-to-lean&quot;&gt;GateX v2 博文&lt;&#x2F;a&gt;里的那句话：&lt;strong&gt;Less is More&lt;&#x2F;strong&gt;。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— &lt;strong&gt;代码的价值不在于行数，在于每一行都解决真实问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;v1.0 → v2.0，从 &lt;code&gt;localhost&lt;&#x2F;code&gt; 到 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;，225 行代码的距离。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;lian-jie&quot;&gt;链接&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;PyPI&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;pypi.org&#x2F;project&#x2F;copilotx&#x2F;&quot;&gt;pypi.org&#x2F;project&#x2F;copilotx&lt;&#x2F;a&gt; （v2.0.0）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;CopilotX&quot;&gt;github.com&#x2F;Polly2014&#x2F;CopilotX&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前篇&lt;&#x2F;strong&gt;: &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;升级只需一行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --upgrade&lt;&#x2F;span&gt;&lt;span&gt; copilotx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;从本地到远程，三行命令的距离又近了一步。🌐&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
