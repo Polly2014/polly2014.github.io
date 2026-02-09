@@ -270,6 +270,236 @@
         
     </entry>
     <entry xml:lang="en">
+        <title>✂️ GateX v2：删掉 2000 行代码后，它反而更强了</title>
+        <published>2026-02-09T00:00:00+00:00</published>
+        <updated>2026-02-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/gatex-v2-from-bloat-to-lean/" type="text/html"/>
+        <id>https://polly.wang/gatex-v2-from-bloat-to-lean/</id>
+        
+        <content type="html">&lt;p&gt;三周前，GateX v0.1.0 诞生了。&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;那篇文章&lt;&#x2F;a&gt;记录了一个很爽的故事——发现 Agent Maestro 有 120 秒硬编码超时，于是连夜自己写一个更好的。&lt;&#x2F;p&gt;
+&lt;p&gt;代码提交，Marketplace 上架，故事结束。&lt;&#x2F;p&gt;
+&lt;p&gt;但故事没有结束。代码在长。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;chart-with-upwards-trend-yi-ge-kuo-zhan-shi-zen-yao-bian-pang-de&quot;&gt;📈 一个扩展是怎么变胖的&lt;&#x2F;h2&gt;
+&lt;p&gt;GateX 的初始需求很简单：&lt;strong&gt;把 VS Code 的 &lt;code&gt;vscode.lm&lt;&#x2F;code&gt; API 暴露为 HTTP 接口&lt;&#x2F;strong&gt;。说白了就是一个协议转换器——左手接 OpenAI&#x2F;Anthropic 格式的请求，右手调 VS Code 的模型 API，中间做一下格式翻译。&lt;&#x2F;p&gt;
+&lt;p&gt;核心代码大概 300 行就能搞定。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我开始&amp;quot;加功能&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;第 1 天：server.ts + extension.ts ✅
+&lt;&#x2F;span&gt;&lt;span&gt;第 2 天：&amp;quot;要不加个 Dashboard 看看请求统计？&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;第 3 天：&amp;quot;缓存相同请求能省 Token 吧？&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;第 4 天：&amp;quot;并发请求应该排队处理……&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;第 5 天：&amp;quot;统计数据得持久化……&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每一步都很&amp;quot;合理&amp;quot;。每一步都让代码更复杂。&lt;&#x2F;p&gt;
+&lt;p&gt;到 v0.1.2 发布时，GateX 长成了这样：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文件&lt;&#x2F;th&gt;&lt;th&gt;行数&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;server.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;~600&lt;&#x2F;td&gt;&lt;td&gt;HTTP 服务器（含硬编码模型映射表）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;dashboard.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1,557&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Web Dashboard（内嵌 HTML&#x2F;CSS&#x2F;JS）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;stats.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;278&lt;&#x2F;td&gt;&lt;td&gt;统计追踪&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;cache.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;192&lt;&#x2F;td&gt;&lt;td&gt;响应缓存&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;queue.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;187&lt;&#x2F;td&gt;&lt;td&gt;请求队列&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;extension.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;~200&lt;&#x2F;td&gt;&lt;td&gt;入口（到处是 statsManager 引用）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;models.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;~120&lt;&#x2F;td&gt;&lt;td&gt;模型管理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;statusBar.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;~80&lt;&#x2F;td&gt;&lt;td&gt;状态栏&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;合计&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;~3,200&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;注意那个 &lt;code&gt;dashboard.ts&lt;&#x2F;code&gt;——&lt;strong&gt;1,557 行&lt;&#x2F;strong&gt;，比其他所有文件加起来还多。它在扩展内嵌了一个完整的 Web 页面，有请求量图表、成功率饼图、模型分布统计……&lt;&#x2F;p&gt;
+&lt;p&gt;我大概打开过三次。其中两次是为了截图写 README。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;copilotx-dai-lai-de-fan-si&quot;&gt;🪞 CopilotX 带来的反思&lt;&#x2F;h2&gt;
+&lt;p&gt;今天还开发了 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX&lt;&#x2F;a&gt;——一个 Python 独立工具，功能和 GateX 几乎相同（把 Copilot 变成本地 API），但完全不依赖 VS Code。&lt;&#x2F;p&gt;
+&lt;p&gt;写 CopilotX 的过程让我重新审视 GateX：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;CopilotX 的核心代码只有 &lt;strong&gt;一个文件&lt;&#x2F;strong&gt;，却支持 OpenAI + Anthropic 双格式、流式输出、并发请求、智能重试。&lt;&#x2F;p&gt;
+&lt;p&gt;GateX 有 &lt;strong&gt;8 个文件、3200 行&lt;&#x2F;strong&gt;，多出来的 2000 多行都在干什么？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案令人汗颜：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Dashboard&lt;&#x2F;strong&gt;（1,557 行）→ 我从来不看&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Cache&lt;&#x2F;strong&gt;（192 行）→ LLM 响应几乎不应该缓存（同样的 prompt 你想要不同的回答）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Queue&lt;&#x2F;strong&gt;（187 行）→ VS Code 的 &lt;code&gt;vscode.lm&lt;&#x2F;code&gt; API 自己就有并发控制&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Stats&lt;&#x2F;strong&gt;（278 行）→ 统计数据喂给 Dashboard，但 Dashboard 我不看&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这 2,214 行代码，&lt;strong&gt;没有一行在解决真正的问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它们存在的唯一理由是：写的时候觉得&amp;quot;这个功能很酷&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;hocho-shou-zhu-dao-shi-zhong-gou&quot;&gt;🔪 手术刀式重构&lt;&#x2F;h2&gt;
+&lt;p&gt;认清了问题，重构方案就很清晰了：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shan-shi-yao&quot;&gt;删什么&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;❌ dashboard.ts  (1,557 行) → 删
+&lt;&#x2F;span&gt;&lt;span&gt;❌ cache.ts      (192 行)   → 删
+&lt;&#x2F;span&gt;&lt;span&gt;❌ queue.ts      (187 行)   → 删
+&lt;&#x2F;span&gt;&lt;span&gt;❌ stats.ts      (278 行)   → 删
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;四个文件，一刀切。不是&amp;quot;先注释掉，以后可能用到&amp;quot;，是 &lt;code&gt;git rm&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;xiu-shi-yao&quot;&gt;修什么&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;server.ts&lt;&#x2F;strong&gt; 的问题最多：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;JSON 解析没有 try&#x2F;catch&lt;&#x2F;strong&gt; → 一个畸形请求就能让服务器 500&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;模型参数被默默丢弃&lt;&#x2F;strong&gt; → &lt;code&gt;temperature&lt;&#x2F;code&gt;、&lt;code&gt;max_tokens&lt;&#x2F;code&gt; 传了但没传给 &lt;code&gt;model.sendRequest()&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Anthropic 模型映射硬编码&lt;&#x2F;strong&gt; → 写死了 5 个模型名的映射表，新模型出来就不认&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;到处是 statsManager 引用&lt;&#x2F;strong&gt; → 删掉 stats 后满屏报错&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;修复后的 &lt;code&gt;server.ts&lt;&#x2F;code&gt; 关键改进：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 之前：空对象，温度、max_tokens 全被忽略
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;response &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;sendRequest&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;, {}, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;token&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 之后：正确传递模型参数
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;buildModelOptions&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;: OpenAIChatRequest) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;opts&lt;&#x2F;span&gt;&lt;span&gt;: Record&amp;lt;string, unknown&amp;gt; = {};
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;temperature &lt;&#x2F;span&gt;&lt;span&gt;!== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;undefined&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;opts&lt;&#x2F;span&gt;&lt;span&gt;[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;temperature&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;temperature&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_tokens &lt;&#x2F;span&gt;&lt;span&gt;!== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;undefined&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;opts&lt;&#x2F;span&gt;&lt;span&gt;[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;top_p &lt;&#x2F;span&gt;&lt;span&gt;!== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;undefined&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;opts&lt;&#x2F;span&gt;&lt;span&gt;[&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;top_p&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;req&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;top_p&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{ modelOptions: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;opts &lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 之前：硬编码映射，只认 5 个模型
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MODEL_MAP&lt;&#x2F;span&gt;&lt;span&gt;: Record&amp;lt;string, string&amp;gt; = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-3-5-sonnet&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;copilot-claude-3.5-sonnet&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-3-opus&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;copilot-claude-3-opus&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 之后：动态模糊匹配，不怕新模型
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;modelManager&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getModel&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;requestedName&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; getModel 先精确匹配，不中再模糊匹配（包含关系 + 编辑距离）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;jia-shi-yao&quot;&gt;加什么&lt;&#x2F;h3&gt;
+&lt;p&gt;删了 2000 行，加了两个真正有用的功能：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. Vendor Filter（模型供应商过滤）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;vscode.lm.selectChatModels({})&lt;&#x2F;code&gt; 会返回 VS Code 里&lt;strong&gt;所有扩展&lt;&#x2F;strong&gt;提供的模型——不只是 Copilot，还有 AI Toolkit、Foundry Local 等。我的 VS Code 里一度列出了 &lt;strong&gt;215 个模型&lt;&#x2F;strong&gt;，大部分根本不能用。&lt;&#x2F;p&gt;
+&lt;p&gt;解决方案：&lt;code&gt;gatex.vendors&lt;&#x2F;code&gt; 配置项，默认只暴露 &lt;code&gt;copilot&lt;&#x2F;code&gt; 模型。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; settings.json
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gatex.vendors&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;copilot&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 215 → ~25 个有效模型
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;2. IDE 配置生成器（configGenerator.ts）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这是从 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Joouis&#x2F;agent-maestro&quot;&gt;Agent Maestro&lt;&#x2F;a&gt; 学来的灵感。与其让用户手动写配置，不如一键生成。&lt;&#x2F;p&gt;
+&lt;p&gt;按 &lt;code&gt;Ctrl+Shift+P&lt;&#x2F;code&gt; → &lt;code&gt;GateX: Configure for IDE&lt;&#x2F;code&gt;，支持：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Claude Code&lt;&#x2F;strong&gt; → 双模型选择（main + fast），自动写入 &lt;code&gt;.claude&#x2F;settings.json&lt;&#x2F;code&gt;，自动绕过 onboarding&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Codex CLI&lt;&#x2F;strong&gt; → 生成 &lt;code&gt;~&#x2F;.codex&#x2F;config.toml&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;.env 文件&lt;&#x2F;strong&gt; → OpenAI + Anthropic 环境变量&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;剪贴板&lt;&#x2F;strong&gt; → &lt;code&gt;export&lt;&#x2F;code&gt; 或 &lt;code&gt;$env:&lt;&#x2F;code&gt; 命令&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;模型选择器按家族分组（Claude &#x2F; GPT &#x2F; Gemini &#x2F; Other），每个 IDE 有 ⭐ 推荐：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;⭐ Recommended
+&lt;&#x2F;span&gt;&lt;span&gt;   claude-sonnet-4
+&lt;&#x2F;span&gt;&lt;span&gt;── Claude ──
+&lt;&#x2F;span&gt;&lt;span&gt;   claude-sonnet-4
+&lt;&#x2F;span&gt;&lt;span&gt;   claude-haiku-3.5
+&lt;&#x2F;span&gt;&lt;span&gt;── GPT ──
+&lt;&#x2F;span&gt;&lt;span&gt;   gpt-4o
+&lt;&#x2F;span&gt;&lt;span&gt;   gpt-4o-mini
+&lt;&#x2F;span&gt;&lt;span&gt;── Gemini ──
+&lt;&#x2F;span&gt;&lt;span&gt;   gemini-2.0-flash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bar-chart-shu-zi-shuo-hua&quot;&gt;📊 数字说话&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;v0.1.2&lt;&#x2F;th&gt;&lt;th&gt;v1.0.0 (v2)&lt;&#x2F;th&gt;&lt;th&gt;变化&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;源文件数&lt;&#x2F;td&gt;&lt;td&gt;8&lt;&#x2F;td&gt;&lt;td&gt;5&lt;&#x2F;td&gt;&lt;td&gt;-37%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;总代码行数&lt;&#x2F;td&gt;&lt;td&gt;~3,200&lt;&#x2F;td&gt;&lt;td&gt;1,726&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;-46%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;最大单文件&lt;&#x2F;td&gt;&lt;td&gt;1,557 行 (dashboard)&lt;&#x2F;td&gt;&lt;td&gt;687 行 (server)&lt;&#x2F;td&gt;&lt;td&gt;-56%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;运行时依赖&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;API 格式&lt;&#x2F;td&gt;&lt;td&gt;OpenAI + Anthropic&lt;&#x2F;td&gt;&lt;td&gt;OpenAI + Anthropic&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;流式输出&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;模型参数传递&lt;&#x2F;td&gt;&lt;td&gt;❌ (被丢弃)&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;🆕 修复&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;JSON 错误保护&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;🆕 修复&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;端口冲突处理&lt;&#x2F;td&gt;&lt;td&gt;❌ (直接崩)&lt;&#x2F;td&gt;&lt;td&gt;✅ (自动换端口)&lt;&#x2F;td&gt;&lt;td&gt;🆕 修复&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Vendor 过滤&lt;&#x2F;td&gt;&lt;td&gt;❌ (215个全列出)&lt;&#x2F;td&gt;&lt;td&gt;✅ (默认仅 Copilot)&lt;&#x2F;td&gt;&lt;td&gt;🆕 功能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;IDE 配置生成&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅ (Claude&#x2F;Codex&#x2F;.env)&lt;&#x2F;td&gt;&lt;td&gt;🆕 功能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Web Dashboard&lt;&#x2F;td&gt;&lt;td&gt;✅ (1,557行)&lt;&#x2F;td&gt;&lt;td&gt;❌ (删了)&lt;&#x2F;td&gt;&lt;td&gt;🗑️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;响应缓存&lt;&#x2F;td&gt;&lt;td&gt;✅ (192行)&lt;&#x2F;td&gt;&lt;td&gt;❌ (删了)&lt;&#x2F;td&gt;&lt;td&gt;🗑️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;请求队列&lt;&#x2F;td&gt;&lt;td&gt;✅ (187行)&lt;&#x2F;td&gt;&lt;td&gt;❌ (删了)&lt;&#x2F;td&gt;&lt;td&gt;🗑️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;统计追踪&lt;&#x2F;td&gt;&lt;td&gt;✅ (278行)&lt;&#x2F;td&gt;&lt;td&gt;❌ (删了)&lt;&#x2F;td&gt;&lt;td&gt;🗑️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;少了 46% 的代码，多了 4 个新功能，修了 3 个 bug。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不是什么激进的重构，只是把不该存在的东西移除了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wrench-si-ge-commit-de-gu-shi&quot;&gt;🔧 四个 Commit 的故事&lt;&#x2F;h2&gt;
+&lt;p&gt;Git log 精确记录了这次重构的四步：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;682b0a2 feat: enhanced config generator (learned from Agent Maestro)
+&lt;&#x2F;span&gt;&lt;span&gt;97f4803 feat: add vendor filter (gatex.vendors) - default copilot only
+&lt;&#x2F;span&gt;&lt;span&gt;2da24a0 fix: fallback to next port when configured port is busy (EADDRINUSE)
+&lt;&#x2F;span&gt;&lt;span&gt;3546129 v2.0: Lean rewrite — delete bloat, fix bugs, add IDE config generator
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Commit 1&lt;&#x2F;strong&gt; (&lt;code&gt;3546129&lt;&#x2F;code&gt;)：大刀阔斧。删 4 个文件，重写 server.ts 和 extension.ts，新增 configGenerator.ts。编译通过，一次提交。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Commit 2&lt;&#x2F;strong&gt; (&lt;code&gt;2da24a0&lt;&#x2F;code&gt;)：装上新版后发现端口 24680 被旧进程占着，扩展直接起不来。加了 &lt;code&gt;isPortAvailable()&lt;&#x2F;code&gt; 检测和自动换端口逻辑。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Commit 3&lt;&#x2F;strong&gt; (&lt;code&gt;97f4803&lt;&#x2F;code&gt;)：发现 VS Code 里居然检测到 215 个模型——原来 AI Toolkit 等扩展也在注册模型。加了 vendor filter，默认只暴露 Copilot 的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Commit 4&lt;&#x2F;strong&gt; (&lt;code&gt;682b0a2&lt;&#x2F;code&gt;)：研究了 Agent Maestro 的配置生成器设计，学到了双模型选择、onboarding bypass、TOML 支持、家族分组等 UX 优化。重写 configGenerator.ts。&lt;&#x2F;p&gt;
+&lt;p&gt;四个 commit，从粗到细，从结构到细节。重构不是一蹴而就的，而是&lt;strong&gt;用了之后才知道哪里还不对&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bulb-cong-agent-maestro-xue-dao-de-he-mei-xue-de&quot;&gt;💡 从 Agent Maestro 学到的，和没学的&lt;&#x2F;h2&gt;
+&lt;p&gt;v2 重构中有一个有趣的插曲：我回头仔细研究了当初&amp;quot;干掉&amp;quot;的 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Joouis&#x2F;agent-maestro&quot;&gt;Agent Maestro&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;三周前的我只关注它的 120 秒超时缺陷。三周后重新看它，我注意到了一些优秀的设计：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;学到的：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;⭐ 双模型选择器（main model + fast model）→ 完美适配 Claude Code 的 &lt;code&gt;ANTHROPIC_SMALL_FAST_MODEL&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;⭐ Onboarding bypass → 自动写 &lt;code&gt;~&#x2F;.claude&#x2F;config.json&lt;&#x2F;code&gt; 跳过 Anthropic 首次配置&lt;&#x2F;li&gt;
+&lt;li&gt;⭐ 模型按家族分组 → 比一长串列表可读性好十倍&lt;&#x2F;li&gt;
+&lt;li&gt;⭐ TOML 配置支持 → Codex CLI 用 TOML 而不是 JSON&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;没学的：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;❌ MCP Server 集成 → 超出了&amp;quot;API Gateway&amp;quot;的职责&lt;&#x2F;li&gt;
+&lt;li&gt;❌ 内置 Agent 框架 → 这是 Agent 该做的事，不是 Gateway&lt;&#x2F;li&gt;
+&lt;li&gt;❌ 六种 IDE 配置（Cursor、Windsurf……）→ 先做好核心的，剩下按需加&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;一个有趣的轮回：GateX 因为嫌 Agent Maestro 太复杂而诞生，v2 又从它身上学到了真正好的设计。&lt;strong&gt;不是否定它，而是有选择地吸收&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;person-in-lotus-position-less-is-more-bu-shi-gong-neng-shao&quot;&gt;🧘 Less is More 不是功能少&lt;&#x2F;h2&gt;
+&lt;p&gt;重构完成后，我在想：为什么 v1 会写出 1,557 行的 Dashboard？&lt;&#x2F;p&gt;
+&lt;p&gt;因为&lt;strong&gt;做加法太容易了&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;写一个新功能、加一个新文件、多一个配置项——每次都能获得&amp;quot;我做了事情&amp;quot;的即时满足感。代码行数在涨，功能列表在长，README 里可以多写一个 bullet point。&lt;&#x2F;p&gt;
+&lt;p&gt;但真正的用户体验在退化。启动慢了，配置复杂了，debug 难了，一个 JSON 畸形请求就能让服务器 500。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Less is More 不是说功能要少&lt;&#x2F;strong&gt;。v2 的功能比 v1 多（vendor filter、配置生成器、端口容错）。Less is More 说的是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;每一行代码都应该为用户解决真正的问题。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Dashboard 不解决任何问题 → 删&lt;&#x2F;li&gt;
+&lt;li&gt;缓存 LLM 响应制造问题 → 删&lt;&#x2F;li&gt;
+&lt;li&gt;自动配置 IDE 解决真问题 → 加&lt;&#x2F;li&gt;
+&lt;li&gt;JSON 解析保护解决真问题 → 加&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我给自己定了一个以后写代码前要问的问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;如果我不做这个功能，用户会怎样？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;如果答案是&amp;quot;完全没影响&amp;quot;，那就不该做。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;link-xi-lie-wen-zhang&quot;&gt;🔗 系列文章&lt;&#x2F;h2&gt;
+&lt;p&gt;GateX 系列现在有三篇了：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;⚡ &lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;GateX：我如何用一天时间干掉 Agent Maestro&lt;&#x2F;a&gt; — 诞生&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-marketplace-publish-journey&quot;&gt;GateX 上架记：从打包到 Marketplace 的踩坑之旅&lt;&#x2F;a&gt; — 发布&lt;&#x2F;li&gt;
+&lt;li&gt;✂️ &lt;strong&gt;本文：删掉 2000 行代码后，它反而更强了&lt;&#x2F;strong&gt; — 回归&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;以及一篇姐妹项目的文章：&lt;&#x2F;p&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt; — Python 独立版&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;&lt;strong&gt;GateX&lt;&#x2F;strong&gt; 是 VS Code 扩展版（零配置，开 VS Code 就能用），&lt;strong&gt;CopilotX&lt;&#x2F;strong&gt; 是 Python 独立版（&lt;code&gt;pip install copilotx&lt;&#x2F;code&gt;，纯终端就能跑）。两个工具互补，覆盖不同场景。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;inbox-tray-huo-qu-gatex-v1-0-0&quot;&gt;📥 获取 GateX v1.0.0&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# VS Code Marketplace
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ext&lt;&#x2F;span&gt;&lt;span&gt; install BaoliWang.gatex
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 或直接搜索 &amp;quot;GateX&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;👉 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;GateX&quot;&gt;GitHub: Polly2014&#x2F;GateX&lt;&#x2F;a&gt;
+👉 &lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=BaoliWang.gatex&quot;&gt;VS Code Marketplace&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;写这篇文章时我又重新看了一遍 v1 的 dashboard.ts。1,557 行 TypeScript 里内嵌了完整的 HTML、CSS 和 Chart.js 调用。那个文件本身就是一个完美的反面教材：技术上没有错误，但完全不应该存在。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;有时候，最好的代码就是被你删掉的那些。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
         <title>🧹 Jarvis Phase 2.5：给 Agent 做一次「大扫除」</title>
         <published>2026-02-06T00:00:00+00:00</published>
         <updated>2026-02-06T00:00:00+00:00</updated>
