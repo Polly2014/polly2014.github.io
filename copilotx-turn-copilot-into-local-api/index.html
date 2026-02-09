@@ -1,0 +1,169 @@
+<!doctype html><html><head><title>🚀 CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器</title><meta content="深入分析了 3 个开源项目后，我用一个晚上从零写出了 CopilotX——一个将 GitHub Copilot 订阅变成本地 OpenAI/Anthropic 兼容 API 的 Python 工具。pip install copilotx，三行命令即可让 Claude Code、Codex 等任意工具调用 Copilot 背后的 22 个模型。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/copilotx-turn-copilot-into-local-api/ property=og:url><meta content="🚀 CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器" property=og:title><meta content="深入分析了 3 个开源项目后，我用一个晚上从零写出了 CopilotX——一个将 GitHub Copilot 订阅变成本地 OpenAI/Anthropic 兼容 API 的 Python 工具。pip install copilotx，三行命令即可让 Claude Code、Codex 等任意工具调用 Copilot 背后的 22 个模型。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/copilotx-turn-copilot-into-local-api/ name=twitter:url><meta content="🚀 CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器" name=twitter:title><meta content="深入分析了 3 个开源项目后，我用一个晚上从零写出了 CopilotX——一个将 GitHub Copilot 订阅变成本地 OpenAI/Anthropic 兼容 API 的 Python 工具。pip install copilotx，三行命令即可让 Claude Code、Codex 等任意工具调用 Copilot 背后的 22 个模型。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-09T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=CopilotX property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content=Python property=article:tag><meta content=FastAPI property=article:tag><meta content=OpenAI property=article:tag><meta content=Claude property=article:tag><meta content=AI工具 property=article:tag><meta content=开源 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🚀 CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器</h1><div class=cover-image><img alt="🚀 CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器" loading=lazy src=cover.jpg></div><div class=content><p>凌晨一点，当终端里的并发测试输出 <strong>16/16 requests passed</strong> 时，我知道这个东西可以发布了。<p>从下午开始研究三个开源项目，到深夜在 PyPI 上发布 <a href=https://pypi.org/project/copilotx/>CopilotX</a>，整个过程不到一天。这篇文章记录这个项目从灵感到上线的完整旅程。<hr><h2 id=qi-yin-san-ge-xiang-mu-de-qi-fa>起因：三个项目的启发</h2><p>事情的起点是一个简单的好奇心——<strong>GitHub Copilot 订阅能不能当本地 API 用？</strong><p>我在 GitHub 上发现了三个试图解决这个问题的项目：<table><thead><tr><th>项目<th>语言<th>核心思路<tbody><tr><td><strong>Router-Maestro</strong><td>Python<td>独立 CLI 工具，OAuth 登录后起 FastAPI 代理<tr><td><strong>Agent-Maestro</strong><td>Python<td>完整 Agent 框架，内置 MCP Server<tr><td><strong>GateX</strong>（我之前写的）<td>TypeScript<td>VS Code 扩展，借 <code>vscode.lm</code> API 透传</table><p>花了一个下午仔细研究它们的代码，我得出几个关键发现：<p><strong>Router-Maestro</strong> 的设计最优雅——它发现了 GitHub Copilot 的一个重要事实：<strong>Copilot 后端（api.githubcopilot.com）原生就是 OpenAI 格式</strong>。这意味着 OpenAI SDK 的请求只需要换个 Token 就能直接转发，根本不需要复杂的格式转换。而且它用 OAuth Device Flow 做认证，完全不依赖 VS Code。<p><strong>Agent-Maestro</strong> 走了另一条路，想做成"一站式 Agent 平台"。功能丰富但过于庞大，光 MCP Server 就带了十几个工具，对于"我只想有个本地 API"的需求来说太重了。<p><strong>GateX</strong> 是我之前写的 VS Code 扩展，通过 <code>vscode.lm</code> API 调用模型再转成 HTTP。优点是零配置（VS Code 已经处理了认证），缺点是<strong>必须在 VS Code 里运行</strong>，没法在纯终端环境用。<p>三个项目各有优缺，但没有一个完美击中我的需求：<strong>轻量、独立、双格式（OpenAI + Anthropic）、开箱即用</strong>。<p>那就自己写一个。<hr><h2 id=she-ji-jue-ce-less-is-more>设计决策：Less is More</h2><p>在动手之前，我花了一些时间做设计决策。这些选择后来证明每一个都是对的：<h3 id=wei-shi-yao-shi-python-du-li-gong-ju>为什么是 Python 独立工具？</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>❌ VS Code 扩展 → 依赖编辑器，不够独立
+</span><span>❌ Node.js CLI  → AI/ML 生态大多在 Python
+</span><span>✅ Python CLI   → pip install 一行搞定，生态亲和
+</span></code></pre><h3 id=wei-shi-yao-tong-shi-zhi-chi-openai-he-anthropic-ge-shi>为什么同时支持 OpenAI 和 Anthropic 格式？</h3><p>因为我的主要使用场景就是两个：<ul><li><strong>Claude Code</strong> → 说 Anthropic 协议（<code>/v1/messages</code>）<li><strong>Codex / 其他工具</strong> → 说 OpenAI 协议（<code>/v1/chat/completions</code>）</ul><p>Copilot 后端原生是 OpenAI 格式，所以 OpenAI 请求直接透传；Anthropic 请求需要实时翻译。<strong>一个代理同时覆盖两大生态，这是 CopilotX 的核心差异化</strong>。<h3 id=wei-shi-yao-yong-oauth-device-flow>为什么用 OAuth Device Flow？</h3><p>GitHub 的 Device Flow 认证非常优雅：<pre style=background:#2b303b;color:#c0c5ce><code><span>1. 终端显示一个 8 位码  →  AB12-CD34
+</span><span>2. 浏览器打开 github.com/login/device
+</span><span>3. 输入码，授权完成
+</span><span>4. 终端自动获取 Token
+</span></code></pre><p>不需要在终端里粘贴密码，不需要手动创建 Personal Access Token。而且我用的 client_id 跟 VS Code Copilot Chat 扩展完全一样（<code>Iv1.b507a08c87ecfe98</code>），这样获得的 Token 权限也完全一致。<hr><h2 id=he-xin-jia-gou-liang-ceng-token-ge-shi-fan-yi>核心架构：两层 Token + 格式翻译</h2><p>整个系统的架构可以画成这样：<pre style=background:#2b303b;color:#c0c5ce><code><span>你的工具 (Claude Code / Codex / Python 脚本)
+</span><span>    │
+</span><span>    │  OpenAI 或 Anthropic 格式
+</span><span>    ▼
+</span><span>┌────────────────────────────────────────┐
+</span><span>│  CopilotX (localhost:24680)            │
+</span><span>│                                        │
+</span><span>│  OpenAI 请求  → 直接转发（加 Token）    │
+</span><span>│  Anthropic 请求 → 翻译成 OpenAI → 转发  │
+</span><span>│                                        │
+</span><span>│  Token 管理：GitHub OAuth → Copilot JWT │
+</span><span>│  （JWT ~30分钟，到期前60秒自动刷新）    │
+</span><span>└──────────────────┬─────────────────────┘
+</span><span>                   │  OpenAI 格式 + Copilot JWT
+</span><span>                   ▼
+</span><span>    api.githubcopilot.com/chat/completions
+</span><span>    → GPT-4o, Claude, Gemini, o3-mini ...
+</span></code></pre><h3 id=liang-ceng-token-ji-zhi>两层 Token 机制</h3><p>这是我从 Router-Maestro 学到的最重要的一点：GitHub Copilot 用的是<strong>两层 Token 架构</strong>。<ul><li><p><strong>第一层：GitHub OAuth Token</strong>（长期有效）</p> <ul><li>通过 Device Flow 获取<li>存储在 <code>~/.copilotx/auth.json</code>（chmod 600）<li>只要用户不撤销授权就一直有效</ul><li><p><strong>第二层：Copilot JWT</strong>（约 30 分钟有效）</p> <ul><li>用 GitHub Token 向 <code>api.github.com/copilot_internal/v2/token</code> 换取<li>实际请求 Copilot API 用的是这个 JWT<li><strong>CopilotX 在 JWT 到期前 60 秒自动刷新</strong>，对用户完全透明</ul></ul><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>ensure_copilot_token</span><span>(</span><span style=color:#bf616a>self</span><span>) -> str:
+</span><span>    </span><span style=color:#65737e>"""确保 Copilot JWT 有效，到期前自动刷新"""
+</span><span>    </span><span style=color:#b48ead>if </span><span style=color:#bf616a>self</span><span>._copilot_token and time.</span><span style=color:#bf616a>time</span><span>() < </span><span style=color:#bf616a>self</span><span>._expires_at - </span><span style=color:#bf616a>TOKEN_REFRESH_BUFFER</span><span>:
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>._copilot_token
+</span><span>    </span><span style=color:#65737e># 自动用 GitHub Token 换取新的 Copilot JWT
+</span><span>    </span><span style=color:#bf616a>self</span><span>._copilot_token = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>self</span><span>.</span><span style=color:#bf616a>_fetch_copilot_token</span><span>()
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>self</span><span>._copilot_token
+</span></code></pre><h3 id=anthropic-openai-ge-shi-fan-yi>Anthropic → OpenAI 格式翻译</h3><p>Copilot 后端只说 OpenAI，但我需要让它也能接受 Anthropic 格式。翻译引擎需要处理的核心差异：<table><thead><tr><th>差异点<th>OpenAI<th>Anthropic<tbody><tr><td>System 消息<td><code>messages</code> 数组里 <code>role: "system"</code><td>独立的 <code>system</code> 字段<tr><td>内容格式<td><code>content: "string"</code><td><code>content: [{type: "text", text: "..."}]</code><tr><td>停止原因<td><code>finish_reason: "stop"</code><td><code>stop_reason: "end_turn"</code><tr><td>流式事件<td><code>data: {choices: [{delta}]}</code><td><code>event: content_block_delta</code> + <code>data: {delta}</code></table><p>其中<strong>流式翻译最复杂</strong>。Anthropic 的 SSE 有 6 种事件类型需要构造：<pre style=background:#2b303b;color:#c0c5ce><code><span>message_start → content_block_start → content_block_delta (N次)
+</span><span>→ content_block_stop → message_delta → message_stop
+</span></code></pre><p>而 OpenAI 只有 <code>data: {...}</code> 和 <code>data: [DONE]</code>。我需要把 OpenAI 的简单流拆解成 Anthropic 的完整事件序列。<hr><h2 id=shi-xian-liang-dian>实现亮点</h2><h3 id=22-ge-mo-xing-kai-xiang-ji-yong>22 个模型，开箱即用</h3><p><code>copilotx models</code> 一下就能看到 Copilot 后端提供的所有模型：<pre style=background:#2b303b;color:#c0c5ce><code><span>📋 Available Models
+</span><span>┌──────────────────────────────────┬───────────────────────┬─────────┐
+</span><span>│ Model ID                         │ Name                  │ Vendor  │
+</span><span>├──────────────────────────────────┼───────────────────────┼─────────┤
+</span><span>│ gpt-4o                           │ GPT-4o                │ Azure   │
+</span><span>│ gpt-4o-mini                      │ GPT-4o Mini           │ Azure   │
+</span><span>│ o3-mini                          │ o3-mini               │ Azure   │
+</span><span>│ claude-sonnet-4                  │ Claude Sonnet 4       │ Azure   │
+</span><span>│ gemini-2.0-flash                 │ Gemini 2.0 Flash      │ Azure   │
+</span><span>│ ...                              │ ...                   │ ...     │
+</span><span>└──────────────────────────────────┴───────────────────────┴─────────┘
+</span><span>
+</span><span>Total: 22 models
+</span></code></pre><p>GPT-4o、Claude Sonnet 4、Gemini 2.0 Flash、o3-mini……这些模型全都可以通过一个统一的本地 API 调用。<h3 id=zhi-neng-duan-kou-guan-li>智能端口管理</h3><p>默认端口选了 <code>24680</code>（偶数递增，好记又冷门）。但真正的亮点在于<strong>端口策略的双模式设计</strong>：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 自动模式：24680 被占就自动试 24681、24682…
+</span><span style=color:#bf616a>copilotx</span><span> serve
+</span><span>
+</span><span style=color:#65737e># 严格模式：端口冲突直接报错，尊重用户的选择
+</span><span style=color:#bf616a>copilotx</span><span> serve</span><span style=color:#bf616a> --port</span><span> 9999
+</span></code></pre><p>同时，启动时会写入 <code>~/.copilotx/server.json</code>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>host</span><span>": "</span><span style=color:#a3be8c>127.0.0.1</span><span>",
+</span><span>  "</span><span style=color:#a3be8c>port</span><span>": </span><span style=color:#d08770>24680</span><span>,
+</span><span>  "</span><span style=color:#a3be8c>pid</span><span>": </span><span style=color:#d08770>12345</span><span>,
+</span><span>  "</span><span style=color:#a3be8c>base_url</span><span>": "</span><span style=color:#a3be8c>http://127.0.0.1:24680</span><span>"
+</span><span>}
+</span></code></pre><p>这样其他脚本可以程序化地发现端口，而不需要硬编码。服务器停止时自动清理这个文件。<h3 id=bing-fa-ce-shi-16-16>并发测试：16/16</h3><p>这是最让我满意的一个环节。我用 Python asyncio + httpx 写了一个并发测试套件，三组测试全部通过：<pre style=background:#2b303b;color:#c0c5ce><code><span>============================================================
+</span><span>  OpenAI /v1/chat/completions: 5 parallel requests
+</span><span>============================================================
+</span><span>  [OK]   #1 |    1000ms | Request 1 OK
+</span><span>  [OK]   #2 |     975ms | Request 2 OK
+</span><span>  [OK]   #3 |     958ms | Request 3 OK
+</span><span>  [OK]   #4 |     962ms | Request 4 OK
+</span><span>  [OK]   #5 |     966ms | Request 5 OK
+</span><span>  --- 5/5 succeeded, wall time: 1001ms ---
+</span><span>
+</span><span>============================================================
+</span><span>  Anthropic /v1/messages: 5 parallel requests
+</span><span>============================================================
+</span><span>  [OK]   #1 |    1062ms | Request 1 OK
+</span><span>  [OK]   #2 |    1063ms | Request 2 OK
+</span><span>  [OK]   #3 |     998ms | Request 3 OK
+</span><span>  [OK]   #4 |    1189ms | Request 4 OK
+</span><span>  [OK]   #5 |    1032ms | Request 5 OK
+</span><span>  --- 5/5 succeeded, wall time: 1190ms ---
+</span><span>
+</span><span>============================================================
+</span><span>  Mixed: 3 OpenAI + 3 Anthropic parallel
+</span><span>============================================================
+</span><span>  [OK]   #1 |     604ms | Hello! How can I assist you today?
+</span><span>  [OK]   #4 |    2135ms | Hi there! I'm Claude
+</span><span>  --- 6/6 succeeded, wall time: 2136ms ---
+</span><span>
+</span><span>  FINAL: 16/16 requests passed ✅
+</span></code></pre><p>注意看 wall time——5 个并发请求的总耗时约等于单个请求（~1s），证明 FastAPI async 架构真正实现了并行处理。<hr><h2 id=san-xing-ming-ling-ti-yan>三行命令体验</h2><p>说了这么多技术细节，实际用起来就三行：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pip</span><span> install copilotx        </span><span style=color:#65737e># 安装
+</span><span style=color:#bf616a>copilotx</span><span> auth login          </span><span style=color:#65737e># 浏览器授权
+</span><span style=color:#bf616a>copilotx</span><span> serve               </span><span style=color:#65737e># 起服务
+</span></code></pre><p>然后你就有了一个本地 API 服务器。搭配 Claude Code：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#b48ead>export </span><span style=color:#bf616a>ANTHROPIC_BASE_URL</span><span>=</span><span style=color:#a3be8c>http://localhost:24680
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>ANTHROPIC_API_KEY</span><span>=</span><span style=color:#a3be8c>copilotx
+</span><span style=color:#bf616a>claude
+</span></code></pre><p>搭配 Codex：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#b48ead>export </span><span style=color:#bf616a>OPENAI_BASE_URL</span><span>=</span><span style=color:#a3be8c>http://localhost:24680/v1
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>OPENAI_API_KEY</span><span>=</span><span style=color:#a3be8c>copilotx
+</span><span style=color:#bf616a>codex
+</span></code></pre><p>搭配任意 Python 脚本：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>openai </span><span style=color:#b48ead>import </span><span>OpenAI
+</span><span>client = </span><span style=color:#bf616a>OpenAI</span><span>(</span><span style=color:#bf616a>base_url</span><span>="</span><span style=color:#a3be8c>http://localhost:24680/v1</span><span>", </span><span style=color:#bf616a>api_key</span><span>="</span><span style=color:#a3be8c>copilotx</span><span>")
+</span><span>
+</span><span>response = client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>    </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>gpt-4o</span><span>",
+</span><span>    </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": "</span><span style=color:#a3be8c>Hello!</span><span>"}],
+</span><span>    </span><span style=color:#bf616a>stream</span><span>=</span><span style=color:#d08770>True</span><span>,
+</span><span>)
+</span><span style=color:#b48ead>for </span><span>chunk </span><span style=color:#b48ead>in </span><span>response:
+</span><span>    </span><span style=color:#96b5b4>print</span><span>(chunk.choices[</span><span style=color:#d08770>0</span><span>].delta.content or "", </span><span style=color:#bf616a>end</span><span>="")
+</span></code></pre><p><code>api_key</code> 可以填任意字符串——CopilotX 自己管理认证，不需要你提供 key。<hr><h2 id=ji-zhu-zhan-yi-lan>技术栈一览</h2><table><thead><tr><th>组件<th>选择<th>理由<tbody><tr><td>HTTP 框架<td>FastAPI + Uvicorn<td>原生 async，SSE streaming 支持好<tr><td>HTTP 客户端<td>httpx<td>async 支持，streaming 友好<tr><td>CLI 框架<td>Typer + Rich<td>漂亮的终端输出，类型安全<tr><td>数据验证<td>Pydantic v2<td>FastAPI 原生支持<tr><td>构建系统<td>Hatchling<td>现代 Python 打包标准</table><p>整个项目 <strong>21 个文件，1479 行代码</strong>。没有一行是多余的。<pre style=background:#2b303b;color:#c0c5ce><code><span>src/copilotx/
+</span><span>├── auth/          # OAuth + Token 生命周期
+</span><span>│   ├── oauth.py      # GitHub Device Flow
+</span><span>│   ├── token.py      # Copilot JWT 管理
+</span><span>│   └── storage.py    # 凭证持久化
+</span><span>├── proxy/         # 代理核心
+</span><span>│   ├── client.py     # Copilot API 客户端
+</span><span>│   ├── translator.py # Anthropic ↔ OpenAI 翻译
+</span><span>│   └── streaming.py  # SSE 流式响应
+</span><span>├── server/        # FastAPI 服务
+</span><span>│   ├── app.py        # 应用工厂 + lifespan
+</span><span>│   ├── routes_openai.py
+</span><span>│   ├── routes_anthropic.py
+</span><span>│   └── routes_models.py
+</span><span>├── cli.py         # Typer CLI
+</span><span>└── config.py      # 全局常量
+</span></code></pre><hr><h2 id=shou-huo-yu-fan-si>收获与反思</h2><h3 id=cong-fen-xi-dao-chan-pin-su-du-ke-yi-hen-kuai>从分析到产品，速度可以很快</h3><p>这个项目从"我来看看别人怎么做的"到"PyPI 发布 + GitHub 开源"，用了不到一天。关键不是写得快，而是<strong>先花足够时间研究，想清楚再动手</strong>。那个下午分析三个项目的时间，价值远超晚上的编码时间。<h3 id=zhan-zai-ju-ren-de-jian-bang-shang>站在巨人的肩膀上</h3><p>Router-Maestro 教会了我 OAuth Device Flow 和两层 Token 机制，Agent-Maestro 让我知道了 MCP 集成的可能性，GateX 则是我自己之前的实践积累。CopilotX 不是凭空创造的，是三个项目最佳实践的融合。<h3 id=xia-yi-bu-ji-hua>下一步计划</h3><ul><li><strong>v0.2</strong>: 支持 Google Gemini API 格式（第三大 AI SDK）<li><strong>v0.3</strong>: 增加 <code>copilotx config</code> 命令，支持自定义 Header 和模型别名<li><strong>GateX v2</strong>: 把 CopilotX 的双格式翻译引擎移植回 VS Code 扩展</ul><hr><h2 id=lian-jie>链接</h2><ul><li><strong>PyPI</strong>: <a href=https://pypi.org/project/copilotx/>pypi.org/project/copilotx</a><li><strong>GitHub</strong>: <a href=https://github.com/Polly2014/CopilotX>github.com/Polly2014/CopilotX</a></ul><p>如果你也有 GitHub Copilot 订阅，不妨试试：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pip</span><span> install copilotx && </span><span style=color:#bf616a>copilotx</span><span> auth login && </span><span style=color:#bf616a>copilotx</span><span> serve
+</span></code></pre><p>三行命令，解锁 22 个模型。🚀</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
