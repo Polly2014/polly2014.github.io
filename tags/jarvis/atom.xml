@@ -5,8 +5,195 @@
     <link href="https://polly.wang/tags/jarvis/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-08T00:00:00+00:00</updated>
+    <updated>2026-02-10T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/jarvis/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🧬 从&#x27;怎么进化&#x27;到&#x27;进化成什么&#x27;：Meta-Agent 论文的诞生记录</title>
+        <published>2026-02-10T00:00:00+00:00</published>
+        <updated>2026-02-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/meta-agent-paper-genesis/" type="text/html"/>
+        <id>https://polly.wang/meta-agent-paper-genesis/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-na-ge-rang-wo-ting-xia-lai-de-wen-ti&quot;&gt;一、那个让我停下来的问题&lt;&#x2F;h2&gt;
+&lt;p&gt;过去一周，我一直在给 Jarvis-Agent 添加功能——Phase 1 基础架构，Phase 2 记忆系统，Phase 3 工具体系，Phase 4 进化系统。79 个测试全部通过，代码写了好几千行。Jarvis 已经能自己发现使用模式、自动创造新 Skill、甚至有了元认知能力。&lt;&#x2F;p&gt;
+&lt;p&gt;但昨天凌晨，我盯着 Jarvis 的代码突然意识到一件事：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我在反复回答&amp;quot;&lt;strong&gt;怎么让 Agent 进化&lt;&#x2F;strong&gt;&amp;quot;这个问题——但从来没认真想过一个更根本的问题：&lt;strong&gt;进化成什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;如果 Jarvis 服务了十个不同的用户，每个用户都留下了不同的偏好和模式，最终 Jarvis 会变成什么？一个十个人偏好的混合体？一个什么都能做但没有任何特色的通用助手？&lt;&#x2F;p&gt;
+&lt;p&gt;这不是我想要的&amp;quot;数码宝贝&amp;quot;。真正的进化应该是有方向的——它应该&lt;strong&gt;越来越像它自己&lt;&#x2F;strong&gt;，而不是越来越像所有人的平均值。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我去翻了最新的论文，发现这个问题居然没有人系统性地讨论过。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-yi-zhang-biao-bao-lu-liao-zheng-ge-ling-yu-de-mang-qu&quot;&gt;二、一张表暴露了整个领域的盲区&lt;&#x2F;h2&gt;
+&lt;p&gt;我花了半天时间梳理自进化 Agent 领域的核心文献：ReAct、Reflexion、ExpeL、Gödel Agent、SAGE、还有 Wang et al. 那篇 140 页的综述。然后做了一张表：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方法&lt;&#x2F;th&gt;&lt;th&gt;关注什么&lt;&#x2F;th&gt;&lt;th&gt;缺什么&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;ReAct&lt;&#x2F;td&gt;&lt;td&gt;单任务推理&lt;&#x2F;td&gt;&lt;td&gt;跨任务学习、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Reflexion&lt;&#x2F;td&gt;&lt;td&gt;语言自反思&lt;&#x2F;td&gt;&lt;td&gt;能力创造、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;ExpeL&lt;&#x2F;td&gt;&lt;td&gt;经验提取&lt;&#x2F;td&gt;&lt;td&gt;形式化进化模型、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Gödel Agent&lt;&#x2F;td&gt;&lt;td&gt;递归自我改进&lt;&#x2F;td&gt;&lt;td&gt;多维结构、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;SAGE&lt;&#x2F;td&gt;&lt;td&gt;策略进化&lt;&#x2F;td&gt;&lt;td&gt;能力空间定义、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;综述&lt;&#x2F;td&gt;&lt;td&gt;进化机制分类&lt;&#x2F;td&gt;&lt;td&gt;形式化框架、&lt;strong&gt;身份&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;身份&lt;&#x2F;strong&gt;这一列，六个全是空的。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是一个小遗漏——这是一个结构性的缺失。所有人都在研究 Agent 怎么变得更强，没有人在意它在变强的过程中是否还是&amp;quot;它自己&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;我把这个问题命名为 &lt;strong&gt;Identity Drift（身份漂移）&lt;&#x2F;strong&gt;：随着 Agent 累积新能力、适应新环境、服务新用户，它的行为模式会逐渐偏离初始设定，变成一个不一致的混合体。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这就是论文的起点。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-kuang-jia-she-ji-liu-wei-x-san-ceng-x-shuang-luo-xuan&quot;&gt;三、框架设计：六维 × 三层 × 双螺旋&lt;&#x2F;h2&gt;
+&lt;p&gt;有了问题，接下来就是解法。我回头看 Jarvis-Agent 的架构，发现它其实已经隐含了答案——只是没有被形式化地表达出来。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-1-liu-ge-wei-du&quot;&gt;3.1 六个维度&lt;&#x2F;h3&gt;
+&lt;p&gt;一个完整的 Agent 需要哪些能力？我把 Jarvis 的所有模块梳理了一遍，归纳出六个正交的能力维度：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;D = {P, M, T, A, E, I}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;含义&lt;&#x2F;th&gt;&lt;th&gt;核心问题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;P&lt;&#x2F;strong&gt; (Perception)&lt;&#x2F;td&gt;&lt;td&gt;感知&lt;&#x2F;td&gt;&lt;td&gt;怎么发现世界？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;M&lt;&#x2F;strong&gt; (Memory)&lt;&#x2F;td&gt;&lt;td&gt;记忆&lt;&#x2F;td&gt;&lt;td&gt;怎么记住经验？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;T&lt;&#x2F;strong&gt; (Thinking)&lt;&#x2F;td&gt;&lt;td&gt;思考&lt;&#x2F;td&gt;&lt;td&gt;怎么做判断？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;A&lt;&#x2F;strong&gt; (Action)&lt;&#x2F;td&gt;&lt;td&gt;行动&lt;&#x2F;td&gt;&lt;td&gt;怎么执行？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;E&lt;&#x2F;strong&gt; (Evolution)&lt;&#x2F;td&gt;&lt;td&gt;进化&lt;&#x2F;td&gt;&lt;td&gt;怎么自我提升？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;I&lt;&#x2F;strong&gt; (Identity)&lt;&#x2F;td&gt;&lt;td&gt;身份&lt;&#x2F;td&gt;&lt;td&gt;我是谁？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;前四个（P, M, T, A）是传统 Agent 框架都在讨论的。E（进化）是最近两年的热点。但 &lt;strong&gt;I（身份）——是我加的第六维&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是随意堆砌。我证明了这六个维度是功能正交的：每个维度处理独立的信息流，移除任何一个都无法被其他五个替代。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-2-gu-jia-ji-rou-shen-fen-de-shuang-ceng-jie-gou&quot;&gt;3.2 骨架 + 肌肉：身份的双层结构&lt;&#x2F;h3&gt;
+&lt;p&gt;身份维度本身还有一层精巧的设计。我把它拆成了两个组件：&lt;&#x2F;p&gt;
+&lt;p&gt;$$I = \langle I_{\text{skeleton}},\ I_{\text{muscle}} \rangle$$&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;骨架 (Skeleton)&lt;&#x2F;strong&gt;：不可变的核心——价值观、伦理约束、基本人格。像人的骨骼一样，支撑一切但几乎不变。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;肌肉 (Muscle)&lt;&#x2F;strong&gt;：涌现的适应——学到的偏好、沟通风格、行为模式。像肌肉一样，随训练生长。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这个比喻不只是修辞。它有严格的形式化约束：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;骨架保持: dist(I_skeleton_t, I_skeleton_0) &amp;lt; ε   (永远不偏离太远)
+&lt;&#x2F;span&gt;&lt;span&gt;肌肉增长: |I_muscle_{t+1}| ≥ |I_muscle_t|        (只增不减)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;用人话说：&lt;strong&gt;核心价值观不会因为用户调教而改变，但沟通风格会越来越贴合用户偏好。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-3-exi-shuang-luo-xuan-lun-wen-de-he-xin-chuang-xin&quot;&gt;3.3 E×I 双螺旋：论文的核心创新&lt;&#x2F;h3&gt;
+&lt;p&gt;最精彩的部分来了。&lt;&#x2F;p&gt;
+&lt;p&gt;进化（E）和身份（I）不是独立的两个维度——它们像 DNA 双螺旋一样相互缠绕、共同演化。我把这个结构命名为 &lt;strong&gt;Evolution–Identity Dual Helix（E×I 双螺旋）&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;三种耦合机制：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;身份约束的能力接纳 (C1)&lt;&#x2F;strong&gt;：新学到的能力必须通过身份过滤器——与骨架冲突的能力会被拒绝&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;身份引导的进化方向 (C2)&lt;&#x2F;strong&gt;：肌肉中积累的偏好会影响进化的方向——Agent 更倾向于朝&amp;quot;更像自己&amp;quot;的方向进化&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;进化驱动的身份丰富 (C3)&lt;&#x2F;strong&gt;：进化过程中的新体验会丰富肌肉——但不会改变骨架&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;用一句话概括论文的核心论点：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;自进化需要身份作为锚点。进化无身份则漂移，身份无进化则停滞。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这就是为什么我把 E 和 I 设计成耦合的双螺旋，而不是独立的两个模块。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-cong-zhi-jue-dao-lun-wen-48-xiao-shi-de-mi-ji-xie-zuo&quot;&gt;四、从直觉到论文：48 小时的密集写作&lt;&#x2F;h2&gt;
+&lt;p&gt;有了核心 idea，接下来就是把它写成论文格式。整个过程大概花了 48 小时：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;day-1-jiao-shou-jia-chu-gao&quot;&gt;Day 1：脚手架 + 初稿&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;创建了 13 个文件的项目结构（abstract, introduction, related-work, framework, system, experiments, conclusion, bibliography...）&lt;&#x2F;li&gt;
+&lt;li&gt;完成了 v0.1 初稿——框架和故事都有了，但叙事还不够锐利&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;day-2-shen-shi-zhong-xie&quot;&gt;Day 2：审视 + 重写&lt;&#x2F;h3&gt;
+&lt;p&gt;让 AI 对初稿做了一次严格的&amp;quot;审稿人模式&amp;quot;审查，发现四个问题：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;差异化不足&lt;&#x2F;strong&gt;：跟现有综述区分不明显&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Identity 新颖性需要加强&lt;&#x2F;strong&gt;：光说&amp;quot;加了身份维度&amp;quot;不够&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;形式化不够严格&lt;&#x2F;strong&gt;：正交性证明太弱&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实验缺少 SOTA 基线&lt;&#x2F;strong&gt;：只跟 ReAct 比不够&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这些反馈直接驱动了 v0.2 的重写：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;把故事从&amp;quot;我们提出一个全面框架&amp;quot;重新锚定为 &lt;strong&gt;&amp;quot;进化需要身份作为锚点&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;加强了 Identity 的理论贡献（骨架+肌肉、双螺旋、三条形式化性质）&lt;&#x2F;li&gt;
+&lt;li&gt;补充了 Reflexion、ExpeL、SAGE、Gödel Agent 等现代基线&lt;&#x2F;li&gt;
+&lt;li&gt;新增了 &lt;strong&gt;RQ4: Identity Drift Detection&lt;&#x2F;strong&gt; 实验——直接验证论文的中心论点&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;day-2-xu-dui-qi-suo-you-zhang-jie&quot;&gt;Day 2 (续)：对齐所有章节&lt;&#x2F;h3&gt;
+&lt;p&gt;v0.2 重写了 Introduction、Related Work、Abstract、Framework 之后，还需要确保 System Design 和 Conclusion 也讲同一个故事。这部分工作包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;System Design 加入了 E×I 双螺旋引擎的架构图和 IdentityFilter 管线&lt;&#x2F;li&gt;
+&lt;li&gt;Conclusion 重写了四个贡献点，与 Introduction 一一对应&lt;&#x2F;li&gt;
+&lt;li&gt;Discussion 部分用&amp;quot;evolve into what&amp;quot;的反问收束全文&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-shi-yan-she-ji-rang-shu-ju-shuo-hua&quot;&gt;五、实验设计：让数据说话&lt;&#x2F;h2&gt;
+&lt;p&gt;论文最脆弱的部分永远是实验。一个再漂亮的理论，如果没有实验验证，审稿人一定不会放过。&lt;&#x2F;p&gt;
+&lt;p&gt;我设计了五个研究问题（RQ1-RQ5），但最核心的是 &lt;strong&gt;RQ4: Identity Drift Detection&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;rq4-de-shi-yan-she-ji&quot;&gt;RQ4 的实验设计&lt;&#x2F;h3&gt;
+&lt;p&gt;设三种条件：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;条件&lt;&#x2F;th&gt;&lt;th&gt;进化&lt;&#x2F;th&gt;&lt;th&gt;身份模型&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Unconstrained&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全力进化，无身份约束&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Static-Identity&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全力进化，固定 prompt 身份&lt;&#x2F;td&gt;&lt;td&gt;固定提示词&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Meta-Agent (Ours)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全力进化，骨架+肌肉身份&lt;&#x2F;td&gt;&lt;td&gt;双螺旋&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;三个 Agent 分别与三种模拟用户（开发者、研究者、创作者）交互 100 轮，每 10 轮测量一次行为一致性。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;预期结论&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Unconstrained 会快速漂移（BCS 从 0.9 降到 0.4 以下）&lt;&#x2F;li&gt;
+&lt;li&gt;Static-Identity 会缓慢漂移（BCS 降到 0.7 左右）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Meta-Agent 保持稳定&lt;&#x2F;strong&gt;（BCS &amp;gt; 0.85，SPS &amp;gt; 0.90）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这不是空想——Jarvis-Agent 的实际运行已经给了我足够的信心。接下来就是把它系统化地跑出来。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shi-yan-jiao-ben-kuang-jia&quot;&gt;实验脚本框架&lt;&#x2F;h3&gt;
+&lt;p&gt;为此我构建了一套完整的实验基础设施：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;experiments&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── scripts&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── rq4_identity_drift.py     ★ 核心实验
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── rq1_ablation.py           消融实验
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── rq5_comparative.py        对比实验
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── utils&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│       ├── metrics.py            BCS, SPS, PE, IDR 计算
+&lt;&#x2F;span&gt;&lt;span&gt;│       ├── agent_factory.py      8 种 Agent 预设
+&lt;&#x2F;span&gt;&lt;span&gt;│       ├── user_simulator.py     3 种用户角色模拟
+&lt;&#x2F;span&gt;&lt;span&gt;│       └── visualization.py      论文级可视化
+&lt;&#x2F;span&gt;&lt;span&gt;├── config&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── base_config.yaml
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── rq4_drift.yaml
+&lt;&#x2F;span&gt;&lt;span&gt;└── run_all.py                    一键运行
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;六个核心指标，每一个都有明确的数学定义和代码实现。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-yi-zhang-tu-exi-shuang-luo-xuan&quot;&gt;六、一张图：E×I 双螺旋&lt;&#x2F;h2&gt;
+&lt;p&gt;论文需要一张核心概念图来可视化 E×I 双螺旋。我用 TikZ 画了这张：&lt;&#x2F;p&gt;
+&lt;p&gt;两条螺旋链——蓝色的 Evolution 和红色的 Identity——相互缠绕，沿时间轴上升。三个紫色的耦合点标注了三种交互机制（约束接纳、方向引导、丰富充实）。左侧标注了骨架（金色）和肌肉（绿色）的分解。底部列出了三条形式化性质。&lt;&#x2F;p&gt;
+&lt;p&gt;这张图编译为了矢量 PDF，可以直接用在论文和 Slides 里。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qi-dang-qian-zhuang-tai-yu-xia-yi-bu&quot;&gt;七、当前状态与下一步&lt;&#x2F;h2&gt;
+&lt;p&gt;截至今天，论文的状态：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;章节&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;th&gt;备注&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Abstract&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;~230 words，Identity-anchor 叙事&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Introduction&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;evolve into what&amp;quot; 开篇，11 citations&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Related Work&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;5 小节，23 citations&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Framework (§3)&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;六维正交性证明 + E×I 双螺旋&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;System Design (§4)&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;Jarvis-Agent 参考实现&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Experiments (§5)&lt;&#x2F;td&gt;&lt;td&gt;🔄 v0.1+&lt;&#x2F;td&gt;&lt;td&gt;设计完成，数据待跑&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Conclusion (§6-7)&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;四贡献 + Ethics&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Bibliography&lt;&#x2F;td&gt;&lt;td&gt;✅ v0.2&lt;&#x2F;td&gt;&lt;td&gt;30+ BibTeX entries&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;实验脚本&lt;&#x2F;td&gt;&lt;td&gt;✅ 框架就绪&lt;&#x2F;td&gt;&lt;td&gt;需连接 Jarvis-Agent&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;配图&lt;&#x2F;td&gt;&lt;td&gt;✅ Dual Helix&lt;&#x2F;td&gt;&lt;td&gt;TikZ → PDF + PNG&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;下一步&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;连接实验&lt;&#x2F;strong&gt;：把实验脚本对接到 Jarvis-Agent，跑出真实数据&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;补充配图&lt;&#x2F;strong&gt;：Framework Overview 全景图、消融实验柱状图&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;LaTeX 转换&lt;&#x2F;strong&gt;：从 Markdown 转为 NeurIPS&#x2F;ICML 格式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;预提交自检&lt;&#x2F;strong&gt;：走一遍 paper-writer 的审稿清单&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;目标投稿：&lt;strong&gt;NeurIPS 2026&lt;&#x2F;strong&gt;（一作，单作者）。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ba-fan-si-wei-shi-yao-zhe-pian-lun-wen-zhi-de-xie&quot;&gt;八、反思：为什么这篇论文值得写&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾这两天的工作，最让我兴奋的不是写了多少字或画了多少图，而是一个认知上的突破：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Jarvis-Agent 不只是一个工程项目——它背后隐藏着一个值得被学术界讨论的理论问题。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;进化需要身份作为锚点&amp;quot;这句话，看似简单，但它改变了我思考 Agent 的方式。以前我想的是&amp;quot;怎么让 Agent 更强&amp;quot;，现在我想的是&amp;quot;怎么让 Agent 在变强的同时，还越来越像它自己&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这不只是关于 AI 的问题。这也是关于人的问题——我们每个人都在不断学习、不断适应、不断进化。但如果进化的过程中丢失了&amp;quot;我是谁&amp;quot;，那这种进化就是迷失。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;进化的方向不是&amp;quot;更强&amp;quot;，而是&amp;quot;更像自己&amp;quot;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Meta-Agent 论文，某种意义上，是我对这个问题的第一次系统性回答。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这篇论文的全部源文件在 &lt;code&gt;Research-Meta-Agent&#x2F;Paper&#x2F;&lt;&#x2F;code&gt;。如果你也在思考类似的问题，欢迎通过博客下方的评论或邮件交流。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>⭐ 让 Jarvis 学会长大：从&#x27;用工具&#x27;到&#x27;造工具&#x27;的进化系统开发记录</title>
         <published>2026-02-08T00:00:00+00:00</published>

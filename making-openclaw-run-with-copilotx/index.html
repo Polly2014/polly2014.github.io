@@ -1,0 +1,135 @@
+<!doctype html><html><head><title>🦞 让小龙虾跑起来：用 CopilotX 驱动 OpenClaw 的调试之旅</title><meta content="当 GitHub Copilot 遇上 OpenClaw，一场持续数小时的调试之旅。从 404 Not Found 到成功对话，记录用 CopilotX 作为无限 Claude API 驱动个人 AI 助手的完整配置过程。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/making-openclaw-run-with-copilotx/ property=og:url><meta content="🦞 让小龙虾跑起来：用 CopilotX 驱动 OpenClaw 的调试之旅" property=og:title><meta content="当 GitHub Copilot 遇上 OpenClaw，一场持续数小时的调试之旅。从 404 Not Found 到成功对话，记录用 CopilotX 作为无限 Claude API 驱动个人 AI 助手的完整配置过程。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/making-openclaw-run-with-copilotx/ name=twitter:url><meta content="🦞 让小龙虾跑起来：用 CopilotX 驱动 OpenClaw 的调试之旅" name=twitter:title><meta content="当 GitHub Copilot 遇上 OpenClaw，一场持续数小时的调试之旅。从 404 Not Found 到成功对话，记录用 CopilotX 作为无限 Claude API 驱动个人 AI 助手的完整配置过程。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-11T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=OpenClaw property=article:tag><meta content=CopilotX property=article:tag><meta content="Claude API" property=article:tag><meta content="AI Agent" property=article:tag><meta content=调试 property=article:tag><meta content=开源项目 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🦞 让小龙虾跑起来：用 CopilotX 驱动 OpenClaw 的调试之旅</h1><div class=cover-image><img alt="🦞 让小龙虾跑起来：用 CopilotX 驱动 OpenClaw 的调试之旅" loading=lazy src=cover.jpg></div><div class=content><p>晚上 10 点，当 WebChat 窗口里终于显示出 AI 的回复时，我忍不住喊出了"终终终于跑通啦！" 这一刻，持续数小时的调试之旅终于画上了圆满的句号。</p><span id=continue-reading></span><h2 id=clapper-bei-jing>🎬 背景</h2><p><a href=https://github.com/openclaw/openclaw>OpenClaw</a> 是一个开源的个人 AI 助手框架——想象一下，一个能同时连接 WhatsApp、Telegram、Discord、Slack、Signal、iMessage、微信、Teams 的 AI 管家，通过统一的 Gateway 控制平面，让你在任何消息渠道都能与 AI 对话。<p>它的名字很有意思，叫"小龙虾"（Claw = 爪子/钳子）。🦞<p>问题是：OpenClaw 需要 LLM 来驱动对话，官方默认支持 Anthropic 和 OpenAI。但这些 API 都要钱——而我手头有一个"无限 Claude API"的神器：<strong>CopilotX</strong>。<p>CopilotX 是我之前构建的一个项目，它通过 GitHub Copilot 的内部 API 提供 Anthropic 兼容的 <code>/v1/messages</code> 端点，部署在 <code>https://api.polly.wang</code>。理论上，只要配置正确，就能让 OpenClaw 白嫖无限的 Claude。<p>说干就干。<h2 id=wrench-di-yi-ge-keng-gateway-token>🔧 第一个坑：Gateway Token</h2><p>安装 OpenClaw 很顺利：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#96b5b4>cd</span><span> X-Workspace/openclaw
+</span><span style=color:#bf616a>pnpm</span><span> install
+</span><span style=color:#bf616a>pnpm</span><span> openclaw gateway
+</span></code></pre><p>Gateway 启动了，WebChat 也在 <code>http://127.0.0.1:18789/__openclaw__/chat/</code> 打开了。但输入消息后，界面提示：<pre style=background:#2b303b;color:#c0c5ce><code><span>unauthorized: gateway token missing
+</span></code></pre><p>翻了一下配置文档，发现 WebChat 需要认证。在 <code>~/.openclaw/openclaw.json</code> 添加：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>gateway</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>local</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>auth</span><span>": { "</span><span style=color:#a3be8c>token</span><span>": "</span><span style=color:#a3be8c>polly-openclaw-local-dev</span><span>" },
+</span><span>    "</span><span style=color:#a3be8c>controlUi</span><span>": { "</span><span style=color:#a3be8c>allowInsecureAuth</span><span>": </span><span style=color:#d08770>true </span><span>}
+</span><span>  }
+</span><span>}
+</span></code></pre><p>重启后，在 WebChat 输入 token，认证通过。✅<h2 id=globe-with-meridians-di-er-ge-keng-pei-zhi-zi-ding-yi-provider>🌐 第二个坑：配置自定义 Provider</h2><p>现在要让 OpenClaw 使用 CopilotX 而不是 Anthropic。我最初的思路是设置环境变量：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#b48ead>export </span><span style=color:#bf616a>ANTHROPIC_BASE_URL</span><span>=</span><span style=color:#a3be8c>https://api.polly.wang/v1
+</span><span style=color:#b48ead>export </span><span style=color:#bf616a>ANTHROPIC_API_KEY</span><span>=</span><span style=color:#a3be8c>polly-copilotx-xxx
+</span></code></pre><p>然而，完全不生效。日志显示请求依然发往 <code>https://api.anthropic.com</code>。<p>深入研究代码后发现，OpenClaw 使用的 <code>@mariozechner/pi-ai</code> SDK 不从环境变量读取 <code>baseUrl</code>——它从配置文件的 <code>model.baseUrl</code> 字段读取。<p>正确的配置方式是创建自定义 Provider：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>models</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>merge</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>providers</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>copilotx</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>baseUrl</span><span>": "</span><span style=color:#a3be8c>https://api.polly.wang/v1</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>api</span><span>": "</span><span style=color:#a3be8c>anthropic-messages</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>apiKey</span><span>": "</span><span style=color:#a3be8c>polly-copilotx-xxx</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>models</span><span>": [
+</span><span>          {
+</span><span>            "</span><span style=color:#a3be8c>id</span><span>": "</span><span style=color:#a3be8c>claude-opus-4-6</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>name</span><span>": "</span><span style=color:#a3be8c>Claude Opus 4.6 (CopilotX)</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>contextWindow</span><span>": </span><span style=color:#d08770>200000</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>maxTokens</span><span>": </span><span style=color:#d08770>32000</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>input</span><span>": ["</span><span style=color:#a3be8c>text</span><span>", "</span><span style=color:#a3be8c>image</span><span>"],
+</span><span>            "</span><span style=color:#a3be8c>reasoning</span><span>": </span><span style=color:#d08770>true
+</span><span>          }
+</span><span>        ]
+</span><span>      }
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre><p>注意这里有个关键细节：<strong>必须包含 <code>models</code> 数组</strong>！我第一次漏掉了，导致配置校验失败：<pre style=background:#2b303b;color:#c0c5ce><code><span>models.providers.copilotx.models: Invalid input: expected array, received undefined
+</span></code></pre><h2 id=dart-di-san-ge-keng-mo-ren-mo-xing-wei-she-zhi>🎯 第三个坑：默认模型未设置</h2><p>配置好 Provider 后，发送消息还是失败：<pre style=background:#2b303b;color:#c0c5ce><code><span>No API key found for provider "anthropic"
+</span></code></pre><p>日志显示：<pre style=background:#2b303b;color:#c0c5ce><code><span>agent model: anthropic/claude-opus-4-6
+</span></code></pre><p>虽然我配置了 <code>copilotx</code> Provider，但默认模型还是 <code>anthropic</code>！需要显式设置：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pnpm</span><span> openclaw models set copilotx/claude-opus-4-6
+</span></code></pre><p>现在日志变成了：<pre style=background:#2b303b;color:#c0c5ce><code><span>agent model: copilotx/claude-opus-4-6
+</span></code></pre><p>进步了！但发消息依然没有回复，日志也没有错误。<h2 id=mag-di-si-ge-keng-404-not-found>🔍 第四个坑：404 Not Found</h2><p>最折磨人的一个坑。表面上一切正常——请求发送了，1.5秒后完成，没有报错。但 WebChat 就是不显示 AI 回复。<p>我去翻 session 文件 <code>~/.openclaw/agents/main/sessions/*.jsonl</code>，终于找到了真相：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>assistant</span><span>",
+</span><span>  "</span><span style=color:#a3be8c>content</span><span>": [],
+</span><span>  "</span><span style=color:#a3be8c>stopReason</span><span>": "</span><span style=color:#a3be8c>error</span><span>",
+</span><span>  "</span><span style=color:#a3be8c>errorMessage</span><span>": "</span><span style=color:#a3be8c>404 {</span><span style=color:#96b5b4>\"</span><span style=color:#a3be8c>detail</span><span style=color:#96b5b4>\"</span><span style=color:#a3be8c>:</span><span style=color:#96b5b4>\"</span><span style=color:#a3be8c>Not Found</span><span style=color:#96b5b4>\"</span><span style=color:#a3be8c>}</span><span>"
+</span><span>}
+</span></code></pre><p><strong>404！</strong> 请求 URL 有问题。<p>灵光一闪，我测试了两个 URL：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># 这个有效（200）
+</span><span style=color:#bf616a>curl</span><span> https://api.polly.wang/v1/messages
+</span><span>
+</span><span style=color:#65737e># 这个 404
+</span><span style=color:#bf616a>curl</span><span> https://api.polly.wang/v1/v1/messages
+</span></code></pre><p>问题找到了！<strong>Anthropic SDK 会自动追加 <code>/v1</code></strong>，而我的 <code>baseUrl</code> 已经带了 <code>/v1</code>，导致最终变成 <code>/v1/v1/messages</code>。<p>修复很简单——把 <code>baseUrl</code> 从 <code>https://api.polly.wang/v1</code> 改成 <code>https://api.polly.wang</code>：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>baseUrl</span><span>": "</span><span style=color:#a3be8c>https://api.polly.wang</span><span>"
+</span><span>}
+</span></code></pre><p>同时更新 agent 的 <code>models.json</code>：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>cat ~</span><span>/.openclaw/agents/main/agent/models.json | \
+</span><span>  </span><span style=color:#bf616a>jq </span><span>'</span><span style=color:#a3be8c>.providers.copilotx.baseUrl = "https://api.polly.wang"</span><span>' > /tmp/tmp.json && \
+</span><span>  </span><span style=color:#bf616a>mv</span><span> /tmp/tmp.json </span><span style=color:#bf616a>~</span><span>/.openclaw/agents/main/agent/models.json
+</span></code></pre><p>重启 Gateway——<p><strong>终于跑通了！</strong> 🎉<p><img alt="OpenClaw WebChat 成功运行" src=https://polly.wang/making-openclaw-run-with-copilotx/ScreenShot.png><h2 id=bar-chart-zui-zhong-pei-zhi-qing-dan>📊 最终配置清单</h2><p>经过这次调试，完整的配置如下：<h3 id=openclaw-openclaw-json>~/.openclaw/openclaw.json</h3><pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>models</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>merge</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>providers</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>copilotx</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>baseUrl</span><span>": "</span><span style=color:#a3be8c>https://api.polly.wang</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>api</span><span>": "</span><span style=color:#a3be8c>anthropic-messages</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>apiKey</span><span>": "</span><span style=color:#a3be8c>your-api-key</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>models</span><span>": [
+</span><span>          {
+</span><span>            "</span><span style=color:#a3be8c>id</span><span>": "</span><span style=color:#a3be8c>claude-opus-4-6</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>name</span><span>": "</span><span style=color:#a3be8c>Claude Opus 4.6 (CopilotX)</span><span>",
+</span><span>            "</span><span style=color:#a3be8c>contextWindow</span><span>": </span><span style=color:#d08770>200000</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>maxTokens</span><span>": </span><span style=color:#d08770>32000</span><span>,
+</span><span>            "</span><span style=color:#a3be8c>input</span><span>": ["</span><span style=color:#a3be8c>text</span><span>", "</span><span style=color:#a3be8c>image</span><span>"],
+</span><span>            "</span><span style=color:#a3be8c>reasoning</span><span>": </span><span style=color:#d08770>true
+</span><span>          }
+</span><span>        ]
+</span><span>      }
+</span><span>    }
+</span><span>  },
+</span><span>  "</span><span style=color:#a3be8c>gateway</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>local</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>auth</span><span>": { "</span><span style=color:#a3be8c>token</span><span>": "</span><span style=color:#a3be8c>your-token</span><span>" },
+</span><span>    "</span><span style=color:#a3be8c>controlUi</span><span>": { "</span><span style=color:#a3be8c>allowInsecureAuth</span><span>": </span><span style=color:#d08770>true </span><span>}
+</span><span>  }
+</span><span>}
+</span></code></pre><h3 id=she-zhi-mo-ren-mo-xing>设置默认模型</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pnpm</span><span> openclaw models set copilotx/claude-opus-4-6
+</span></code></pre><h3 id=qi-dong>启动</h3><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pnpm</span><span> openclaw gateway
+</span><span style=color:#65737e># 访问 http://127.0.0.1:18789/__openclaw__/chat/
+</span></code></pre><h2 id=bulb-cai-keng-su-cha-biao>💡 踩坑速查表</h2><table><thead><tr><th>问题<th>原因<th>解决方案<tbody><tr><td><code>gateway token missing</code><td>WebChat 需要认证<td>配置 <code>gateway.auth.token</code><tr><td><code>ANTHROPIC_BASE_URL</code> 不生效<td>SDK 从 config 读取，不从 env<td>使用 <code>models.providers</code> 配置<tr><td><code>models: expected array</code><td>Provider 配置缺少 models 数组<td>必须包含完整的 models 定义<tr><td><code>No API key for anthropic</code><td>默认模型未更改<td>运行 <code>openclaw models set</code><tr><td><code>404 Not Found</code><td>baseUrl 多了 <code>/v1</code><td>使用不带 <code>/v1</code> 的 baseUrl</table><h2 id=thinking-fan-si>🤔 反思</h2><p>这次调试让我体会到几点：<ol><li><p><strong>日志是金矿</strong>：OpenClaw 的 trace 级别日志非常详细，<code>/tmp/openclaw/*.log</code> 里藏着所有真相</p><li><p><strong>Session 文件会说话</strong>：API 返回的错误信息被保存在 <code>.jsonl</code> 文件里，而不是显示在界面上</p><li><p><strong>SDK 会自动追加路径</strong>：这是个常见的坑，Anthropic SDK、OpenAI SDK 都会做类似的事情</p><li><p><strong>两层配置</strong>：OpenClaw 有全局配置（<code>~/.openclaw/openclaw.json</code>）和 agent 级配置（<code>~/.openclaw/agents/main/agent/models.json</code>），都要更新</p></ol><p>现在，我拥有了一个用无限 Claude API 驱动的个人 AI 助手网关。可以通过 WhatsApp、Telegram、Discord 等任何渠道与 AI 对话，而成本是——零。<p>小龙虾，跑起来了！🦞<hr><p><em>如果你也想尝试这个配置，OpenClaw 项目地址：https://github.com/openclaw/openclaw</em></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
