@@ -607,7 +607,7 @@ table td {
     padding-bottom: 20px; /* 为底部留出空间 */
 }
 
-.polly-chat h2 {
+.polly-chat > h2 {
     font-size: 2.2em;
     color: #333;
     text-align: center;
@@ -618,8 +618,8 @@ table td {
     padding-bottom: 15px; /* 为下划线留出空间 */
 }
 
-/* 添加简单的装饰性下划线 */
-.polly-chat h2:after {
+/* 添加简单的装饰性下划线 - 只针对标题 */
+.polly-chat > h2:after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -643,7 +643,7 @@ table td {
     }
 }
 
-.polly-chat h2 {
+.polly-chat > h2 {
     animation: titleFadeIn 0.8s ease-out forwards;
 }
 
@@ -1169,7 +1169,7 @@ blockquote p {
         width: 100%;
     }
     
-    .polly-chat h2 {
+    .polly-chat > h2 {
         font-size: 1.4em;
         text-align: center;
     }
@@ -1330,7 +1330,7 @@ blockquote p {
         font-size: 0.8em; /* 更小的字体 */
     }
     
-    .polly-chat h2 {
+    .polly-chat > h2 {
         font-size: 1.2em; /* 减小标题大小 */
         margin-bottom: 1em; /* 减小标题下方间距 */
     }
