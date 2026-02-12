@@ -1,0 +1,130 @@
+<!doctype html><html><head><title>Polly Chat 2.0: From Clunky Backend to Zero-Backend</title><meta content="博客首页的 AI 聊天功能迎来 2.0 重构——告别臃肿后端，直连 CopilotX，用 memory 系统动态生成人设，SSE 流式响应让对话丝滑如聊微信。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=article property=og:type><meta content=https://polly.wang/Polly-Chat-2.0/ property=og:url><meta content="Polly Chat 2.0: From Clunky Backend to Zero-Backend" property=og:title><meta content="博客首页的 AI 聊天功能迎来 2.0 重构——告别臃肿后端，直连 CopilotX，用 memory 系统动态生成人设，SSE 流式响应让对话丝滑如聊微信。" property=og:description><meta content=https://polly.wang/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/Polly-Chat-2.0/ name=twitter:url><meta content="Polly Chat 2.0: From Clunky Backend to Zero-Backend" name=twitter:title><meta content="博客首页的 AI 聊天功能迎来 2.0 重构——告别臃肿后端，直连 CopilotX，用 memory 系统动态生成人设，SSE 流式响应让对话丝滑如聊微信。" name=twitter:description><meta content=https://polly.wang/cover.jpg name=twitter:image><meta content=2026-02-13T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=CopilotX property=article:tag><meta content=Digital-Polly property=article:tag><meta content=Blog property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>Polly Chat 2.0: From Clunky Backend to Zero-Backend</h1><div class=cover-image><img alt="Polly Chat 2.0: From Clunky Backend to Zero-Backend" loading=lazy src=cover.jpg></div><div class=content><p>凌晨 1 点，朋友发消息抱怨："你首页那个聊天机器人，太慢了，等半天才出来几个字。"<p>我打开 Chrome DevTools 看了眼——确实，第一个字符要 5-15 秒，整个回复完要 20+ 秒。这体验，放在 2026 年简直是考古级别。<p>是时候重构了。</p><span id=continue-reading></span><h2 id=mag-wen-ti-zhen-duan>🔍 问题诊断</h2><p>老架构长这样：<pre style=background:#2b303b;color:#c0c5ce><code><span>Blog Frontend → Polly-Blog-Backend (Python/FastAPI) → DeepSeek API (付费)
+</span></code></pre><p>问题在哪？<ol><li><strong>非流式响应</strong> - <code>stream=False</code>，必须等 AI 想完才一次性吐出来<li><strong>重复加载配置</strong> - 每次请求都重新读 <code>profile_polly.json</code><li><strong>静态人设</strong> - 那个 JSON 文件还是去年写的，早就和我现在的状态脱节<li><strong>付费 API</strong> - 每月还要花钱买 DeepSeek token</ol><p>最要命的是——我现在有 CopilotX 了啊！这个"无限续杯大杀器"已经稳定运行在 <code>api.polly.wang</code>，Claude Sonnet 4 免费调用，还支持 SSE 流式输出。<p>为什么还要维护一个臃肿的 Python 后端？<h2 id=bulb-jia-gou-ge-ming>💡 架构革命</h2><p>小龙虾（OpenClaw）给了我一个精彩的洞察：<blockquote><p>"profile_polly.json 那种静态人设文件完全是上个时代的产物——你已经有了编年体+纪传体的双螺旋记忆系统，几百条记忆、7 个主题、13 天的编年记录，比那个 JSON 里的死板描述丰富 100 倍。"</blockquote><p>一语惊醒梦中人！我的 <code>memory/</code> 目录才是真正的"我"——包含最新的项目进展、今日的思考、核心信念。为什么不从这里动态生成 system prompt？<p>新架构：<pre style=background:#2b303b;color:#c0c5ce><code><span>memory/** → build_prompt.py → polly-prompt.json
+</span><span>                                    ↓
+</span><span>Blog Frontend → Cloudflare Worker (chat.polly.wang) → CopilotX (api.polly.wang) → Claude Sonnet 4 (SSE)
+</span><span>                        ↑ API Key 在这里注入
+</span></code></pre><p><strong>Zero Backend。纯前端。API Key 藏在边缘。</strong><h2 id=shi-xian>🛠️ 实现</h2><h3 id=1-prompt-gou-jian-jiao-ben>1. Prompt 构建脚本</h3><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># scripts/build_prompt.py
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>build_system_prompt</span><span>():
+</span><span>    identity = </span><span style=color:#bf616a>load_identity</span><span>()      </span><span style=color:#65737e># 从 topics/digital-polly 提取核心身份
+</span><span>    recent_focus = </span><span style=color:#bf616a>load_recent_focus</span><span>(</span><span style=color:#bf616a>days</span><span>=</span><span style=color:#d08770>3</span><span>)  </span><span style=color:#65737e># 最近 3 天的日记焦点
+</span><span>    projects = </span><span style=color:#bf616a>load_active_projects</span><span>()  </span><span style=color:#65737e># 活跃项目列表
+</span><span>    achievements = </span><span style=color:#bf616a>load_achievements</span><span>()  </span><span style=color:#65737e># 成长里程碑
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#bf616a>format_prompt</span><span>(identity, recent_focus, projects, achievements)
+</span></code></pre><p>运行一下：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> scripts/build_prompt.py
+</span><span>
+</span><span style=color:#bf616a>🧠</span><span> Building prompt from memory...
+</span><span style=color:#bf616a>✅</span><span> Generated: static/polly-prompt.json
+</span><span>   </span><span style=color:#bf616a>-</span><span> Identity: Polly
+</span><span>   </span><span style=color:#bf616a>-</span><span> Recent focus: 3 days
+</span><span>   </span><span style=color:#bf616a>-</span><span> Projects: 7
+</span><span>   </span><span style=color:#bf616a>-</span><span> Achievements: 13 days, </span><span style=color:#bf616a>~</span><span>260 entries
+</span><span>   </span><span style=color:#bf616a>-</span><span> Prompt length: 1274 chars
+</span></code></pre><h3 id=2-qing-liang-ji-liao-tian-zu-jian>2. 轻量级聊天组件</h3><pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// static/js/polly-chat.js
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>PollyChat </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>async </span><span style=color:#8fa1b3>init</span><span>() </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>const </span><span style=color:#bf616a>res </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>fetch</span><span style=color:#eff1f5>(</span><span>'</span><span style=color:#a3be8c>/polly-prompt.json</span><span>'</span><span style=color:#eff1f5>);
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>const </span><span style=color:#bf616a>data </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#bf616a>res</span><span style=color:#eff1f5>.</span><span style=color:#8fa1b3>json</span><span style=color:#eff1f5>();
+</span><span style=color:#eff1f5>        </span><span style=color:#bf616a>this</span><span style=color:#eff1f5>.</span><span style=color:#bf616a>systemPrompt </span><span>= </span><span style=color:#bf616a>data</span><span style=color:#eff1f5>.</span><span style=color:#bf616a>system_prompt</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>    
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>async </span><span style=color:#8fa1b3>send</span><span>() </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#65737e>// 请求发往 Cloudflare Worker，无需携带 API Key
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>const </span><span style=color:#bf616a>response </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>fetch</span><span style=color:#eff1f5>(</span><span>'</span><span style=color:#a3be8c>https://chat.polly.wang/v1/messages</span><span>'</span><span style=color:#eff1f5>, {
+</span><span style=color:#eff1f5>            method: </span><span>'</span><span style=color:#a3be8c>POST</span><span>'</span><span style=color:#eff1f5>,
+</span><span style=color:#eff1f5>            headers: {
+</span><span style=color:#eff1f5>                </span><span>'</span><span style=color:#a3be8c>Content-Type</span><span>'</span><span style=color:#eff1f5>: </span><span>'</span><span style=color:#a3be8c>application/json</span><span>'</span><span style=color:#eff1f5>,
+</span><span style=color:#eff1f5>                </span><span>'</span><span style=color:#a3be8c>Accept</span><span>'</span><span style=color:#eff1f5>: </span><span>'</span><span style=color:#a3be8c>text/event-stream</span><span>'
+</span><span style=color:#eff1f5>            },
+</span><span style=color:#eff1f5>            body: JSON.</span><span style=color:#96b5b4>stringify</span><span style=color:#eff1f5>({
+</span><span style=color:#eff1f5>                model: </span><span>'</span><span style=color:#a3be8c>claude-sonnet-4</span><span>'</span><span style=color:#eff1f5>,
+</span><span style=color:#eff1f5>                system: </span><span style=color:#bf616a>this</span><span style=color:#eff1f5>.</span><span style=color:#bf616a>systemPrompt</span><span style=color:#eff1f5>,
+</span><span style=color:#eff1f5>                messages: </span><span style=color:#bf616a>this</span><span style=color:#eff1f5>.</span><span style=color:#bf616a>messages</span><span style=color:#eff1f5>,
+</span><span style=color:#eff1f5>                stream: </span><span style=color:#d08770>true
+</span><span style=color:#eff1f5>            })
+</span><span style=color:#eff1f5>        });
+</span><span style=color:#eff1f5>        </span><span style=color:#65737e>// SSE 流式解析...
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>}
+</span></code></pre><h3 id=3-cloudflare-worker-dai-li>3. Cloudflare Worker 代理</h3><p>直接把 API Key 放在前端？那我的 CopilotX 就成公共厕所了。<p>解决方案：<strong>Cloudflare Worker 作为代理层</strong>，API Key 存在加密环境变量里。<pre class=language-javascript data-lang=javascript style=background:#2b303b;color:#c0c5ce><code class=language-javascript data-lang=javascript><span style=color:#65737e>// Cloudflare Worker
+</span><span style=color:#b48ead>export default </span><span>{
+</span><span>  </span><span style=color:#b48ead>async </span><span style=color:#8fa1b3>fetch</span><span>(</span><span style=color:#bf616a>request</span><span>, </span><span style=color:#bf616a>env</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>ALLOWED_ORIGINS </span><span>= ['</span><span style=color:#a3be8c>https://polly.wang</span><span>', '</span><span style=color:#a3be8c>https://www.polly.wang</span><span>'];
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>origin </span><span>= </span><span style=color:#bf616a>request</span><span>.headers.</span><span style=color:#96b5b4>get</span><span>('</span><span style=color:#a3be8c>Origin</span><span>');
+</span><span>    
+</span><span>    </span><span style=color:#65737e>// CORS 白名单校验
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>origin </span><span>&& !</span><span style=color:#bf616a>ALLOWED_ORIGINS</span><span>.</span><span style=color:#8fa1b3>includes</span><span>(</span><span style=color:#bf616a>origin</span><span>)) {
+</span><span>      </span><span style=color:#b48ead>return </span><span>new Response('</span><span style=color:#a3be8c>Forbidden</span><span>', { status: </span><span style=color:#d08770>403 </span><span>});
+</span><span>    }
+</span><span>    
+</span><span>    </span><span style=color:#65737e>// 代理到 CopilotX，注入 API Key
+</span><span>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>proxyHeaders </span><span>= new Headers(</span><span style=color:#bf616a>request</span><span>.headers);
+</span><span>    </span><span style=color:#bf616a>proxyHeaders</span><span>.</span><span style=color:#96b5b4>set</span><span>('</span><span style=color:#a3be8c>Authorization</span><span>', `</span><span style=color:#a3be8c>Bearer ${</span><span style=color:#bf616a>env</span><span style=color:#a3be8c>.</span><span style=color:#bf616a>COPILOTX_API_KEY</span><span style=color:#a3be8c>}</span><span>`);
+</span><span>    
+</span><span>    </span><span style=color:#b48ead>return </span><span style=color:#8fa1b3>fetch</span><span>('</span><span style=color:#a3be8c>https://api.polly.wang</span><span>' + new URL(</span><span style=color:#bf616a>request</span><span>.</span><span style=color:#bf616a>url</span><span>).pathname, {
+</span><span>      method: </span><span style=color:#bf616a>request</span><span>.method,
+</span><span>      headers: </span><span style=color:#bf616a>proxyHeaders</span><span>,
+</span><span>      body: </span><span style=color:#bf616a>request</span><span>.body,
+</span><span>    });
+</span><span>  }
+</span><span>};
+</span></code></pre><p>部署到 <code>chat.polly.wang</code>，前端只知道这个域名，API Key 永远不出现在客户端代码里。<p><strong>免费额度</strong>：Cloudflare Workers 每天 100k 请求，对个人博客来说约等于无限。<h3 id=4-mo-ban-jing-jian>4. 模板精简</h3><p>老版本 <code>index.html</code>：~500 行（WebSocket + HTTP fallback + 打字机效果 + 错误处理）<p>新版本：~40 行<pre class=language-html data-lang=html style=background:#2b303b;color:#c0c5ce><code class=language-html data-lang=html><span><</span><span style=color:#bf616a>script </span><span style=color:#d08770>src</span><span>="</span><span style=color:#8fa1b3>&#</span><span style=color:#d08770>123;</span><span style=color:#8fa1b3>&#</span><span style=color:#d08770>123;</span><span style=color:#a3be8c> get_url(path='js/polly-chat.js') </span><span style=color:#8fa1b3>&#</span><span style=color:#d08770>125;</span><span style=color:#8fa1b3>&#</span><span style=color:#d08770>125;</span><span>">&LT/</span><span style=color:#bf616a>script</span><span>>
+</span></code></pre><p>就这么简单。<h3 id=5-copilotx-cors-zhi-chi>5. CopilotX CORS 支持</h3><p>为了让前端能直接调用 <code>api.polly.wang</code>，给 CopilotX 加上 CORS 中间件：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#bf616a>CORS_ORIGINS </span><span>= [
+</span><span>    "</span><span style=color:#a3be8c>https://polly.wang</span><span>",
+</span><span>    "</span><span style=color:#a3be8c>http://127.0.0.1:1111</span><span>",   </span><span style=color:#65737e># 本地开发
+</span><span>]
+</span><span>
+</span><span>app.</span><span style=color:#bf616a>add_middleware</span><span>(
+</span><span>    CORSMiddleware,
+</span><span>    </span><span style=color:#bf616a>allow_origins</span><span>=</span><span style=color:#bf616a>CORS_ORIGINS</span><span>,
+</span><span>    </span><span style=color:#bf616a>allow_methods</span><span>=["</span><span style=color:#a3be8c>*</span><span>"],
+</span><span>    </span><span style=color:#bf616a>allow_headers</span><span>=["</span><span style=color:#a3be8c>*</span><span>"],
+</span><span>)
+</span></code></pre><h2 id=sparkles-xiao-guo-dui-bi>✨ 效果对比</h2><table><thead><tr><th>指标<th>v1.0 (旧)<th>v2.0 (新)<tbody><tr><td>首字延迟<td>5-15s<td>&LT1s<tr><td>完整回复<td>20+ s<td>流式实时<tr><td>后端维护<td>需要<td>零<tr><td>模型开销<td>付费 (DeepSeek)<td>免费 (Copilot)<tr><td>人设新鲜度<td>静态 JSON<td>memory 动态提取<tr><td>API Key 安全<td>明文暴露<td>Cloudflare 加密存储<tr><td>代码量<td>~500 行<td>~40 行模板 + ~200 行 JS</table><h2 id=dart-shou-huo>🎯 收获</h2><ol><li><strong>CopilotX 是基础设施</strong> - 它不只是 CLI 工具，已经成为整个 AI 工具链的核心 API 层<li><strong>Memory 即人格</strong> - 静态配置文件是"死的"，但记忆系统是"活的"<li><strong>Zero Backend 思维</strong> - 能前端做的，就别起后端服务<li><strong>边缘代理保安全</strong> - Cloudflare Worker 让敏感凭证永远不出现在客户端</ol><p>下一步：让 <code>build_prompt.py</code> 接入 GitHub Actions，每次 push 自动更新 <code>polly-prompt.json</code>。这样我的数字分身会随着记忆增长而"进化"。<hr><p>现在刷新 <a href=https://polly.wang>polly.wang</a>，试试和新版 Polly 聊天吧 🚀</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
