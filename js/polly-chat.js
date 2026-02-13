@@ -13,12 +13,14 @@ class PollyChat {
         this.systemPrompt = '';
         this.messages = [];
         this.isStreaming = false;
+        this.pendingImage = null; // 待发送的图片 {base64, mediaType}
         
         // DOM 元素
         this.container = null;
         this.chatBox = null;
         this.input = null;
         this.sendBtn = null;
+        this.imagePreview = null;
         
         this.init();
     }
@@ -55,6 +57,7 @@ class PollyChat {
         this.chatBox = document.getElementById('chat-box');
         this.input = document.getElementById('user-input');
         this.sendBtn = document.getElementById('send-button');
+        this.imagePreview = document.getElementById('image-preview-container');
         
         if (!this.container || !this.chatBox || !this.input) {
             console.error('PollyChat: Missing DOM elements');
@@ -70,14 +73,142 @@ class PollyChat {
                 this.send();
             }
         });
+        
+        // 图片粘贴支持
+        this.input?.addEventListener('paste', (e) => this.handlePaste(e));
+    }
+    
+    handlePaste(e) {
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        
+        for (const item of items) {
+            if (item.type.startsWith('image/')) {
+                e.preventDefault();
+                const file = item.getAsFile();
+                if (file) this.processImage(file);
+                return;
+            }
+        }
+    }
+    
+    processImage(file) {
+        // 限制原始文件 10MB
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Image too large (max 10MB)');
+            return;
+        }
+        
+        // 使用 Canvas 压缩图片
+        this.compressImage(file).then(({ base64, mediaType, dataUrl }) => {
+            this.pendingImage = { base64, mediaType };
+            this.showImagePreview(dataUrl);
+            console.log(`📷 Image ready: ${Math.round(base64.length / 1024)}KB`);
+        }).catch(err => {
+            console.error('Image processing failed:', err);
+            alert('Failed to process image');
+        });
+    }
+    
+    compressImage(file, maxSize = 800, quality = 0.7, maxBytes = 60000) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            img.onload = () => {
+                // 计算缩放尺寸
+                let { width, height } = img;
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height = Math.round(height * maxSize / width);
+                        width = maxSize;
+                    } else {
+                        width = Math.round(width * maxSize / height);
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // 尝试压缩到目标大小
+                let currentQuality = quality;
+                let dataUrl;
+                let attempts = 0;
+                
+                do {
+                    dataUrl = canvas.toDataURL('image/jpeg', currentQuality);
+                    const base64Length = dataUrl.split(',')[1].length;
+                    
+                    if (base64Length <= maxBytes || currentQuality <= 0.3 || attempts >= 5) {
+                        break;
+                    }
+                    
+                    currentQuality -= 0.1;
+                    attempts++;
+                } while (true);
+                
+                const base64 = dataUrl.split(',')[1];
+                console.log(`📷 Compressed: ${img.width}x${img.height} → ${width}x${height}, quality=${currentQuality.toFixed(1)}, size=${Math.round(base64.length/1024)}KB`);
+                
+                resolve({
+                    base64,
+                    mediaType: 'image/jpeg',
+                    dataUrl
+                });
+            };
+            
+            img.onerror = () => reject(new Error('Failed to load image'));
+            img.src = URL.createObjectURL(file);
+        });
+    }
+    
+    showImagePreview(dataUrl) {
+        if (!this.imagePreview) return;
+        
+        this.imagePreview.innerHTML = `
+            <div class="preview-wrapper">
+                <img src="${dataUrl}" alt="Preview" class="preview-image" />
+                <button class="preview-remove" title="Remove image">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        this.imagePreview.classList.add('visible');
+        
+        // 绑定移除按钮
+        this.imagePreview.querySelector('.preview-remove')?.addEventListener('click', () => {
+            this.clearImagePreview();
+        });
+        
+        // 聚焦输入框
+        this.input?.focus();
+    }
+    
+    clearImagePreview() {
+        this.pendingImage = null;
+        if (this.imagePreview) {
+            this.imagePreview.innerHTML = '';
+            this.imagePreview.classList.remove('visible');
+        }
     }
     
     async send() {
         const userMessage = this.input.value.trim();
-        if (!userMessage || this.isStreaming) return;
+        const hasImage = !!this.pendingImage;
+        
+        // 必须有文字或图片
+        if (!userMessage && !hasImage) return;
+        if (this.isStreaming) return;
+        
+        // 保存图片数据（清空前）
+        const imageData = this.pendingImage;
         
         // 清空输入
         this.input.value = '';
+        this.clearImagePreview();
         this.input.disabled = true;
         this.sendBtn.disabled = true;
         this.isStreaming = true;
@@ -86,11 +217,30 @@ class PollyChat {
         this.container.classList.add('expanded');
         this.chatBox.classList.add('expanded');
         
-        // 显示用户消息
-        this.appendMessage('user', userMessage);
+        // 显示用户消息（带图片预览）
+        this.appendMessage('user', userMessage, imageData);
+        
+        // 构建消息内容（Anthropic 格式）
+        let messageContent;
+        if (imageData) {
+            messageContent = [];
+            messageContent.push({
+                type: 'image',
+                source: {
+                    type: 'base64',
+                    media_type: imageData.mediaType,
+                    data: imageData.base64
+                }
+            });
+            if (userMessage) {
+                messageContent.push({ type: 'text', text: userMessage });
+            }
+        } else {
+            messageContent = userMessage;
+        }
         
         // 添加到历史
-        this.messages.push({ role: 'user', content: userMessage });
+        this.messages.push({ role: 'user', content: messageContent });
         
         // 创建助手消息容器
         const assistantBubble = this.appendMessage('assistant', '');
@@ -181,7 +331,7 @@ class PollyChat {
         return fullText;
     }
     
-    appendMessage(role, content) {
+    appendMessage(role, content, imageData = null) {
         const wrapper = document.createElement('div');
         // 使用原有 CSS 类名：message-container + user-message/polly-message
         const roleClass = role === 'user' ? 'user-message' : 'polly-message';
@@ -198,7 +348,16 @@ class PollyChat {
         // 使用原有 CSS 类名：chat-bubble + user/polly
         const bubbleClass = role === 'user' ? 'user' : 'polly';
         bubble.className = `chat-bubble ${bubbleClass}`;
-        bubble.innerHTML = content ? this.renderMarkdown(content) : '<span class="thinking">Thinking...</span>';
+        
+        // 构建气泡内容
+        let bubbleContent = '';
+        if (imageData) {
+            bubbleContent += `<img src="data:${imageData.mediaType};base64,${imageData.base64}" class="chat-image" alt="Uploaded" />`;
+        }
+        if (content) {
+            bubbleContent += this.renderMarkdown(content);
+        }
+        bubble.innerHTML = bubbleContent || '<span class="thinking">Thinking...</span>';
         
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
