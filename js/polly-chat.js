@@ -357,7 +357,7 @@ class PollyChat {
         if (content) {
             bubbleContent += this.renderMarkdown(content);
         }
-        bubble.innerHTML = bubbleContent || '<span class="thinking">Thinking...</span>';
+        bubble.innerHTML = bubbleContent || '<div class="thinking"><span></span><span></span><span></span></div>';
         
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);

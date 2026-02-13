@@ -632,7 +632,7 @@ table td {
     background: rgba(0, 0, 0, 0.25);
 }
 
-* 添加展开状态的类 */
+/* 添加展开状态的类 */
 .polly-chat.expanded {
     justify-content: flex-end; /* 切换到底部对齐 */
     padding-bottom: 20px; /* 为底部留出空间 */
@@ -679,9 +679,11 @@ table td {
 }
 
 #chat-box.expanded {
-    height: 500px; /* 展开后的高度 */
+    height: auto;
+    max-height: calc(100vh - 250px); /* 自适应屏幕，留出标题和输入框空间 */
+    min-height: 300px;
     opacity: 1;
-    padding: 20px; /* 恢复完整padding */
+    padding: 20px;
 }
 
 .input-container {
@@ -1276,17 +1278,11 @@ blockquote p {
     
     #chat-box {
         padding: 5px;
-        width: 95%; /* 从100%修改为95%，避免边缘太紧 */
+        width: 95%;
         overflow-y: auto;
-        margin-left: auto; /* 添加自动边距使其居中 */
+        margin-left: auto;
         margin-right: auto;
-    }
-    
-    .chat-bubble {
-        max-width: 80%; /* 从70%增加到80%使气泡更宽 */
-        padding: 10px;
-        border-radius: 10px;
-        font-size: 0.85em; /* 从0.9em调小到0.85em */
+        max-height: calc(100vh - 200px); /* 移动端自适应高度 */
     }
 
     /* 优化代码显示 */
@@ -1309,20 +1305,14 @@ blockquote p {
         padding-left: 1.2em; /* 减少列表缩进 */
     }
     
-     /* 调整聊天气泡间距，确保头像和气泡底部对齐 */
-    .message-container {
-        display: flex;
-        align-items: flex-end; /* 改为底部对齐，而不是顶部对齐 */
-        gap: 8px;
-        max-width: 95%; /* 移动端更宽，充分利用屏幕 */
-        animation: fadeIn 0.3s ease-out;
-        margin-bottom: 12px;
-    }
-    
+    /* 调整聊天气泡间距，确保头像和气泡底部对齐 */
     .message-container {
         display: flex;
         align-items: flex-end;
-        margin-bottom: 10px;
+        gap: 8px;
+        max-width: 95%;
+        animation: fadeIn 0.3s ease-out;
+        margin-bottom: 12px;
     }
     
     .message-container.user-message {
