@@ -485,14 +485,14 @@
 &lt;&#x2F;ul&gt;
 &lt;p&gt;这些都是&amp;quot;合理&amp;quot;的功能，但对于&amp;quot;个人远程访问自己的 Copilot&amp;quot;这个场景，全是过度设计。&lt;&#x2F;p&gt;
 &lt;p&gt;一个环境变量（&lt;code&gt;COPILOTX_API_KEY&lt;&#x2F;code&gt;）+ 一个中间件（50 行）+ 一个 Caddy 配置（3 行），就解决了所有问题。&lt;&#x2F;p&gt;
-&lt;p&gt;这让我想起今天早上写的 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-v2-from-bloat-to-lean&quot;&gt;GateX v2 博文&lt;&#x2F;a&gt;里的那句话：&lt;strong&gt;Less is More&lt;&#x2F;strong&gt;。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— &lt;strong&gt;代码的价值不在于行数，在于每一行都解决真实问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我想起今天早上写的 &lt;a href=&quot;&#x2F;gatex-v2-from-bloat-to-lean&quot;&gt;GateX v2 博文&lt;&#x2F;a&gt;里的那句话：&lt;strong&gt;Less is More&lt;&#x2F;strong&gt;。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— &lt;strong&gt;代码的价值不在于行数，在于每一行都解决真实问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;v1.0 → v2.0，从 &lt;code&gt;localhost&lt;&#x2F;code&gt; 到 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;，225 行代码的距离。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;lian-jie&quot;&gt;链接&lt;&#x2F;h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;PyPI&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;pypi.org&#x2F;project&#x2F;copilotx&#x2F;&quot;&gt;pypi.org&#x2F;project&#x2F;copilotx&lt;&#x2F;a&gt; （v2.0.0）&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;CopilotX&quot;&gt;github.com&#x2F;Polly2014&#x2F;CopilotX&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;前篇&lt;&#x2F;strong&gt;: &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前篇&lt;&#x2F;strong&gt;: &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;升级只需一行：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --upgrade&lt;&#x2F;span&gt;&lt;span&gt; copilotx
@@ -511,7 +511,7 @@
         <link rel="alternate" href="https://polly.wang/gatex-v2-from-bloat-to-lean/" type="text/html"/>
         <id>https://polly.wang/gatex-v2-from-bloat-to-lean/</id>
         
-        <content type="html">&lt;p&gt;三周前，GateX v0.1.0 诞生了。&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;那篇文章&lt;&#x2F;a&gt;记录了一个很爽的故事——发现 Agent Maestro 有 120 秒硬编码超时，于是连夜自己写一个更好的。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;三周前，GateX v0.1.0 诞生了。&lt;a href=&quot;&#x2F;gatex-kill-agent-maestro&quot;&gt;那篇文章&lt;&#x2F;a&gt;记录了一个很爽的故事——发现 Agent Maestro 有 120 秒硬编码超时，于是连夜自己写一个更好的。&lt;&#x2F;p&gt;
 &lt;p&gt;代码提交，Marketplace 上架，故事结束。&lt;&#x2F;p&gt;
 &lt;p&gt;但故事没有结束。代码在长。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -542,7 +542,7 @@
 &lt;p&gt;我大概打开过三次。其中两次是为了截图写 README。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;copilotx-dai-lai-de-fan-si&quot;&gt;🪞 CopilotX 带来的反思&lt;&#x2F;h2&gt;
-&lt;p&gt;今天还开发了 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX&lt;&#x2F;a&gt;——一个 Python 独立工具，功能和 GateX 几乎相同（把 Copilot 变成本地 API），但完全不依赖 VS Code。&lt;&#x2F;p&gt;
+&lt;p&gt;今天还开发了 &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX&lt;&#x2F;a&gt;——一个 Python 独立工具，功能和 GateX 几乎相同（把 Copilot 变成本地 API），但完全不依赖 VS Code。&lt;&#x2F;p&gt;
 &lt;p&gt;写 CopilotX 的过程让我重新审视 GateX：&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;CopilotX 的核心代码只有 &lt;strong&gt;一个文件&lt;&#x2F;strong&gt;，却支持 OpenAI + Anthropic 双格式、流式输出、并发请求、智能重试。&lt;&#x2F;p&gt;
@@ -707,13 +707,13 @@
 &lt;h2 id=&quot;link-xi-lie-wen-zhang&quot;&gt;🔗 系列文章&lt;&#x2F;h2&gt;
 &lt;p&gt;GateX 系列现在有三篇了：&lt;&#x2F;p&gt;
 &lt;ol&gt;
-&lt;li&gt;⚡ &lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;GateX：我如何用一天时间干掉 Agent Maestro&lt;&#x2F;a&gt; — 诞生&lt;&#x2F;li&gt;
-&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-marketplace-publish-journey&quot;&gt;GateX 上架记：从打包到 Marketplace 的踩坑之旅&lt;&#x2F;a&gt; — 发布&lt;&#x2F;li&gt;
+&lt;li&gt;⚡ &lt;a href=&quot;&#x2F;gatex-kill-agent-maestro&quot;&gt;GateX：我如何用一天时间干掉 Agent Maestro&lt;&#x2F;a&gt; — 诞生&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;gatex-marketplace-publish-journey&quot;&gt;GateX 上架记：从打包到 Marketplace 的踩坑之旅&lt;&#x2F;a&gt; — 发布&lt;&#x2F;li&gt;
 &lt;li&gt;✂️ &lt;strong&gt;本文：删掉 2000 行代码后，它反而更强了&lt;&#x2F;strong&gt; — 回归&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;以及一篇姐妹项目的文章：&lt;&#x2F;p&gt;
 &lt;ol start=&quot;4&quot;&gt;
-&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt; — Python 独立版&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt; — Python 独立版&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;&lt;strong&gt;GateX&lt;&#x2F;strong&gt; 是 VS Code 扩展版（零配置，开 VS Code 就能用），&lt;strong&gt;CopilotX&lt;&#x2F;strong&gt; 是 Python 独立版（&lt;code&gt;pip install copilotx&lt;&#x2F;code&gt;，纯终端就能跑）。两个工具互补，覆盖不同场景。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -900,7 +900,7 @@ LICENSE 文件存在&lt;&#x2F;li&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=BaoliWang.gatex&quot;&gt;GateX on Marketplace&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.visualstudio.com&#x2F;api&#x2F;working-with-extensions&#x2F;publishing-extension&quot;&gt;VS Code 扩展发布官方文档&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;上一篇：GateX 技术实现详解&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;gatex-kill-agent-maestro&quot;&gt;上一篇：GateX 技术实现详解&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;hr &#x2F;&gt;
 &lt;p&gt;从「干掉 Agent Maestro」到「上架 Marketplace」，前后大约 48 小时。&lt;&#x2F;p&gt;

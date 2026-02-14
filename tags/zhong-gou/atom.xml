@@ -17,7 +17,7 @@
         <link rel="alternate" href="https://polly.wang/gatex-v2-from-bloat-to-lean/" type="text/html"/>
         <id>https://polly.wang/gatex-v2-from-bloat-to-lean/</id>
         
-        <content type="html">&lt;p&gt;三周前，GateX v0.1.0 诞生了。&lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;那篇文章&lt;&#x2F;a&gt;记录了一个很爽的故事——发现 Agent Maestro 有 120 秒硬编码超时，于是连夜自己写一个更好的。&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;三周前，GateX v0.1.0 诞生了。&lt;a href=&quot;&#x2F;gatex-kill-agent-maestro&quot;&gt;那篇文章&lt;&#x2F;a&gt;记录了一个很爽的故事——发现 Agent Maestro 有 120 秒硬编码超时，于是连夜自己写一个更好的。&lt;&#x2F;p&gt;
 &lt;p&gt;代码提交，Marketplace 上架，故事结束。&lt;&#x2F;p&gt;
 &lt;p&gt;但故事没有结束。代码在长。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -48,7 +48,7 @@
 &lt;p&gt;我大概打开过三次。其中两次是为了截图写 README。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;copilotx-dai-lai-de-fan-si&quot;&gt;🪞 CopilotX 带来的反思&lt;&#x2F;h2&gt;
-&lt;p&gt;今天还开发了 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX&lt;&#x2F;a&gt;——一个 Python 独立工具，功能和 GateX 几乎相同（把 Copilot 变成本地 API），但完全不依赖 VS Code。&lt;&#x2F;p&gt;
+&lt;p&gt;今天还开发了 &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX&lt;&#x2F;a&gt;——一个 Python 独立工具，功能和 GateX 几乎相同（把 Copilot 变成本地 API），但完全不依赖 VS Code。&lt;&#x2F;p&gt;
 &lt;p&gt;写 CopilotX 的过程让我重新审视 GateX：&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;CopilotX 的核心代码只有 &lt;strong&gt;一个文件&lt;&#x2F;strong&gt;，却支持 OpenAI + Anthropic 双格式、流式输出、并发请求、智能重试。&lt;&#x2F;p&gt;
@@ -213,13 +213,13 @@
 &lt;h2 id=&quot;link-xi-lie-wen-zhang&quot;&gt;🔗 系列文章&lt;&#x2F;h2&gt;
 &lt;p&gt;GateX 系列现在有三篇了：&lt;&#x2F;p&gt;
 &lt;ol&gt;
-&lt;li&gt;⚡ &lt;a href=&quot;&#x2F;blog&#x2F;gatex-kill-agent-maestro&quot;&gt;GateX：我如何用一天时间干掉 Agent Maestro&lt;&#x2F;a&gt; — 诞生&lt;&#x2F;li&gt;
-&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-marketplace-publish-journey&quot;&gt;GateX 上架记：从打包到 Marketplace 的踩坑之旅&lt;&#x2F;a&gt; — 发布&lt;&#x2F;li&gt;
+&lt;li&gt;⚡ &lt;a href=&quot;&#x2F;gatex-kill-agent-maestro&quot;&gt;GateX：我如何用一天时间干掉 Agent Maestro&lt;&#x2F;a&gt; — 诞生&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;gatex-marketplace-publish-journey&quot;&gt;GateX 上架记：从打包到 Marketplace 的踩坑之旅&lt;&#x2F;a&gt; — 发布&lt;&#x2F;li&gt;
 &lt;li&gt;✂️ &lt;strong&gt;本文：删掉 2000 行代码后，它反而更强了&lt;&#x2F;strong&gt; — 回归&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;以及一篇姐妹项目的文章：&lt;&#x2F;p&gt;
 &lt;ol start=&quot;4&quot;&gt;
-&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt; — Python 独立版&lt;&#x2F;li&gt;
+&lt;li&gt;🚀 &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt; — Python 独立版&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
 &lt;p&gt;&lt;strong&gt;GateX&lt;&#x2F;strong&gt; 是 VS Code 扩展版（零配置，开 VS Code 就能用），&lt;strong&gt;CopilotX&lt;&#x2F;strong&gt; 是 Python 独立版（&lt;code&gt;pip install copilotx&lt;&#x2F;code&gt;，纯终端就能跑）。两个工具互补，覆盖不同场景。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -248,7 +248,7 @@
         <id>https://polly.wang/jarvis-agent-phase25-code-cleanup/</id>
         
         <summary type="html">&lt;p&gt;当 &lt;code&gt;jarvis --help&lt;&#x2F;code&gt; 显示 13 个子命令全部正常注册时，我终于确认：这次重构没有翻车。&lt;&#x2F;p&gt;
-&lt;p&gt;这是 &lt;a href=&quot;&#x2F;blog&#x2F;jarvis-agent-genesis&#x2F;&quot;&gt;Jarvis-Agent&lt;&#x2F;a&gt; 的第 2.5 阶段——一个没有新功能的版本。听起来无聊？但这可能是整个项目中最重要的一次迭代。&lt;&#x2F;p&gt;
+&lt;p&gt;这是 &lt;a href=&quot;&#x2F;jarvis-agent-genesis&#x2F;&quot;&gt;Jarvis-Agent&lt;&#x2F;a&gt; 的第 2.5 阶段——一个没有新功能的版本。听起来无聊？但这可能是整个项目中最重要的一次迭代。&lt;&#x2F;p&gt;
 </summary>
         
     </entry>

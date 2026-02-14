@@ -485,14 +485,14 @@
 &lt;&#x2F;ul&gt;
 &lt;p&gt;这些都是&amp;quot;合理&amp;quot;的功能，但对于&amp;quot;个人远程访问自己的 Copilot&amp;quot;这个场景，全是过度设计。&lt;&#x2F;p&gt;
 &lt;p&gt;一个环境变量（&lt;code&gt;COPILOTX_API_KEY&lt;&#x2F;code&gt;）+ 一个中间件（50 行）+ 一个 Caddy 配置（3 行），就解决了所有问题。&lt;&#x2F;p&gt;
-&lt;p&gt;这让我想起今天早上写的 &lt;a href=&quot;&#x2F;blog&#x2F;gatex-v2-from-bloat-to-lean&quot;&gt;GateX v2 博文&lt;&#x2F;a&gt;里的那句话：&lt;strong&gt;Less is More&lt;&#x2F;strong&gt;。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— &lt;strong&gt;代码的价值不在于行数，在于每一行都解决真实问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我想起今天早上写的 &lt;a href=&quot;&#x2F;gatex-v2-from-bloat-to-lean&quot;&gt;GateX v2 博文&lt;&#x2F;a&gt;里的那句话：&lt;strong&gt;Less is More&lt;&#x2F;strong&gt;。GateX 是删掉 2000 行变强的，CopilotX v2 是只加 225 行就升级的。两个方向，同一个道理 —— &lt;strong&gt;代码的价值不在于行数，在于每一行都解决真实问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;v1.0 → v2.0，从 &lt;code&gt;localhost&lt;&#x2F;code&gt; 到 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;，225 行代码的距离。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;lian-jie&quot;&gt;链接&lt;&#x2F;h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;PyPI&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;pypi.org&#x2F;project&#x2F;copilotx&#x2F;&quot;&gt;pypi.org&#x2F;project&#x2F;copilotx&lt;&#x2F;a&gt; （v2.0.0）&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;GitHub&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;CopilotX&quot;&gt;github.com&#x2F;Polly2014&#x2F;CopilotX&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;前篇&lt;&#x2F;strong&gt;: &lt;a href=&quot;&#x2F;blog&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前篇&lt;&#x2F;strong&gt;: &lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX v1.0：一个晚上，把 GitHub Copilot 变成本地 API 服务器&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;升级只需一行：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --upgrade&lt;&#x2F;span&gt;&lt;span&gt; copilotx
