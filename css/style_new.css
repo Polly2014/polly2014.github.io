@@ -588,6 +588,39 @@ table td {
     transition: all 0.6s ease-out;
 }
 
+.chat-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    position: relative;
+}
+
+.new-chat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    margin-bottom: 4px;
+    background: none;
+    color: #aaa;
+    border: none;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    font-family: Arial, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+}
+
+.new-chat-btn:hover {
+    color: #333;
+}
+
+.new-chat-btn i {
+    font-size: 0.75em;
+}
+
 #chat-box {
     width: 80%;
     height: 0; /* 初始高度为0 */
@@ -597,7 +630,7 @@ table td {
     padding: 0 20px; /* 初始padding-top和bottom为0 */
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
     transition: all 0.6s ease-out;
     /* 极简滚动条 - Firefox */
     scrollbar-width: thin;
@@ -634,11 +667,21 @@ table td {
 
 /* 添加展开状态的类 */
 .polly-chat.expanded {
-    justify-content: flex-end; /* 切换到底部对齐 */
-    padding-bottom: 20px; /* 为底部留出空间 */
+    justify-content: flex-start;
+    height: 100%;
+    padding-bottom: 10px;
 }
 
-.polly-chat > h2 {
+/* 展开后隐藏大标题，New Chat 按钮保留 */
+.polly-chat.expanded .chat-header h2 {
+    display: none;
+}
+
+.polly-chat.expanded .chat-header {
+    margin-bottom: 4px;
+}
+
+.chat-header h2 {
     font-size: 2.2em;
     color: #333;
     text-align: center;
@@ -650,7 +693,7 @@ table td {
 }
 
 /* 添加简单的装饰性下划线 - 只针对标题 */
-.polly-chat > h2:after {
+.chat-header h2:after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -674,14 +717,13 @@ table td {
     }
 }
 
-.polly-chat > h2 {
+.chat-header h2 {
     animation: titleFadeIn 0.8s ease-out forwards;
 }
 
 #chat-box.expanded {
-    height: auto;
-    max-height: calc(100vh - 250px); /* 自适应屏幕，留出标题和输入框空间 */
-    min-height: 300px;
+    flex: 1;
+    min-height: 0; /* 允许收缩 */
     opacity: 1;
     padding: 20px;
 }
@@ -771,10 +813,10 @@ table td {
 .message-container {
     display: flex;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px;
     max-width: 80%;
     animation: fadeIn 0.3s ease-out;
-    margin-bottom: 15px; /* 增加消息间的垂直间距 */
+    margin-bottom: 4px;
 }
 
 /* 修改用户消息容器样式 */
@@ -824,10 +866,11 @@ table td {
 }
 
 .chat-bubble {
-    padding: 8px 16px;
+    padding: 5px 16px;
     border-radius: 16px;
-    max-width: calc(100% - 50px);
-    word-wrap: break-word;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: normal;
     position: relative;
 }
 
@@ -946,13 +989,7 @@ table td {
 
 /* 增强 Markdown 内容在聊天气泡中的显示 */
 .chat-bubble {
-    /* 保留现有样式 */
-    padding: 8px 16px;
-    border-radius: 16px;
-    max-width: calc(100% - 50px);
-    word-wrap: break-word;
-    position: relative;
-    /* 添加以下样式 */
+    /* 样式已在上方定义，此处仅补充 Markdown 相关 */
     line-height: 1.5;
 }
 
@@ -1337,12 +1374,16 @@ blockquote p {
     }
     
     .chat-bubble {
-        max-width: calc(100% - 40px); /* 移动端不再额外限制宽度 */
-        padding: 10px 12px;
+        max-width: 100%;
+        padding: 3px 10px;
         border-radius: 12px;
         font-size: 0.9em;
     }    
-    
+
+    #chat-box.expanded {
+        padding: 5px;
+    }
+
     #send-button i {
         font-size: 1em;
     }
@@ -1415,8 +1456,8 @@ blockquote p {
     }
     
     .chat-bubble {
-        max-width: 85%; /* 进一步增加气泡宽度 */
-        padding: 8px;
+        max-width: 100%;
+        padding: 3px 10px;
         font-size: 0.8em; /* 更小的字体 */
     }
     

@@ -15,12 +15,18 @@ class PollyChat {
         this.isStreaming = false;
         this.pendingImage = null; // 待发送的图片 {base64, mediaType}
         
+        // localStorage 配置
+        this.STORAGE_KEY = 'polly_chat_history';
+        this.MAX_MESSAGES = 50;
+        this.EXPIRE_MS = 24 * 60 * 60 * 1000; // 24小时过期
+        
         // DOM 元素
         this.container = null;
         this.chatBox = null;
         this.input = null;
         this.sendBtn = null;
         this.imagePreview = null;
+        this.newChatBtn = null;
         
         this.init();
     }
@@ -34,8 +40,9 @@ class PollyChat {
         
         // 绑定事件
         this.bindEvents();
-        
-        console.log('� PollyChat initialized');
+                // 恢复历史聊天记录
+        this.restoreHistory();
+                console.log('� PollyChat initialized');
     }
     
     async loadPrompt() {
@@ -58,6 +65,7 @@ class PollyChat {
         this.input = document.getElementById('user-input');
         this.sendBtn = document.getElementById('send-button');
         this.imagePreview = document.getElementById('image-preview-container');
+        this.newChatBtn = document.getElementById('new-chat-btn');
         
         if (!this.container || !this.chatBox || !this.input) {
             console.error('PollyChat: Missing DOM elements');
@@ -76,6 +84,9 @@ class PollyChat {
         
         // 图片粘贴支持
         this.input?.addEventListener('paste', (e) => this.handlePaste(e));
+        
+        // New Chat 按钮
+        this.newChatBtn?.addEventListener('click', () => this.newChat());
     }
     
     handlePaste(e) {
@@ -242,6 +253,12 @@ class PollyChat {
         // 添加到历史
         this.messages.push({ role: 'user', content: messageContent });
         
+        // 保存用户消息到 localStorage
+        this.saveHistory();
+        
+        // 显示 New Chat 按钮
+        this.showNewChatBtn();
+        
         // 创建助手消息容器
         const assistantBubble = this.appendMessage('assistant', '');
         
@@ -328,6 +345,9 @@ class PollyChat {
         // 保存完整回复到历史
         this.messages.push({ role: 'assistant', content: fullText });
         
+        // 持久化到 localStorage
+        this.saveHistory();
+        
         return fullText;
     }
     
@@ -384,6 +404,80 @@ class PollyChat {
     
     scrollToBottom() {
         this.chatBox.scrollTop = this.chatBox.scrollHeight;
+    }
+    
+    // ========== 聊天记录持久化 ==========
+    
+    saveHistory() {
+        try {
+            // 只保存文本消息（跳过图片 base64 避免擑爆 localStorage）
+            const toSave = this.messages.map(msg => ({
+                role: msg.role,
+                content: typeof msg.content === 'string' ? msg.content : 
+                    (msg.content.find(c => c.type === 'text')?.text || '[image]')
+            }));
+            // 上限控制
+            while (toSave.length > this.MAX_MESSAGES) toSave.shift();
+            const data = { messages: toSave, time: Date.now() };
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('保存聊天记录失败:', e);
+        }
+    }
+    
+    restoreHistory() {
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (!raw) return;
+            
+            const data = JSON.parse(raw);
+            
+            // 24小时过期自动清空
+            if (data.time && Date.now() - data.time > this.EXPIRE_MS) {
+                localStorage.removeItem(this.STORAGE_KEY);
+                return;
+            }
+            
+            if (!data.messages || data.messages.length === 0) return;
+            
+            // 恢复 messages 数组（用于上下文继续对话）
+            this.messages = data.messages;
+            
+            // 展开聊天界面
+            this.container.classList.add('expanded');
+            this.chatBox.classList.add('expanded');
+            
+            // 渲染历史消息到页面
+            data.messages.forEach(msg => {
+                this.appendMessage(msg.role === 'user' ? 'user' : 'assistant', msg.content);
+            });
+            
+            // 显示 New Chat 按钮
+            this.showNewChatBtn();
+            this.scrollToBottom();
+            
+            console.log(`💬 Restored ${data.messages.length} messages`);
+        } catch (e) {
+            console.warn('恢复聊天记录失败:', e);
+        }
+    }
+    
+    showNewChatBtn() {
+        if (this.newChatBtn) this.newChatBtn.style.display = 'inline-flex';
+    }
+    
+    newChat() {
+        // 清空一切
+        this.messages = [];
+        localStorage.removeItem(this.STORAGE_KEY);
+        this.chatBox.innerHTML = '';
+        
+        // 隐藏按钮，收起界面
+        if (this.newChatBtn) this.newChatBtn.style.display = 'none';
+        this.container.classList.remove('expanded');
+        this.chatBox.classList.remove('expanded');
+        
+        this.input?.focus();
     }
 }
 
