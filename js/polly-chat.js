@@ -3,6 +3,7 @@
  * 
  * 直连 CopilotX (api.polly.wang)，SSE 流式响应
  * 从 /polly-prompt.json 加载动态 system prompt
+ * D1 持久化：每条消息 fire-and-forget 同步到 Cloudflare D1
  */
 
 class PollyChat {
@@ -19,6 +20,9 @@ class PollyChat {
         this.STORAGE_KEY = 'polly_chat_history';
         this.MAX_MESSAGES = 50;
         this.EXPIRE_MS = 24 * 60 * 60 * 1000; // 24小时过期
+        
+        // D1 持久化: 会话 ID
+        this.conversationId = this.getOrCreateConversationId();
         
         // DOM 元素
         this.container = null;
@@ -256,6 +260,9 @@ class PollyChat {
         // 保存用户消息到 localStorage
         this.saveHistory();
         
+        // D1 持久化: 同步用户消息 (fire-and-forget)
+        this.syncMessage('user', userMessage || '[image]', hasImage);
+        
         // 显示 New Chat 按钮
         this.showNewChatBtn();
         
@@ -347,6 +354,9 @@ class PollyChat {
         
         // 持久化到 localStorage
         this.saveHistory();
+        
+        // D1 持久化: 同步助手回复 (fire-and-forget)
+        this.syncMessage('assistant', fullText);
         
         return fullText;
     }
@@ -472,12 +482,54 @@ class PollyChat {
         localStorage.removeItem(this.STORAGE_KEY);
         this.chatBox.innerHTML = '';
         
+        // 新会话 ID
+        this.conversationId = this.resetConversationId();
+        
         // 隐藏按钮，收起界面
         if (this.newChatBtn) this.newChatBtn.style.display = 'none';
         this.container.classList.remove('expanded');
         this.chatBox.classList.remove('expanded');
         
         this.input?.focus();
+    }
+    
+    // ========== D1 持久化 ==========
+    
+    getOrCreateConversationId() {
+        const stored = localStorage.getItem('polly_conv_id');
+        if (stored) return stored;
+        return this.resetConversationId();
+    }
+    
+    resetConversationId() {
+        const id = crypto.randomUUID();
+        localStorage.setItem('polly_conv_id', id);
+        return id;
+    }
+    
+    syncMessage(role, content, hasImage = false) {
+        // Fire-and-forget: 绝不阻塞聊天体验
+        try {
+            const metadata = this.messages.length <= 1 ? {
+                ua: navigator.userAgent.slice(0, 200),
+                lang: navigator.language,
+                ref: document.referrer.slice(0, 200),
+            } : undefined;
+            
+            fetch(`${this.apiUrl}/v1/conversations/log`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversation_id: this.conversationId,
+                    role,
+                    content,
+                    has_image: hasImage,
+                    metadata,
+                }),
+            }).catch(() => {}); // 静默失败
+        } catch (e) {
+            // 静默
+        }
     }
 }
 
