@@ -751,6 +751,7 @@ table td {
     max-height: 200px;
     opacity: 1;
     margin-bottom: 12px;
+    overflow: visible;
 }
 
 .preview-wrapper {
@@ -881,7 +882,7 @@ table td {
 }
 
 .chat-bubble.polly {
-    background-color: #f0f0f0;
+    background-color: #e8e8e8;
     color: #333;
     border-bottom-left-radius: 4px;
 }
@@ -905,7 +906,7 @@ table td {
     bottom: 0;
     width: 10px;
     height: 10px;
-    background-color: #f0f0f0;
+    background-color: #e8e8e8;
     clip-path: polygon(100% 0, 0 100%, 100% 100%);
 }
 
