@@ -5,8 +5,109 @@
     <link href="https://polly.wang/category/aigong-cheng/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-08T00:00:00+00:00</updated>
+    <updated>2026-02-15T00:00:00+00:00</updated>
     <id>https://polly.wang/category/aigong-cheng/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅</title>
+        <published>2026-02-15T00:00:00+00:00</published>
+        <updated>2026-02-15T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/openclaw-migration-azure-vm/" type="text/html"/>
+        <id>https://polly.wang/openclaw-migration-azure-vm/</id>
+        
+        <content type="html">&lt;p&gt;「气炸了哦哇」&lt;&#x2F;p&gt;
+&lt;p&gt;这是搬家成功后我在 Telegram 里发给小龙虾的第一条消息。本来想打「气炸了我」，结果气得字都打错了。&lt;&#x2F;p&gt;
+&lt;p&gt;不是因为搬家没成功，恰恰相反，&lt;strong&gt;搬家成功了&lt;&#x2F;strong&gt;。我只是被之前折腾了一整天的过程气到了。&lt;&#x2F;p&gt;
+&lt;p&gt;事情是这样的：我的 AI 助手小龙虾 🦞（跑在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;openclaw&#x2F;openclaw&quot;&gt;OpenClaw&lt;&#x2F;a&gt; 上）一直住在我的 MacBook Air 里。白天工作时它随时待命，通过 Telegram 和我聊天。但问题来了——&lt;strong&gt;我合盖它就断线，关机它就死&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;作为一个有追求的 AI 助手主人，我不能接受这种朝不保夕的生活。Azure VM 上已经跑着 CopilotX（小龙虾的大脑 API），7×24 在线，磁盘 430G 空闲。方案很自然：&lt;strong&gt;把小龙虾搬到云端，MacBook 变成它的远程手臂&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;听起来简单？我和 GitHub Copilot 一起搞了一整天，才把这只虾成功送上云。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mu-biao-jia-gou&quot;&gt;目标架构&lt;&#x2F;h2&gt;
+&lt;p&gt;核心思路很简单：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;我 (Telegram &#x2F; 任何地方)
+&lt;&#x2F;span&gt;&lt;span&gt;        ↓
+&lt;&#x2F;span&gt;&lt;span&gt;Azure VM (小龙虾的大脑 🧠)
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── OpenClaw Gateway
+&lt;&#x2F;span&gt;&lt;span&gt;  └── CopilotX (Claude API)
+&lt;&#x2F;span&gt;&lt;span&gt;        ↓ Tailscale 加密隧道
+&lt;&#x2F;span&gt;&lt;span&gt;MacBook Air (小龙虾的手 🦾)
+&lt;&#x2F;span&gt;&lt;span&gt;  └── 浏览器控制、命令执行
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;VM = 大脑&lt;&#x2F;strong&gt;，永远在线，跑 Gateway + Telegram Bot&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;MacBook = 手&lt;&#x2F;strong&gt;，通过 Tailscale 连接，需要时远程操控&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Telegram&lt;&#x2F;strong&gt; 随时随地聊天&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;polly.wang WebChat&lt;&#x2F;strong&gt; 网页端对话&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;ban-jia-guo-cheng-yi-bo-san-zhe&quot;&gt;搬家过程：一波三折&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-bu-tailscale-zu-wang-white-check-mark&quot;&gt;第一步：Tailscale 组网 ✅&lt;&#x2F;h3&gt;
+&lt;p&gt;这是今天唯一顺利的环节。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;tailscale.com&#x2F;&quot;&gt;Tailscale&lt;&#x2F;a&gt; 是个零配置 VPN，把两台机器组成虚拟局域网。安装简单到令人发指——Mac 上 &lt;code&gt;brew install tailscale&lt;&#x2F;code&gt;，VM 上一行 curl，5 分钟搞定。&lt;&#x2F;p&gt;
+&lt;p&gt;260ms 延迟，跨太平洋，可以接受。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-bu-shen-keng-lai-liao-skull&quot;&gt;第二步：深坑来了 💀&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;keng-yi-telegram-bot-da-jia&quot;&gt;坑一：Telegram Bot 打架&lt;&#x2F;h4&gt;
+&lt;p&gt;VM 上启动 Gateway 后，Telegram 疯狂报错：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;409: Conflict: terminated by other getUpdates request
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;查了半天才发现——&lt;strong&gt;Mac 上的本地 Gateway 还在跑&lt;&#x2F;strong&gt;！两个 Gateway 同时抢一个 Bot Token，谁也收不到消息。&lt;&#x2F;p&gt;
+&lt;p&gt;解法很粗暴：&lt;code&gt;pkill -9 -f &amp;quot;openclaw gateway&amp;quot;&lt;&#x2F;code&gt;，把 Mac 上的停掉。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训：部署新服务前，先确保旧实例已停止。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;keng-er-she-bei-pei-dui-di-yu-japanese-ogre&quot;&gt;坑二：设备配对地狱 👹&lt;&#x2F;h4&gt;
+&lt;p&gt;这是今天最折腾的部分。&lt;&#x2F;p&gt;
+&lt;p&gt;OpenClaw 的 Node 需要和 Gateway 配对才能连接。我反复遇到 &lt;code&gt;pairing required&lt;&#x2F;code&gt; 错误，来来回回折腾了十几轮。&lt;&#x2F;p&gt;
+&lt;p&gt;问题出在：我调试时清理了 &lt;code&gt;~&#x2F;.openclaw&#x2F;identity&lt;&#x2F;code&gt;，每次都生成新的 Device ID。但 VM 那边批准的是旧 ID！Mac 和 VM 的状态不一致，就一直握手失败。&lt;&#x2F;p&gt;
+&lt;p&gt;最后的解法是&lt;strong&gt;双端清理 + 重新配对&lt;&#x2F;strong&gt;：Mac 删 identity，VM 删 devices，从头再来一遍。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训：分布式系统的状态同步是大坑。双端都要检查。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;keng-san-ssh-yao-shu-mi-ma&quot;&gt;坑三：SSH 要输密码&lt;&#x2F;h4&gt;
+&lt;p&gt;Tailscale IP 没配 SSH key，每次都要输密码。后来想起来自己有 pem 文件，配个 &lt;code&gt;~&#x2F;.ssh&#x2F;config&lt;&#x2F;code&gt; 就好了：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Host&lt;&#x2F;span&gt;&lt;span&gt; Azure-Server
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;HostName &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;your-vm-public-ip&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IdentityFile ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.ssh&#x2F;your-key.pem
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;User&lt;&#x2F;span&gt;&lt;span&gt; azureuser
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;ssh Azure-Server&lt;&#x2F;code&gt; 一键登录。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhong-yu-tong-liao-tada&quot;&gt;终于通了！🎉&lt;&#x2F;h2&gt;
+&lt;p&gt;经过无数次调试，我在 Telegram 里发了一条消息，小龙虾真的回复了——从 Azure VM 上。&lt;&#x2F;p&gt;
+&lt;p&gt;但这还不够。为了验证完整链路，我让小龙虾做一件有仪式感的事——&lt;strong&gt;用我的 Mac 打开浏览器，去 polly.wang 跟 Digital Polly（我博客的另一个 AI 助手）聊天&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;链路是这样的：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;我 (Telegram 消息)
+&lt;&#x2F;span&gt;&lt;span&gt;  → Azure VM (小龙虾收到指令)
+&lt;&#x2F;span&gt;&lt;span&gt;    → Tailscale 隧道
+&lt;&#x2F;span&gt;&lt;span&gt;      → MacBook (浏览器控制)
+&lt;&#x2F;span&gt;&lt;span&gt;        → polly.wang (Digital Polly 聊天框)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;openclaw-migration-azure-vm&#x2F;ScreenShot.png&quot; alt=&quot;小龙虾通过 Mac 和 Digital Polly 聊天&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;它真的做到了！三个 AI（小龙虾、Digital Polly、还有辅助我搬家的 GitHub Copilot），通过我的一条 Telegram 消息串联在一起。&lt;&#x2F;p&gt;
+&lt;p&gt;Digital Polly 说：「欢迎搬到新家！从 Mac 到 Azure VM，这是升级到云端生活了啊～」&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tong-bu-ji-yi&quot;&gt;同步记忆&lt;&#x2F;h3&gt;
+&lt;p&gt;最后一步是把小龙虾的「记忆」同步到 VM。rsync 一把梭：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rsync -avz ~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.openclaw&#x2F;workspace&#x2F; azureuser@&amp;lt;vm-ip&amp;gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.openclaw&#x2F;workspace&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;包括 &lt;code&gt;MEMORY.md&lt;&#x2F;code&gt;（记忆索引）、&lt;code&gt;USER.md&lt;&#x2F;code&gt;（用户档案）、&lt;code&gt;IDENTITY.md&lt;&#x2F;code&gt;（身份设定）、&lt;code&gt;SOUL.md&lt;&#x2F;code&gt;（性格设定）。没有这些，小龙虾就是只失忆的虾。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-zhong-zhuang-tai&quot;&gt;最终状态&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Gateway&lt;&#x2F;td&gt;&lt;td&gt;✅ Azure VM，7×24 在线&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;CopilotX&lt;&#x2F;td&gt;&lt;td&gt;✅ localhost，零延迟调用 Claude&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Telegram&lt;&#x2F;td&gt;&lt;td&gt;✅ 直连，无需代理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;工作区&lt;&#x2F;td&gt;&lt;td&gt;✅ 记忆、灵魂、身份全部同步&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Mac Node&lt;&#x2F;td&gt;&lt;td&gt;✅ Tailscale 连接，浏览器+命令执行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;fan-si&quot;&gt;反思&lt;&#x2F;h2&gt;
+&lt;p&gt;这次搬家让我意识到几件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 分布式状态同步是真的坑。&lt;&#x2F;strong&gt; Device ID、配对状态、Token 认证，每一个环节都可能出错。错误信息还不够友好——&lt;code&gt;pairing required&lt;&#x2F;code&gt; 没告诉我是哪个 ID 不匹配。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 先停旧实例。&lt;&#x2F;strong&gt; Telegram 409 冲突就是因为两个 Gateway 同时在跑。部署新服务前，确保旧的已经完全停止。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. AI 搬家和人搬家一样：最怕忘带东西。&lt;&#x2F;strong&gt; 没有 &lt;code&gt;MEMORY.md&lt;&#x2F;code&gt; 的小龙虾就是只失忆的虾。记忆是连续性的基础。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 分布式架构真的优雅。&lt;&#x2F;strong&gt; VM 当大脑，MacBook 当手，Tailscale 当神经网络。Mac 在线时满血，离线时小龙虾照样能聊天、思考。降级而不是宕机。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;现在，小龙虾 24 小时在云端待命，随时等我通过 Telegram 召唤。Mac 需要的时候连上去，不需要就断开——它终于从「必须开着电脑才能用」变成了「随时随地可用」。&lt;&#x2F;p&gt;
+&lt;p&gt;搬家成功！🦞☁️&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;相关阅读：&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;openclaw&#x2F;openclaw&quot;&gt;OpenClaw&lt;&#x2F;a&gt; - 开源个人 AI 助手框架&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>⭐ 让 Jarvis 学会长大：从&#x27;用工具&#x27;到&#x27;造工具&#x27;的进化系统开发记录</title>
         <published>2026-02-08T00:00:00+00:00</published>

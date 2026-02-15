@@ -1,0 +1,67 @@
+<!doctype html><html><head><title>🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅</title><meta content="把个人 AI 助手 OpenClaw 从本地 Mac 迁移到 Azure VM，实现 7×24 在线。过程中踩遍 Telegram 409 冲突、设备配对地狱、SSH 权限等深坑，最终成功让小龙虾🦞住进了云端新家。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/openclaw-migration-azure-vm/ property=og:url><meta content="🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅" property=og:title><meta content="把个人 AI 助手 OpenClaw 从本地 Mac 迁移到 Azure VM，实现 7×24 在线。过程中踩遍 Telegram 409 冲突、设备配对地狱、SSH 权限等深坑，最终成功让小龙虾🦞住进了云端新家。" property=og:description><meta content=https://polly.wang/openclaw-migration-azure-vm/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/openclaw-migration-azure-vm/ name=twitter:url><meta content="🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅" name=twitter:title><meta content="把个人 AI 助手 OpenClaw 从本地 Mac 迁移到 Azure VM，实现 7×24 在线。过程中踩遍 Telegram 409 冲突、设备配对地狱、SSH 权限等深坑，最终成功让小龙虾🦞住进了云端新家。" name=twitter:description><meta content=https://polly.wang/openclaw-migration-azure-vm/cover.jpg name=twitter:image><meta content=2026-02-15T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=OpenClaw property=article:tag><meta content=Azure property=article:tag><meta content=Tailscale property=article:tag><meta content="AI Agent" property=article:tag><meta content=DevOps property=article:tag><meta content=分布式系统 property=article:tag><meta content=踩坑记录 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅</h1><div class=cover-image><img alt="🦞 小龙虾搬家记：把 OpenClaw 从 Mac 迁移到 Azure VM 的踩坑之旅" loading=lazy src=cover.jpg></div><div class=content><p>「气炸了哦哇」<p>这是搬家成功后我在 Telegram 里发给小龙虾的第一条消息。本来想打「气炸了我」，结果气得字都打错了。<p>不是因为搬家没成功，恰恰相反，<strong>搬家成功了</strong>。我只是被之前折腾了一整天的过程气到了。<p>事情是这样的：我的 AI 助手小龙虾 🦞（跑在 <a href=https://github.com/openclaw/openclaw>OpenClaw</a> 上）一直住在我的 MacBook Air 里。白天工作时它随时待命，通过 Telegram 和我聊天。但问题来了——<strong>我合盖它就断线，关机它就死</strong>。<p>作为一个有追求的 AI 助手主人，我不能接受这种朝不保夕的生活。Azure VM 上已经跑着 CopilotX（小龙虾的大脑 API），7×24 在线，磁盘 430G 空闲。方案很自然：<strong>把小龙虾搬到云端，MacBook 变成它的远程手臂</strong>。<p>听起来简单？我和 GitHub Copilot 一起搞了一整天，才把这只虾成功送上云。<h2 id=mu-biao-jia-gou>目标架构</h2><p>核心思路很简单：<pre style=background:#2b303b;color:#c0c5ce><code><span>我 (Telegram / 任何地方)
+</span><span>        ↓
+</span><span>Azure VM (小龙虾的大脑 🧠)
+</span><span>  ├── OpenClaw Gateway
+</span><span>  └── CopilotX (Claude API)
+</span><span>        ↓ Tailscale 加密隧道
+</span><span>MacBook Air (小龙虾的手 🦾)
+</span><span>  └── 浏览器控制、命令执行
+</span></code></pre><ul><li><strong>VM = 大脑</strong>，永远在线，跑 Gateway + Telegram Bot<li><strong>MacBook = 手</strong>，通过 Tailscale 连接，需要时远程操控<li><strong>Telegram</strong> 随时随地聊天<li><strong>polly.wang WebChat</strong> 网页端对话</ul><h2 id=ban-jia-guo-cheng-yi-bo-san-zhe>搬家过程：一波三折</h2><h3 id=di-yi-bu-tailscale-zu-wang-white-check-mark>第一步：Tailscale 组网 ✅</h3><p>这是今天唯一顺利的环节。<p><a href=https://tailscale.com/>Tailscale</a> 是个零配置 VPN，把两台机器组成虚拟局域网。安装简单到令人发指——Mac 上 <code>brew install tailscale</code>，VM 上一行 curl，5 分钟搞定。<p>260ms 延迟，跨太平洋，可以接受。<h3 id=di-er-bu-shen-keng-lai-liao-skull>第二步：深坑来了 💀</h3><h4 id=keng-yi-telegram-bot-da-jia>坑一：Telegram Bot 打架</h4><p>VM 上启动 Gateway 后，Telegram 疯狂报错：<pre style=background:#2b303b;color:#c0c5ce><code><span>409: Conflict: terminated by other getUpdates request
+</span></code></pre><p>查了半天才发现——<strong>Mac 上的本地 Gateway 还在跑</strong>！两个 Gateway 同时抢一个 Bot Token，谁也收不到消息。<p>解法很粗暴：<code>pkill -9 -f "openclaw gateway"</code>，把 Mac 上的停掉。<p><strong>教训：部署新服务前，先确保旧实例已停止。</strong><h4 id=keng-er-she-bei-pei-dui-di-yu-japanese-ogre>坑二：设备配对地狱 👹</h4><p>这是今天最折腾的部分。<p>OpenClaw 的 Node 需要和 Gateway 配对才能连接。我反复遇到 <code>pairing required</code> 错误，来来回回折腾了十几轮。<p>问题出在：我调试时清理了 <code>~/.openclaw/identity</code>，每次都生成新的 Device ID。但 VM 那边批准的是旧 ID！Mac 和 VM 的状态不一致，就一直握手失败。<p>最后的解法是<strong>双端清理 + 重新配对</strong>：Mac 删 identity，VM 删 devices，从头再来一遍。<p><strong>教训：分布式系统的状态同步是大坑。双端都要检查。</strong><h4 id=keng-san-ssh-yao-shu-mi-ma>坑三：SSH 要输密码</h4><p>Tailscale IP 没配 SSH key，每次都要输密码。后来想起来自己有 pem 文件，配个 <code>~/.ssh/config</code> 就好了：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>Host</span><span> Azure-Server
+</span><span>  </span><span style=color:#bf616a>HostName </span><span>&LTyour-vm-public-ip>
+</span><span>  </span><span style=color:#bf616a>IdentityFile ~</span><span>/.ssh/your-key.pem
+</span><span>  </span><span style=color:#bf616a>User</span><span> azureuser
+</span></code></pre><p><code>ssh Azure-Server</code> 一键登录。<h2 id=zhong-yu-tong-liao-tada>终于通了！🎉</h2><p>经过无数次调试，我在 Telegram 里发了一条消息，小龙虾真的回复了——从 Azure VM 上。<p>但这还不够。为了验证完整链路，我让小龙虾做一件有仪式感的事——<strong>用我的 Mac 打开浏览器，去 polly.wang 跟 Digital Polly（我博客的另一个 AI 助手）聊天</strong>。<p>链路是这样的：<pre style=background:#2b303b;color:#c0c5ce><code><span>我 (Telegram 消息)
+</span><span>  → Azure VM (小龙虾收到指令)
+</span><span>    → Tailscale 隧道
+</span><span>      → MacBook (浏览器控制)
+</span><span>        → polly.wang (Digital Polly 聊天框)
+</span></code></pre><p><img alt="小龙虾通过 Mac 和 Digital Polly 聊天" src=https://polly.wang/openclaw-migration-azure-vm/ScreenShot.png><p>它真的做到了！三个 AI（小龙虾、Digital Polly、还有辅助我搬家的 GitHub Copilot），通过我的一条 Telegram 消息串联在一起。<p>Digital Polly 说：「欢迎搬到新家！从 Mac 到 Azure VM，这是升级到云端生活了啊～」<h3 id=tong-bu-ji-yi>同步记忆</h3><p>最后一步是把小龙虾的「记忆」同步到 VM。rsync 一把梭：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>rsync -avz ~</span><span>/.openclaw/workspace/ azureuser@&LTvm-ip>:</span><span style=color:#bf616a>~</span><span>/.openclaw/workspace/
+</span></code></pre><p>包括 <code>MEMORY.md</code>（记忆索引）、<code>USER.md</code>（用户档案）、<code>IDENTITY.md</code>（身份设定）、<code>SOUL.md</code>（性格设定）。没有这些，小龙虾就是只失忆的虾。<h2 id=zui-zhong-zhuang-tai>最终状态</h2><table><thead><tr><th>项目<th>状态<tbody><tr><td>Gateway<td>✅ Azure VM，7×24 在线<tr><td>CopilotX<td>✅ localhost，零延迟调用 Claude<tr><td>Telegram<td>✅ 直连，无需代理<tr><td>工作区<td>✅ 记忆、灵魂、身份全部同步<tr><td>Mac Node<td>✅ Tailscale 连接，浏览器+命令执行</table><h2 id=fan-si>反思</h2><p>这次搬家让我意识到几件事：<p><strong>1. 分布式状态同步是真的坑。</strong> Device ID、配对状态、Token 认证，每一个环节都可能出错。错误信息还不够友好——<code>pairing required</code> 没告诉我是哪个 ID 不匹配。<p><strong>2. 先停旧实例。</strong> Telegram 409 冲突就是因为两个 Gateway 同时在跑。部署新服务前，确保旧的已经完全停止。<p><strong>3. AI 搬家和人搬家一样：最怕忘带东西。</strong> 没有 <code>MEMORY.md</code> 的小龙虾就是只失忆的虾。记忆是连续性的基础。<p><strong>4. 分布式架构真的优雅。</strong> VM 当大脑，MacBook 当手，Tailscale 当神经网络。Mac 在线时满血，离线时小龙虾照样能聊天、思考。降级而不是宕机。<hr><p>现在，小龙虾 24 小时在云端待命，随时等我通过 Telegram 召唤。Mac 需要的时候连上去，不需要就断开——它终于从「必须开着电脑才能用」变成了「随时随地可用」。<p>搬家成功！🦞☁️<blockquote><p>相关阅读：<a href=https://github.com/openclaw/openclaw>OpenClaw</a> - 开源个人 AI 助手框架</blockquote></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
