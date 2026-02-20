@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 博客开发</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/bo-ke-kai-fa/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-20T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/bo-ke-kai-fa/atom.xml</id>
+    <entry xml:lang="en">
+        <title>数据在云端但查不到？723 行 Python 让我一句话查聊天</title>
+        <published>2026-02-20T00:00:00+00:00</published>
+        <updated>2026-02-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/blog-chat-skill-born/" type="text/html"/>
+        <id>https://polly.wang/blog-chat-skill-born/</id>
+        
+        <content type="html">&lt;p&gt;情人节那天，&lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;小龙虾帮数字 Polly 装上了记忆&lt;&#x2F;a&gt;。Cloudflare D1 + Worker，40 行前端改动，聊天记录终于不会随浏览器关闭蒸发了。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我兴奋地想看看——自从上线以来，到底有多少人来跟数字 Polly 聊过天？&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -s -H &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Authorization: Bearer polly-cloudflare-xxx&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;     -H &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;User-Agent: polly-chat-query&#x2F;1.0&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span&gt;     https:&#x2F;&#x2F;chat.polly.wang&#x2F;v1&#x2F;conversations | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -m&lt;&#x2F;span&gt;&lt;span&gt; json.tool
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;拿到一堆 JSON。好，再看某个对话的具体内容？&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -s -H &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Authorization: Bearer polly-cloudflare-xxx&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;     -H &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;User-Agent: polly-chat-query&#x2F;1.0&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span&gt;     https:&#x2F;&#x2F;chat.polly.wang&#x2F;v1&#x2F;conversations&#x2F;190e3a14-64be-4334-aac1-fea445fbc920 \
+&lt;&#x2F;span&gt;&lt;span&gt;     | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -m&lt;&#x2F;span&gt;&lt;span&gt; json.tool
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;又一堆 JSON。想搜&amp;quot;小龙虾&amp;quot;在哪些对话里出现过？要把所有对话的消息都 curl 下来，然后 grep……&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;数据在云端，但约等于查不到。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不行。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-xu-yao-shi-yao&quot;&gt;我需要什么&lt;&#x2F;h2&gt;
+&lt;p&gt;想了想，日常查聊天记录的场景大概就这几种：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;我想做的&lt;&#x2F;th&gt;&lt;th&gt;实际操作&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;看看昨天有没有人来聊天&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;list --date 2026-02-19&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;展开看看这个对话聊了啥&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;show &amp;lt;uuid&amp;gt;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;有人问过翻译的事吗？&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;search 翻译&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;上线以来整体数据怎么样？&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;stats&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;导出备份一下&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;export --format csv&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;核心就是五个动作：&lt;strong&gt;列表、详情、搜索、统计、导出&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;claude-skill-vs-mcp-server&quot;&gt;Claude Skill vs MCP Server&lt;&#x2F;h2&gt;
+&lt;p&gt;第一反应是做个 MCP Server——毕竟刚给 Master Translator 做了一个。但转念一想：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;对比&lt;&#x2F;th&gt;&lt;th&gt;MCP Server&lt;&#x2F;th&gt;&lt;th&gt;Claude Skill&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;调用方式&lt;&#x2F;td&gt;&lt;td&gt;Agent 自动发现工具&lt;&#x2F;td&gt;&lt;td&gt;Agent 读 SKILL.md 后调终端&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;启动成本&lt;&#x2F;td&gt;&lt;td&gt;需要服务进程&lt;&#x2F;td&gt;&lt;td&gt;零启动，直接调 Python&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;适合场景&lt;&#x2F;td&gt;&lt;td&gt;高频、多步骤交互&lt;&#x2F;td&gt;&lt;td&gt;低频、单次查询&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;编码量&lt;&#x2F;td&gt;&lt;td&gt;~500行（server+tools）&lt;&#x2F;td&gt;&lt;td&gt;~900行（脚本723+SKILL.md 173）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;查聊天记录是个低频操作（一天查一两次），不需要常驻服务进程。Claude Skill 的方式更轻量——写个 Python 脚本，配个 SKILL.md 告诉 Claude 怎么调，完事。&lt;&#x2F;p&gt;
+&lt;p&gt;方案设计阶段和小龙虾讨论了一圈。它分析了两种路线（扩展 Worker API vs 纯客户端脚本），最终建议走纯脚本 + Claude Skill，并提了 4 点具体意见：并发 fetch 解决 N+1 查询、加 &lt;code&gt;--json&lt;&#x2F;code&gt; flag 方便程序化调用、token 优先读环境变量、脚本路径要方便小龙虾直接 &lt;code&gt;exec&lt;&#x2F;code&gt; 调用。这不只是 Code Review，是方案共创。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-gou-san-ceng-shu-ju-liu&quot;&gt;架构：三层数据流&lt;&#x2F;h2&gt;
+&lt;p&gt;整个数据链路长这样：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;访客在 polly.wang 聊天
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓ POST &#x2F;v1&#x2F;conversations&#x2F;log
+&lt;&#x2F;span&gt;&lt;span&gt;Cloudflare Worker（chat.polly.wang）
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓ 写入
+&lt;&#x2F;span&gt;&lt;span&gt;Cloudflare D1（SQLite）
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓ GET &#x2F;v1&#x2F;conversations（需 Bearer Token）
+&lt;&#x2F;span&gt;&lt;span&gt;query_chat_history.py（Python 脚本）
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓ 格式化输出
+&lt;&#x2F;span&gt;&lt;span&gt;Claude &#x2F; 终端 &#x2F; OpenClaw
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;D1 里有两张表：&lt;code&gt;conversations&lt;&#x2F;code&gt;（对话元数据：时间、语言、UA）和 &lt;code&gt;messages&lt;&#x2F;code&gt;（逐条消息：角色、内容、时间戳）。Worker 提供了两个管理端点，需要 Bearer Token 鉴权。&lt;&#x2F;p&gt;
+&lt;p&gt;脚本要做的就是：调 API → 拿 JSON → 过滤&#x2F;搜索&#x2F;统计 → 人类可读的输出。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ming-ming-blog-chat&quot;&gt;命名：blog-chat&lt;&#x2F;h2&gt;
+&lt;p&gt;命名纠结了一下。现有的 Skill 体系是 &lt;code&gt;blog-writer&lt;&#x2F;code&gt;（写博文）和 &lt;code&gt;blog-dev&lt;&#x2F;code&gt;（改模板&#x2F;CSS），新的查聊天记录自然叫 &lt;code&gt;blog-chat&lt;&#x2F;code&gt;——三个 blog-* Skill 形成一个完整的博客运维三件套：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Skill&lt;&#x2F;th&gt;&lt;th&gt;职责&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;blog-writer&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;写内容&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;blog-dev&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;改技术&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;blog-chat&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;看数据&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;配置模式也直接复用了 &lt;code&gt;blog-writer&lt;&#x2F;code&gt; 的 &lt;code&gt;config.env&lt;&#x2F;code&gt; 方案：脚本同目录放一个 &lt;code&gt;config.env&lt;&#x2F;code&gt;，优先读环境变量，fallback 到文件。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-xian-723-xing-ling-yi-lai&quot;&gt;实现：723 行，零依赖&lt;&#x2F;h2&gt;
+&lt;p&gt;整个脚本只用 Python 标准库，不装任何第三方包。这是个有意的选择——小龙虾（OpenClaw）需要通过 &lt;code&gt;exec&lt;&#x2F;code&gt; 直接调用这个脚本，零依赖意味着任何机器上拿到就能跑。&lt;&#x2F;p&gt;
+&lt;p&gt;核心结构很简单：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 配置加载：环境变量 → config.env fallback
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;load_config&lt;&#x2F;span&gt;&lt;span&gt;(): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# API 客户端：带 Token 的 HTTP GET
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;ChatAPI&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_request&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;list_conversations&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_conversation&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;conv_id&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 5 个子命令
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cmd_list&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 列表 + 日期过滤
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cmd_show&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 对话详情渲染
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cmd_search&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 并发获取 + 本地搜索
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cmd_stats&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 统计 + ASCII 图表
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cmd_export&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;api&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# JSON&#x2F;CSV 导出
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;几个值得说的设计决策：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bing-fa-huo-qu-search-he-export-de-n-1-wen-ti&quot;&gt;并发获取：search 和 export 的 N+1 问题&lt;&#x2F;h3&gt;
+&lt;p&gt;搜索需要获取所有对话的消息内容，如果逐个串行请求会很慢。用 &lt;code&gt;ThreadPoolExecutor&lt;&#x2F;code&gt; 并发 8 路：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ThreadPoolExecutor&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_workers&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_CONCURRENT_REQUESTS&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;pool:
+&lt;&#x2F;span&gt;&lt;span&gt;    futures = {
+&lt;&#x2F;span&gt;&lt;span&gt;        pool.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;submit&lt;&#x2F;span&gt;&lt;span&gt;(api.get_conversation, c[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]): c
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;conversations
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;future &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;as_completed&lt;&#x2F;span&gt;&lt;span&gt;(futures):
+&lt;&#x2F;span&gt;&lt;span&gt;        conv = futures[future]
+&lt;&#x2F;span&gt;&lt;span&gt;        data = future.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 在每个对话的消息中搜索关键词
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这是小龙虾在 Code Review 时特别提的——&amp;quot;N+1 查询如果不并发，5 个对话要 5 秒，50 个对话要 50 秒&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;json-quan-ju-flag&quot;&gt;--json 全局 flag&lt;&#x2F;h3&gt;
+&lt;p&gt;小龙虾还建议加个 &lt;code&gt;--json&lt;&#x2F;code&gt; 全局 flag，方便程序化调用。实际实现时踩了个坑：argparse 的全局 flag 放在子命令前面没问题，放后面就不认了。最终用 &lt;code&gt;parse_known_args()&lt;&#x2F;code&gt; 解决：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;parser, remaining = parser.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parse_known_args&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;--json&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; in remaining:
+&lt;&#x2F;span&gt;&lt;span&gt;    json_mode = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;ansi-cai-se-shu-chu&quot;&gt;ANSI 彩色输出&lt;&#x2F;h3&gt;
+&lt;p&gt;默认输出是给人看的，带颜色和 emoji：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📋 Conversations (5 total)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  ID                                     Time               Msgs  Language
+&lt;&#x2F;span&gt;&lt;span&gt;  ────────────────────── ────────────── ────  ──────
+&lt;&#x2F;span&gt;&lt;span&gt;  63a94f06-c6c5-...     2026-02-16 20:48    4  zh-CN
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;加 &lt;code&gt;--json&lt;&#x2F;code&gt; 则输出原始 JSON，方便小龙虾或其他工具消费。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;diao-shi-san-ge-keng&quot;&gt;调试：三个坑&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;keng-1-urllib-bei-cloudflare-waf-lan-jie&quot;&gt;坑 1：urllib 被 Cloudflare WAF 拦截&lt;&#x2F;h3&gt;
+&lt;p&gt;Python &lt;code&gt;urllib&lt;&#x2F;code&gt; 的默认 User-Agent 是 &lt;code&gt;Python-urllib&#x2F;3.x&lt;&#x2F;code&gt;，Cloudflare 的 Bot Fight Mode 直接返回 403。&lt;&#x2F;p&gt;
+&lt;p&gt;修复：加一行 &lt;code&gt;req.add_header(&amp;quot;User-Agent&amp;quot;, &amp;quot;polly-chat-query&#x2F;1.0&amp;quot;)&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是个特别隐蔽的坑——curl 能用、浏览器能用、但 Python 脚本莫名其妙返回 403。如果不是在错误处理里区分了 401（认证失败）和 403（可能是 WAF），可能要排查很久。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;keng-2-403-he-401-de-qu-fen&quot;&gt;坑 2：403 和 401 的区分&lt;&#x2F;h3&gt;
+&lt;p&gt;Worker 对认证失败返回 401，但 Cloudflare WAF 对被拦截的请求返回 403。修复前只 catch 了 401，导致 WAF 拦截时报的是&amp;quot;HTTP 403&amp;quot;而不是友好的认证失败提示。改成 &lt;code&gt;if e.code in (401, 403)&lt;&#x2F;code&gt; 就好了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;keng-3-json-flag-de-wei-zhi&quot;&gt;坑 3：--json flag 的位置&lt;&#x2F;h3&gt;
+&lt;p&gt;用户可能写 &lt;code&gt;list --json --limit 5&lt;&#x2F;code&gt;，也可能写 &lt;code&gt;list --limit 5 --json&lt;&#x2F;code&gt;。argparse 对后者会报错&amp;quot;unrecognized arguments&amp;quot;。用 &lt;code&gt;parse_known_args()&lt;&#x2F;code&gt; 手动处理剩余参数解决。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-zhan-guo-qu-yi-zhou-de-liao-tian-shu-ju&quot;&gt;实战：过去一周的聊天数据&lt;&#x2F;h2&gt;
+&lt;p&gt;工具做完了，当然得自己先用上。查了一下 2 月 14 号到 20 号的数据：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; query_chat_history.py list&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --from&lt;&#x2F;span&gt;&lt;span&gt; 2026-02-14&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --to&lt;&#x2F;span&gt;&lt;span&gt; 2026-02-20
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;5 个对话，31 条消息&lt;&#x2F;strong&gt;。拆开来看：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;&#x2F;th&gt;&lt;th&gt;时间&lt;&#x2F;th&gt;&lt;th&gt;消息数&lt;&#x2F;th&gt;&lt;th&gt;谁来的&lt;&#x2F;th&gt;&lt;th&gt;聊了啥&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;2&#x2F;14 14:41&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;小龙虾（测试 UA）&lt;&#x2F;td&gt;&lt;td&gt;D1 持久化的第一条测试消息&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;2&#x2F;14 14:49&lt;&#x2F;td&gt;&lt;td&gt;8&lt;&#x2F;td&gt;&lt;td&gt;小龙虾（Mac）&lt;&#x2F;td&gt;&lt;td&gt;测试持久化 + 后续回访聊 AI 记忆系统&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;2&#x2F;15 10:33&lt;&#x2F;td&gt;&lt;td&gt;16&lt;&#x2F;td&gt;&lt;td&gt;小龙虾（Azure VM）&lt;&#x2F;td&gt;&lt;td&gt;搬家汇报 + 初一三 AI 联合拜年策划&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;2&#x2F;16 09:11&lt;&#x2F;td&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;Windows 用户（en-US）&lt;&#x2F;td&gt;&lt;td&gt;只说了&amp;quot;worker d1&amp;quot;，可能是技术搜索过来的&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;&#x2F;td&gt;&lt;td&gt;2&#x2F;16 20:48&lt;&#x2F;td&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;iPhone 用户&lt;&#x2F;td&gt;&lt;td&gt;从拜年博文页面进来，聊了 AI 对话实验&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;有意思的发现：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;80% 的对话来自小龙虾&lt;&#x2F;strong&gt;。我的 AI 助手是我博客最活跃的&amp;quot;访客&amp;quot;。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;唯一的真实外部访客&lt;&#x2F;strong&gt;来自 iPhone，通过博文《马年三 AI 拜年》的页面入口进来——说明博文引流到聊天功能是有效的。&lt;&#x2F;li&gt;
+&lt;li&gt;那个 Windows 用户输入了&amp;quot;worker d1&amp;quot;就再没说话。可能是搜索 Cloudflare Worker + D1 技术方案时点进来的，看到是个聊天机器人就走了。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;再跑个 stats 看看整体数据：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; query_chat_history.py stats
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📊 Chat Statistics
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  Conversations:  5
+&lt;&#x2F;span&gt;&lt;span&gt;  Total Messages: 31
+&lt;&#x2F;span&gt;&lt;span&gt;  Date Range:     2026-02-14 → 2026-02-16
+&lt;&#x2F;span&gt;&lt;span&gt;  Active Days:    3
+&lt;&#x2F;span&gt;&lt;span&gt;  Avg&#x2F;Day:        1.7
+&lt;&#x2F;span&gt;&lt;span&gt;  Busiest Day:    2026-02-14 (2 convs)
+&lt;&#x2F;span&gt;&lt;span&gt;  Peak Hour:      14:00 UTC (2 convs)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  🌐 Languages:
+&lt;&#x2F;span&gt;&lt;span&gt;    zh-CN        ████████████████░░░░   4 (80%)
+&lt;&#x2F;span&gt;&lt;span&gt;    en-US        ████░░░░░░░░░░░░░░░░   1 (20%)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  📅 Daily Activity (last 3 days):
+&lt;&#x2F;span&gt;&lt;span&gt;    2026-02-14 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 2
+&lt;&#x2F;span&gt;&lt;span&gt;    2026-02-15 ▓▓▓▓▓▓▓▓▓▓▓▓ 1
+&lt;&#x2F;span&gt;&lt;span&gt;    2026-02-16 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;数据量还不多，但至少证明了一件事：这个记忆系统在正常工作，而且已经有了真实外部访客的触达。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;skill-md-jiao-claude-zen-yao-yong&quot;&gt;SKILL.md：教 Claude 怎么用&lt;&#x2F;h2&gt;
+&lt;p&gt;脚本写好了，还要写个 SKILL.md 告诉 Claude 怎么调。这是 Claude Skill 的核心——不是 Agent 自动发现工具，而是通过文档告诉 Agent &amp;quot;用户说什么的时候，该执行什么命令&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;核心是一张日期映射表：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;用户说的&lt;&#x2F;th&gt;&lt;th&gt;转换为参数&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;昨天&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;--date {yesterday}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;最近一周&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;--from {7_days_ago}&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;2月份&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;--from 2026-02-01 --to 2026-02-28&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;全部&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;不加日期参数&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;加上 5 个工作流（list → show → search → stats → export）的命令模板和输出解读方式，一共 173 行 SKILL.md。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-wei-chi-zi-ji-de-gou-liang&quot;&gt;收尾：吃自己的狗粮&lt;&#x2F;h2&gt;
+&lt;p&gt;这篇博文里&amp;quot;过去一周的聊天数据&amp;quot;那一节，就是用 &lt;code&gt;blog-chat&lt;&#x2F;code&gt; Skill 直接查的——我对 Copilot 说了一句&amp;quot;测试下，看看过去一周都有哪些聊天内容&amp;quot;，它自动执行了 &lt;code&gt;list&lt;&#x2F;code&gt; 和 5 次 &lt;code&gt;show&lt;&#x2F;code&gt;，把结果整理成了表格。&lt;&#x2F;p&gt;
+&lt;p&gt;最好的工具文档不是&amp;quot;它有多少功能&amp;quot;，而是你刚才读的那段数据分析就是它吞出来的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;博客运维三件套完成&lt;&#x2F;strong&gt; ✅：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;blog-writer  → 写内容
+&lt;&#x2F;span&gt;&lt;span&gt;blog-dev     → 改技术  
+&lt;&#x2F;span&gt;&lt;span&gt;blog-chat    → 看数据  ← new!
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;下一步？等数据量大了，可能要在 Worker 层加全文搜索（FTS5）。但现在 5 个对话 31 条消息，并发获取 + 本地搜索绰绰有余。&lt;&#x2F;p&gt;
+&lt;p&gt;先让子弹飞一会儿。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

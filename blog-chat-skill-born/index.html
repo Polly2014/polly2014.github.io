@@ -1,0 +1,119 @@
+<!doctype html><html><head><title>数据在云端但查不到？723 行 Python 让我一句话查聊天</title><meta content="给数字 Polly 装上了记忆（Cloudflare D1），但查不了——每次要手写 curl + Bearer Token + JSON 解析。于是我和小龙虾一起设计了个 Claude Skill：blog-chat，723 行纯标准库 Python，5 个子命令，一句话就能查、搜、统计、导出访客聊天记录。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/blog-chat-skill-born/ property=og:url><meta content="数据在云端但查不到？723 行 Python 让我一句话查聊天" property=og:title><meta content="给数字 Polly 装上了记忆（Cloudflare D1），但查不了——每次要手写 curl + Bearer Token + JSON 解析。于是我和小龙虾一起设计了个 Claude Skill：blog-chat，723 行纯标准库 Python，5 个子命令，一句话就能查、搜、统计、导出访客聊天记录。" property=og:description><meta content=https://polly.wang/blog-chat-skill-born/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/blog-chat-skill-born/ name=twitter:url><meta content="数据在云端但查不到？723 行 Python 让我一句话查聊天" name=twitter:title><meta content="给数字 Polly 装上了记忆（Cloudflare D1），但查不了——每次要手写 curl + Bearer Token + JSON 解析。于是我和小龙虾一起设计了个 Claude Skill：blog-chat，723 行纯标准库 Python，5 个子命令，一句话就能查、搜、统计、导出访客聊天记录。" name=twitter:description><meta content=https://polly.wang/blog-chat-skill-born/cover.jpg name=twitter:image><meta content=2026-02-20T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="Claude Skill" property=article:tag><meta content="Cloudflare D1" property=article:tag><meta content=Python property=article:tag><meta content="AI Agent" property=article:tag><meta content=数字分身 property=article:tag><meta content=博客开发 property=article:tag><meta content=小龙虾 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>数据在云端但查不到？723 行 Python 让我一句话查聊天</h1><div class=cover-image><img alt="数据在云端但查不到？723 行 Python 让我一句话查聊天" loading=lazy src=cover.jpg></div><div class=content><p>情人节那天，<a href=/polly-chat-d1-persistence>小龙虾帮数字 Polly 装上了记忆</a>。Cloudflare D1 + Worker，40 行前端改动，聊天记录终于不会随浏览器关闭蒸发了。<p>然后我兴奋地想看看——自从上线以来，到底有多少人来跟数字 Polly 聊过天？<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>curl -s -H </span><span>"</span><span style=color:#a3be8c>Authorization: Bearer polly-cloudflare-xxx</span><span>" \
+</span><span style=color:#bf616a>     -H </span><span>"</span><span style=color:#a3be8c>User-Agent: polly-chat-query/1.0</span><span>" \
+</span><span>     https://chat.polly.wang/v1/conversations | </span><span style=color:#bf616a>python3 -m</span><span> json.tool
+</span></code></pre><p>拿到一堆 JSON。好，再看某个对话的具体内容？<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>curl -s -H </span><span>"</span><span style=color:#a3be8c>Authorization: Bearer polly-cloudflare-xxx</span><span>" \
+</span><span style=color:#bf616a>     -H </span><span>"</span><span style=color:#a3be8c>User-Agent: polly-chat-query/1.0</span><span>" \
+</span><span>     https://chat.polly.wang/v1/conversations/190e3a14-64be-4334-aac1-fea445fbc920 \
+</span><span>     | </span><span style=color:#bf616a>python3 -m</span><span> json.tool
+</span></code></pre><p>又一堆 JSON。想搜"小龙虾"在哪些对话里出现过？要把所有对话的消息都 curl 下来，然后 grep……<p><strong>数据在云端，但约等于查不到。</strong><p>这不行。<h2 id=wo-xu-yao-shi-yao>我需要什么</h2><p>想了想，日常查聊天记录的场景大概就这几种：<table><thead><tr><th>我想做的<th>实际操作<tbody><tr><td>"看看昨天有没有人来聊天"<td><code>list --date 2026-02-19</code><tr><td>"展开看看这个对话聊了啥"<td><code>show &LTuuid></code><tr><td>"有人问过翻译的事吗？"<td><code>search 翻译</code><tr><td>"上线以来整体数据怎么样？"<td><code>stats</code><tr><td>"导出备份一下"<td><code>export --format csv</code></table><p>核心就是五个动作：<strong>列表、详情、搜索、统计、导出</strong>。<h2 id=claude-skill-vs-mcp-server>Claude Skill vs MCP Server</h2><p>第一反应是做个 MCP Server——毕竟刚给 Master Translator 做了一个。但转念一想：<table><thead><tr><th>对比<th>MCP Server<th>Claude Skill<tbody><tr><td>调用方式<td>Agent 自动发现工具<td>Agent 读 SKILL.md 后调终端<tr><td>启动成本<td>需要服务进程<td>零启动，直接调 Python<tr><td>适合场景<td>高频、多步骤交互<td>低频、单次查询<tr><td>编码量<td>~500行（server+tools）<td>~900行（脚本723+SKILL.md 173）</table><p>查聊天记录是个低频操作（一天查一两次），不需要常驻服务进程。Claude Skill 的方式更轻量——写个 Python 脚本，配个 SKILL.md 告诉 Claude 怎么调，完事。<p>方案设计阶段和小龙虾讨论了一圈。它分析了两种路线（扩展 Worker API vs 纯客户端脚本），最终建议走纯脚本 + Claude Skill，并提了 4 点具体意见：并发 fetch 解决 N+1 查询、加 <code>--json</code> flag 方便程序化调用、token 优先读环境变量、脚本路径要方便小龙虾直接 <code>exec</code> 调用。这不只是 Code Review，是方案共创。<h2 id=jia-gou-san-ceng-shu-ju-liu>架构：三层数据流</h2><p>整个数据链路长这样：<pre style=background:#2b303b;color:#c0c5ce><code><span>访客在 polly.wang 聊天
+</span><span>  ↓ POST /v1/conversations/log
+</span><span>Cloudflare Worker（chat.polly.wang）
+</span><span>  ↓ 写入
+</span><span>Cloudflare D1（SQLite）
+</span><span>  ↓ GET /v1/conversations（需 Bearer Token）
+</span><span>query_chat_history.py（Python 脚本）
+</span><span>  ↓ 格式化输出
+</span><span>Claude / 终端 / OpenClaw
+</span></code></pre><p>D1 里有两张表：<code>conversations</code>（对话元数据：时间、语言、UA）和 <code>messages</code>（逐条消息：角色、内容、时间戳）。Worker 提供了两个管理端点，需要 Bearer Token 鉴权。<p>脚本要做的就是：调 API → 拿 JSON → 过滤/搜索/统计 → 人类可读的输出。<h2 id=ming-ming-blog-chat>命名：blog-chat</h2><p>命名纠结了一下。现有的 Skill 体系是 <code>blog-writer</code>（写博文）和 <code>blog-dev</code>（改模板/CSS），新的查聊天记录自然叫 <code>blog-chat</code>——三个 blog-* Skill 形成一个完整的博客运维三件套：<table><thead><tr><th>Skill<th>职责<tbody><tr><td><code>blog-writer</code><td>写内容<tr><td><code>blog-dev</code><td>改技术<tr><td><code>blog-chat</code><td>看数据</table><p>配置模式也直接复用了 <code>blog-writer</code> 的 <code>config.env</code> 方案：脚本同目录放一个 <code>config.env</code>，优先读环境变量，fallback 到文件。<h2 id=shi-xian-723-xing-ling-yi-lai>实现：723 行，零依赖</h2><p>整个脚本只用 Python 标准库，不装任何第三方包。这是个有意的选择——小龙虾（OpenClaw）需要通过 <code>exec</code> 直接调用这个脚本，零依赖意味着任何机器上拿到就能跑。<p>核心结构很简单：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 配置加载：环境变量 → config.env fallback
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>load_config</span><span>(): </span><span style=color:#d08770>...
+</span><span>
+</span><span style=color:#65737e># API 客户端：带 Token 的 HTTP GET
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>ChatAPI</span><span style=color:#eff1f5>:
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>_request</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>path</span><span>): </span><span style=color:#d08770>...
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>list_conversations</span><span>(</span><span style=color:#bf616a>self</span><span>): </span><span style=color:#d08770>...
+</span><span>    </span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>get_conversation</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>conv_id</span><span>): </span><span style=color:#d08770>...
+</span><span>
+</span><span style=color:#65737e># 5 个子命令
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>cmd_list</span><span>(</span><span style=color:#bf616a>api</span><span>, </span><span style=color:#bf616a>args</span><span>): </span><span style=color:#d08770>...    </span><span style=color:#65737e># 列表 + 日期过滤
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>cmd_show</span><span>(</span><span style=color:#bf616a>api</span><span>, </span><span style=color:#bf616a>args</span><span>): </span><span style=color:#d08770>...    </span><span style=color:#65737e># 对话详情渲染
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>cmd_search</span><span>(</span><span style=color:#bf616a>api</span><span>, </span><span style=color:#bf616a>args</span><span>): </span><span style=color:#d08770>...  </span><span style=color:#65737e># 并发获取 + 本地搜索
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>cmd_stats</span><span>(</span><span style=color:#bf616a>api</span><span>, </span><span style=color:#bf616a>args</span><span>): </span><span style=color:#d08770>...   </span><span style=color:#65737e># 统计 + ASCII 图表
+</span><span style=color:#b48ead>def </span><span style=color:#8fa1b3>cmd_export</span><span>(</span><span style=color:#bf616a>api</span><span>, </span><span style=color:#bf616a>args</span><span>): </span><span style=color:#d08770>...  </span><span style=color:#65737e># JSON/CSV 导出
+</span></code></pre><p>几个值得说的设计决策：<h3 id=bing-fa-huo-qu-search-he-export-de-n-1-wen-ti>并发获取：search 和 export 的 N+1 问题</h3><p>搜索需要获取所有对话的消息内容，如果逐个串行请求会很慢。用 <code>ThreadPoolExecutor</code> 并发 8 路：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>with </span><span style=color:#bf616a>ThreadPoolExecutor</span><span>(</span><span style=color:#bf616a>max_workers</span><span>=</span><span style=color:#bf616a>MAX_CONCURRENT_REQUESTS</span><span>) </span><span style=color:#b48ead>as </span><span>pool:
+</span><span>    futures = {
+</span><span>        pool.</span><span style=color:#bf616a>submit</span><span>(api.get_conversation, c["</span><span style=color:#a3be8c>id</span><span>"]): c
+</span><span>        </span><span style=color:#b48ead>for </span><span>c </span><span style=color:#b48ead>in </span><span>conversations
+</span><span>    }
+</span><span>    </span><span style=color:#b48ead>for </span><span>future </span><span style=color:#b48ead>in </span><span style=color:#bf616a>as_completed</span><span>(futures):
+</span><span>        conv = futures[future]
+</span><span>        data = future.</span><span style=color:#bf616a>result</span><span>()
+</span><span>        </span><span style=color:#65737e># 在每个对话的消息中搜索关键词
+</span></code></pre><p>这是小龙虾在 Code Review 时特别提的——"N+1 查询如果不并发，5 个对话要 5 秒，50 个对话要 50 秒"。<h3 id=json-quan-ju-flag>--json 全局 flag</h3><p>小龙虾还建议加个 <code>--json</code> 全局 flag，方便程序化调用。实际实现时踩了个坑：argparse 的全局 flag 放在子命令前面没问题，放后面就不认了。最终用 <code>parse_known_args()</code> 解决：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span>parser, remaining = parser.</span><span style=color:#bf616a>parse_known_args</span><span>()
+</span><span style=color:#b48ead>if </span><span>"</span><span style=color:#a3be8c>--json</span><span>" in remaining:
+</span><span>    json_mode = </span><span style=color:#d08770>True
+</span></code></pre><h3 id=ansi-cai-se-shu-chu>ANSI 彩色输出</h3><p>默认输出是给人看的，带颜色和 emoji：<pre style=background:#2b303b;color:#c0c5ce><code><span>📋 Conversations (5 total)
+</span><span>
+</span><span>  ID                                     Time               Msgs  Language
+</span><span>  ────────────────────── ────────────── ────  ──────
+</span><span>  63a94f06-c6c5-...     2026-02-16 20:48    4  zh-CN
+</span></code></pre><p>加 <code>--json</code> 则输出原始 JSON，方便小龙虾或其他工具消费。<h2 id=diao-shi-san-ge-keng>调试：三个坑</h2><h3 id=keng-1-urllib-bei-cloudflare-waf-lan-jie>坑 1：urllib 被 Cloudflare WAF 拦截</h3><p>Python <code>urllib</code> 的默认 User-Agent 是 <code>Python-urllib/3.x</code>，Cloudflare 的 Bot Fight Mode 直接返回 403。<p>修复：加一行 <code>req.add_header("User-Agent", "polly-chat-query/1.0")</code>。<p>这是个特别隐蔽的坑——curl 能用、浏览器能用、但 Python 脚本莫名其妙返回 403。如果不是在错误处理里区分了 401（认证失败）和 403（可能是 WAF），可能要排查很久。<h3 id=keng-2-403-he-401-de-qu-fen>坑 2：403 和 401 的区分</h3><p>Worker 对认证失败返回 401，但 Cloudflare WAF 对被拦截的请求返回 403。修复前只 catch 了 401，导致 WAF 拦截时报的是"HTTP 403"而不是友好的认证失败提示。改成 <code>if e.code in (401, 403)</code> 就好了。<h3 id=keng-3-json-flag-de-wei-zhi>坑 3：--json flag 的位置</h3><p>用户可能写 <code>list --json --limit 5</code>，也可能写 <code>list --limit 5 --json</code>。argparse 对后者会报错"unrecognized arguments"。用 <code>parse_known_args()</code> 手动处理剩余参数解决。<h2 id=shi-zhan-guo-qu-yi-zhou-de-liao-tian-shu-ju>实战：过去一周的聊天数据</h2><p>工具做完了，当然得自己先用上。查了一下 2 月 14 号到 20 号的数据：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> query_chat_history.py list</span><span style=color:#bf616a> --from</span><span> 2026-02-14</span><span style=color:#bf616a> --to</span><span> 2026-02-20
+</span></code></pre><p><strong>5 个对话，31 条消息</strong>。拆开来看：<table><thead><tr><th>#<th>时间<th>消息数<th>谁来的<th>聊了啥<tbody><tr><td>1<td>2/14 14:41<td>1<td>小龙虾（测试 UA）<td>D1 持久化的第一条测试消息<tr><td>2<td>2/14 14:49<td>8<td>小龙虾（Mac）<td>测试持久化 + 后续回访聊 AI 记忆系统<tr><td>3<td>2/15 10:33<td>16<td>小龙虾（Azure VM）<td>搬家汇报 + 初一三 AI 联合拜年策划<tr><td>4<td>2/16 09:11<td>2<td>Windows 用户（en-US）<td>只说了"worker d1"，可能是技术搜索过来的<tr><td>5<td>2/16 20:48<td>4<td>iPhone 用户<td>从拜年博文页面进来，聊了 AI 对话实验</table><p>有意思的发现：<ul><li><strong>80% 的对话来自小龙虾</strong>。我的 AI 助手是我博客最活跃的"访客"。<li><strong>唯一的真实外部访客</strong>来自 iPhone，通过博文《马年三 AI 拜年》的页面入口进来——说明博文引流到聊天功能是有效的。<li>那个 Windows 用户输入了"worker d1"就再没说话。可能是搜索 Cloudflare Worker + D1 技术方案时点进来的，看到是个聊天机器人就走了。</ul><p>再跑个 stats 看看整体数据：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>python</span><span> query_chat_history.py stats
+</span></code></pre><pre style=background:#2b303b;color:#c0c5ce><code><span>📊 Chat Statistics
+</span><span>
+</span><span>  Conversations:  5
+</span><span>  Total Messages: 31
+</span><span>  Date Range:     2026-02-14 → 2026-02-16
+</span><span>  Active Days:    3
+</span><span>  Avg/Day:        1.7
+</span><span>  Busiest Day:    2026-02-14 (2 convs)
+</span><span>  Peak Hour:      14:00 UTC (2 convs)
+</span><span>
+</span><span>  🌐 Languages:
+</span><span>    zh-CN        ████████████████░░░░   4 (80%)
+</span><span>    en-US        ████░░░░░░░░░░░░░░░░   1 (20%)
+</span><span>
+</span><span>  📅 Daily Activity (last 3 days):
+</span><span>    2026-02-14 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 2
+</span><span>    2026-02-15 ▓▓▓▓▓▓▓▓▓▓▓▓ 1
+</span><span>    2026-02-16 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 2
+</span></code></pre><p>数据量还不多，但至少证明了一件事：这个记忆系统在正常工作，而且已经有了真实外部访客的触达。<h2 id=skill-md-jiao-claude-zen-yao-yong>SKILL.md：教 Claude 怎么用</h2><p>脚本写好了，还要写个 SKILL.md 告诉 Claude 怎么调。这是 Claude Skill 的核心——不是 Agent 自动发现工具，而是通过文档告诉 Agent "用户说什么的时候，该执行什么命令"。<p>核心是一张日期映射表：<table><thead><tr><th>用户说的<th>转换为参数<tbody><tr><td>"昨天"<td><code>--date {yesterday}</code><tr><td>"最近一周"<td><code>--from {7_days_ago}</code><tr><td>"2月份"<td><code>--from 2026-02-01 --to 2026-02-28</code><tr><td>"全部"<td>不加日期参数</table><p>加上 5 个工作流（list → show → search → stats → export）的命令模板和输出解读方式，一共 173 行 SKILL.md。<h2 id=shou-wei-chi-zi-ji-de-gou-liang>收尾：吃自己的狗粮</h2><p>这篇博文里"过去一周的聊天数据"那一节，就是用 <code>blog-chat</code> Skill 直接查的——我对 Copilot 说了一句"测试下，看看过去一周都有哪些聊天内容"，它自动执行了 <code>list</code> 和 5 次 <code>show</code>，把结果整理成了表格。<p>最好的工具文档不是"它有多少功能"，而是你刚才读的那段数据分析就是它吞出来的。<p><strong>博客运维三件套完成</strong> ✅：<pre style=background:#2b303b;color:#c0c5ce><code><span>blog-writer  → 写内容
+</span><span>blog-dev     → 改技术  
+</span><span>blog-chat    → 看数据  ← new!
+</span></code></pre><p>下一步？等数据量大了，可能要在 Worker 层加全文搜索（FTS5）。但现在 5 个对话 31 条消息，并发获取 + 本地搜索绰绰有余。<p>先让子弹飞一会儿。</div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
