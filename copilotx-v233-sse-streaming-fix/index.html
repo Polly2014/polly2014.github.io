@@ -1,0 +1,113 @@
+<!doctype html><html><head><title>🔍 CopilotX v2.3.3：一个空行引发的「血案」</title><meta content="当 OpenAI Python SDK 向 CopilotX 发起 streaming 请求时，总是报 JSONDecodeError。调试发现根因是一行看似无害的 if line: 过滤掉了 SSE 协议的事件分隔符——一个空行。修复只改了一行代码，但背后是对 SSE 协议的深入理解。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/copilotx-v233-sse-streaming-fix/ property=og:url><meta content="🔍 CopilotX v2.3.3：一个空行引发的「血案」" property=og:title><meta content="当 OpenAI Python SDK 向 CopilotX 发起 streaming 请求时，总是报 JSONDecodeError。调试发现根因是一行看似无害的 if line: 过滤掉了 SSE 协议的事件分隔符——一个空行。修复只改了一行代码，但背后是对 SSE 协议的深入理解。" property=og:description><meta content=https://polly.wang/copilotx-v233-sse-streaming-fix/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/copilotx-v233-sse-streaming-fix/ name=twitter:url><meta content="🔍 CopilotX v2.3.3：一个空行引发的「血案」" name=twitter:title><meta content="当 OpenAI Python SDK 向 CopilotX 发起 streaming 请求时，总是报 JSONDecodeError。调试发现根因是一行看似无害的 if line: 过滤掉了 SSE 协议的事件分隔符——一个空行。修复只改了一行代码，但背后是对 SSE 协议的深入理解。" name=twitter:description><meta content=https://polly.wang/copilotx-v233-sse-streaming-fix/cover.jpg name=twitter:image><meta content=2026-02-20T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=CopilotX property=article:tag><meta content=SSE property=article:tag><meta content=Streaming property=article:tag><meta content="OpenAI SDK" property=article:tag><meta content=Debug property=article:tag><meta content="API 代理" property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🔍 CopilotX v2.3.3：一个空行引发的「血案」</h1><div class=cover-image><img alt="🔍 CopilotX v2.3.3：一个空行引发的「血案」" loading=lazy src=cover.jpg></div><div class=content><pre style=background:#2b303b;color:#c0c5ce><code><span>Extra data: line 2 column 1 (char 160)
+</span></code></pre><p>跑翻译实验的时候，terminal 刷出了这行错误。三个 streaming 测试，全军覆没。</p><span id=continue-reading></span><h2 id=bei-jing-shi-yan-xu-yao-streaming>背景：实验需要 Streaming</h2><p>接上回：<a href=/copilotx-v23-tools-support-journey>CopilotX v2.3 让 OpenClaw 终于能动手了</a>。<p>这次的场景不同。我在做 ContextWeave 论文的补充实验（EXP18），需要通过 CopilotX 调用 Claude Sonnet 4 和 Gemini 2.5 Pro 翻译 100K 字符的文档。实验脚本用的是 OpenAI Python SDK：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>from </span><span>openai </span><span style=color:#b48ead>import </span><span>OpenAI
+</span><span>
+</span><span>client = </span><span style=color:#bf616a>OpenAI</span><span>(
+</span><span>    </span><span style=color:#bf616a>base_url</span><span>="</span><span style=color:#a3be8c>https://api.polly.wang/v1</span><span>",
+</span><span>    </span><span style=color:#bf616a>api_key</span><span>="</span><span style=color:#a3be8c>polly-copilotx-xxx</span><span>"
+</span><span>)
+</span><span>
+</span><span>response = client.chat.completions.</span><span style=color:#bf616a>create</span><span>(
+</span><span>    </span><span style=color:#bf616a>model</span><span>="</span><span style=color:#a3be8c>claude-sonnet-4</span><span>",
+</span><span>    </span><span style=color:#bf616a>messages</span><span>=[{"</span><span style=color:#a3be8c>role</span><span>": "</span><span style=color:#a3be8c>user</span><span>", "</span><span style=color:#a3be8c>content</span><span>": huge_document}],
+</span><span>    </span><span style=color:#bf616a>stream</span><span>=</span><span style=color:#d08770>True</span><span>,
+</span><span>    </span><span style=color:#bf616a>max_tokens</span><span>=</span><span style=color:#d08770>16384
+</span><span>)
+</span><span>
+</span><span style=color:#b48ead>for </span><span>chunk </span><span style=color:#b48ead>in </span><span>response:  </span><span style=color:#65737e># 💥 JSONDecodeError!
+</span><span>    </span><span style=color:#d08770>...
+</span></code></pre><p>Non-streaming 一切正常。但 streaming 是必须的——100K 文档翻译动辄几分钟，不用 streaming 的话 120 秒 timeout 会把请求杀掉。<h2 id=zhen-duan-160-ge-zi-fu-chu-duan-lie>诊断：160 个字符处断裂</h2><p><code>Extra data: line 2 column 1 (char 160)</code> —— 这个错误信息很精确：JSON 解析器在第 160 个字符处遇到了「多余的数据」。<p>这意味着 SDK 期望收到一个 JSON 对象，但实际收到的是两个（或更多）JSON 对象拼在一起。<p>我用 <code>curl</code> 直接看原始 SSE 输出：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>curl -s --no-buffer -X</span><span> POST https://api.polly.wang/v1/chat/completions \
+</span><span style=color:#bf616a>  -H </span><span>"</span><span style=color:#a3be8c>Authorization: Bearer </span><span>$</span><span style=color:#bf616a>KEY</span><span>" \
+</span><span style=color:#bf616a>  -d </span><span>'</span><span style=color:#a3be8c>{"model":"gpt-4o","messages":[{"role":"user","content":"Say hi"}],"stream":true}</span><span>' \
+</span><span>  | </span><span style=color:#bf616a>head -20
+</span></code></pre><p>输出（修复前）：<pre style=background:#2b303b;color:#c0c5ce><code><span>data: {"choices":[...],"id":"chatcmpl-xxx"}data: {"choices":[...],"id":"chatcmpl-xxx"}data: {"choices":[...],"id":"chatcmpl-xxx"}data: [DONE]
+</span></code></pre><p>所有 <code>data:</code> 行<strong>粘在一起了</strong>。没有空行分隔。<h2 id=sse-xie-yi-kong-xing-shi-ling-hun>SSE 协议：空行是灵魂</h2><p>Server-Sent Events (SSE) 是一个简单但严格的协议。标准格式长这样：<pre style=background:#2b303b;color:#c0c5ce><code><span>data: {"id":"chunk1","choices":[...]}\n
+</span><span>\n                                      ← 空行 = 事件结束
+</span><span>data: {"id":"chunk2","choices":[...]}\n
+</span><span>\n                                      ← 空行 = 事件结束
+</span><span>data: [DONE]\n
+</span><span>\n
+</span></code></pre><p>每个事件由一个 <code>data:</code> 行和一个<strong>空行</strong>组成。空行是事件之间的分隔符。<p>OpenAI Python SDK（以及任何标准 SSE 客户端）依赖空行来切分事件。没有空行，SDK 就把多个 JSON 对象当成一个来解析 → 💥 <code>Extra data</code>。<h2 id=gen-yin-si-ge-zi-fu-de-bug>根因：四个字符的 Bug</h2><p>打开 CopilotX 的 streaming 代码（<a href=https://github.com/Polly2014/CopilotX/blob/main/src/copilotx/proxy/client.py>client.py</a>）：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async def </span><span style=color:#8fa1b3>chat_completions_stream</span><span>(</span><span style=color:#bf616a>self</span><span>, </span><span style=color:#bf616a>payload</span><span>: dict) -> AsyncIterator[bytes]:
+</span><span>    </span><span style=color:#65737e>"""POST /chat/completions with stream=true — yields raw SSE lines."""
+</span><span>    </span><span style=color:#b48ead>async with </span><span style=color:#bf616a>self</span><span>._client.</span><span style=color:#bf616a>stream</span><span>("</span><span style=color:#a3be8c>POST</span><span>", url, </span><span style=color:#bf616a>json</span><span>=payload, </span><span style=color:#d08770>...</span><span>) </span><span style=color:#b48ead>as </span><span>resp:
+</span><span>        </span><span style=color:#b48ead>async for </span><span>line </span><span style=color:#b48ead>in </span><span>resp.</span><span style=color:#bf616a>aiter_lines</span><span>():
+</span><span>            </span><span style=color:#b48ead>if </span><span>line:                          </span><span style=color:#65737e># ← 🐛 就是这行
+</span><span>                </span><span style=color:#b48ead>yield </span><span>(line + "</span><span style=color:#96b5b4>\n</span><span>").</span><span style=color:#bf616a>encode</span><span>("</span><span style=color:#a3be8c>utf-8</span><span>")
+</span><span>        </span><span style=color:#b48ead>yield b</span><span>"</span><span style=color:#96b5b4>\n</span><span>"
+</span></code></pre><p><code>httpx.aiter_lines()</code> 按 <code>\n</code> 拆分流。原始 SSE 流长这样：<pre style=background:#2b303b;color:#c0c5ce><code><span>data: {"id":"chunk1",...}\n     → line = 'data: {"id":"chunk1",...}'
+</span><span>\n                               → line = ''  (空字符串！)
+</span><span>data: {"id":"chunk2",...}\n     → line = 'data: {"id":"chunk2",...}'
+</span><span>\n                               → line = ''
+</span></code></pre><p><code>if line:</code> 在 Python 中把空字符串判为 <code>False</code>，于是所有空行被过滤掉了。<p>SSE 事件分隔符 → 空行 → 空字符串 → <code>if line:</code> 跳过 → 事件粘连 → JSON 解析失败。<p>四个字符（<code>if l</code>），毁掉了整个 streaming。<h2 id=xiu-fu-shan-diao-yi-xing>修复：删掉一行</h2><pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>async for </span><span>line </span><span style=color:#b48ead>in </span><span>resp.</span><span style=color:#bf616a>aiter_lines</span><span>():
+</span><span>    </span><span style=color:#65737e># Yield ALL lines including empty ones — empty lines are
+</span><span>    </span><span style=color:#65737e># SSE event delimiters and MUST be preserved for clients
+</span><span>    </span><span style=color:#65737e># (e.g. OpenAI Python SDK) that rely on them to separate
+</span><span>    </span><span style=color:#65737e># JSON chunks.
+</span><span>    </span><span style=color:#b48ead>yield </span><span>(line + "</span><span style=color:#96b5b4>\n</span><span>").</span><span style=color:#bf616a>encode</span><span>("</span><span style=color:#a3be8c>utf-8</span><span>")
+</span></code></pre><p>去掉 <code>if line:</code> 守卫，让空行原样透传。<p>修复后的 curl 输出：<pre style=background:#2b303b;color:#c0c5ce><code><span>data: {"choices":[...],"id":"chatcmpl-xxx"}
+</span><span>
+</span><span>data: {"choices":[...],"id":"chatcmpl-xxx"}
+</span><span>
+</span><span>data: {"choices":[...],"id":"chatcmpl-xxx"}
+</span><span>
+</span><span>data: [DONE]
+</span><span>
+</span></code></pre><p>每个 <code>data:</code> 行之间有了空行分隔。✅<h2 id=yan-zheng-shi-yan-pao-qi-lai-liao>验证：实验跑起来了</h2><p>部署修复，重启服务，再跑 EXP18：<pre style=background:#2b303b;color:#c0c5ce><code><span>======================================================================
+</span><span>EXP18: Long-Context LLM Baseline
+</span><span>======================================================================
+</span><span>📄 Loading pseudo-document (100K)...
+</span><span>   99,848 chars, 158 paragraphs
+</span><span>
+</span><span>🔬 A1: Claude Sonnet 4 · direct · minimal
+</span><span>   ⏳ Translating (may take 5-15 minutes)...
+</span><span>   ... streaming: 197 chars received
+</span><span>   ... streaming: 423 chars received
+</span><span>   ... streaming: 633 chars received
+</span><span>   ... streaming: 833 chars received
+</span></code></pre><p>Streaming 稳定输出，不再报错。100K 文档翻译实验顺利启动。<h2 id=wei-shi-yao-zhe-ge-bug-qian-fu-liao-zhe-yao-jiu>为什么这个 Bug 潜伏了这么久？</h2><p>回看 CopilotX 的版本线：<table><thead><tr><th>日期<th>版本<th>里程碑<tbody><tr><td>2/9<td>v2.0<td><a href=/copilotx-v2-remote-deployment>远程部署</a><tr><td>2/13<td>v2.3.0-2.3.1<td><a href=/copilotx-v23-tools-support-journey>Tools 支持</a><tr><td>2/13<td>v2.3.2<td>错误透传 + 测试套件<tr><td><strong>2/20</strong><td><strong>v2.3.3</strong><td><strong>SSE 空行修复</strong> ← 本文</table><p>v2.3.2 加了测试套件，但测试用的是 <code>httpx</code> 直接调用，不是标准 SSE 客户端。<code>httpx</code> 不在乎空行分隔——它本来就是按行读的。只有当真正用 OpenAI SDK（它实现了完整的 SSE 解析）去消费流时，问题才暴露。<p>这是一个经典的「测试和客户端不同路径」case：<ul><li><strong>开发时</strong>: curl 看到输出，觉得没问题（人眼不在乎空行）<li><strong>测试时</strong>: httpx 直接读行，不解析 SSE 事件边界<li><strong>实战时</strong>: OpenAI SDK 严格按 SSE 协议解析 → 💥</ul><p><strong>教训</strong>：Proxy 的测试应该用<strong>最终客户端</strong>来测，而不是底层 HTTP 库。<h2 id=ji-zhu-xiao-jie>技术小结</h2><table><thead><tr><th>项<th>内容<tbody><tr><td><strong>Bug</strong><td><code>if line:</code> 过滤了 SSE 空行分隔符<tr><td><strong>症状</strong><td>OpenAI SDK 报 <code>JSONDecodeError: Extra data</code><tr><td><strong>根因</strong><td>空行 → 空字符串 → Python falsy → 被跳过<tr><td><strong>修复</strong><td>去掉 <code>if line:</code> 条件，让所有行透传<tr><td><strong>改动量</strong><td>1 个文件，5 行改动<tr><td><strong>影响</strong><td>所有 streaming 客户端恢复正常</table><hr><p><em>有时候，最致命的 bug 只有四个字符。</em><hr><p><strong>CopilotX 版本线：</strong><table><thead><tr><th>日期<th>版本<th>博文<tbody><tr><td>2/9<td>v1.0<td><a href=/copilotx-turn-copilot-into-local-api>把 Copilot 变成本地 API</a><tr><td>2/9<td>v2.0<td><a href=/copilotx-v2-remote-deployment>从本地工具到远程服务</a><tr><td>2/13<td>v2.3.0-2.3.1<td><a href=/copilotx-v23-tools-support-journey>让 OpenClaw 终于能动手了</a><tr><td><strong>2/20</strong><td><strong>v2.3.3</strong><td><strong>一个空行引发的「血案」</strong> ← 本文</table></div><div class=navigation></div></div><div id=giscus-container><h2>留言与讨论</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
