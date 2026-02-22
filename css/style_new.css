@@ -588,6 +588,62 @@ table td {
     transition: all 0.6s ease-out;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   欢迎屏幕 — 头像 + 副标题 + 快捷入口
+   ══════════════════════════════════════════════════════════════ */
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    animation: titleFadeIn 0.8s ease-out forwards;
+}
+
+.welcome-subtitle {
+    color: #888;
+    font-size: 0.95em;
+    font-weight: 300;
+    margin: -0.8em 0 1.5em;
+    letter-spacing: 0.5px;
+}
+
+.welcome-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 480px;
+    margin-bottom: 1.5em;
+}
+
+.chip {
+    padding: 8px 18px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #fff;
+    color: #555;
+    font-size: 0.88em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.chip:hover {
+    background: #f0f7ff;
+    border-color: rgb(61, 146, 201);
+    color: rgb(61, 146, 201);
+}
+
+.chip:active {
+    transform: scale(0.96);
+}
+
+/* 展开后隐藏欢迎屏幕 */
+.polly-chat.expanded .welcome-screen {
+    display: none;
+}
+
 .chat-header {
     display: flex;
     flex-direction: column;
@@ -685,14 +741,14 @@ table td {
     font-size: 2.2em;
     color: #333;
     text-align: center;
-    margin-bottom: 1.5em;
-    font-weight: 300; /* 使用较细的字重 */
-    letter-spacing: 1px; /* 增加字间距 */
+    margin-bottom: 0.5em;
+    font-weight: 300;
+    letter-spacing: 1px;
     position: relative;
-    padding-bottom: 15px; /* 为下划线留出空间 */
+    padding-bottom: 15px;
 }
 
-/* 添加简单的装饰性下划线 - 只针对标题 */
+/* 装饰性下划线 */
 .chat-header h2:after {
     content: '';
     position: absolute;
@@ -701,11 +757,11 @@ table td {
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: rgb(61, 146, 201); /* 使用网站主题蓝色 */
+    background: rgb(61, 146, 201);
     border-radius: 2px;
 }
 
-/* 添加淡入动画 */
+/* 淡入动画 (用于 welcome-screen) */
 @keyframes titleFadeIn {
     from {
         opacity: 0;
@@ -715,10 +771,6 @@ table td {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.chat-header h2 {
-    animation: titleFadeIn 0.8s ease-out forwards;
 }
 
 #chat-box.expanded {
@@ -864,12 +916,6 @@ table td {
     align-self: flex-start;
 }
 
-.input-container {
-    position: relative;
-    width: 80%;
-    margin-bottom: 10px;
-}
-
 .chat-avatar {
     width: 40px;
     height: 40px;
@@ -890,13 +936,17 @@ table td {
 }
 
 .chat-avatar i {
-    font-size: 20px;
-    color: #666;
-    display: flex;           /* 使用 flex 布局 */
-    width: 100%;             /* 占满父元素宽度 */
-    height: 100%;            /* 占满父元素高度 */
-    align-items: center;     /* 垂直居中 */
-    justify-content: center; /* 水平居中 */
+    font-size: 18px;
+    color: #fff;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-message .chat-avatar {
+    background-color: #555;
 }
 
 .chat-bubble {
@@ -997,11 +1047,21 @@ table td {
     66% { transform: translateY(2px); }
 }
 
+@keyframes thinkingFadeOut {
+    from { opacity: 1; max-height: 40px; }
+    to { opacity: 0; max-height: 0; overflow: hidden; }
+}
+
 .thinking {
     display: flex;
     gap: 4px;
     align-items: center;
     padding: 0 8px;
+    transition: opacity 0.3s ease;
+}
+
+.thinking.fade-out {
+    animation: thinkingFadeOut 0.3s ease forwards;
 }
 
 .thinking span {
@@ -1315,7 +1375,7 @@ blockquote p {
     /* 调整内容区域 */
     .content {
         width: 100%;
-        padding: 1em;
+        padding: 1em 1em 0;
     }
 
     /* 优化导航菜单在移动端的显示 */
@@ -1347,13 +1407,45 @@ blockquote p {
         text-align: center;
     }
     
+    .input-container,
+    .image-preview-container,
+    .chat-header {
+        width: 95%;
+    }
+    
+    .welcome-subtitle {
+        font-size: 0.85em;
+    }
+    
+    .welcome-chips {
+        max-width: 300px;
+        gap: 8px;
+    }
+    
+    .chip {
+        padding: 6px 14px;
+        font-size: 0.82em;
+    }
+    
+    .polly-chat.expanded {
+        padding-bottom: 0;
+    }
+    
+    .polly-chat.expanded .input-container {
+        margin-bottom: 24px;
+    }
+    
     #chat-box {
         padding: 5px;
         width: 95%;
         overflow-y: auto;
         margin-left: auto;
         margin-right: auto;
-        max-height: calc(100vh - 200px); /* 移动端自适应高度 */
+        max-height: calc(100vh - 120px); /* 移动端自适应高度 */
+    }
+
+    #chat-box.expanded {
+        max-height: none; /* expanded 模式下由 flex:1 控制高度，不限制 */
     }
 
     /* 优化代码显示 */

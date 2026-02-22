@@ -17,8 +17,10 @@ class PollyChat {
         this.pendingImages = []; // 待发送的图片数组 [{base64, mediaType, dataUrl}]
         this.MAX_IMAGES = 4; // 单条消息最多 4 张图片
         
-        // localStorage 配置
-        this.STORAGE_KEY = 'polly_chat_history';
+        // 持久化配置 (IndexedDB)
+        this.STORAGE_KEY = 'polly_chat_history'; // legacy localStorage key，迁移后清除
+        this.DB_NAME = 'polly_chat';
+        this.STORE_NAME = 'history';
         this.MAX_MESSAGES = 50;
         this.EXPIRE_MS = 24 * 60 * 60 * 1000; // 24小时过期
         
@@ -45,9 +47,13 @@ class PollyChat {
         
         // 绑定事件
         this.bindEvents();
-                // 恢复历史聊天记录
-        this.restoreHistory();
-                console.log('� PollyChat initialized');
+        
+        // 设置欢迎屏幕（时段副标题 + 动态 chips）
+        this.setupWelcome();
+        
+        // 恢复历史聊天记录（IndexedDB 异步）
+        await this.restoreHistory();
+        console.log('🐾 PollyChat initialized');
     }
     
     async loadPrompt() {
@@ -56,11 +62,13 @@ class PollyChat {
             if (res.ok) {
                 const data = await res.json();
                 this.systemPrompt = data.system_prompt;
+                this.promptMetadata = data.metadata || {};
                 console.log(`📝 Loaded prompt (${this.systemPrompt.length} chars)`);
             }
         } catch (e) {
             console.warn('Failed to load prompt, using default');
             this.systemPrompt = 'You are Polly\'s digital avatar, a friendly and professional AI assistant.';
+            this.promptMetadata = {};
         }
     }
     
@@ -92,6 +100,74 @@ class PollyChat {
         
         // New Chat 按钮
         this.newChatBtn?.addEventListener('click', () => this.newChat());
+        
+        // 快捷 chip 点击（3 种类型）
+        document.querySelectorAll('.welcome-chips .chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                // 功能型：发张图试试 → 弹文件选择器
+                if (chip.dataset.action === 'upload-image') {
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            this.processImage(file);
+                            this.input.focus();
+                        }
+                    };
+                    fileInput.click();
+                    return;
+                }
+                // 普通/动态型：发送 data-msg
+                const msg = chip.dataset.msg;
+                if (msg) {
+                    this.input.value = msg;
+                    this.send();
+                }
+            });
+        });
+    }
+    
+    // ========== 欢迎屏幕 ==========
+    
+    setupWelcome() {
+        // 时段副标题
+        const subtitle = document.getElementById('welcome-subtitle');
+        if (subtitle) {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 9) {
+                subtitle.textContent = '早起的程序员，难得 ☀️';
+            } else if (hour >= 9 && hour < 12) {
+                subtitle.textContent = '博客主人的数字分身，上午好 ☕';
+            } else if (hour >= 12 && hour < 14) {
+                subtitle.textContent = '午餐时间，随便聊聊 🍜';
+            } else if (hour >= 14 && hour < 18) {
+                subtitle.textContent = '博客主人的数字分身，随时在线 ☕';
+            } else if (hour >= 18 && hour < 22) {
+                subtitle.textContent = '下班时间，放松一下 🌆';
+            } else {
+                subtitle.textContent = '夜猫子模式，正在线 🌙';
+            }
+        }
+        
+        // 动态 chips：从 prompt 提取当前项目
+        this.updateDynamicChips();
+    }
+    
+    updateDynamicChips() {
+        if (!this.systemPrompt) return;
+        const dynamicChip = document.querySelector('.welcome-chips .chip-dynamic');
+        if (!dynamicChip) return;
+        
+        // 提取第一个🟢项目名
+        const projectMatch = this.systemPrompt.match(/\*\*(.+?)\*\*\s*\(🟢\)/);
+        if (projectMatch) {
+            const name = projectMatch[1];
+            const shortName = name.length > 10 ? name.slice(0, 10) + '…' : name;
+            dynamicChip.textContent = `🔬 ${shortName}`;
+            dynamicChip.dataset.msg = `${name} 是什么？跟我讲讲`;
+        }
     }
     
     handlePaste(e) {
@@ -291,7 +367,7 @@ class PollyChat {
         // 添加到历史
         this.messages.push({ role: 'user', content: messageContent });
         
-        // 保存用户消息到 localStorage
+        // 保存用户消息到 IndexedDB
         this.saveHistory();
         
         // D1 持久化: 同步用户消息 (fire-and-forget)
@@ -385,6 +461,13 @@ class PollyChat {
                     if (event.type === 'content_block_delta') {
                         const delta = event.delta?.text || '';
                         fullText += delta;
+                        // 首次收到文字时，淡出 thinking（动画并行，文字立即渲染）
+                        if (bubble._thinkingEl) {
+                            bubble._thinkingEl.classList.add('fade-out');
+                            const el = bubble._thinkingEl;
+                            bubble._thinkingEl = null;
+                            setTimeout(() => el.remove(), 300);
+                        }
                         bubble.innerHTML = this.renderMarkdown(fullText);
                         this.scrollToBottom();
                     }
@@ -404,7 +487,7 @@ class PollyChat {
         // 保存完整回复到历史
         this.messages.push({ role: 'assistant', content: fullText });
         
-        // 持久化到 localStorage
+        // 持久化到 IndexedDB
         this.saveHistory();
         
         // D1 持久化: 同步助手回复 (fire-and-forget)
@@ -451,84 +534,141 @@ class PollyChat {
         
         this.scrollToBottom();
         
+        // 记录 thinking 元素，用于过渡动画
+        if (!bubbleContent) {
+            bubble._thinkingEl = bubble.querySelector('.thinking');
+        }
+        
         return bubble;
     }
     
     renderMarkdown(text) {
-        // 简单的 Markdown 渲染
+        let html;
         if (typeof marked !== 'undefined') {
-            return marked.parse(text);
+            html = marked.parse(text);
+        } else {
+            // Fallback: 基础格式化
+            html = text
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/`(.+?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
         }
-        
-        // Fallback: 基础格式化
-        return text
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.+?)\*/g, '<em>$1</em>')
-            .replace(/`(.+?)`/g, '<code>$1</code>')
-            .replace(/\n/g, '<br>');
+        // XSS 防护：DOMPurify 清洗
+        if (typeof DOMPurify !== 'undefined') {
+            return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+        }
+        return html;
     }
     
     scrollToBottom() {
         this.chatBox.scrollTop = this.chatBox.scrollHeight;
     }
     
+    // ========== IndexedDB 持久化 ==========
+    
+    _openDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(this.DB_NAME, 1);
+            req.onupgradeneeded = () => req.result.createObjectStore(this.STORE_NAME);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+    
+    async _idbGet(key) {
+        const db = await this._openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(this.STORE_NAME, 'readonly');
+            const req = tx.objectStore(this.STORE_NAME).get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+            tx.oncomplete = () => db.close();
+        });
+    }
+    
+    async _idbPut(key, value) {
+        const db = await this._openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(this.STORE_NAME, 'readwrite');
+            tx.objectStore(this.STORE_NAME).put(value, key);
+            tx.oncomplete = () => { db.close(); resolve(); };
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+    
+    async _idbDelete(key) {
+        const db = await this._openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(this.STORE_NAME, 'readwrite');
+            tx.objectStore(this.STORE_NAME).delete(key);
+            tx.oncomplete = () => { db.close(); resolve(); };
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+    
     // ========== 聊天记录持久化 ==========
     
-    saveHistory() {
+    async saveHistory() {
         try {
-            // 只保存文本消息（跳过图片 base64 避免撑爆 localStorage）
-            const toSave = this.messages.map(msg => {
-                if (typeof msg.content === 'string') {
-                    return { role: msg.role, content: msg.content };
-                }
-                // 多图消息：提取文本 + 标注图片数量
-                const textBlock = msg.content.find(c => c.type === 'text');
-                const imgCount = msg.content.filter(c => c.type === 'image').length;
-                const imgLabel = imgCount > 0 ? `[${imgCount} image${imgCount > 1 ? 's' : ''}]` : '';
-                const text = textBlock?.text || '';
-                return { role: msg.role, content: text ? `${imgLabel} ${text}`.trim() : imgLabel || '[image]' };
-            });
-            // 上限控制
-            while (toSave.length > this.MAX_MESSAGES) toSave.shift();
-            const data = { messages: toSave, time: Date.now() };
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+            // 完整保存消息（含图片 base64），IndexedDB 容量充裕
+            const toSave = this.messages.slice(-this.MAX_MESSAGES);
+            await this._idbPut('current', { messages: toSave, time: Date.now() });
         } catch (e) {
             console.warn('保存聊天记录失败:', e);
         }
     }
     
-    restoreHistory() {
+    async restoreHistory() {
         try {
-            const raw = localStorage.getItem(this.STORAGE_KEY);
-            if (!raw) return;
+            // 自动迁移旧 localStorage 数据
+            const legacy = localStorage.getItem(this.STORAGE_KEY);
+            if (legacy) {
+                const legacyData = JSON.parse(legacy);
+                // 迁移到 IndexedDB（旧数据无图片，直接搬）
+                if (legacyData.messages?.length > 0) {
+                    await this._idbPut('current', legacyData);
+                }
+                localStorage.removeItem(this.STORAGE_KEY);
+                console.log('📦 Migrated localStorage → IndexedDB');
+            }
             
-            const data = JSON.parse(raw);
+            const data = await this._idbGet('current');
+            if (!data || !data.messages?.length) return;
             
             // 24小时过期自动清空
             if (data.time && Date.now() - data.time > this.EXPIRE_MS) {
-                localStorage.removeItem(this.STORAGE_KEY);
+                await this._idbDelete('current');
                 return;
             }
             
-            if (!data.messages || data.messages.length === 0) return;
-            
-            // 恢复 messages 数组（用于上下文继续对话）
+            // 恢复 messages 数组（含完整图片，可继续对话）
             this.messages = data.messages;
             
             // 展开聊天界面
             this.container.classList.add('expanded');
             this.chatBox.classList.add('expanded');
             
-            // 渲染历史消息到页面
+            // 渲染历史消息到页面（区分纯文本 vs 含图消息）
             data.messages.forEach(msg => {
-                this.appendMessage(msg.role === 'user' ? 'user' : 'assistant', msg.content);
+                const role = msg.role === 'user' ? 'user' : 'assistant';
+                if (typeof msg.content === 'string') {
+                    this.appendMessage(role, msg.content);
+                } else {
+                    // 从 Anthropic content 数组提取图片 + 文本
+                    const images = msg.content
+                        .filter(c => c.type === 'image')
+                        .map(c => ({ base64: c.source.data, mediaType: c.source.media_type }));
+                    const text = msg.content.find(c => c.type === 'text')?.text || '';
+                    this.appendMessage(role, text, images);
+                }
             });
             
             // 显示 New Chat 按钮
             this.showNewChatBtn();
             this.scrollToBottom();
             
-            console.log(`💬 Restored ${data.messages.length} messages`);
+            console.log(`💬 Restored ${data.messages.length} messages (IndexedDB)`);
         } catch (e) {
             console.warn('恢复聊天记录失败:', e);
         }
@@ -541,13 +681,14 @@ class PollyChat {
     newChat() {
         // 清空一切
         this.messages = [];
-        localStorage.removeItem(this.STORAGE_KEY);
+        this._idbDelete('current').catch(() => {});
+        localStorage.removeItem(this.STORAGE_KEY); // 清理 legacy
         this.chatBox.innerHTML = '';
         
         // 新会话 ID
         this.conversationId = this.resetConversationId();
         
-        // 隐藏按钮，收起界面
+        // 隐藏按钮，收起界面（CSS .expanded 控制 welcome-screen 显隐）
         if (this.newChatBtn) this.newChatBtn.style.display = 'none';
         this.container.classList.remove('expanded');
         this.chatBox.classList.remove('expanded');
