@@ -8,6 +8,373 @@
     <updated>2026-02-22T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ni-xiang-gong-cheng/atom.xml</id>
     <entry xml:lang="en">
+        <title>你的 AI 编程助手在想什么？Context Window 逐项拆解</title>
+        <published>2026-02-22T00:00:00+00:00</published>
+        <updated>2026-02-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/context-window-anatomy/" type="text/html"/>
+        <id>https://polly.wang/context-window-anatomy/</id>
+        
+        <content type="html">&lt;!-- 技术博客组件样式 --&gt;
+&lt;style&gt;
+&#x2F;* 核心洞察高亮框 *&#x2F;
+.insight-box { background: linear-gradient(135deg, #e8f4f8 0%, #d4eaf7 100%); border-left: 4px solid #3d92c9; border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 24px 0; position: relative; }
+.insight-box::before { content: &quot;💡&quot;; position: absolute; left: -14px; top: 50%; transform: translateY(-50%); background: #3d92c9; width: 28px; height: 28px; border-radius: 50%; line-height: 28px; text-align: center; font-size: 14px; }
+.insight-box strong { color: #2c3e50; }
+
+&#x2F;* 数据统计卡片 *&#x2F;
+.stat-card { display: inline-block; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px 24px; margin: 8px; text-align: center; min-width: 140px; }
+.stat-card .number { font-size: 2em; font-weight: 700; color: #3d92c9; display: block; }
+.stat-card .label { font-size: 0.85em; color: #666; margin-top: 4px; }
+.stat-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 20px 0; }
+
+&#x2F;* 文件路径树 *&#x2F;
+.file-tree { background: #1e1e1e; color: #d4d4d4; border-radius: 12px; padding: 20px 24px; margin: 20px 0; font-family: &#x27;SF Mono&#x27;, &#x27;Fira Code&#x27;, monospace; font-size: 0.88em; line-height: 1.8; overflow-x: auto; }
+.file-tree .comment { color: #6a9955; }
+.file-tree .path { color: #9cdcfe; }
+.file-tree .highlight { color: #ce9178; font-weight: bold; }
+.file-tree .arrow { color: #569cd6; }
+
+&#x2F;* 饼图模拟 - 横向条 *&#x2F;
+.bar-chart { margin: 20px 0; }
+.bar-item { display: flex; align-items: center; margin: 8px 0; }
+.bar-label { width: 180px; font-size: 0.9em; color: #555; flex-shrink: 0; }
+.bar-track { flex: 1; height: 28px; background: #f0f0f0; border-radius: 14px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 14px; display: flex; align-items: center; padding-left: 12px; font-size: 0.8em; color: white; font-weight: 600; transition: width 0.5s ease; min-width: 48px; }
+.bar-fill.sys { background: linear-gradient(90deg, #3d92c9, #5ba3d4); }
+.bar-fill.tools { background: linear-gradient(90deg, #e67e22, #f39c12); }
+.bar-fill.msgs { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+.bar-fill.files { background: linear-gradient(90deg, #8e44ad, #9b59b6); }
+.bar-fill.results { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+.bar-fill.other { background: linear-gradient(90deg, #95a5a6, #bdc3c7); }
+
+&#x2F;* 层级表格 *&#x2F;
+.layer-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.92em; }
+.layer-table th { background: #2c3e50; color: white; padding: 12px 16px; text-align: left; }
+.layer-table td { padding: 12px 16px; border-bottom: 1px solid #eee; vertical-align: top; }
+.layer-table tr:hover { background: #f8f9fa; }
+.layer-table code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+
+&#x2F;* 截图占位 *&#x2F;
+.screenshot-placeholder { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: 2px dashed #bbb; border-radius: 12px; padding: 40px; text-align: center; margin: 24px 0; color: #888; font-style: italic; }
+
+&#x2F;* 移动端适配 *&#x2F;
+@media (max-width: 768px) {
+    .layer-table { font-size: 0.82em; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .layer-table td, .layer-table th { padding: 8px 10px; }
+    .stat-card { min-width: 100px; padding: 12px 16px; }
+    .stat-card .number { font-size: 1.5em; }
+    .stat-row { gap: 4px; }
+    .bar-label { width: 120px; font-size: 0.82em; }
+    .bar-fill { font-size: 0.7em; padding-left: 6px; }
+    .file-tree { font-size: 0.78em; padding: 14px 16px; line-height: 1.6; }
+    .insight-box { padding: 16px 18px; margin: 16px 0; }
+}
+&lt;&#x2F;style&gt;
+&lt;h2 id=&quot;yuan-qi&quot;&gt;缘起&lt;&#x2F;h2&gt;
+&lt;p&gt;用 GitHub Copilot (Agent Mode) 写了一整天代码后，我突然好奇：&lt;strong&gt;这个 128K 的 Context Window，到底被谁瓜分了？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;VS Code 提供了一个隐藏的 Context Window 使用面板，展示了当前会话中每一类内容的 token 占比。我截取了一张，看完之后觉得这个话题值得深入拆解——因为这直接关系到你的 AI 编程助手&lt;strong&gt;到底在多大程度上理解你的代码&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;img src=&quot;Screenshot_Context_Window.png&quot; alt=&quot;GitHub Copilot Context Window 使用面板截图&quot; style=&quot;max-width: 380px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); margin: 0 auto; display: block;&quot; &#x2F;&gt;
+&lt;p style=&quot;text-align: center; color: #888; font-size: 0.9em; margin-top: 8px;&quot;&gt;VS Code 中的 Context Window 使用面板（Settings → &quot;context window&quot;）&lt;&#x2F;p&gt;
+&lt;p&gt;下面我们逐项拆解截图中的每一行，追溯到磁盘上的具体文件。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;quan-jing-shu-ju&quot;&gt;全景数据&lt;&#x2F;h2&gt;
+&lt;p&gt;我的这次会话快照：&lt;&#x2F;p&gt;
+&lt;div class=&quot;stat-row&quot;&gt;
+&lt;div class=&quot;stat-card&quot;&gt;&lt;span class=&quot;number&quot;&gt;60.8K&lt;&#x2F;span&gt;&lt;span class=&quot;label&quot;&gt;已用 tokens&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;stat-card&quot;&gt;&lt;span class=&quot;number&quot;&gt;128K&lt;&#x2F;span&gt;&lt;span class=&quot;label&quot;&gt;总窗口&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;stat-card&quot;&gt;&lt;span class=&quot;number&quot;&gt;48%&lt;&#x2F;span&gt;&lt;span class=&quot;label&quot;&gt;已使用&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;还没聊几轮就用掉了将近一半。每一项占比如下：&lt;&#x2F;p&gt;
+&lt;div class=&quot;bar-chart&quot;&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;Messages&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill msgs&quot; style=&quot;width: 13.8%&quot;&gt;13.8%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;Tool Definitions&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill tools&quot; style=&quot;width: 10.9%&quot;&gt;10.9%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;System Instructions&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill sys&quot; style=&quot;width: 9.0%&quot;&gt;9.0%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;Tool Results&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill results&quot; style=&quot;width: 7.6%&quot;&gt;7.6%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;Files&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill files&quot; style=&quot;width: 5.7%&quot;&gt;5.7%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;div class=&quot;bar-item&quot;&gt;&lt;span class=&quot;bar-label&quot;&gt;Other&lt;&#x2F;span&gt;&lt;div class=&quot;bar-track&quot;&gt;&lt;div class=&quot;bar-fill other&quot; style=&quot;width: 0.5%&quot;&gt;0.5%&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;下面逐项拆解，追溯到磁盘上的&lt;strong&gt;具体文件路径&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;1-system-instructions-9-0-11-520-tokens&quot;&gt;1. System Instructions（9.0% ≈ 11,520 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;系统指令是每次 API 调用都会携带的&amp;quot;底色&amp;quot;——你还没说话，它已经在了。&lt;&#x2F;p&gt;
+&lt;p&gt;它由 &lt;strong&gt;三层&lt;&#x2F;strong&gt; 叠加而成：&lt;&#x2F;p&gt;
+&lt;table class=&quot;layer-table&quot;&gt;
+&lt;tr&gt;&lt;th&gt;层级&lt;&#x2F;th&gt;&lt;th&gt;来源文件&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;th&gt;≈ tokens&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;① Copilot 内置&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;~&#x2F;.vscode&#x2F;extensions&#x2F;github.copilot-chat-0.37.8&#x2F;dist&#x2F;extension.js&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;身份提示 &quot;You are a highly sophisticated automated coding agent...&quot;、输出格式规则、KaTeX 指令、Markdown Linkification 规则、Notebook 指令&lt;&#x2F;td&gt;
+&lt;td&gt;~4,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;② 项目指令&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt; → &lt;strong&gt;符号链接&lt;&#x2F;strong&gt; → &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;项目导航地图、命令手册、架构图、Content Conventions、Communication Style&lt;&#x2F;td&gt;
+&lt;td&gt;~3,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;③ Skills 描述列表&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;*&#x2F;SKILL.md&lt;&#x2F;code&gt; (30 个)&lt;br&gt;&lt;code&gt;~&#x2F;.claude&#x2F;skills&#x2F;*&#x2F;SKILL.md&lt;&#x2F;code&gt; (20 个)&lt;&#x2F;td&gt;
+&lt;td&gt;每个 Skill 的 name + description + file 路径，打包成列表注入 system prompt&lt;&#x2F;td&gt;
+&lt;td&gt;~4,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;ceng-ji-copilot-ying-bian-ma-ti-shi&quot;&gt;层级 ①：Copilot 硬编码提示&lt;&#x2F;h3&gt;
+&lt;p&gt;藏在一个 17MB 的压缩 JS 文件里：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;.vscode&#x2F;extensions&#x2F;github.copilot-chat-0.37.8&#x2F;dist&#x2F;extension.js
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;用 &lt;code&gt;grep&lt;&#x2F;code&gt; 能挖出多条系统提示模板，分别对应不同场景：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; grep&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -oE &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;You are [^&amp;quot;]{20,80}&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; extension.js | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;head -4
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;You are a helpful code reviewer who...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;You are a highly sophisticated automated coding agent with expert-level knowledge.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;You are a strictly grounded assistant limited to the&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;You are a coding agent running in VS Code. You are expected to be precise, safe, and helpful.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不同的 Chat Participant（&lt;code&gt;github.copilot.default&lt;&#x2F;code&gt;、&lt;code&gt;github.copilot.editsAgent&lt;&#x2F;code&gt;、&lt;code&gt;github.copilot.notebook&lt;&#x2F;code&gt;...）会选用不同的系统提示模板。在 Agent Mode 下，用的是那条最长的 &amp;quot;highly sophisticated automated coding agent&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ceng-ji-xiang-mu-zhi-ling-ni-zi-ji-xie-de&quot;&gt;层级 ②：项目指令（你自己写的）&lt;&#x2F;h3&gt;
+&lt;p&gt;这是最有意思的发现——我的仓库里有个符号链接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; ls&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -la&lt;&#x2F;span&gt;&lt;span&gt; .github&#x2F;copilot-instructions.md
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lrwxr-xr-x&lt;&#x2F;span&gt;&lt;span&gt;  1 polly  staff  12  1月 30 23:49
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;span&gt;&lt;span&gt; -&amp;gt; ..&#x2F;CLAUDE.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;一个文件，两个入口&lt;&#x2F;strong&gt;：Claude Code 读 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;，VS Code Copilot 读 &lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt;，实际是同一个 293 行的项目指令文件。这是我当初有意为之的设计——维护一份文档，两个 AI 编程助手都能读到。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ceng-ji-skills-miao-shu-lie-biao&quot;&gt;层级 ③：Skills 描述列表&lt;&#x2F;h3&gt;
+&lt;p&gt;这部分跟我在 &lt;a href=&quot;&#x2F;skill-pipeline-deep-dive&quot;&gt;Skill Pipeline 深度拆解&lt;&#x2F;a&gt; 中分析的完全对应。Copilot 会扫描两个层级的 Skills：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Workspace 级（30 个）：    .claude&#x2F;skills&#x2F;*&#x2F;SKILL.md
+&lt;&#x2F;span&gt;&lt;span&gt;User 级（20 个）：         ~&#x2F;.claude&#x2F;skills&#x2F;*&#x2F;SKILL.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每个 Skill 只抽取 &lt;code&gt;name&lt;&#x2F;code&gt; 和 &lt;code&gt;description&lt;&#x2F;code&gt; 字段（约 100-150 tokens），打包成一个列表注入 system prompt。30 + 20 = 50 个 Skill 描述 × ~80 tokens ≈ &lt;strong&gt;4,000 tokens&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box&quot;&gt;
+&lt;strong&gt;Skills 是 System Instructions 中最大的单项开支&lt;&#x2F;strong&gt;。50 个 Skills 的描述列表就吃掉了系统指令的 ~35%。如果你觉得 Context Window 不够用，第一个优化点就是清理不常用的 Skills。
+&lt;&#x2F;div&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;2-tool-definitions-10-9-13-952-tokens&quot;&gt;2. Tool Definitions（10.9% ≈ 13,952 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;工具定义比系统提示还大——它是最沉默的 token 大户。&lt;&#x2F;p&gt;
+&lt;table class=&quot;layer-table&quot;&gt;
+&lt;tr&gt;&lt;th&gt;类型&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;th&gt;≈ tokens&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;内置工具 (Active)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;extension.js&lt;&#x2F;code&gt; 硬编码&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;read_file&lt;&#x2F;code&gt;、&lt;code&gt;grep_search&lt;&#x2F;code&gt;、&lt;code&gt;replace_string_in_file&lt;&#x2F;code&gt;、&lt;code&gt;run_in_terminal&lt;&#x2F;code&gt;、&lt;code&gt;semantic_search&lt;&#x2F;code&gt;、&lt;code&gt;create_file&lt;&#x2F;code&gt;、&lt;code&gt;list_dir&lt;&#x2F;code&gt;、&lt;code&gt;manage_todo_list&lt;&#x2F;code&gt; 等 ~15 个工具的完整 JSON Schema&lt;&#x2F;td&gt;
+&lt;td&gt;~8,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Deferred 工具列表&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;extension.js&lt;&#x2F;code&gt; 硬编码&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;fetch_webpage&lt;&#x2F;code&gt;、&lt;code&gt;run_notebook_cell&lt;&#x2F;code&gt;、&lt;code&gt;get_changed_files&lt;&#x2F;code&gt; 等 ~50 个工具的名称 + 简述&lt;&#x2F;td&gt;
+&lt;td&gt;~3,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;MCP 外部工具&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;.claude&#x2F;settings.json&lt;&#x2F;code&gt; + MCP 服务器动态注册&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;mcp_master-transl_*&lt;&#x2F;code&gt;、&lt;code&gt;mcp_tavily-remote_*&lt;&#x2F;code&gt;、&lt;code&gt;mcp_pylance_*&lt;&#x2F;code&gt; 等&lt;&#x2F;td&gt;
+&lt;td&gt;~3,000&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;每个工具定义长什么样？大概是这样的 JSON Schema：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;read_file&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Read the contents of a file.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;You must specify the line range...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;parameters&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;properties&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;filePath&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The absolute path of the file to read.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;startLine&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The line number to start reading from, 1-based.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;number&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;endLine&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The inclusive line number to end reading at, 1-based.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;number&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;    },
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;required&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;filePath&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;startLine&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;endLine&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;read_file&lt;&#x2F;code&gt; 算简单的，大约 300 tokens。而 &lt;code&gt;run_in_terminal&lt;&#x2F;code&gt; 带了一堆使用指南（Directory Management、Background Processes、Output Management...），轻松到 800 tokens。&lt;&#x2F;p&gt;
+&lt;p&gt;用 grep 统计各工具在 &lt;code&gt;extension.js&lt;&#x2F;code&gt; 中的引用次数：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; grep&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -oE &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;replace_string_in_file|semantic_search|read_file|run_in_terminal&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; extension.js \
+&lt;&#x2F;span&gt;&lt;span&gt;  | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sort &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uniq -c &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sort -rn
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;195&lt;&#x2F;span&gt;&lt;span&gt; replace_string_in_file    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 引用最多——因为使用指南长
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;84&lt;&#x2F;span&gt;&lt;span&gt; semantic_search
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;74&lt;&#x2F;span&gt;&lt;span&gt; read_file
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;67&lt;&#x2F;span&gt;&lt;span&gt; run_in_terminal
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;39&lt;&#x2F;span&gt;&lt;span&gt; manage_todo_list
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;36&lt;&#x2F;span&gt;&lt;span&gt; grep_search
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;12&lt;&#x2F;span&gt;&lt;span&gt; create_file
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt; list_dir
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;deferred-tools-an-xu-jia-zai-de-you-hua&quot;&gt;Deferred Tools：按需加载的优化&lt;&#x2F;h3&gt;
+&lt;p&gt;Copilot 并不是把所有 ~60 个工具的完整 Schema 都塞进去（那要 30,000+ tokens）。它用了一个聪明的分层策略：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Active Tools（~15 个）&lt;&#x2F;strong&gt;：完整 JSON Schema 直接注入，每次调用都带&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Deferred Tools（~50 个）&lt;&#x2F;strong&gt;：只放名称 + 一句话描述，需要时通过 &lt;code&gt;tool_search_tool_regex&lt;&#x2F;code&gt; 动态加载完整定义&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Active:  read_file, grep_search, run_in_terminal, create_file...     → 完整 Schema
+&lt;&#x2F;span&gt;&lt;span&gt;Deferred: fetch_webpage, run_notebook_cell, install_extension...     → 名称 + 简述
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这就是为什么你有时在对话中看到 Copilot 先调 &lt;code&gt;tool_search_tool_regex&lt;&#x2F;code&gt; 再调目标工具——它在&amp;quot;按需展开&amp;quot;一个 Deferred Tool 的完整 Schema。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;3-messages-13-8-17-664-tokens&quot;&gt;3. Messages（13.8% ≈ 17,664 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;这是唯一&lt;strong&gt;没有独立磁盘文件源头&lt;&#x2F;strong&gt;的部分——它就是你和 AI 聊的内容本身。&lt;&#x2F;p&gt;
+&lt;table class=&quot;layer-table&quot;&gt;
+&lt;tr&gt;&lt;th&gt;组成&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;对话历史&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;VS Code 内存 + &lt;code&gt;workspaceStorage&#x2F;state.vscdb&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;你的每条消息 + AI 的每条回复，按时间顺序累积&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Conversation Summary&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;Copilot 动态生成&lt;&#x2F;td&gt;
+&lt;td&gt;对话变长时，早期内容被压缩为 &lt;code&gt;&amp;lt;conversation-summary&amp;gt;&lt;&#x2F;code&gt; XML 块&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;持久化位置：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;Library&#x2F;Application Support&#x2F;Code&#x2F;User&#x2F;workspaceStorage&#x2F;&amp;lt;hash&amp;gt;&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  └── state.vscdb        ← SQLite 数据库，存储 chat 会话历史
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Messages 是 Context Window 中&lt;strong&gt;增长最快的部分&lt;&#x2F;strong&gt;。每多一轮对话，你的可用空间就少一些。当接近窗口上限时，Copilot 会开始压缩早期对话——这就是长会话后期&amp;quot;失忆&amp;quot;的根本原因。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;4-files-5-7-7-296-tokens&quot;&gt;4. Files（5.7% ≈ 7,296 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;这部分来自你&lt;strong&gt;主动提供或编辑器自动携带&lt;&#x2F;strong&gt;的文件上下文：&lt;&#x2F;p&gt;
+&lt;table class=&quot;layer-table&quot;&gt;
+&lt;tr&gt;&lt;th&gt;类型&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;注入方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;用户附加文件&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;你在编辑器中选中的内容（如 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 293 行）&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;&amp;lt;attachment&amp;gt;&lt;&#x2F;code&gt; XML 标签包裹，完整内容注入&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;编辑器上下文&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;当前打开的文件路径 + 光标位置&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;&amp;lt;editorContext&amp;gt;&lt;&#x2F;code&gt; 标签，路径 + 选区信息&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Workspace 结构&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;工作目录的目录树摘要&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;&amp;lt;workspace_info&amp;gt;&lt;&#x2F;code&gt; 标签，自动生成&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;这里的关键优化点：&lt;strong&gt;不要无脑附加大文件&lt;&#x2F;strong&gt;。把一个 500 行文件选中拖进聊天 = 白白吃掉 ~3000 tokens。只在需要时选中相关代码段。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;5-tool-results-7-6-9-728-tokens&quot;&gt;5. Tool Results（7.6% ≈ 9,728 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;每次 AI 调用工具后，工具的&lt;strong&gt;返回结果也要放回 Context Window&lt;&#x2F;strong&gt;——因为 LLM 需要看到结果才能继续推理。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;返回内容&lt;&#x2F;th&gt;&lt;th&gt;Token 消耗&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;read_file&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;文件内容&lt;&#x2F;td&gt;&lt;td&gt;~2000&#x2F;300行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;grep_search&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;搜索结果列表&lt;&#x2F;td&gt;&lt;td&gt;~500&#x2F;次&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;run_in_terminal&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;命令输出&lt;&#x2F;td&gt;&lt;td&gt;变化大&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;get_errors&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;编译&#x2F;lint 错误&lt;&#x2F;td&gt;&lt;td&gt;~100&#x2F;次&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;runSubagent&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;子代理报告&lt;&#x2F;td&gt;&lt;td&gt;~2000&#x2F;次&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Tool Results 是&amp;quot;隐形消费&amp;quot;大户。你让 AI 读一个文件 → ~2000 tokens，再读一个 → +2000，跑个 git push → +500...不知不觉就累积了将近 10,000 tokens。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;6-other-0-5-640-tokens&quot;&gt;6. Other（0.5% ≈ 640 tokens）&lt;&#x2F;h2&gt;
+&lt;p&gt;最小的一块，但也值得知道它是什么：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;&amp;lt;environment_info&amp;gt;macOS&amp;lt;&#x2F;environment_info&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;context&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  Terminals: zola, node, zsh...
+&lt;&#x2F;span&gt;&lt;span&gt;  Last Command: git push
+&lt;&#x2F;span&gt;&lt;span&gt;  Cwd: &#x2F;Users&#x2F;polly&#x2F;...&#x2F;www.polly.com
+&lt;&#x2F;span&gt;&lt;span&gt;  Exit Code: 0
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;context&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;来自 VS Code 运行时环境采集：操作系统类型、已开的终端、最近执行的命令、当前工作目录。这些帮助 AI 理解你的开发环境上下文。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;quan-jing-ci-pan-di-tu&quot;&gt;全景磁盘地图&lt;&#x2F;h2&gt;
+&lt;p&gt;把所有来源汇总到一张文件树上：&lt;&#x2F;p&gt;
+&lt;div class=&quot;file-tree&quot;&gt;
+&lt;span class=&quot;comment&quot;&gt;# 你的 Context Window = 60.8K tokens，来自这些文件：&lt;&#x2F;span&gt;&lt;br&gt;&lt;br&gt;
+&lt;span class=&quot;path&quot;&gt;~&#x2F;.vscode&#x2F;extensions&#x2F;github.copilot-chat-0.37.8&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+├── &lt;span class=&quot;highlight&quot;&gt;dist&#x2F;extension.js&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 17MB，包含：&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── System Prompt 模板 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# &quot;You are a highly sophisticated...&quot;&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── Tool JSON Schemas &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# read_file, grep_search, ...&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── Deferred Tools 列表 &amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# ~50 个工具名称+简述&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── Skill 加载逻辑 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# .claude&#x2F;skills 目录扫描&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;└── Context 组装器 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 拼接所有来源&lt;&#x2F;span&gt;&lt;br&gt;
+└── &lt;span class=&quot;path&quot;&gt;package.json&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 12 个 chatParticipant 注册&lt;&#x2F;span&gt;&lt;br&gt;&lt;br&gt;
+&lt;span class=&quot;path&quot;&gt;&amp;lt;workspace&amp;gt;&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+├── &lt;span class=&quot;highlight&quot;&gt;CLAUDE.md&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 项目指令 (293 行)&lt;&#x2F;span&gt;&lt;br&gt;
+├── &lt;span class=&quot;path&quot;&gt;.github&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── &lt;span class=&quot;highlight&quot;&gt;copilot-instructions.md&lt;&#x2F;span&gt; &lt;span class=&quot;arrow&quot;&gt;→&lt;&#x2F;span&gt; &lt;span class=&quot;highlight&quot;&gt;..&#x2F;CLAUDE.md&lt;&#x2F;span&gt; &amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 符号链接！&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;└── &lt;span class=&quot;path&quot;&gt;prompts&#x2F;&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 16 个 prompt 模板 (按需)&lt;&#x2F;span&gt;&lt;br&gt;
+├── &lt;span class=&quot;path&quot;&gt;.claude&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;├── &lt;span class=&quot;path&quot;&gt;settings.json&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# MCP 服务器配置&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;└── &lt;span class=&quot;path&quot;&gt;skills&#x2F;&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 30 个 workspace skills&lt;&#x2F;span&gt;&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├── blog-writer&#x2F;SKILL.md&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├── paper-writer&#x2F;SKILL.md&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├── memory-keeper&#x2F;SKILL.md&lt;br&gt;
+│ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;└── ... (27 more)&lt;br&gt;&lt;br&gt;
+&lt;span class=&quot;path&quot;&gt;~&#x2F;.claude&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+└── &lt;span class=&quot;path&quot;&gt;skills&#x2F;&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 20 个 user-level skills&lt;&#x2F;span&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├── academic-paper-writer&#x2F;SKILL.md&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;├── frontend-design&#x2F;SKILL.md&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;└── ... (18 more)&lt;br&gt;&lt;br&gt;
+&lt;span class=&quot;path&quot;&gt;~&#x2F;Library&#x2F;Application Support&#x2F;Code&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+└── &lt;span class=&quot;path&quot;&gt;User&#x2F;workspaceStorage&#x2F;&amp;lt;hash&amp;gt;&#x2F;&lt;&#x2F;span&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;└── &lt;span class=&quot;highlight&quot;&gt;state.vscdb&lt;&#x2F;span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;comment&quot;&gt;# 对话历史 (SQLite)&lt;&#x2F;span&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;最核心的一个文件就是那个 &lt;strong&gt;17MB 的 &lt;code&gt;extension.js&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;——System Prompt、Tool Definitions、Skill 加载器、Context 组装器全在里面。其余都是配置文件和内容文件，被它在运行时读取并拼装。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;cheng-ben-jie-gou-gu-ding-vs-lei-ji&quot;&gt;成本结构：固定 vs 累积&lt;&#x2F;h2&gt;
+&lt;p&gt;这张图是我最想表达的核心观点：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│         每次 API 调用的 token 构成                │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🔒 固定成本（每次都付）              ≈ 20%      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     System Instructions     9.0%                │
+&lt;&#x2F;span&gt;&lt;span&gt;│     Tool Definitions       10.9%                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📈 累积成本（越聊越多）              ≈ 27%      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     Messages              13.8%                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     Files                  5.7%                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     Tool Results           7.6%                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📦 杂项                              ≈  1%      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     Other                  0.5%                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  💨 剩余空间                          ≈ 52%      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     可用于继续对话                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;div class=&quot;insight-box&quot;&gt;
+&lt;strong&gt;128K 窗口你实际能用的只有 ~102K&lt;&#x2F;strong&gt;。System Instructions + Tool Definitions 这 20% 是&quot;入场券&quot;——你还没开口说话就被扣了。对话越长，Messages + Tool Results 像滚雪球一样膨胀。到 80-90% 时 Copilot 会开始压缩早期对话，这就是长会话后期&quot;失忆&quot;的根本原因。
+&lt;&#x2F;div&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;you-hua-zhi-nan&quot;&gt;优化指南&lt;&#x2F;h2&gt;
+&lt;p&gt;知道了每一寸 token 的出处，优化就有方向了：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;优化策略&lt;&#x2F;th&gt;&lt;th&gt;针对部分&lt;&#x2F;th&gt;&lt;th&gt;效果&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;清理不常用的 Skills&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;System Instructions&lt;&#x2F;td&gt;&lt;td&gt;50 个减到 20 个 → 省 ~2,400 tokens&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;减少 MCP 工具数量&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Tool Definitions&lt;&#x2F;td&gt;&lt;td&gt;每少一个 MCP 工具 → 省 ~300 tokens&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;及时开新会话&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Messages&lt;&#x2F;td&gt;&lt;td&gt;归零，回收 ~15-20%&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;精确选中代码段，别全文拖入&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Files&lt;&#x2F;td&gt;&lt;td&gt;300 行→50 行 → 省 ~1,600 tokens&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;少让 AI 读大文件&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Tool Results&lt;&#x2F;td&gt;&lt;td&gt;每次 &lt;code&gt;read_file&lt;&#x2F;code&gt; 控制行数&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;精简 CLAUDE.md&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;System Instructions&lt;&#x2F;td&gt;&lt;td&gt;293 行→150 行 → 省 ~1,500 tokens&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;gen-skill-pipeline-de-guan-xi&quot;&gt;跟 Skill Pipeline 的关系&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你读过我的 &lt;a href=&quot;&#x2F;skill-pipeline-deep-dive&quot;&gt;Skill Pipeline 深度拆解&lt;&#x2F;a&gt;，现在可以把两篇文章串起来：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Skill 描述列表常驻 System Instructions&lt;&#x2F;strong&gt;（~4,000 tokens）——这就是 Skill Pipeline 的&amp;quot;唯一固定代价&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;触发 Skill 后，SKILL.md 全文作为 Tool Result 注入&lt;&#x2F;strong&gt;——从 Tool Results 的 7.6% 那块扣&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具调用（read_file 等）的结果也进 Tool Results&lt;&#x2F;strong&gt;——Skill 触发后续的工具调用链，每一步都在累加&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;整个 Skill Pipeline 的 token 足迹：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;描述列表 (常驻)  →  ~80 tokens&#x2F;skill  →  System Instructions
+&lt;&#x2F;span&gt;&lt;span&gt;SKILL.md (按需)  →  ~500-2000 tokens  →  Tool Results
+&lt;&#x2F;span&gt;&lt;span&gt;后续工具调用     →  每次 ~500-2000     →  Tool Results (累积)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jie-yu&quot;&gt;结语&lt;&#x2F;h2&gt;
+&lt;p&gt;Context Window 就是 AI Agent 的&amp;quot;工作内存&amp;quot;。跟你用 &lt;code&gt;htop&lt;&#x2F;code&gt; 看进程内存一样，这个面板告诉你每一寸 token 被谁占了、从哪来的。&lt;&#x2F;p&gt;
+&lt;p&gt;下次你觉得 AI &amp;quot;不够聪明&amp;quot;或&amp;quot;忘了之前说的&amp;quot;时，先看看 Context Window 使用率——很可能不是模型的问题，而是它的&amp;quot;内存&amp;quot;快满了。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇拆的是 VS Code Copilot 的 Context Window。Claude Code 呢？它的上下文组装策略完全不同——没有 Deferred Tools，有 System Prompt Caching，还有一套独特的 conversation compaction 机制。那是另一个故事了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;本文与 &lt;a href=&quot;&#x2F;skill-pipeline-deep-dive&quot;&gt;拆解 Skill Pipeline&lt;&#x2F;a&gt; 为同日姊妹篇，建议对照阅读。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
         <title>从逆向工程到自己造轮子：Jarvis Skill Pipeline 实现之旅</title>
         <published>2026-02-22T00:00:00+00:00</published>
         <updated>2026-02-22T00:00:00+00:00</updated>
