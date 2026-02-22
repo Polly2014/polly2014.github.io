@@ -644,6 +644,26 @@ table td {
     display: none;
 }
 
+/* Language badges */
+.lang-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+    letter-spacing: 0.02em;
+}
+.lang-zh {
+    background: #fee2e2;
+    color: #dc2626;
+}
+.lang-en {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
 .chat-header {
     display: flex;
     flex-direction: column;
