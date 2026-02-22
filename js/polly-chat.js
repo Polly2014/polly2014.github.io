@@ -146,6 +146,7 @@ class PollyChat {
             const ctx = canvas.getContext('2d');
             
             img.onload = () => {
+                URL.revokeObjectURL(img.src); // 释放 Blob URL
                 // 计算缩放尺寸
                 let { width, height } = img;
                 if (width > maxSize || height > maxSize) {
