@@ -132,26 +132,26 @@ class PollyChat {
     // ========== 欢迎屏幕 ==========
     
     setupWelcome() {
-        // 时段副标题
+        // Time-based subtitle
         const subtitle = document.getElementById('welcome-subtitle');
         if (subtitle) {
             const hour = new Date().getHours();
             if (hour >= 5 && hour < 9) {
-                subtitle.textContent = '早起的程序员，难得 ☀️';
+                subtitle.textContent = 'An early bird coder, rare sight ☀️';
             } else if (hour >= 9 && hour < 12) {
-                subtitle.textContent = '博客主人的数字分身，上午好 ☕';
+                subtitle.textContent = 'Polly\'s digital twin, good morning ☕';
             } else if (hour >= 12 && hour < 14) {
-                subtitle.textContent = '午餐时间，随便聊聊 🍜';
+                subtitle.textContent = 'Lunch break, let\'s chat 🍜';
             } else if (hour >= 14 && hour < 18) {
-                subtitle.textContent = '博客主人的数字分身，随时在线 ☕';
+                subtitle.textContent = 'Polly\'s digital twin, always online ☕';
             } else if (hour >= 18 && hour < 22) {
-                subtitle.textContent = '下班时间，放松一下 🌆';
+                subtitle.textContent = 'After hours, time to unwind 🌆';
             } else {
-                subtitle.textContent = '夜猫子模式，正在线 🌙';
+                subtitle.textContent = 'Night owl mode, online 🌙';
             }
         }
         
-        // 动态 chips：从 prompt 提取当前项目
+        // Dynamic chips: extract current project from prompt
         this.updateDynamicChips();
     }
     
@@ -160,13 +160,13 @@ class PollyChat {
         const dynamicChip = document.querySelector('.welcome-chips .chip-dynamic');
         if (!dynamicChip) return;
         
-        // 提取第一个🟢项目名
+        // Extract first 🟢 project name
         const projectMatch = this.systemPrompt.match(/\*\*(.+?)\*\*\s*\(🟢\)/);
         if (projectMatch) {
             const name = projectMatch[1];
             const shortName = name.length > 10 ? name.slice(0, 10) + '…' : name;
             dynamicChip.textContent = `🔬 ${shortName}`;
-            dynamicChip.dataset.msg = `${name} 是什么？跟我讲讲`;
+            dynamicChip.dataset.msg = `What is ${name}? Tell me about it`;
         }
     }
     
@@ -182,7 +182,7 @@ class PollyChat {
                     hasImage = true;
                 }
                 if (this.pendingImages.length >= this.MAX_IMAGES) {
-                    alert(`最多支持 ${this.MAX_IMAGES} 张图片`);
+                    alert(`Up to ${this.MAX_IMAGES} images allowed`);
                     break;
                 }
                 const file = item.getAsFile();
@@ -200,7 +200,7 @@ class PollyChat {
         
         // 检查数量上限
         if (this.pendingImages.length >= this.MAX_IMAGES) {
-            alert(`最多支持 ${this.MAX_IMAGES} 张图片`);
+            alert(`Up to ${this.MAX_IMAGES} images allowed`);
             return;
         }
         
@@ -396,18 +396,18 @@ class PollyChat {
         const now = new Date();
         const hour = now.getHours();
         const min = String(now.getMinutes()).padStart(2, '0');
-        const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const day = weekdays[now.getDay()];
         
-        // 时段标签
+        // Time period label
         let period;
-        if (hour >= 6 && hour < 12) period = '上午';
-        else if (hour >= 12 && hour < 14) period = '中午';
-        else if (hour >= 14 && hour < 18) period = '下午';
-        else if (hour >= 18 && hour < 22) period = '傍晚';
-        else period = '深夜';
+        if (hour >= 6 && hour < 12) period = 'morning';
+        else if (hour >= 12 && hour < 14) period = 'noon';
+        else if (hour >= 14 && hour < 18) period = 'afternoon';
+        else if (hour >= 18 && hour < 22) period = 'evening';
+        else period = 'late night';
         
-        return `\n\n## 当前时间\n访客本地时间：${period} ${hour}:${min}，星期${day}。据此调整语气和话题。`;
+        return `\n\n## Current Time\nVisitor's local time: ${period}, ${hour}:${min}, ${day}. Adjust tone and topics accordingly.`;
     }
     
     async streamResponse(bubble) {
