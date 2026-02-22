@@ -644,24 +644,25 @@ table td {
     display: none;
 }
 
-/* Language badges */
+/* Language badges — 与 .year-count 风格统一 */
 .lang-badge {
     display: inline-block;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     padding: 1px 6px;
-    border-radius: 3px;
-    font-weight: 600;
-    vertical-align: middle;
-    margin-right: 0.4rem;
+    border-radius: 10px;
+    font-weight: 500;
+    vertical-align: baseline;
+    margin-right: 0.3rem;
     letter-spacing: 0.02em;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 .lang-zh {
-    background: #fee2e2;
-    color: #dc2626;
+    background: #e8e8e8;
+    color: #999;
 }
 .lang-en {
-    background: #dbeafe;
-    color: #2563eb;
+    background: #e0eaf3;
+    color: #7a93a8;
 }
 
 .chat-header {
