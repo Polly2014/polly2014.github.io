@@ -153,6 +153,10 @@ class PollyChat {
         
         // Dynamic chips: extract current project from prompt
         this.updateDynamicChips();
+
+        // Fade in subtitle & chips (avoid flash of default text)
+        subtitle?.classList.add('ready');
+        document.getElementById('welcome-chips')?.classList.add('ready');
     }
     
     updateDynamicChips() {

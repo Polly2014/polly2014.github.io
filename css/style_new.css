@@ -605,6 +605,11 @@ table td {
     font-weight: 300;
     margin: -0.8em 0 1.5em;
     letter-spacing: 0.5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.welcome-subtitle.ready {
+    opacity: 1;
 }
 
 .welcome-chips {
@@ -614,6 +619,11 @@ table td {
     gap: 10px;
     max-width: 480px;
     margin-bottom: 1.5em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.welcome-chips.ready {
+    opacity: 1;
 }
 
 .chip {
