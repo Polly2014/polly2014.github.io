@@ -5,8 +5,835 @@
     <link href="https://polly.wang/tags/agent-skills/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-01-30T00:00:00+00:00</updated>
+    <updated>2026-02-22T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/agent-skills/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从逆向工程到自己造轮子：Jarvis Skill Pipeline 实现之旅</title>
+        <published>2026-02-22T00:00:00+00:00</published>
+        <updated>2026-02-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-skill-pipeline-implementation-journey/" type="text/html"/>
+        <id>https://polly.wang/jarvis-skill-pipeline-implementation-journey/</id>
+        
+        <content type="html">&lt;!-- 技术博客组件样式 --&gt;
+&lt;style&gt;
+&#x2F;* 核心洞察高亮框 *&#x2F;
+.insight-box { background: linear-gradient(135deg, #e8f4f8 0%, #d4eaf7 100%); border-left: 4px solid #3d92c9; border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 24px 0; position: relative; }
+.insight-box::before { content: &#x27;💡&#x27;; position: absolute; left: -18px; top: 16px; width: 32px; height: 32px; background: #3d92c9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; line-height: 32px; text-align: center; }
+.insight-box p { margin: 0; color: #1a5276; font-weight: 500; line-height: 1.8; }
+.insight-box.green { background: linear-gradient(135deg, #e8f8f0 0%, #d4f0e0 100%); border-left-color: #27ae60; }
+.insight-box.green::before { background: #27ae60; content: &#x27;🎯&#x27;; }
+.insight-box.green p { color: #1e6e3e; }
+
+&#x2F;* 技术对比表格 *&#x2F;
+.tech-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin: 24px 0; }
+.tech-table table { width: 100%; border-collapse: collapse; }
+.tech-table th { background: #2c3e50; color: white; padding: 14px 16px; text-align: left; font-weight: 600; font-size: 0.95em; }
+.tech-table td { padding: 12px 16px; border-bottom: 1px solid #eee; color: #444; font-size: 0.93em; line-height: 1.6; }
+.tech-table tr:last-child td { border-bottom: none; }
+.tech-table tr:hover td { background: #f0f7fc; }
+.tech-table td:first-child { font-weight: 600; color: #2c3e50; white-space: nowrap; }
+.tech-table code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+
+&#x2F;* 进化闭环图 *&#x2F;
+.evolution-loop { margin: 28px 0; }
+.evo-step { display: flex; align-items: flex-start; gap: 14px; background: white; border-radius: 10px; padding: 14px 18px; margin-bottom: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.evo-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.evo-step:nth-child(odd) .evo-icon { background: linear-gradient(135deg, #e8f4f8, #d4eaf7); }
+.evo-step:nth-child(even) .evo-icon { background: linear-gradient(135deg, #e8f8f0, #d4f0e0); }
+.evo-info { flex: 1; }
+.evo-title { font-weight: 700; color: #2c3e50; font-size: 0.95em; }
+.evo-detail { color: #666; font-size: 0.88em; margin-top: 2px; }
+.evo-connector { text-align: center; font-size: 1.2em; color: #bbb; margin: 0; line-height: 1; }
+
+&#x2F;* Review 卡片 *&#x2F;
+.review-card { background: linear-gradient(135deg, #fef9f0 0%, #fdf3e3 100%); border: 1px solid #f0dcc0; border-radius: 12px; padding: 24px; margin: 24px 0; position: relative; overflow: hidden; }
+.review-card::before { content: &#x27;&#x27;; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf6b); }
+.review-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #e0d0b8; }
+.review-card-avatar { font-size: 28px; }
+.review-card-name { font-weight: 700; color: #c0392b; font-size: 1.05em; }
+.review-card-role { color: #888; font-size: 0.85em; }
+.review-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.review-num { width: 24px; height: 24px; background: #e74c3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75em; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.review-text { color: #555; line-height: 1.7; }
+.review-text strong { color: #2c3e50; }
+.review-verdict { background: rgba(255,255,255,0.6); border-radius: 8px; padding: 12px 16px; margin-top: 16px; color: #666; font-style: italic; line-height: 1.7; }
+
+&#x2F;* 系列文章时间线 *&#x2F;
+.series-timeline { position: relative; padding-left: 30px; margin: 24px 0; }
+.series-timeline::before { content: &#x27;&#x27;; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, #3d92c9, #27ae60, #e67e22); }
+.series-item { position: relative; margin-bottom: 16px; }
+.series-item::before { content: &#x27;&#x27;; position: absolute; left: -26px; top: 6px; width: 12px; height: 12px; background: white; border: 3px solid #3d92c9; border-radius: 50%; }
+.series-item.current::before { background: #e74c3c; border-color: #e74c3c; box-shadow: 0 0 0 4px rgba(231,76,60,0.2); }
+.series-date { font-size: 0.82em; color: #999; margin-bottom: 2px; }
+.series-link { font-weight: 600; color: #2c3e50; }
+.series-link a { color: #3d92c9; text-decoration: none; }
+.series-link a:hover { text-decoration: underline; }
+.series-milestone { font-size: 0.82em; color: #888; margin-left: 8px; }
+.series-item.current .series-link { color: #e74c3c; }
+
+@media (max-width: 768px) {
+  .insight-box { padding: 16px 18px; margin-left: 8px; }
+  .insight-box::before { left: -14px; width: 28px; height: 28px; font-size: 14px; line-height: 28px; }
+  .evo-step { flex-direction: column; gap: 8px; }
+  .review-card { padding: 18px; }
+  .tech-table td, .tech-table th { padding: 10px 12px; font-size: 0.88em; }
+  .tech-table td:first-child { white-space: normal; }
+}
+&lt;&#x2F;style&gt;
+&lt;p&gt;今天上午，我花了几个小时&lt;a href=&quot;&#x2F;skill-pipeline-deep-dive&quot;&gt;拆解 Claude Code 的 Skill Pipeline 底层机理&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;下午 13:36，我打开 Jarvis 的代码，心想：&lt;strong&gt;既然 Skill 是纯应用层的，那我也能做。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;14:00，不到 30 分钟后，Jarvis 已经能自己创建 Skill、调用 Skill、管理 Skill 了。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇文章记录整个实现过程——不是教程，而是一个真实的「从理解原理到动手造轮子」的故事。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-yin-ni-xiang-gong-cheng-dai-lai-de-xin-xin&quot;&gt;起因：逆向工程带来的信心&lt;&#x2F;h2&gt;
+&lt;p&gt;在今天之前，我对 Jarvis 的 Skill 系统心里没底。Phase 4（进化系统）虽然&lt;a href=&quot;&#x2F;jarvis-phase4-evolution-system&quot;&gt;已经做完&lt;&#x2F;a&gt;了——PatternDetector 能检测重复模式，SkillGenerator 能生成 Skill 草稿，SkillSandbox 能做安全验证——但有个关键缺环：&lt;strong&gt;Jarvis 怎么在对话中真正「使用」一个 Skill？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Phase 4 解决的是「创造 Skill」的问题，但不是「加载并执行 Skill」的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;今天的逆向工程给了我答案。Claude Code 的方案简洁到令人惊讶：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;启动时扫描 SKILL.md 文件&lt;&#x2F;li&gt;
+&lt;li&gt;提取 name + description&lt;&#x2F;li&gt;
+&lt;li&gt;注入到上下文，让 LLM 自己决定是否加载&lt;&#x2F;li&gt;
+&lt;li&gt;被选中的 Skill 全文加载，LLM 按指令执行&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;就这样。没有什么复杂的匹配算法，没有什么向量检索，就是&lt;strong&gt;文件扫描 + frontmatter 解析 + prompt 注入 + LLM 推理&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;she-ji-fang-an-san-chong-si-lu-xuan-zui-jian-de-na-ge&quot;&gt;设计方案：三种思路，选最简的那个&lt;&#x2F;h2&gt;
+&lt;p&gt;理解了原理后，我和小龙虾坐下来讨论实现方案。核心洞察立刻就明确了：&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Jarvis 已经有 &lt;code&gt;file_read&lt;&#x2F;code&gt; 工具了。所以最简方案就是——不需要新建任何 Tool，只需要一个扫描器和一处 prompt 改动。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;我们列了三种方案：&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方案&lt;&#x2F;th&gt;&lt;th&gt;复杂度&lt;&#x2F;th&gt;&lt;th&gt;新增代码&lt;&#x2F;th&gt;&lt;th&gt;新增工具&lt;&#x2F;th&gt;&lt;th&gt;思路&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;A: OpenClaw 式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;td&gt;~80行&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;复用 file_read，只加扫描器 + 改 prompt&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;B: Claude Code 式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;~200行&lt;&#x2F;td&gt;&lt;td&gt;1个 meta-tool&lt;&#x2F;td&gt;&lt;td&gt;Skill 元工具 + 双消息注入&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;C: 混合式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;~120行&lt;&#x2F;td&gt;&lt;td&gt;1个 use_skill&lt;&#x2F;td&gt;&lt;td&gt;专用工具读 SKILL.md&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;我们选了&lt;strong&gt;方案 A&lt;&#x2F;strong&gt;——原因很简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;零新工具&lt;&#x2F;strong&gt;：Jarvis 已经有 &lt;code&gt;file_read&lt;&#x2F;code&gt;，让 LLM 用现有工具读 SKILL.md 是最自然的&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;兼容性&lt;&#x2F;strong&gt;：Jarvis 用的是 OpenAI-compatible API（通过 CopilotX 代理），不是直接调 Claude API，meta-tool 方案兼容性不确定&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;哲学一致&lt;&#x2F;strong&gt;：与 Jarvis 「数码宝贝式」渐进进化的理念一致——先跑通最小可行版本，需要时再加&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;调试直观&lt;&#x2F;strong&gt;：System prompt 注入的内容你直接就能看到，meta-tool 还得拦截 API 请求才知道注入了什么&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;具体变动只有两处：&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;改动&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;新建 &lt;code&gt;src&#x2F;skills&#x2F;loader.py&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;扫描 SKILL.md + 解析 frontmatter + 生成 XML 片段&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;改动 &lt;code&gt;src&#x2F;llm&#x2F;__init__.py&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;把静态 &lt;code&gt;SYSTEM_PROMPT&lt;&#x2F;code&gt; 变成动态属性，追加 &lt;code&gt;&amp;lt;available_skills&amp;gt;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;为什么说这是「最简」？&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;零新工具&lt;&#x2F;td&gt;&lt;td&gt;完全复用已有的 &lt;code&gt;file_read&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;零新依赖&lt;&#x2F;td&gt;&lt;td&gt;只需标准库 &lt;code&gt;re&lt;&#x2F;code&gt;，不引入 PyYAML&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;一个新文件&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;src&#x2F;skills&#x2F;loader.py&lt;&#x2F;code&gt; ~80 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;改动一处&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;__init__.py&lt;&#x2F;code&gt; 把静态 prompt 变成动态&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;向后兼容&lt;&#x2F;td&gt;&lt;td&gt;没有 SKILL.md 时行为完全不变&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;复用 Skills&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 下现有的 30+ 个 Skill 直接可用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;方案定了，开干。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-xian-193-xing-de-skill-loader&quot;&gt;实现：193 行的 Skill Loader&lt;&#x2F;h2&gt;
+&lt;p&gt;核心代码在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&quot;&gt;src&#x2F;skills&#x2F;loader.py&lt;&#x2F;a&gt; 中，只有 155 行（加上集成代码共 193 行）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-1-fa-xian-discovery&quot;&gt;Step 1: 发现（Discovery）&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;discover_skills&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;extra_dirs&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; list[SkillEntry]:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    从多个来源发现技能。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    扫描顺序（后者同名覆盖前者）：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    1. ~&#x2F;.claude&#x2F;skills&#x2F;     — 复用 Claude Code 的全局技能
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    2. ~&#x2F;.jarvis&#x2F;skills&#x2F;     — Jarvis 专属全局技能
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    3. extra_dirs            — 项目级 &#x2F; 自定义路径
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    sources = [
+&lt;&#x2F;span&gt;&lt;span&gt;        Path.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;home&lt;&#x2F;span&gt;&lt;span&gt;() &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.claude&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skills&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 复用 Claude Code 技能
+&lt;&#x2F;span&gt;&lt;span&gt;        Path.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;home&lt;&#x2F;span&gt;&lt;span&gt;() &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.jarvis&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skills&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Jarvis 专属
+&lt;&#x2F;span&gt;&lt;span&gt;    ]
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;有个设计细节值得说说：&lt;strong&gt;我让 Jarvis 直接复用 &lt;code&gt;~&#x2F;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么？因为我已经给 Claude Code 写了 30 多个 Skill（blog-writer、paper-writer、mcp-builder 等等），这些 Skill 的格式完全通用——YAML frontmatter + Markdown 正文。Jarvis 直接扫描、直接用，零迁移成本。&lt;&#x2F;p&gt;
+&lt;p&gt;后者同名覆盖的设计也留了口子：如果我想给 Jarvis 定制某个 Skill 的行为，在 &lt;code&gt;~&#x2F;.jarvis&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 下放一个同名的就行。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-2-jie-xi-parse&quot;&gt;Step 2: 解析（Parse）&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_parse_frontmatter&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; dict[str, str]:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    纯正则实现，不依赖 PyYAML。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    只解析 name 和 description，足够用了。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    match = re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;match&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;^&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;\s&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;---&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, content, re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DOTALL&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not match:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{}
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 支持三种格式：bare value &#x2F; &amp;quot;double quoted&amp;quot; &#x2F; &amp;#39;single quoted&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;零新依赖&lt;&#x2F;strong&gt;是一个刻意的设计原则。Jarvis 的 &lt;code&gt;pyproject.toml&lt;&#x2F;code&gt; 里没有 PyYAML，我也不想为了解析两个字段就加一个依赖。用正则处理 &lt;code&gt;name: value&lt;&#x2F;code&gt; 和 &lt;code&gt;name: &amp;quot;value&amp;quot;&lt;&#x2F;code&gt; 完全够了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-3-zhu-ru-inject&quot;&gt;Step 3: 注入（Inject）&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;format_skills_prompt&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;skills&lt;&#x2F;span&gt;&lt;span&gt;: list[SkillEntry], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_chars&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;15000&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    生成注入 system prompt 的技能片段。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    格式参考 OpenClaw 的 &amp;lt;available_skills&amp;gt; XML 结构。
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    header = (
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## 技能 (Skills)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;回复前，先扫描下方 &amp;lt;available_skills&amp;gt; 中每个技能的描述。&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- 如果有技能明确匹配用户请求：先用 file_read 读取该技能的 path，&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;然后按其中的指令执行。&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- 如果没有匹配的技能：正常回复，不要读取任何 SKILL.md。&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- 每次最多读取一个技能。&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;available_skills&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 每个 Skill 一行 XML: &amp;lt;skill name=&amp;quot;...&amp;quot; path=&amp;quot;...&amp;quot;&amp;gt;{description}&amp;lt;&#x2F;skill&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注入格式我用了 XML，原因也是从 Claude Code 的逆向工程中学到的——Claude 对结构化 XML 的解析能力很强，比纯 Markdown 列表更可靠。&lt;&#x2F;p&gt;
+&lt;p&gt;还有个 &lt;code&gt;max_chars=15000&lt;&#x2F;code&gt; 的截断保护。30+ 个 Skill 的描述加起来大概几千 token，但如果未来 Skill 数量爆炸到上百个，这层保护就有用了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;step-4-5-pi-pei-jia-zai&quot;&gt;Step 4 &amp;amp; 5: 匹配 + 加载&lt;&#x2F;h3&gt;
+&lt;p&gt;这两步不在 loader.py 中——它们由 LLM 自己完成。&lt;&#x2F;p&gt;
+&lt;p&gt;当 &lt;code&gt;format_skills_prompt&lt;&#x2F;code&gt; 的输出被注入到 system prompt 后，LLM 在每次对话中会：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;看到 &lt;code&gt;&amp;lt;available_skills&amp;gt;&lt;&#x2F;code&gt; 列表&lt;&#x2F;li&gt;
+&lt;li&gt;根据用户输入判断是否需要某个 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;如果需要，调用 &lt;code&gt;file_read&lt;&#x2F;code&gt; 工具读取对应的 SKILL.md 文件&lt;&#x2F;li&gt;
+&lt;li&gt;拿到完整指令后，按指令执行&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这就是 Jarvis 版的「延迟加载」——不用专门的 Skill tool，复用已有的 file_read tool。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-cheng-dao-dui-hua-yin-qing&quot;&gt;集成到对话引擎&lt;&#x2F;h2&gt;
+&lt;p&gt;Skill Loader 写好后，集成到 &lt;code&gt;JarvisLLMClient&lt;&#x2F;code&gt; 只需要几行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;JarvisLLMClient&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_build_system_prompt&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;动态构建 system prompt，包含已发现的技能列表。&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        prompt = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SYSTEM_PROMPT
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 技能发现 + prompt 注入
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            skills = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;discover_skills&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;            skills_section = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;format_skills_prompt&lt;&#x2F;span&gt;&lt;span&gt;(skills)
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;skills_section:
+&lt;&#x2F;span&gt;&lt;span&gt;                prompt += skills_section
+&lt;&#x2F;span&gt;&lt;span&gt;                logger.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;info&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;已注入 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%d&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; 个技能到 system prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(skills))
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;Exception &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;e:
+&lt;&#x2F;span&gt;&lt;span&gt;            logger.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;warning&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;技能发现失败，跳过: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%s&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, e)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;._system_prompt = prompt
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;prompt
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;_build_system_prompt&lt;&#x2F;code&gt; 在首次调用时执行一次技能发现，结果被缓存。如果需要热加载（比如用户刚创建了一个新 Skill），调用 &lt;code&gt;reload_skills()&lt;&#x2F;code&gt; 清缓存即可。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;he-phase-4-jin-hua-xi-tong-de-bi-huan&quot;&gt;和 Phase 4 进化系统的闭环&lt;&#x2F;h2&gt;
+&lt;p&gt;到现在为止，Jarvis 的 Skill 闭环完整了：&lt;&#x2F;p&gt;
+&lt;div class=&quot;evolution-loop&quot;&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;💬&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;用户交互&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;记录交互指纹（intent, domain, tools_used）&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;🔍&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;PatternDetector&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;同类指纹 ≥ 3 次 → 触发 Skill 生成&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;✨&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;SkillGenerator&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;LLM 生成 Skill 草稿（SkillDraft），用户审阅确认&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;🛡️&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;SkillSandbox&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;五项安全检查（格式 &#x2F; 依赖 &#x2F; 危险操作 &#x2F; 模拟 &#x2F; 边界）&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;📦&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;SkillRegistry&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;写入 &lt;code&gt;~&#x2F;.jarvis&#x2F;skills&#x2F;{name}&#x2F;SKILL.md&lt;&#x2F;code&gt;&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;📡&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;Skill Loader&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;下次对话时自动发现 → 注入 system prompt&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;evo-step&quot;&gt;
+  &lt;div class=&quot;evo-icon&quot;&gt;🤖&lt;&#x2F;div&gt;
+  &lt;div class=&quot;evo-info&quot;&gt;
+    &lt;div class=&quot;evo-title&quot;&gt;LLM 执行&lt;&#x2F;div&gt;
+    &lt;div class=&quot;evo-detail&quot;&gt;匹配 + 加载 + 按指令执行&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;每个环节都有对应的代码模块，每个模块都有清晰的职责边界。&lt;&#x2F;p&gt;
+&lt;p&gt;最让我兴奋的是&lt;strong&gt;从自动创建到自动使用的无缝衔接&lt;&#x2F;strong&gt;。PatternDetector 发现你经常做翻译任务 → SkillGenerator 自动提议一个翻译 Skill → 你确认后写入 → 下次你说「帮我翻译这个文档」，Skill Loader 自动发现它、LLM 自动加载它、然后按 Skill 里的指令执行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Agent 自己给自己创造能力，然后自己使用这些能力。&lt;&#x2F;strong&gt; 这就是 Phase 4 进化系统的核心意义。&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box green&quot;&gt;
+&lt;p&gt;从自动创建到自动使用的无缝衔接——PatternDetector 发现你经常做翻译任务 → SkillGenerator 自动提议一个翻译 Skill → 你确认后写入 → 下次你说「帮我翻译这个文档」，Skill Loader 自动发现它、LLM 自动加载它、然后按 Skill 里的指令执行。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;ce-shi-yan-zheng&quot;&gt;测试验证&lt;&#x2F;h2&gt;
+&lt;p&gt;安装最新版后测试：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; Jarvis-Agent
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poetry&lt;&#x2F;span&gt;&lt;span&gt; install
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poetry&lt;&#x2F;span&gt;&lt;span&gt; run jarvis chat
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个核心功能全部跑通：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ &lt;strong&gt;创建 Skill&lt;&#x2F;strong&gt;：通过对话或 PatternDetector 触发，生成 SKILL.md 写入 &lt;code&gt;~&#x2F;.jarvis&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;✅ &lt;strong&gt;调用 Skill&lt;&#x2F;strong&gt;：在对话中说对应的触发词，LLM 自动 file_read 加载 SKILL.md 并执行&lt;&#x2F;li&gt;
+&lt;li&gt;✅ &lt;strong&gt;查看 Skill&lt;&#x2F;strong&gt;：&lt;code&gt;jarvis skill list&lt;&#x2F;code&gt; 显示所有已注册的 Skill，包括来源、状态、使用次数&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;还有一些高级功能：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;jarvis skill enable&#x2F;disable &amp;lt;name&amp;gt;&lt;&#x2F;code&gt;：启禁 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;jarvis skill delete &amp;lt;name&amp;gt;&lt;&#x2F;code&gt;：删除（移到 .trash）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;jarvis skill test &amp;lt;name&amp;gt;&lt;&#x2F;code&gt;：沙盒验证&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;jarvis reflect&lt;&#x2F;code&gt;：元认知报告，包含五维能力雷达&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;ji-ge-shi-xian-zhong-de-xin-de&quot;&gt;几个实现中的心得&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-fu-yong-you-yu-zhong-zao&quot;&gt;1. 复用优于重造&lt;&#x2F;h3&gt;
+&lt;p&gt;Jarvis 的 Skill Loader 复用了三个东西：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SKILL.md 格式&lt;&#x2F;strong&gt;——不发明新格式，用已经成为开放标准的那个&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;~&#x2F;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录&lt;&#x2F;strong&gt;——不重建 Skill 库，现有 30+ 个 Skill 直接可用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;file_read&lt;&#x2F;code&gt; 工具&lt;&#x2F;strong&gt;——不新增专用 Skill tool，这就是方案 A 的核心优势&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;能在 30 分钟内做完，就是因为不需要从零开始。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-system-prompt-zhu-ru-vs-meta-tool&quot;&gt;2. System Prompt 注入 vs. Meta-Tool&lt;&#x2F;h3&gt;
+&lt;p&gt;Claude Code 用 meta-tool 方案有它的道理——tool_use 机制给了模型更明确的「调用」语义，而且 Anthropic 对自家 API 的 tools 支持肯定更好。&lt;&#x2F;p&gt;
+&lt;p&gt;但对于通过 OpenAI-compatible API 代理（如 CopilotX）调用的场景，system prompt 注入更稳定。这也是我们讨论时选方案 A 而不是 B 的关键原因——不同模型、不同代理对 tools 的支持参差不齐，但 system prompt 每家都支持。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-xml-ge-shi-de-jie-gou-hua-you-shi&quot;&gt;3. XML 格式的结构化优势&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;xml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-xml &quot;&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;skill &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blog-writer&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;~&#x2F;.claude&#x2F;skills&#x2F;blog-writer&#x2F;SKILL.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  Polly 个人博客写作助手，用于撰写技术博文...
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;skill&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;比起纯文本列表，XML 格式给 LLM 提供了更清晰的结构信号——name 是什么、path 在哪里、description 是什么，一目了然。这是从 Claude Code 的逆向工程中学到的经验。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-ling-yi-lai-de-frontmatter-jie-xi&quot;&gt;4. 零依赖的 frontmatter 解析&lt;&#x2F;h3&gt;
+&lt;p&gt;不到 20 行的正则就搞定了 YAML frontmatter 解析。Skills 规范中 frontmatter 只有简单标量字段（&lt;code&gt;name: value&lt;&#x2F;code&gt;），不需要处理嵌套对象、数组等复杂结构，所以完全没必要引入 PyYAML。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-xiao-long-xia-de-code-review&quot;&gt;5. 小龙虾的 Code Review&lt;&#x2F;h3&gt;
+&lt;div class=&quot;review-card&quot;&gt;
+&lt;div class=&quot;review-card-header&quot;&gt;
+  &lt;span class=&quot;review-card-avatar&quot;&gt;🦞&lt;&#x2F;span&gt;
+  &lt;div&gt;
+    &lt;div class=&quot;review-card-name&quot;&gt;小龙虾 Code Review&lt;&#x2F;div&gt;
+    &lt;div class=&quot;review-card-role&quot;&gt;AI 伙伴 · Reviewer&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;review-item&quot;&gt;
+  &lt;div class=&quot;review-num&quot;&gt;1&lt;&#x2F;div&gt;
+  &lt;div class=&quot;review-text&quot;&gt;&lt;strong&gt;引号边界处理&lt;&#x2F;strong&gt;：frontmatter 中的 description 可能包含单引号或双引号，正则要同时匹配三种格式（bare &#x2F; &quot;double&quot; &#x2F; &#x27;single&#x27;）&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;review-item&quot;&gt;
+  &lt;div class=&quot;review-num&quot;&gt;2&lt;&#x2F;div&gt;
+  &lt;div class=&quot;review-text&quot;&gt;&lt;strong&gt;热加载支持&lt;&#x2F;strong&gt;：用户刚创建了一个新 Skill，下一轮对话就应该能用，加了 &lt;code&gt;reload_skills()&lt;&#x2F;code&gt; 方法清缓存&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;review-item&quot;&gt;
+  &lt;div class=&quot;review-num&quot;&gt;3&lt;&#x2F;div&gt;
+  &lt;div class=&quot;review-text&quot;&gt;&lt;strong&gt;XML 转义&lt;&#x2F;strong&gt;：路径和名称中可能包含 &lt;code&gt;&quot;&lt;&#x2F;code&gt; 等字符，注入时要做 &lt;code&gt;&amp;amp;quot;&lt;&#x2F;code&gt; 转义&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;review-verdict&quot;&gt;三条全部采纳。这就是 AI 协作的真实样本——不是人写代码 AI 看，也不是 AI 写代码人看，而是两个 AI 互相 Review，人类拍板。&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;cong-li-jie-dao-chuang-zao&quot;&gt;从理解到创造&lt;&#x2F;h2&gt;
+&lt;p&gt;回顾今天的历程：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;上午&lt;&#x2F;strong&gt;：逆向工程 Claude Code 和 Copilot 的 Skill Pipeline，纠正了两个关于模型层的误解&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;13:36 → 14:00&lt;&#x2F;strong&gt;：从打开编辑器到全功能验证通过，不到 30 分钟&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;小龙虾 Code Review&lt;&#x2F;strong&gt;：三条建议全部采纳&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;总共约 193 行新代码（loader.py 155 行 + &lt;strong&gt;init&lt;&#x2F;strong&gt;.py 10 行 + LLM Client 集成 28 行）。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么能这么快？因为&lt;strong&gt;每一行代码都写在理解之上&lt;&#x2F;strong&gt;。我知道 Claude Code 为什么那样设计，我也知道我为什么做了不同的选择。不需要试错，不需要迭代，拆明白原理后一次写对。&lt;&#x2F;p&gt;
+&lt;p&gt;Jarvis 的 Skill 系统和 Claude Code 的 Skill 系统，底层原理完全一样，但实现方式各有取舍。这就是逆向工程最大的价值——&lt;strong&gt;不是抄作业，而是理解出题人的思路后，用自己的方式解题。&lt;&#x2F;strong&gt; 这也是小龙虾 Review 时说的：“30 分钟从零到跑通，比‘一个下午’更有说服力。”她说得对。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;系列文章&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;div class=&quot;series-timeline&quot;&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;5&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-agent-genesis&quot;&gt;Jarvis 的诞生&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;设计理念&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;5&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-agent-phase1-development&quot;&gt;Phase 1: 心跳&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;感知 + CLI&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;5&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-agent-phase2-memory-system&quot;&gt;Phase 2: 记忆&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;Markdown + FTS5&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;6&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-agent-phase25-code-cleanup&quot;&gt;Phase 2.5: 清理&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;模块化重构&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;7&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-phase3-tool-system&quot;&gt;Phase 3: 双手&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;Tool Registry&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;8&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;jarvis-phase4-evolution-system&quot;&gt;Phase 4: 进化&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;元认知 + 模式检测&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;22&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;&lt;a href=&quot;&#x2F;skill-pipeline-deep-dive&quot;&gt;Skill Pipeline 底层机理&lt;&#x2F;a&gt;&lt;span class=&quot;series-milestone&quot;&gt;快速调研&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;series-item current&quot;&gt;
+  &lt;div class=&quot;series-date&quot;&gt;2&#x2F;22&lt;&#x2F;div&gt;
+  &lt;div class=&quot;series-link&quot;&gt;本文&lt;span class=&quot;series-milestone&quot;&gt;Skill Loader 实现&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>拆解 Skill Pipeline：AI 编程工具的「技能注入」到底是怎么实现的？</title>
+        <published>2026-02-22T00:00:00+00:00</published>
+        <updated>2026-02-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/skill-pipeline-deep-dive/" type="text/html"/>
+        <id>https://polly.wang/skill-pipeline-deep-dive/</id>
+        
+        <content type="html">&lt;!-- 技术博客组件样式 --&gt;
+&lt;style&gt;
+&#x2F;* 核心洞察高亮框 *&#x2F;
+.insight-box { background: linear-gradient(135deg, #e8f4f8 0%, #d4eaf7 100%); border-left: 4px solid #3d92c9; border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 24px 0; position: relative; }
+.insight-box::before { content: &#x27;💡&#x27;; position: absolute; left: -18px; top: 16px; width: 32px; height: 32px; background: #3d92c9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; line-height: 32px; text-align: center; }
+.insight-box p { margin: 0; color: #1a5276; font-weight: 500; line-height: 1.8; }
+.insight-box.green { background: linear-gradient(135deg, #e8f8f0 0%, #d4f0e0 100%); border-left-color: #27ae60; }
+.insight-box.green::before { background: #27ae60; content: &#x27;🎯&#x27;; }
+.insight-box.green p { color: #1e6e3e; }
+.insight-box.orange { background: linear-gradient(135deg, #fef9e7 0%, #fdebd0 100%); border-left-color: #f39c12; }
+.insight-box.orange::before { background: #f39c12; content: &#x27;⚡&#x27;; }
+.insight-box.orange p { color: #7d6608; }
+
+&#x2F;* 技术对比表格 *&#x2F;
+.tech-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin: 24px 0; }
+.tech-table table { width: 100%; border-collapse: collapse; }
+.tech-table th { background: #2c3e50; color: white; padding: 14px 16px; text-align: left; font-weight: 600; font-size: 0.95em; }
+.tech-table td { padding: 12px 16px; border-bottom: 1px solid #eee; color: #444; font-size: 0.93em; line-height: 1.6; }
+.tech-table tr:last-child td { border-bottom: none; }
+.tech-table tr:hover td { background: #f0f7fc; }
+.tech-table td:first-child { font-weight: 600; color: #2c3e50; white-space: nowrap; }
+.tech-table code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+
+&#x2F;* 三段式流水线图 *&#x2F;
+.pipeline-diagram { margin: 28px 0; }
+.pipeline-stage { background: white; border-radius: 12px; padding: 20px 24px; margin-bottom: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; border-left: 4px solid transparent; }
+.pipeline-stage.inject { border-left-color: #3d92c9; }
+.pipeline-stage.reason { border-left-color: #e67e22; }
+.pipeline-stage.execute { border-left-color: #27ae60; }
+.pipeline-stage-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.pipeline-stage-num { width: 36px; height: 36px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1em; flex-shrink: 0; }
+.pipeline-stage.inject .pipeline-stage-num { background: #3d92c9; }
+.pipeline-stage.reason .pipeline-stage-num { background: #e67e22; }
+.pipeline-stage.execute .pipeline-stage-num { background: #27ae60; }
+.pipeline-stage-title { font-weight: 700; font-size: 1.05em; color: #2c3e50; }
+.pipeline-stage-label { font-size: 0.85em; color: #888; margin-left: 4px; }
+.pipeline-stage-body { color: #555; line-height: 1.8; padding-left: 48px; }
+.pipeline-stage-body ol { margin: 0; padding-left: 20px; }
+.pipeline-stage-body li { margin-bottom: 4px; }
+.pipeline-connector { text-align: center; font-size: 1.4em; color: #bbb; margin: 0; line-height: 1; }
+
+&#x2F;* 五阶段模型 *&#x2F;
+.phase-cards { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }
+.phase-card { display: flex; align-items: flex-start; gap: 16px; background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.15s, box-shadow 0.15s; }
+.phase-card:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+.phase-num { width: 42px; height: 42px; border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1em; flex-shrink: 0; }
+.phase-1 .phase-num { background: linear-gradient(135deg, #3d92c9, #2980b9); }
+.phase-2 .phase-num { background: linear-gradient(135deg, #27ae60, #219a52); }
+.phase-3 .phase-num { background: linear-gradient(135deg, #e67e22, #d35400); }
+.phase-4 .phase-num { background: linear-gradient(135deg, #8e44ad, #7d3c98); }
+.phase-5 .phase-num { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.phase-info { flex: 1; }
+.phase-title { font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
+.phase-title span { font-size: 0.85em; color: #888; font-weight: 400; }
+.phase-detail { color: #666; font-size: 0.92em; line-height: 1.6; }
+.phase-detail code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+.phase-options { color: #999; font-size: 0.85em; margin-top: 4px; }
+
+&#x2F;* 引用来源卡片 *&#x2F;
+.source-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin: 24px 0; }
+.source-table table { width: 100%; border-collapse: collapse; }
+.source-table th { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 14px 16px; text-align: left; }
+.source-table td { padding: 12px 16px; border-bottom: 1px solid #eee; }
+.source-table tr:last-child td { border-bottom: none; }
+
+@media (max-width: 768px) {
+  .insight-box { padding: 16px 18px; margin-left: 8px; }
+  .insight-box::before { left: -14px; width: 28px; height: 28px; font-size: 14px; line-height: 28px; }
+  .pipeline-stage-body { padding-left: 0; margin-top: 8px; }
+  .phase-card { flex-direction: column; gap: 10px; }
+  .phase-num { width: 36px; height: 36px; }
+  .tech-table td, .tech-table th { padding: 10px 12px; font-size: 0.88em; }
+  .tech-table td:first-child { white-space: normal; }
+}
+&lt;&#x2F;style&gt;
+&lt;p&gt;我一直以为 Claude 模型「理解」Skills。&lt;&#x2F;p&gt;
+&lt;p&gt;这个错觉维持了整整一个月——从 1 月 22 日&lt;a href=&quot;&#x2F;agent-skills-awakening-moment&quot;&gt;第一次被 Agent Skills 震撼到夜不能寐&lt;&#x2F;a&gt;开始，到今天被自己的追问彻底打碎。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-bei-yan-fan-wu-jie-de-shi-shi&quot;&gt;一个被广泛误解的事实&lt;&#x2F;h2&gt;
+&lt;p&gt;先说结论：&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box&quot;&gt;
+&lt;p&gt;&lt;strong&gt;LLM 模型（无论是 Claude、GPT 还是 DeepSeek）对 Skill 这个概念一无所知。Skill Pipeline 是 100% 的应用层魔法。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;这话什么意思？当你在 Claude Code 里触发一个 Skill——比如说你输入「帮我做个 PPT」，系统调用了 &lt;code&gt;pptx&lt;&#x2F;code&gt; 这个 Skill——整个过程中，Claude 模型只做了一件事：&lt;strong&gt;读 prompt、写回复&lt;&#x2F;strong&gt;。它不知道自己在「调用 Skill」，它只知道 prompt 里有一堆关于怎么生成演示文稿的详细指令。&lt;&#x2F;p&gt;
+&lt;p&gt;让我拆解这个过程。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-duan-shi-liu-shui-xian-zhu-ru-tui-li-zhi-xing&quot;&gt;三段式流水线：注入 → 推理 → 执行&lt;&#x2F;h2&gt;
+&lt;p&gt;Skill Pipeline 的本质可以画成这样：&lt;&#x2F;p&gt;
+&lt;div class=&quot;pipeline-diagram&quot;&gt;
+&lt;div class=&quot;pipeline-stage inject&quot;&gt;
+  &lt;div class=&quot;pipeline-stage-header&quot;&gt;
+    &lt;div class=&quot;pipeline-stage-num&quot;&gt;①&lt;&#x2F;div&gt;
+    &lt;div class=&quot;pipeline-stage-title&quot;&gt;应用层 · 注入 &lt;span class=&quot;pipeline-stage-label&quot;&gt;Inject&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;pipeline-stage-body&quot;&gt;
+    &lt;ol&gt;
+      &lt;li&gt;启动时扫描 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 目录&lt;&#x2F;li&gt;
+      &lt;li&gt;解析每个 SKILL.md 的 YAML frontmatter&lt;&#x2F;li&gt;
+      &lt;li&gt;把 name + description 注入 LLM 上下文&lt;&#x2F;li&gt;
+    &lt;&#x2F;ol&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;pipeline-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;pipeline-stage reason&quot;&gt;
+  &lt;div class=&quot;pipeline-stage-header&quot;&gt;
+    &lt;div class=&quot;pipeline-stage-num&quot;&gt;②&lt;&#x2F;div&gt;
+    &lt;div class=&quot;pipeline-stage-title&quot;&gt;模型层 · 推理 &lt;span class=&quot;pipeline-stage-label&quot;&gt;Reason&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;pipeline-stage-body&quot;&gt;
+    只做两件事：① 看到 Skill 描述列表 → 推理哪个匹配 → 请求加载；② 收到 SKILL.md 内容 → 按指令执行。&lt;br&gt;&lt;strong&gt;模型不知道「Skill」是什么，它只看到 prompt 文本。&lt;&#x2F;strong&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;pipeline-connector&quot;&gt;▼&lt;&#x2F;div&gt;
+&lt;div class=&quot;pipeline-stage execute&quot;&gt;
+  &lt;div class=&quot;pipeline-stage-header&quot;&gt;
+    &lt;div class=&quot;pipeline-stage-num&quot;&gt;③&lt;&#x2F;div&gt;
+    &lt;div class=&quot;pipeline-stage-title&quot;&gt;应用层 · 执行 &lt;span class=&quot;pipeline-stage-label&quot;&gt;Execute&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;pipeline-stage-body&quot;&gt;
+    &lt;ol start=&quot;4&quot;&gt;
+      &lt;li&gt;LLM 说「我要读 pptx」→ 应用层加载完整内容&lt;&#x2F;li&gt;
+      &lt;li&gt;把 SKILL.md 正文作为 tool_result 回传给 LLM&lt;&#x2F;li&gt;
+    &lt;&#x2F;ol&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;&lt;strong&gt;关键洞察&lt;&#x2F;strong&gt;：模型层做的是纯粹的自然语言推理——「这段描述和用户的请求很像，我应该先读取这个文件」。它用的是 general reasoning 能力，不是什么特殊的 Skill 解析模块。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;claude-code-de-shi-xian-meta-tool-fang-an&quot;&gt;Claude Code 的实现：Meta-Tool 方案&lt;&#x2F;h2&gt;
+&lt;p&gt;今天做了快速调研，找到了两个关键信息源——都是别人做的硬核逆向工程：&lt;&#x2F;p&gt;
+&lt;div class=&quot;source-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;作者&lt;&#x2F;th&gt;&lt;th&gt;方法&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Han Lee 深度拆解&lt;&#x2F;td&gt;&lt;td&gt;Han-chung Lee&lt;&#x2F;td&gt;&lt;td&gt;源码逆向 + 代码重构&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;AgiFlow 网络抓包&lt;&#x2F;td&gt;&lt;td&gt;Vuong Ngo&lt;&#x2F;td&gt;&lt;td&gt;修改 Claude Code 注入网络日志&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;han-lee-de-yuan-ma-ni-xiang&quot;&gt;Han Lee 的源码逆向&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;leehanchung.github.io&quot;&gt;Han Lee&lt;&#x2F;a&gt; 做了一件非常硬核的事：他读了 Claude Code 的源码（JavaScript 混淆后的），逆向还原了 Skill 机制的完整实现。&lt;&#x2F;p&gt;
+&lt;p&gt;核心发现：Skill 在 Claude Code 内部被实现为一个 &lt;strong&gt;meta-tool&lt;&#x2F;strong&gt;（元工具），不是 system prompt 的一部分。而且 Skill 不是普通工具——它的 prompt 字段是&lt;strong&gt;动态生成&lt;&#x2F;strong&gt;的。&lt;&#x2F;p&gt;
+&lt;p&gt;每次 API 请求时，一个内部函数（Han Lee 重构后标记为 &lt;code&gt;fN2()&lt;&#x2F;code&gt;）会重新聚合所有可用 Skill 的 name + description，生成 Skill tool 的 description：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Han Lee 逆向重构的 Skill Tool 对象结构（简化）
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    name: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Skill&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; fN2() — 动态生成！每次 API 请求时重新聚合
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;skills &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getAllSkills&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;skills&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;            `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.name}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.description}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Path: ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;span&gt;        ).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);
+&lt;&#x2F;span&gt;&lt;span&gt;    },
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 不是每个 Skill 一个 tool，而是一个统一的 Skill tool
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Claude 通过 input 参数指定要读哪个 Skill
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意：不是「每个 Skill 一个 tool」，而是&lt;strong&gt;一个统一的 &lt;code&gt;Skill&lt;&#x2F;code&gt; tool&lt;&#x2F;strong&gt;，通过参数指定读哪个。所有 Skill 的描述聚合在这个 tool 的 description 里，每个 Skill 只占约 30-50 tokens。&lt;&#x2F;p&gt;
+&lt;p&gt;调用后的核心机制是&lt;strong&gt;双消息注入&lt;&#x2F;strong&gt;——&lt;code&gt;call()&lt;&#x2F;code&gt; 方法 yield 出两条消息：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一条（&lt;code&gt;isMeta: true&lt;&#x2F;code&gt;）：Skill 的元信息，作为上下文补充&lt;&#x2F;li&gt;
+&lt;li&gt;第二条（&lt;code&gt;isMeta: false&lt;&#x2F;code&gt;）：SKILL.md 的完整正文，这才是真正的指令&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;为什么这样设计？因为一个项目可能有 30+ 个 Skill，如果全部正文都塞进 system prompt，token 直接爆炸。用 meta-tool 方案，初始 token 成本只有描述列表（几百 token），只有被选中的 Skill 才加载完整内容（可能几千 token）。这就是 &lt;strong&gt;progressive disclosure&lt;&#x2F;strong&gt;（渐进式披露）。&lt;&#x2F;p&gt;
+&lt;p&gt;一个关键结论：&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box green&quot;&gt;
+&lt;p&gt;&quot;The skill selection mechanism has no algorithmic routing or intent classification at the code level. Claude Code doesn&#x27;t use embeddings, classifiers, or pattern matching... The decision happens inside Claude&#x27;s forward pass through the transformer, not in the application code.&quot;&lt;&#x2F;p&gt;
+&lt;p style=&quot;margin-top: 8px; font-size: 0.9em; color: #555;&quot;&gt;Skill 选择靠的是 LLM 通用推理能力，不是应用层的定制路由。代码层面没有 embedding、分类器、正则匹配——一切发生在模型的前向传播中。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;agiflow-de-wang-luo-zhua-bao-yan-zheng&quot;&gt;AgiFlow 的网络抓包验证&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;agiflow.io&quot;&gt;AgiFlow&lt;&#x2F;a&gt; 的 Vuong Ngo 更狠——他们修改了 Claude Code 的代码，拦截了所有发往 Claude API 的请求，完整记录了 JSON payload（&lt;code&gt;data&#x2F;skills.log&lt;&#x2F;code&gt;）。&lt;&#x2F;p&gt;
+&lt;p&gt;抓包结果直接确认：Skill 出现在 &lt;code&gt;tools&lt;&#x2F;code&gt; 数组中，不在 system prompt 里：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 发送给 API 的请求结构（简化）
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tools&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;        {
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Skill&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## pptx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Presentation creation, editing, and analysis...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## paper-writer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AI&#x2F;ML 学术论文写作顾问...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        },
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ... 其他普通 tools
+&lt;&#x2F;span&gt;&lt;span&gt;    ]
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Claude 请求调用 Skill
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_use&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Skill&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skill_name&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;pptx&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 应用层 yield 双消息：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 消息 1 (isMeta: true) — 元信息
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 消息 2 (isMeta: false) — SKILL.md 完整正文
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_result&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;# PPTX&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Presentation creation, editing, and analysis...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Claude 按 SKILL.md 指令开始执行
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;好的，我来帮你做演示文稿...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;完整生命周期&lt;&#x2F;strong&gt;是标准的 tool_use → 双消息注入（meta + body）→ 按指令执行。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;vs-code-copilot-de-shi-xian-chat-extension-api-jia-gou&quot;&gt;VS Code Copilot 的实现：Chat Extension API 架构&lt;&#x2F;h2&gt;
+&lt;p&gt;我原本以为 VS Code Copilot 只是「透传」——把 SKILL.md 内容丢给后端模型就完了。错了。&lt;&#x2F;p&gt;
+&lt;p&gt;Copilot Chat 的实现是闭源的（在 Copilot 扩展内部），但从社区调试和 VS Code Output panel 中可以看到关键线索：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;扫描阶段&lt;&#x2F;strong&gt;：启动时扫描 &lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt;、&lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 等路径&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;解析阶段&lt;&#x2F;strong&gt;：提取 YAML frontmatter 中的 name、description&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;注入阶段&lt;&#x2F;strong&gt;：Skill 被注册为 &lt;strong&gt;chatParticipant&lt;&#x2F;strong&gt; 的工具，描述列表注入到和模型交互的 prompt 中&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;匹配阶段&lt;&#x2F;strong&gt;：Output panel 的 &lt;code&gt;[tool-selection]&lt;&#x2F;code&gt; 标签可以看到 &lt;code&gt;score:&lt;&#x2F;code&gt; 置信度值——模型给每个 Skill 打分，选最高的&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;和 Claude Code 的核心区别在于&lt;strong&gt;架构层次&lt;&#x2F;strong&gt;：Copilot 基于 VS Code 的 Chat Extension API，Skill 本质上是 chatParticipant 的工具；而 Claude Code 用更底层的 tools 数组直接和 API 交互。但五阶段 Pipeline 完全一致——应用层扫描 → 描述注入 → 模型推理 → 延迟加载。&lt;&#x2F;p&gt;
+&lt;p&gt;在 Output panel 的 &lt;code&gt;[context]&lt;&#x2F;code&gt; 标签下，你能看到 Copilot 准备注入的所有上下文，包括 Skill 描述。这不是黑盒——VS Code 给了足够的调试信息。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;openclaw-de-shi-xian-zui-gong-cheng-hua-de-fang-an&quot;&gt;OpenClaw 的实现：最工程化的方案&lt;&#x2F;h2&gt;
+&lt;p&gt;如果说 Claude Code 是「精巧」，VS Code Copilot 是「稳健」，那 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nicepkg&#x2F;openclaw&quot;&gt;OpenClaw&lt;&#x2F;a&gt;（我本地也在用的开源 AI 助手）就是「工程化到极致」。&lt;&#x2F;p&gt;
+&lt;p&gt;我读了 OpenClaw 的源码，它的 Skill Pipeline 复杂度远超前两者：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;liu-ceng-you-xian-ji-de-duo-yuan-fa-xian&quot;&gt;六层优先级的多源发现&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;优先级从低到高：
+&lt;&#x2F;span&gt;&lt;span&gt;① extra dirs     — 配置的额外目录 + 插件目录
+&lt;&#x2F;span&gt;&lt;span&gt;② bundled        — 项目内置 &#x2F;skills&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;③ managed        — ~&#x2F;.openclaw&#x2F;skills&#x2F;（用户手动安装）
+&lt;&#x2F;span&gt;&lt;span&gt;④ agents-personal — ~&#x2F;.agents&#x2F;skills&#x2F;（个人全局）
+&lt;&#x2F;span&gt;&lt;span&gt;⑤ agents-project — &amp;lt;workspace&amp;gt;&#x2F;.agents&#x2F;skills&#x2F;（项目级）
+&lt;&#x2F;span&gt;&lt;span&gt;⑥ workspace      — &amp;lt;workspace&amp;gt;&#x2F;skills&#x2F;（最高优先级）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;同名 Skill 高优先级覆盖低优先级——这意味着你可以用项目级 Skill 覆盖全局默认行为，非常灵活。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;feng-fu-de-frontmatter-kuo-zhan&quot;&gt;丰富的 Frontmatter 扩展&lt;&#x2F;h3&gt;
+&lt;p&gt;OpenClaw 在标准的 &lt;code&gt;name&lt;&#x2F;code&gt; + &lt;code&gt;description&lt;&#x2F;code&gt; 之外，扩展了大量元数据：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span&gt;---
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;github
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GitHub operations via `gh` CLI...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;metadata&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;openclaw&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;emoji&lt;&#x2F;span&gt;&lt;span&gt;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;🐙&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;always&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 是否始终加载
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;os&lt;&#x2F;span&gt;&lt;span&gt;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;darwin&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;linux&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 平台限制
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;requires&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bins&lt;&#x2F;span&gt;&lt;span&gt;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gh&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 必须安装的 CLI 工具
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span&gt;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;GITHUB_TOKEN&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 必须设置的环境变量
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;install&lt;&#x2F;span&gt;&lt;span&gt;:                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 自动安装依赖！
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;method&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;brew
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;package&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gh
+&lt;&#x2F;span&gt;&lt;span&gt;---
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这意味着 OpenClaw 的 Skill 可以：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;声明运行时依赖&lt;&#x2F;strong&gt;：需要 &lt;code&gt;gh&lt;&#x2F;code&gt; CLI？需要 &lt;code&gt;GITHUB_TOKEN&lt;&#x2F;code&gt;？frontmatter 里写清楚&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;平台过滤&lt;&#x2F;strong&gt;：macOS 专属 Skill 不会出现在 Linux 上&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自动安装&lt;&#x2F;strong&gt;：缺少依赖时可以自动用 brew&#x2F;npm&#x2F;pip 安装&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;zhu-ru-fang-shi-system-prompt-available-skills-xml&quot;&gt;注入方式：System Prompt + &lt;code&gt;&amp;lt;available_skills&amp;gt;&lt;&#x2F;code&gt; XML&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;## Skills (mandatory)
+&lt;&#x2F;span&gt;&lt;span&gt;Before replying: scan &amp;lt;available_skills&amp;gt; &amp;lt;description&amp;gt; entries.
+&lt;&#x2F;span&gt;&lt;span&gt;- If exactly one skill clearly applies: read its SKILL.md with `read`, then follow it.
+&lt;&#x2F;span&gt;&lt;span&gt;- If multiple could apply: choose the most specific one, then read&#x2F;follow it.
+&lt;&#x2F;span&gt;&lt;span&gt;- If none clearly apply: do not read any SKILL.md.
+&lt;&#x2F;span&gt;&lt;span&gt;Constraints: never read more than one skill up front; only read after selecting.
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;available_skills&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;skill name=&amp;quot;github&amp;quot; path=&amp;quot;~&#x2F;.openclaw&#x2F;skills&#x2F;github&#x2F;SKILL.md&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    GitHub operations via gh CLI...
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&#x2F;skill&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  ...
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;available_skills&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;OpenClaw 用 system prompt 注入而非 meta-tool，并且多了几个精巧的工程细节：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;路径压缩&lt;&#x2F;strong&gt;：&lt;code&gt;&#x2F;Users&#x2F;polly&#x2F;.openclaw&#x2F;&lt;&#x2F;code&gt; → &lt;code&gt;~&#x2F;...&lt;&#x2F;code&gt;，节省 token&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;二分搜索裁剪&lt;&#x2F;strong&gt;：当 Skill 数量太多时，按字符预算自动裁剪，保证不超过 &lt;code&gt;maxSkillsPromptChars&lt;&#x2F;code&gt;（默认 30,000 字符）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;chokidar 文件监控&lt;&#x2F;strong&gt;：Skill 目录变化时自动热重载，不需要重启&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;ming-ling-fen-pai-yong-hu-ye-neng-shou-dong-hong-fa&quot;&gt;命令分派：用户也能手动触发&lt;&#x2F;h3&gt;
+&lt;p&gt;OpenClaw 独有的一个设计——Skill 可以通过 frontmatter 声明为用户可调用的命令：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;user-invocable&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 允许 &#x2F;github 手动触发
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;disable-model-invocation&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 但不允许 LLM 自动选择
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;command-dispatch&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 直接分派到具体工具
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;command-tool&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gh_cli            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 目标工具名
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这等于在 LLM 匹配之外，提供了一条&lt;strong&gt;确定性的调用路径&lt;&#x2F;strong&gt;——用户输入 &lt;code&gt;&#x2F;github&lt;&#x2F;code&gt; 就一定触发 github Skill，不依赖 LLM 推理。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-jia-shi-xian-heng-xiang-dui-bi&quot;&gt;三家实现横向对比&lt;&#x2F;h2&gt;
+&lt;p&gt;看了 Claude Code、Copilot 和 OpenClaw，可以画一张对比表：&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Claude Code&lt;&#x2F;th&gt;&lt;th&gt;VS Code Copilot&lt;&#x2F;th&gt;&lt;th&gt;OpenClaw&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;注入方式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Meta-tool（tools 数组）&lt;&#x2F;td&gt;&lt;td&gt;System instructions&lt;&#x2F;td&gt;&lt;td&gt;System prompt + XML&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;加载触发&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;tool_use → tool_result&lt;&#x2F;td&gt;&lt;td&gt;模型推理 + 内置机制&lt;&#x2F;td&gt;&lt;td&gt;LLM 调用 &lt;code&gt;read&lt;&#x2F;code&gt; 工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;发现源&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;项目 + 全局&lt;&#x2F;td&gt;&lt;td&gt;项目 + 全局&lt;&#x2F;td&gt;&lt;td&gt;6 层优先级&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;运行时过滤&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;OS&#x2F;依赖&#x2F;配置检查&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;热重载&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;chokidar 监控&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;自动安装&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;brew&#x2F;npm&#x2F;pip&#x2F;go&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;用户手动触发&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&#x2F;skill-name&lt;&#x2F;code&gt;（自动补全）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&#x2F;skill-name&lt;&#x2F;code&gt;（自动补全）&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&#x2F;command&lt;&#x2F;code&gt; 斜杠命令&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Token 优化&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;isMeta 两阶段&lt;&#x2F;td&gt;&lt;td&gt;未公开&lt;&#x2F;td&gt;&lt;td&gt;路径压缩 + 二分裁剪&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;底层模型&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Claude 专属&lt;&#x2F;td&gt;&lt;td&gt;多模型（GPT&#x2F;Claude&#x2F;Gemini）&lt;&#x2F;td&gt;&lt;td&gt;多模型&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;insight-box green&quot;&gt;
+&lt;p&gt;&lt;strong&gt;核心洞察&lt;&#x2F;strong&gt;：三家的五阶段框架（发现→解析→注入→匹配→加载）完全一致，差异全在工程细节上。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;skill-md-yi-ge-zheng-zai-cheng-xing-de-kai-fang-biao-zhun&quot;&gt;SKILL.md：一个正在成型的开放标准&lt;&#x2F;h2&gt;
+&lt;p&gt;在研究这三家实现的过程中，我发现了一件有意思的事：&lt;strong&gt;SKILL.md 已经在 2025-2026 年间演化为一个事实上的开放标准&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;agentskills.io&quot;&gt;agentskills.io&lt;&#x2F;a&gt; 记录了这个标准的采纳情况——20+ 平台原生支持同一格式：&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;平台&lt;&#x2F;th&gt;&lt;th&gt;项目级目录&lt;&#x2F;th&gt;&lt;th&gt;个人级目录&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.copilot&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Cursor&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.cursor&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.cursor&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Gemini CLI&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.gemini&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.gemini&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;OpenAI Codex&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.agents&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.agents&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;OpenClaw&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;~&#x2F;.openclaw&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;这意味着什么？&lt;strong&gt;你写的 Skill 可以跨工具复用。&lt;&#x2F;strong&gt; 同一套 SKILL.md 放到 &lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 被 Claude Code 读取，做个 symlink 到 &lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 就能被 Copilot 读取——因为格式完全一致，只是目录约定不同。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是为什么我说 &lt;strong&gt;Skill 是跨模型、跨工具的通用模式&lt;&#x2F;strong&gt;：不是某一家的私有 feature，而是整个行业正在收敛的标准。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xian-deng-yi-xia-cursor-rules-shi-skill-ma&quot;&gt;先等一下：Cursor Rules 是 Skill 吗？&lt;&#x2F;h2&gt;
+&lt;p&gt;这里要做一个重要的概念辨析。很多人把 Cursor 的 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt;、Windsurf 的规则文件等同于 Skill。&lt;strong&gt;它们不是。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;Instructions (Rules)&lt;&#x2F;th&gt;&lt;th&gt;Skills&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;加载时机&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;每次请求都加载&lt;&#x2F;td&gt;&lt;td&gt;按需延迟加载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Token 成本&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;固定消耗（全量注入）&lt;&#x2F;td&gt;&lt;td&gt;只有被选中时才消耗&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;匹配机制&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无（始终生效）&lt;&#x2F;td&gt;&lt;td&gt;LLM 语义推理匹配&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;粒度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;单文件，项目级&lt;&#x2F;td&gt;&lt;td&gt;多文件目录，可独立管理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;代表&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.cursorrules&lt;&#x2F;code&gt;, &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;, &lt;code&gt;.github&#x2F;copilot-instructions.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;, &lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Instructions&#x2F;Rules 等价于「让每个人都背一本通用手册」；Skills 等价于「给你一个专家团队的通讯录，需要谁就叫谁」。&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box orange&quot;&gt;
+&lt;p&gt;这是一个质的飞跃：&lt;strong&gt;从全量注入到智能按需加载&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Cursor 目前只有 Instructions 层（&lt;code&gt;.cursorrules&lt;&#x2F;code&gt;），没有原生 Skill 系统。同理，Cline、Roo Code 的 custom instructions 也是 Instructions 层。真正实现了 Skill Pipeline 的，目前只有 Claude Code、VS Code Copilot 和 OpenClaw。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;description-shi-phase-4-de-ling-hun&quot;&gt;Description 是 Phase 4 的灵魂&lt;&#x2F;h2&gt;
+&lt;p&gt;五阶段模型中，Phase 4（匹配）的成败取决于一个字段——&lt;strong&gt;description&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是&lt;a href=&quot;&#x2F;vs-code-copilot-chat-agent-skills&quot;&gt;我写了 30+ 个 Skill 后&lt;&#x2F;a&gt;总结出的实战经验：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;好的 description&lt;&#x2F;strong&gt;——像一份精准的岗位说明书：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Presentation creation, editing, and analysis. Use when Claude needs to
+&lt;&#x2F;span&gt;&lt;span&gt;work with .pptx files for: (1) Creating new presentations, (2) Modifying
+&lt;&#x2F;span&gt;&lt;span&gt;content, (3) Working with layouts, (4) Adding speaker notes.
+&lt;&#x2F;span&gt;&lt;span&gt;NOT for PDF or Word documents (use pdf&#x2F;docx skills instead).
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;差的 description&lt;&#x2F;strong&gt;——像一句废话：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;A skill for presentations.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;区别在哪？LLM 在 Phase 4 做的是 &lt;strong&gt;description vs. 用户输入&lt;&#x2F;strong&gt; 的语义匹配。如果 description 太模糊，LLM 无法做出准确判断，要么不触发，要么触发错的 Skill。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;写 description 的三个原则&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;列举具体场景&lt;&#x2F;strong&gt;：「(1) Creating presentations, (2) Modifying content, (3) Adding layouts」&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;包含触发关键词&lt;&#x2F;strong&gt;：「.pptx, presentation, slides, 演示文稿」——直接告诉 LLM 什么词该匹配&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;说明不适用场景&lt;&#x2F;strong&gt;：「NOT for PDF or Word documents (use pdf&#x2F;docx skills)」——让 LLM 知道什么时候不该选你&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;jiu-zheng-wo-de-liang-ge-wu-jie&quot;&gt;纠正我的两个误解&lt;&#x2F;h2&gt;
+&lt;p&gt;在今天的研究之前，我有两个错误的心智模型：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wu-jie-1-claude-mo-xing-zai-jie-xi-skill-md&quot;&gt;误解 1：「Claude 模型在解析 SKILL.md」&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;真相&lt;&#x2F;strong&gt;：Claude 模型对 SKILL.md 的格式（YAML frontmatter、&lt;code&gt;---&lt;&#x2F;code&gt; 分隔符等）没有任何特殊处理。frontmatter 解析是应用层（Claude Code 客户端）用正则 &#x2F; YAML 库做的。模型看到的只是处理过的 prompt 文本。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wu-jie-2-vs-code-copilot-zhi-shi-tou-chuan&quot;&gt;误解 2：「VS Code Copilot 只是透传」&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;真相&lt;&#x2F;strong&gt;：Copilot 有自己的完整实现——文件扫描、frontmatter 解析、描述提取、prompt 注入、延迟加载——一整套 pipeline，和 Claude Code 平行独立。&lt;&#x2F;p&gt;
+&lt;p&gt;这两个纠正带来一个重要推论：&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box&quot;&gt;
+&lt;p&gt;&lt;strong&gt;任何 LLM 应用都可以实现 Skill 系统，因为它不依赖模型能力，只依赖应用层工程。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;tong-yong-skill-pipeline-wu-jie-duan-mo-xing&quot;&gt;通用 Skill Pipeline 五阶段模型&lt;&#x2F;h2&gt;
+&lt;p&gt;综合 Claude Code、VS Code Copilot 和 OpenClaw 三家的实现，Skill Pipeline 可以抽象为五个阶段：&lt;&#x2F;p&gt;
+&lt;div class=&quot;phase-cards&quot;&gt;
+&lt;div class=&quot;phase-card phase-1&quot;&gt;
+  &lt;div class=&quot;phase-num&quot;&gt;1&lt;&#x2F;div&gt;
+  &lt;div class=&quot;phase-info&quot;&gt;
+    &lt;div class=&quot;phase-title&quot;&gt;发现 &lt;span&gt;Discovery&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-detail&quot;&gt;扫描约定路径（&lt;code&gt;~&#x2F;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt;、&lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt;、&lt;code&gt;skills&#x2F;&lt;&#x2F;code&gt; 等），找到所有 SKILL.md 文件，支持多源聚合（全局 + 项目级 + 自定义）&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;phase-card phase-2&quot;&gt;
+  &lt;div class=&quot;phase-num&quot;&gt;2&lt;&#x2F;div&gt;
+  &lt;div class=&quot;phase-info&quot;&gt;
+    &lt;div class=&quot;phase-title&quot;&gt;解析 &lt;span&gt;Parse&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-detail&quot;&gt;提取 YAML frontmatter（name, description, trigger_keywords...），正文暂不加载（延迟加载），构建 SkillEntry 数据结构&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;phase-card phase-3&quot;&gt;
+  &lt;div class=&quot;phase-num&quot;&gt;3&lt;&#x2F;div&gt;
+  &lt;div class=&quot;phase-info&quot;&gt;
+    &lt;div class=&quot;phase-title&quot;&gt;注入 &lt;span&gt;Inject&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-detail&quot;&gt;只注入摘要信息（name + description），≈ 几百 token&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-options&quot;&gt;方案 A: 作为 tool（Claude Code meta-tool）　|　方案 B: 作为 system prompt 片段（OpenClaw）&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;phase-card phase-4&quot;&gt;
+  &lt;div class=&quot;phase-num&quot;&gt;4&lt;&#x2F;div&gt;
+  &lt;div class=&quot;phase-info&quot;&gt;
+    &lt;div class=&quot;phase-title&quot;&gt;匹配 &lt;span&gt;Match&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-detail&quot;&gt;LLM 通用推理：description vs. 用户输入，结果为选中 0 或 1 个 Skill&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-options&quot;&gt;可选加速: 关键词精确匹配　|　可选兜底: LLM 语义匹配&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;phase-card phase-5&quot;&gt;
+  &lt;div class=&quot;phase-num&quot;&gt;5&lt;&#x2F;div&gt;
+  &lt;div class=&quot;phase-info&quot;&gt;
+    &lt;div class=&quot;phase-title&quot;&gt;加载 &lt;span&gt;Load&lt;&#x2F;span&gt;&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-detail&quot;&gt;读取完整 SKILL.md 正文，LLM 按正文指令执行后续任务&lt;&#x2F;div&gt;
+    &lt;div class=&quot;phase-options&quot;&gt;方案 A: 作为 tool_result 回传（Claude Code）　|　方案 B: 追加到 system prompt（OpenClaw）&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;每个实现可以在每个阶段做不同选择，但五阶段框架是通用的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-zhe-ge-jia-gou-ru-ci-you-ya&quot;&gt;为什么这个架构如此优雅&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看，这个设计之所以优雅，是因为它完美利用了 LLM 的两个核心能力：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;语义理解&lt;&#x2F;strong&gt;：模型能从几十个 Skill 描述中找到最匹配的那个（Phase 4）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;指令遵循&lt;&#x2F;strong&gt;：模型能按 SKILL.md 中的详细指令执行复杂工作流（Phase 5）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;而应用层只需要做 LLM 不擅长的事情：文件 I&#x2F;O、YAML 解析、token 预算管理。&lt;&#x2F;p&gt;
+&lt;p&gt;这种分工——&lt;strong&gt;应用层做结构化管道，模型层做语义推理&lt;&#x2F;strong&gt;——是当前 AI 应用架构的一个典范。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;na-wei-shi-yao-claude-code-ti-yan-geng-hao&quot;&gt;那为什么 Claude Code 体验更好？&lt;&#x2F;h3&gt;
+&lt;p&gt;既然 Skill Pipeline 是应用层魔法，任何强 LLM 都能跑，为什么大家普遍觉得 Claude Code 的 Skill 体验最好？&lt;&#x2F;p&gt;
+&lt;p&gt;不是因为 Claude 模型「认识」SKILL.md，而是三个工程原因：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Claude 模型的指令遵循能力强&lt;&#x2F;strong&gt;——注入的 SKILL.md 指令它真的会一步步跟，不打折、不跳步&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Claude Code 的 progressive disclosure 做得最成熟&lt;&#x2F;strong&gt;——meta-tool + isMeta 双消息注入，token 效率高&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Skill 可以声明 &lt;code&gt;allowed-tools&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;——在 SKILL.md 里指定该 Skill 需要哪些工具权限，权限模型更精细&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;但本质上，&lt;strong&gt;任何足够强的 LLM + 任何实现了 Skill 加载的 IDE，都能跑同一套 Skills。&lt;&#x2F;strong&gt; 这也是为什么我的同一套 Skills 可以同时被 Claude Code 和 Copilot 读取——只要把目录也放到 &lt;code&gt;.github&#x2F;skills&#x2F;&lt;&#x2F;code&gt; 或做个 symlink。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-wu-jie-dao-jing-jin&quot;&gt;从误解到精进&lt;&#x2F;h2&gt;
+&lt;p&gt;一个月前我在&lt;a href=&quot;&#x2F;agent-skills-awakening-moment&quot;&gt;那篇觉醒文章&lt;&#x2F;a&gt;里写道：「Agent Skills + MCP 的组合，完全改变了游戏规则。」&lt;&#x2F;p&gt;
+&lt;p&gt;现在我理解得更深了。Skills 改变游戏规则的方式不是靠什么黑魔法，而是靠一个&lt;strong&gt;极其朴素但极其有效的应用层设计模式&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它朴素到任何一个开发者都能在 30 分钟内实现出来（我在 &lt;a href=&quot;&#x2F;jarvis-skill-pipeline-implementation-journey&quot;&gt;Jarvis&lt;&#x2F;a&gt; 中就是这么做的——从设计到全功能验证通过，不到半小时）。它有效到 Claude Code、Copilot、Gemini CLI、OpenAI Codex 等 20+ 平台全都在用它——而且用的是&lt;a href=&quot;https:&#x2F;&#x2F;agentskills.io&quot;&gt;同一套 SKILL.md 格式&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;理解底层机理后，Skill 不再是「别人家的魔法」，而是「自己能掌控的架构模式」。&lt;&#x2F;p&gt;
+&lt;p&gt;这种感觉，比盲目的惊叹好太多了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;延伸阅读&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;agent-skills-awakening-moment&quot;&gt;Agent Skills 让我夜不能寐的觉醒时刻&lt;&#x2F;a&gt; — 1 月的感性震撼&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;jarvis-skill-pipeline-implementation-journey&quot;&gt;Jarvis Skill Pipeline 实现之旅&lt;&#x2F;a&gt; — 理解底层后，在自己的 Agent 中实现&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;vs-code-copilot-chat-agent-skills&quot;&gt;VS Code Agent Skills 实战指南&lt;&#x2F;a&gt; — 怎么给 Copilot 写 Skill&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;agent-architecture-instructions-prompts-skills-tools&quot;&gt;Agent 架构全景：Instructions, Prompts, Skills, Tools&lt;&#x2F;a&gt; — 概念辨析&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🛠️ 在 VS Code 中打造丝滑的 Claude Code 体验</title>
         <published>2026-01-30T00:00:00+00:00</published>
