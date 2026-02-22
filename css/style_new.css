@@ -1031,7 +1031,7 @@ table td {
     border: 1px solid #ddd;
     border-radius: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
+    font-size: 16px; /* ≥16px 防止 iOS Safari/微信聚焦时自动缩放 */
 }
 
 #send-button {
