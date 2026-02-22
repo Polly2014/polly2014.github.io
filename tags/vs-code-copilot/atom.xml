@@ -142,6 +142,61 @@
 &lt;&#x2F;div&gt;
 &lt;&#x2F;div&gt;
 &lt;p&gt;&lt;strong&gt;关键洞察&lt;&#x2F;strong&gt;：模型层做的是纯粹的自然语言推理——「这段描述和用户的请求很像，我应该先读取这个文件」。它用的是 general reasoning 能力，不是什么特殊的 Skill 解析模块。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;skill-de-dai-jie-dao-di-duo-liao-ji-ci-llm-diao-yong&quot;&gt;Skill 的代价：到底多了几次 LLM 调用？&lt;&#x2F;h3&gt;
+&lt;p&gt;看完三段式流水线，一个自然的问题是：&lt;strong&gt;装了 Skill 之后，每次对话到底请求了多少次 LLM？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;直觉上你可能觉得：「LLM 要先判断用不用 Skill，判断本身就是一次调用；再拿到 SKILL.md 执行，又是一次——那至少两次吧？」&lt;&#x2F;p&gt;
+&lt;p&gt;不一定。用一个具体例子说清楚：&lt;&#x2F;p&gt;
+&lt;p&gt;假设你装了 30 个 Skill（pptx、paper-writer、blog-writer……），现在你发了一条消息。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;场景 A：你说「今天天气怎么样？」&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;─── API Call #1 ────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span&gt;发送给 LLM 的内容:
+&lt;&#x2F;span&gt;&lt;span&gt;  - system prompt（CLAUDE.md 等 Instructions）
+&lt;&#x2F;span&gt;&lt;span&gt;  - tools 数组:
+&lt;&#x2F;span&gt;&lt;span&gt;      ├─ Skill tool（description 里列着 30 个 Skill 的摘要）
+&lt;&#x2F;span&gt;&lt;span&gt;      ├─ read_file
+&lt;&#x2F;span&gt;&lt;span&gt;      ├─ create_file
+&lt;&#x2F;span&gt;&lt;span&gt;      └─ ... 其他工具
+&lt;&#x2F;span&gt;&lt;span&gt;  - 用户消息: &amp;quot;今天天气怎么样？&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;LLM 的决策（一次前向传播里同时完成）:
+&lt;&#x2F;span&gt;&lt;span&gt;  ✗ 不调 Skill（没有天气相关的 Skill）
+&lt;&#x2F;span&gt;&lt;span&gt;  ✗ 不调 read_file（不需要）
+&lt;&#x2F;span&gt;&lt;span&gt;  ✓ 直接输出文本: &amp;quot;我没有实时天气数据...&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;结果: 1 次 API 调用，结束。
+&lt;&#x2F;span&gt;&lt;span&gt;────────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;场景 B：你说「帮我做个 PPT」&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;─── API Call #1 ────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span&gt;发送内容: 同上（tools 数组 + 用户消息）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;LLM 的决策:
+&lt;&#x2F;span&gt;&lt;span&gt;  ✓ 调用 Skill tool: { skill_name: &amp;quot;pptx&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;    （它在 description 里看到 pptx 的描述和用户请求匹配）
+&lt;&#x2F;span&gt;&lt;span&gt;────────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span&gt;     ↓ 应用层拦截，读取 SKILL.md 完整内容，回传给 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;─── API Call #2 ────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span&gt;发送内容: 之前的上下文 + tool_result（SKILL.md 正文）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;LLM 的决策:
+&lt;&#x2F;span&gt;&lt;span&gt;  ✓ 按 SKILL.md 里的指令开始工作
+&lt;&#x2F;span&gt;&lt;span&gt;  ✓ 调用 create_file 创建 .pptx ...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;结果: 2 次 API 调用（+ 后续工具调用 N 次）
+&lt;&#x2F;span&gt;&lt;span&gt;────────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;区别很清楚了：&lt;strong&gt;LLM 不需要「专门花一次调用来判断要不要用 Skill」&lt;&#x2F;strong&gt;。判断是它在处理你消息时的&lt;strong&gt;顺便推理&lt;&#x2F;strong&gt;——跟它决定要不要调 &lt;code&gt;read_file&lt;&#x2F;code&gt;、要不要调 &lt;code&gt;run_terminal&lt;&#x2F;code&gt; 是完全一样的机制。没匹配到就不调，不额外花一次 round-trip。&lt;&#x2F;p&gt;
+&lt;div class=&quot;tech-table&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;API 调用次数&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;无 Skill 匹配&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1 次&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;跟没装 Skill 一模一样&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;触发 Skill&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;2 次&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;多的那 1 次 = 加载 SKILL.md 那一轮&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Skill + 后续工具&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;2 + N 次&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;后续 create_file 等每个又是一轮&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;那「装了 Skill 但没触发」的代价在哪？&lt;strong&gt;不是 round-trip，而是 token。&lt;&#x2F;strong&gt; 每次请求都带着 30 个 Skill 的描述列表（≈ 几百到一千多 token），不管最终有没有触发。这就是 progressive disclosure 的设计哲学——用少量 token 的「目录」换取按需加载的灵活性。&lt;&#x2F;p&gt;
+&lt;div class=&quot;insight-box green&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Skill 的代价模型&lt;&#x2F;strong&gt;：固定开销 = 描述列表 token（每次请求都带，~数百 token）。触发开销 = +1 次 API round-trip + SKILL.md 正文 token（~数千 token）。不触发时，唯一的代价就是那几百 token 的「目录」——零额外延迟。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
 &lt;h2 id=&quot;claude-code-de-shi-xian-meta-tool-fang-an&quot;&gt;Claude Code 的实现：Meta-Tool 方案&lt;&#x2F;h2&gt;
 &lt;p&gt;今天做了快速调研，找到了两个关键信息源——都是别人做的硬核逆向工程：&lt;&#x2F;p&gt;
 &lt;div class=&quot;source-table&quot;&gt;
