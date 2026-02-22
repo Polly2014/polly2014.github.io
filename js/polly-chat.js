@@ -14,7 +14,8 @@ class PollyChat {
         this.systemPrompt = '';
         this.messages = [];
         this.isStreaming = false;
-        this.pendingImage = null; // 待发送的图片 {base64, mediaType}
+        this.pendingImages = []; // 待发送的图片数组 [{base64, mediaType, dataUrl}]
+        this.MAX_IMAGES = 4; // 单条消息最多 4 张图片
         
         // localStorage 配置
         this.STORAGE_KEY = 'polly_chat_history';
@@ -97,12 +98,19 @@ class PollyChat {
         const items = e.clipboardData?.items;
         if (!items) return;
         
+        let hasImage = false;
         for (const item of items) {
             if (item.type.startsWith('image/')) {
-                e.preventDefault();
+                if (!hasImage) {
+                    e.preventDefault();
+                    hasImage = true;
+                }
+                if (this.pendingImages.length >= this.MAX_IMAGES) {
+                    alert(`最多支持 ${this.MAX_IMAGES} 张图片`);
+                    break;
+                }
                 const file = item.getAsFile();
                 if (file) this.processImage(file);
-                return;
             }
         }
     }
@@ -114,11 +122,17 @@ class PollyChat {
             return;
         }
         
+        // 检查数量上限
+        if (this.pendingImages.length >= this.MAX_IMAGES) {
+            alert(`最多支持 ${this.MAX_IMAGES} 张图片`);
+            return;
+        }
+        
         // 使用 Canvas 压缩图片
         this.compressImage(file).then(({ base64, mediaType, dataUrl }) => {
-            this.pendingImage = { base64, mediaType };
-            this.showImagePreview(dataUrl);
-            console.log(`📷 Image ready: ${Math.round(base64.length / 1024)}KB`);
+            this.pendingImages.push({ base64, mediaType, dataUrl });
+            this.showImagePreview();
+            console.log(`📷 Image ${this.pendingImages.length}/${this.MAX_IMAGES} ready: ${Math.round(base64.length / 1024)}KB`);
         }).catch(err => {
             console.error('Image processing failed:', err);
             alert('Failed to process image');
@@ -180,22 +194,38 @@ class PollyChat {
         });
     }
     
-    showImagePreview(dataUrl) {
+    showImagePreview() {
         if (!this.imagePreview) return;
         
-        this.imagePreview.innerHTML = `
-            <div class="preview-wrapper">
-                <img src="${dataUrl}" alt="Preview" class="preview-image" />
-                <button class="preview-remove" title="Remove image">
+        if (this.pendingImages.length === 0) {
+            this.clearImagePreview();
+            return;
+        }
+        
+        // 横向 flex 布局，每张缩略图独立 ❌
+        const thumbnails = this.pendingImages.map((img, idx) => `
+            <div class="preview-wrapper" data-idx="${idx}">
+                <img src="${img.dataUrl}" alt="Preview ${idx + 1}" class="preview-image" />
+                <button class="preview-remove" title="Remove image" data-idx="${idx}">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-        `;
+        `).join('');
+        
+        const countHint = this.pendingImages.length >= this.MAX_IMAGES 
+            ? `<span class="preview-count">${this.pendingImages.length}/${this.MAX_IMAGES} (max)</span>` 
+            : `<span class="preview-count">${this.pendingImages.length}/${this.MAX_IMAGES}</span>`;
+        
+        this.imagePreview.innerHTML = `<div class="preview-list">${thumbnails}</div>${countHint}`;
         this.imagePreview.classList.add('visible');
         
-        // 绑定移除按钮
-        this.imagePreview.querySelector('.preview-remove')?.addEventListener('click', () => {
-            this.clearImagePreview();
+        // 为每个 ❌ 绑定独立删除
+        this.imagePreview.querySelectorAll('.preview-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.dataset.idx);
+                this.pendingImages.splice(idx, 1);
+                this.showImagePreview(); // 重新渲染
+            });
         });
         
         // 聚焦输入框
@@ -203,7 +233,7 @@ class PollyChat {
     }
     
     clearImagePreview() {
-        this.pendingImage = null;
+        this.pendingImages = [];
         if (this.imagePreview) {
             this.imagePreview.innerHTML = '';
             this.imagePreview.classList.remove('visible');
@@ -212,14 +242,14 @@ class PollyChat {
     
     async send() {
         const userMessage = this.input.value.trim();
-        const hasImage = !!this.pendingImage;
+        const imageCount = this.pendingImages.length;
         
         // 必须有文字或图片
-        if (!userMessage && !hasImage) return;
+        if (!userMessage && imageCount === 0) return;
         if (this.isStreaming) return;
         
         // 保存图片数据（清空前）
-        const imageData = this.pendingImage;
+        const images = [...this.pendingImages];
         
         // 清空输入
         this.input.value = '';
@@ -233,20 +263,23 @@ class PollyChat {
         this.chatBox.classList.add('expanded');
         
         // 显示用户消息（带图片预览）
-        this.appendMessage('user', userMessage, imageData);
+        this.appendMessage('user', userMessage, images);
         
         // 构建消息内容（Anthropic 格式）
         let messageContent;
-        if (imageData) {
+        if (images.length > 0) {
             messageContent = [];
-            messageContent.push({
-                type: 'image',
-                source: {
-                    type: 'base64',
-                    media_type: imageData.mediaType,
-                    data: imageData.base64
-                }
-            });
+            // 多张图片依次加入 content 数组
+            for (const img of images) {
+                messageContent.push({
+                    type: 'image',
+                    source: {
+                        type: 'base64',
+                        media_type: img.mediaType,
+                        data: img.base64
+                    }
+                });
+            }
             if (userMessage) {
                 messageContent.push({ type: 'text', text: userMessage });
             }
@@ -261,7 +294,7 @@ class PollyChat {
         this.saveHistory();
         
         // D1 持久化: 同步用户消息 (fire-and-forget)
-        this.syncMessage('user', userMessage || '[image]', hasImage);
+        this.syncMessage('user', userMessage || `[${imageCount} image${imageCount > 1 ? 's' : ''}]`, imageCount);
         
         // 显示 New Chat 按钮
         this.showNewChatBtn();
@@ -361,7 +394,7 @@ class PollyChat {
         return fullText;
     }
     
-    appendMessage(role, content, imageData = null) {
+    appendMessage(role, content, images = []) {
         const wrapper = document.createElement('div');
         // 使用原有 CSS 类名：message-container + user-message/polly-message
         const roleClass = role === 'user' ? 'user-message' : 'polly-message';
@@ -379,10 +412,14 @@ class PollyChat {
         const bubbleClass = role === 'user' ? 'user' : 'polly';
         bubble.className = `chat-bubble ${bubbleClass}`;
         
-        // 构建气泡内容
+        // 构建气泡内容：多图循环渲染
         let bubbleContent = '';
-        if (imageData) {
-            bubbleContent += `<img src="data:${imageData.mediaType};base64,${imageData.base64}" class="chat-image" alt="Uploaded" />`;
+        if (images && images.length > 0) {
+            bubbleContent += '<div class="chat-images">';
+            for (const img of images) {
+                bubbleContent += `<img src="data:${img.mediaType};base64,${img.base64}" class="chat-image" alt="Uploaded" />`;
+            }
+            bubbleContent += '</div>';
         }
         if (content) {
             bubbleContent += this.renderMarkdown(content);
@@ -420,12 +457,18 @@ class PollyChat {
     
     saveHistory() {
         try {
-            // 只保存文本消息（跳过图片 base64 避免擑爆 localStorage）
-            const toSave = this.messages.map(msg => ({
-                role: msg.role,
-                content: typeof msg.content === 'string' ? msg.content : 
-                    (msg.content.find(c => c.type === 'text')?.text || '[image]')
-            }));
+            // 只保存文本消息（跳过图片 base64 避免撑爆 localStorage）
+            const toSave = this.messages.map(msg => {
+                if (typeof msg.content === 'string') {
+                    return { role: msg.role, content: msg.content };
+                }
+                // 多图消息：提取文本 + 标注图片数量
+                const textBlock = msg.content.find(c => c.type === 'text');
+                const imgCount = msg.content.filter(c => c.type === 'image').length;
+                const imgLabel = imgCount > 0 ? `[${imgCount} image${imgCount > 1 ? 's' : ''}]` : '';
+                const text = textBlock?.text || '';
+                return { role: msg.role, content: text ? `${imgLabel} ${text}`.trim() : imgLabel || '[image]' };
+            });
             // 上限控制
             while (toSave.length > this.MAX_MESSAGES) toSave.shift();
             const data = { messages: toSave, time: Date.now() };
@@ -507,7 +550,7 @@ class PollyChat {
         return id;
     }
     
-    syncMessage(role, content, hasImage = false) {
+    syncMessage(role, content, imageCount = 0) {
         // Fire-and-forget: 绝不阻塞聊天体验
         try {
             const metadata = this.messages.length <= 1 ? {
@@ -523,7 +566,7 @@ class PollyChat {
                     conversation_id: this.conversationId,
                     role,
                     content,
-                    has_image: hasImage,
+                    image_count: imageCount,
                     metadata,
                 }),
             }).catch(() => {}); // 静默失败

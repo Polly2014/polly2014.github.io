@@ -762,11 +762,27 @@ table td {
     padding: 8px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.preview-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.preview-count {
+    display: block;
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    text-align: right;
 }
 
 .preview-image {
-    max-width: 180px;
-    max-height: 120px;
+    max-width: 120px;
+    max-height: 90px;
     border-radius: 8px;
     object-fit: contain;
     display: block;
@@ -797,12 +813,29 @@ table td {
 }
 
 /* 聊天气泡中的图片 */
+.chat-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
 .chat-image {
+    max-width: 150px;
+    max-height: 120px;
+    border-radius: 8px;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.chat-image:hover {
+    transform: scale(1.05);
+}
+
+.chat-image:only-child {
     max-width: 200px;
     max-height: 150px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    display: block;
 }
 
 /* 可选：添加输入框上移动画 */
