@@ -316,10 +316,28 @@ class PollyChat {
         }
     }
     
+    getTimeContext() {
+        const now = new Date();
+        const hour = now.getHours();
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        const day = weekdays[now.getDay()];
+        
+        // 时段标签
+        let period;
+        if (hour >= 6 && hour < 12) period = '上午';
+        else if (hour >= 12 && hour < 14) period = '中午';
+        else if (hour >= 14 && hour < 18) period = '下午';
+        else if (hour >= 18 && hour < 22) period = '傍晚';
+        else period = '深夜';
+        
+        return `\n\n## 当前时间\n访客本地时间：${period} ${hour}:${min}，星期${day}。据此调整语气和话题。`;
+    }
+    
     async streamResponse(bubble) {
         const body = {
             model: this.model,
-            system: this.systemPrompt,
+            system: this.systemPrompt + this.getTimeContext(),
             messages: this.messages,
             max_tokens: 2048,
             stream: true
