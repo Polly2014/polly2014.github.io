@@ -92,7 +92,7 @@ a:focus {
     color: #666;
 }
 
-.content span {
+.content span:not(.lang-badge) {
     color: #999;
     font-size: 0.8em;
     margin-left: 0.5em;
@@ -661,7 +661,9 @@ table td {
     padding: 1px 6px;
     border-radius: 10px;
     font-weight: 500;
-    vertical-align: baseline;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
     margin-left: 0;  /* 覆盖 .content span 的 margin-left: 0.5em */
     margin-right: 0.3rem;
     letter-spacing: 0.02em;
