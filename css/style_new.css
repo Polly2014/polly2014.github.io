@@ -662,6 +662,7 @@ table td {
     border-radius: 10px;
     font-weight: 500;
     vertical-align: baseline;
+    margin-left: 0;  /* 覆盖 .content span 的 margin-left: 0.5em */
     margin-right: 0.3rem;
     letter-spacing: 0.02em;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -673,6 +674,13 @@ table td {
 .lang-en {
     background: #e0eaf3;
     color: #7a93a8;
+}
+
+/* 移动端隐藏语言标签 — 必须在 .lang-badge 主定义之后 */
+@media (max-width: 768px) {
+    .lang-badge {
+        display: none;
+    }
 }
 
 .chat-header {
