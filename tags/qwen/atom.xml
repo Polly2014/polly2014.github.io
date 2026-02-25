@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Qwen</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/qwen/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-25T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/qwen/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🎨 Qwen-Image-Edit 完全指南：从小白到入门的深入浅出解析</title>
+        <published>2026-02-25T00:00:00+00:00</published>
+        <updated>2026-02-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/qwen-image-edit-complete-guide-for-beginners/" type="text/html"/>
+        <id>https://polly.wang/qwen-image-edit-complete-guide-for-beginners/</id>
+        
+        <content type="html">&lt;style&gt;
+&#x2F;* ── 代码块 ── *&#x2F;
+.blog-post .content pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 1.2em 1.5em;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.88em;
+    line-height: 1.75;
+    margin: 1.2em 0;
+    border: 1px solid #313244;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.blog-post .content pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+    border: none;
+    box-shadow: none;
+}
+&#x2F;* ── 行内代码 ── *&#x2F;
+.blog-post .content code {
+    background: #e6e6e6;
+    color: #c7254e;
+    padding: 0.15em 0.45em;
+    border-radius: 4px;
+    font-size: 0.88em;
+    font-family: &#x27;SFMono-Regular&#x27;, Consolas, &#x27;Liberation Mono&#x27;, Menlo, &#x27;Courier New&#x27;, monospace;
+}
+&#x2F;* ── 表格 ── *&#x2F;
+.blog-post .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 0.92em;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.blog-post .content thead { background: #3d92c9; color: #fff; }
+.blog-post .content th {
+    padding: 0.75em 1em;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #357eab;
+    white-space: nowrap;
+}
+.blog-post .content td {
+    padding: 0.6em 1em;
+    border: 1px solid #e0e0e0;
+}
+.blog-post .content tbody tr:nth-child(even) { background: #f8f9fa; }
+.blog-post .content tbody tr:hover { background: #e8f4fc; transition: background 0.15s; }
+&#x2F;* ── 引用块 ── *&#x2F;
+.blog-post .content blockquote {
+    border-left: 4px solid #3d92c9;
+    background: #f0f7fc;
+    padding: 0.8em 1.2em;
+    margin: 1.2em 0;
+    border-radius: 0 6px 6px 0;
+    color: #444;
+}
+.blog-post .content blockquote p { margin: 0.3em 0; }
+&#x2F;* ── 标题 ── *&#x2F;
+.blog-post .content h2 {
+    margin-top: 2.2em;
+    padding-bottom: 0.35em;
+    border-bottom: 2px solid #3d92c9;
+    color: #2c3e50;
+}
+.blog-post .content h3 { margin-top: 1.6em; color: #34495e; }
+&#x2F;* ── 分割线 ── *&#x2F;
+.blog-post .content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin: 2.5em 0;
+}
+&#x2F;* ── 链接 ── *&#x2F;
+.blog-post .content a {
+    color: #3d92c9;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+.blog-post .content a:hover { border-bottom-color: #3d92c9; }
+&#x2F;* ── 列表 ── *&#x2F;
+.blog-post .content ul, .blog-post .content ol { padding-left: 1.5em; margin: 0.8em 0; }
+.blog-post .content li { margin: 0.3em 0; line-height: 1.75; }
+&#x2F;* ── 加粗 ── *&#x2F;
+.blog-post .content strong { color: #2c3e50; }
+&#x2F;* ── 移动端优化 ── *&#x2F;
+@media (max-width: 768px) {
+    .blog-post .content pre { padding: 0.8em 1em; font-size: 0.82em; }
+    .blog-post .content table { font-size: 0.85em; display: block; overflow-x: auto; }
+    .blog-post .content th, .blog-post .content td { padding: 0.5em 0.6em; }
+}
+&lt;&#x2F;style&gt;
+&lt;p&gt;最近在研究 AI 图像编辑领域时，深入了解了阿里巴巴通义团队推出的 &lt;strong&gt;Qwen-Image-Edit&lt;&#x2F;strong&gt;——一个基于 20B 参数 MMDiT 架构的新一代图像编辑模型。它最让人兴奋的地方在于：&lt;strong&gt;能精准编辑图片里的文字&lt;&#x2F;strong&gt;，而且中英文都行！&lt;&#x2F;p&gt;
+&lt;p&gt;网上关于这个模型的资料要么太碎片化，要么太学术化。于是我决定写这篇&amp;quot;小白友好&amp;quot;的完全指南——用大量的类比来解释复杂的概念，让你即使没有深度学习背景，也能理解 Qwen-Image-Edit 的方方面面。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;blue-mu-lu&quot;&gt;📖 目录&lt;&#x2F;h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#qwen-image-edit-%E6%98%AF%E4%BB%80%E4%B9%88&quot;&gt;Qwen-Image-Edit 是什么？&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#ai-%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F&quot;&gt;AI 图像编辑的前世今生&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E5%8F%8C%E6%B5%81%E8%B0%83%E6%8E%A7&quot;&gt;核心原理：双流调控&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E6%9E%B6%E6%9E%84%E5%85%A8%E6%99%AF%E4%BA%94%E5%A4%A7%E7%BB%84%E4%BB%B6&quot;&gt;架构全景：五大组件&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#qwen-image-edit-%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C&quot;&gt;Qwen-Image-Edit 如何工作&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95%E5%A4%9A%E4%BB%BB%E5%8A%A1%E6%B8%90%E8%BF%9B%E5%BC%8F&quot;&gt;训练方法：多任务渐进式&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E7%89%88%E6%9C%AC%E6%BC%94%E8%BF%9B%E4%B8%8E-qwen-image-20&quot;&gt;版本演进与 Qwen Image 2.0&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E5%AE%9E%E6%88%98%E9%83%A8%E7%BD%B2%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B&quot;&gt;实战部署与代码示例&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#lora-%E5%BE%AE%E8%B0%83%E6%8C%87%E5%8D%97&quot;&gt;LoRA 微调指南&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E7%AB%9E%E5%93%81%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E5%9E%8B%E5%BB%BA%E8%AE%AE&quot;&gt;竞品对比与选型建议&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;qwen-image-edit-complete-guide-for-beginners&#x2F;#%E6%80%BB%E7%BB%93%E4%B8%8E%E9%80%9F%E6%9F%A5%E5%8D%A1&quot;&gt;总结与速查卡&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qwen-image-edit-是什么&quot;&gt;Qwen-Image-Edit 是什么？&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;yi-ju-hua-ban-ben&quot;&gt;一句话版本&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Qwen-Image-Edit = 一个超级智能的&amp;quot;AI 修图大师&amp;quot;，不仅能修图、换风格、合成多图，还能精准编辑图片里的文字——中文英文都能改！&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;house-lei-bi-xiang-xiang-yi-ge-shen-qi-de-xiu-tu-gong-zuo-shi&quot;&gt;🏠 类比：想象一个神奇的修图工作室&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;传统修图（Photoshop）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 自己打开软件
+&lt;&#x2F;span&gt;&lt;span&gt;├── 手动选区、调色、修补
+&lt;&#x2F;span&gt;&lt;span&gt;├── 花好几个小时改文字
+&lt;&#x2F;span&gt;&lt;span&gt;└── 改完发现字体不对 😭
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Qwen-Image-Edit：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 上传一张照片
+&lt;&#x2F;span&gt;&lt;span&gt;├── 用自然语言描述&amp;quot;我想要什么效果&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── AI 直接生成编辑后的图片
+&lt;&#x2F;span&gt;&lt;span&gt;├── 连图片里的文字都能完美修改！
+&lt;&#x2F;span&gt;&lt;span&gt;└── 几秒钟搞定！🎉
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;dart-ming-zi-chai-jie&quot;&gt;🎯 名字拆解&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Qwen-Image-Edit = 通义千问 · 图像编辑
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Qwen（通义千问）: 阿里巴巴的大模型家族
+&lt;&#x2F;span&gt;&lt;span&gt;Image（图像）: 处理图像的分支
+&lt;&#x2F;span&gt;&lt;span&gt;Edit（编辑）: 核心功能——编辑已有的图片
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;完整家族：
+&lt;&#x2F;span&gt;&lt;span&gt;├── Qwen-Image         → 文字生成图片（T2I）
+&lt;&#x2F;span&gt;&lt;span&gt;├── Qwen-Image-Edit    → 图像编辑（我们的主角！）
+&lt;&#x2F;span&gt;&lt;span&gt;├── Qwen-Image-Edit-2509 → 增强版（多图+ControlNet）
+&lt;&#x2F;span&gt;&lt;span&gt;├── Qwen-Image-Edit-2511 → 更强版（质量提升）
+&lt;&#x2F;span&gt;&lt;span&gt;├── Qwen-Image-Layered → 分层编辑（RGBA 图层）
+&lt;&#x2F;span&gt;&lt;span&gt;└── Qwen-Image 2.0     → 统一版（生成+编辑合一，7B）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bar-chart-he-xin-can-shu-yi-lan&quot;&gt;📊 核心参数一览&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;参数&lt;&#x2F;th&gt;&lt;th&gt;值&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;模型规模&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;20B&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;200 亿参数，属于大型模型&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;架构&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;MMDiT&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;多模态扩散 Transformer&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;条件编码器&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Qwen2.5-VL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;冻结的多模态视觉语言模型&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;图像编码器&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;VAE&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;变分自编码器（19M&#x2F;25M）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;位置编码&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;MSRoPE&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;多模态可扩展旋转位置编码&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文字编辑&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;中英文&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;业内领先的图内文字编辑能力&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;开源协议&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Apache-2.0&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;可商用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;推荐 VRAM&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;≥24GB&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全精度；量化后可降低&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ai-图像编辑的前世今生&quot;&gt;AI 图像编辑的前世今生&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;scroll-ji-zhu-jin-hua-shi&quot;&gt;📜 技术进化史&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    AI 图像编辑技术进化史                             │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第一代：基于 GAN 的编辑（2017-2020）                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：Pix2Pix, CycleGAN                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：图像到图像的翻译                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 问题：只能做固定类型转换，不灵活                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：只会&amp;quot;证件照换底色&amp;quot;的修图师 📸                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第二代：扩散模型编辑（2022-2023）                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：SDEdit, InstructPix2Pix                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：基于 Stable Diffusion 做条件编辑                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 进步：能听懂自然语言指令了！                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 问题：文字编辑一塌糊涂，细节容易丢失                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：能听指令的画家，但字写得歪歪扭扭 ✏️                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第三代：大模型增强编辑（2024）                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：DALL·E 3 编辑, Adobe Firefly                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：大型商业模型加持                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 进步：语义理解更强，编辑更自然                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 问题：闭源为主，文字渲染仍有限                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：很厉害但不让你看手法的魔术师 🎩                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  第四代：多模态 LLM+扩散融合（2025-2026）                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 代表：Qwen-Image-Edit（我们的主角！）                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 方法：视觉语言模型 + MMDiT 双流调控                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 优点：语义理解极强，文字编辑精准，开源可商用                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 类比：既懂语言又懂美术的双料专家 👨‍🎨📝                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;vs-qwen-image-edit-vs-qi-ta-fang-an&quot;&gt;🆚 Qwen-Image-Edit vs 其他方案&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th&gt;InstructPix2Pix&lt;&#x2F;th&gt;&lt;th&gt;DALL·E 3 Edit&lt;&#x2F;th&gt;&lt;th&gt;Adobe Firefly&lt;&#x2F;th&gt;&lt;th&gt;Qwen-Image-Edit&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;底层架构&lt;&#x2F;td&gt;&lt;td&gt;SD 1.5&lt;&#x2F;td&gt;&lt;td&gt;闭源&lt;&#x2F;td&gt;&lt;td&gt;闭源&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;MMDiT (20B)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;语义理解&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文字编辑&lt;&#x2F;td&gt;&lt;td&gt;❌ 基本不行&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;中文文字&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;多图合成&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;ControlNet&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;部分&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生支持&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;开源&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅ Apache-2.0&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;本地部署&lt;&#x2F;td&gt;&lt;td&gt;✅ 容易&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅ 需要显存&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;核心原理双流调控&quot;&gt;核心原理：双流调控&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;he-xin-si-xiang-yu-yi-wai-guan-liang-shou-du-yao-ying&quot;&gt;🧩 核心思想：语义 + 外观，两手都要硬&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;lei-bi-yi-ge-ding-ji-xiu-tu-tuan-dui&quot;&gt;类比：一个顶级修图团队&lt;&#x2F;h4&gt;
+&lt;p&gt;想象你去一个超级高端的修图工作室，他们的工作方式是这样的：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                     传统方法 vs Qwen-Image-Edit                     │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  传统方法（一个编码器做所有事）：                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────┐                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  一个 VAE 编码器：                               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 看图片的颜色                               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 看图片的纹理                               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 猜测图片的含义                             │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 试着理解编辑指令                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  问题：浅层特征和深层语义混在一起               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │        像让一个人同时当翻译和画家               │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────┘                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Qwen-Image-Edit（双流调控）：                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────┐                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  🧠 语义专家（Qwen2.5-VL，冻结的）             │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 深度理解图片内容                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 理解&amp;quot;这是一只猫坐在桌上&amp;quot;                   │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 理解编辑指令&amp;quot;把猫变成紫色&amp;quot;                 │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 提供高级语义特征                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  👁️ 外观专家（VAE Encoder）                     │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 精确记录图片的颜色                         │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 保留纹理、光影、细节                       │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 确保编辑后的图&amp;quot;看起来对&amp;quot;                   │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 提供低级重建特征                           │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  🎨 总设计师（MMDiT 主干网络）                  │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 融合语义和外观两路信号                     │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 在扩散过程中逐步生成结果                   │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 输出高保真编辑图像                         │                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────┘                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-yi-qwen2-5-vl-yu-yi-bian-ma-qi&quot;&gt;🧩 核心技术一：Qwen2.5-VL 语义编码器&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;为什么用 Qwen2.5-VL 而不是普通 CLIP？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;普通 CLIP（简历匹配者）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 能力：将图片和文字映射到同一空间
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解深度：浅层——&amp;quot;这张图有猫&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 文字理解：还行，但不够深
+&lt;&#x2F;span&gt;&lt;span&gt;└── 中文能力：一般般
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Qwen2.5-VL（资深面试官）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 能力：真正&amp;quot;看懂&amp;quot;图片的每个细节
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解深度：深层——&amp;quot;这只橘猫正趴在红色桌布上，背景是厨房&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 文字理解：极强（毕竟是个 LLM！）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 中文能力：母语级别 🇨🇳
+&lt;&#x2F;span&gt;&lt;span&gt;└── 额外技能：能理解物体关系、空间位置、动作
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;类比：
+&lt;&#x2F;span&gt;&lt;span&gt;CLIP 像是看了一眼照片就分类的实习生
+&lt;&#x2F;span&gt;&lt;span&gt;Qwen2.5-VL 像是仔细研究过照片每个角落的资深侦探
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-er-vae-shuang-xiang-tong-dao&quot;&gt;🧩 核心技术二：VAE 双向通道&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;VAE 的角色：图片的&amp;quot;压缩-解压&amp;quot;专家
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│              VAE 的工作原理                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  原始图片 (1024×1024)                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│      │                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│      ▼                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────┐                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ VAE Encoder │  把图片&amp;quot;压缩&amp;quot;成数学表示            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  (19M 参数) │  1024×1024 → 128×128 latent         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  (冻结的!)  │  数据量减少 64 倍！                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────┬──────┘                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│         │   latent（潜在表示）                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│         │   保留颜色、纹理、结构信息                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│         ▼                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────┐                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  MMDiT 处理  │  在这个&amp;quot;压缩空间&amp;quot;里做编辑         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  扩散+去噪   │  计算量大大减少                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────┬───────┘                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│         │   编辑后的 latent                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│         ▼                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────┐                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │ VAE Decoder │  把编辑好的数学表示&amp;quot;解压&amp;quot;回图片    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  (25M 参数) │  128×128 latent → 1024×1024         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  (微调过!)  │  ← 这是唯一被微调的 VAE 组件       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────┘                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  为什么 Encoder 冻结而 Decoder 微调？                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → Encoder：保持和训练数据一致的压缩方式            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → Decoder：需要学会&amp;quot;解压&amp;quot;编辑后的新内容            │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;he-xin-ji-zhu-san-msrope-wei-zhi-bian-ma&quot;&gt;🧩 核心技术三：MSRoPE 位置编码&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;MSRoPE = Multimodal Scalable RoPE
+&lt;&#x2F;span&gt;&lt;span&gt;       = 多模态可扩展旋转位置编码
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;类比：快递里的&amp;quot;门牌号系统&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;普通 RoPE（一维门牌号）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 1号, 2号, 3号, 4号...
+&lt;&#x2F;span&gt;&lt;span&gt;└── 只能表示&amp;quot;谁在谁前面&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;MSRoPE（多维门牌号）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 图片 token：(x=3, y=5, 图片空间)  → 知道在图片的哪个位置
+&lt;&#x2F;span&gt;&lt;span&gt;├── 文字 token：(pos=7, 文本空间)      → 知道在句子的哪个位置
+&lt;&#x2F;span&gt;&lt;span&gt;├── 跨模态：图片和文字的位置信息可以&amp;quot;对话&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;└── 可扩展：支持不同尺寸的图片
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;好处：
+&lt;&#x2F;span&gt;&lt;span&gt;模型既知道&amp;quot;这个 token 在图片的左上角&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;也知道&amp;quot;这个词是编辑指令的第三个词&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;两种位置信息融合后，编辑更精准！
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;架构全景五大组件&quot;&gt;架构全景：五大组件&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;zheng-ti-jia-gou-tu&quot;&gt;🏗️ 整体架构图&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    Qwen-Image-Edit Architecture                      │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ╔══════════════════════════════════════════════════════════════╗    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║                     输入层（3个输入）                         ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ╠══════════════════════════════════════════════════════════════╣    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║                                                              ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  ┌──────────┐    ┌──────────────┐    ┌──────────────────┐   ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  Source  │    │    Text      │    │    Noise         │   ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  Image   │    │   Prompt     │    │ (随机噪声 latent)│   ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │ (原始图) │    │ (编辑指令)   │    │                  │   ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  └────┬─────┘    └──────┬───────┘    └────────┬─────────┘   ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║       │                 │                     │             ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ╚═══════╪═════════════════╪═════════════════════╪═════════════╝    │
+&lt;&#x2F;span&gt;&lt;span&gt;│          │                 │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ┌────┴────────────┐    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │   同一张图片     │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │   分两路处理     │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ├────────┬────────┤    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     ▼        ▼        │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌────────┐ ┌────────┐│    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │Qwen2.5│ │  VAE   ││    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  -VL   │ │Encoder ││    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │(冻结)  │ │(冻结)  ││    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │        │ │ 19M    ││    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └───┬────┘ └───┬────┘│    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│      │          │     │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│   语义特征   外观特征  │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│   (高级)    (低级)    │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│      │          │     │    │                     │                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ╔═══╪══════════╪═════╪════╪═════════════════════╪═════════════╗    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║   ▼          ▼     │    ▼                     ▼             ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  ┌──────────────────────────────────────────────────────┐  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │         MMDiT（多模态扩散 Transformer）              │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │                                                      │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  ┌────────────────────────────────────────────────┐  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │     双流 DiT Blocks（Double-Stream）           │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │                                                │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │  图像流 ◄──── MSRoPE ────► 文本流             │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │    │                          │                │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │    └──── Cross-Attention ─────┘                │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │          (双向信息交换)                         │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │                                                │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │  Normalization: RMSNorm (QK) + LayerNorm      │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  └────────────────────────────────────────────────┘  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │                          │                           │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  ┌────────────────────────────────────────────────┐  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │     单流 DiT Blocks（Single-Stream）           │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  │     图像+文本合并处理                          │  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │  └────────────────────────────────────────────────┘  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │                          │                           │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  │                     去噪后的 latent                  │  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ║  └──────────────────────────┬───────────────────────────┘  ║    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ╚═════════════════════════════╪═══════════════════════════════╝    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         ┌──────▼──────┐                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │ VAE Decoder │                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │   (25M)     │                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │  (微调过!)  │                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         └──────┬──────┘                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                │                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         ┌──────▼──────┐                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │  编辑后的   │                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │  输出图片   │                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         └─────────────┘                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;mag-zu-jian-xiang-jie&quot;&gt;🔍 组件详解&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;zu-jian-1-qwen2-5-vl-yu-yi-da-nao&quot;&gt;组件 1：Qwen2.5-VL（语义大脑）&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;角色：理解图片和文字的&amp;quot;大脑&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    Qwen2.5-VL                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  是什么：阿里巴巴的多模态视觉语言模型               │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  能力表：                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 图片理解：看懂图片里的物体、场景、关系          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 文字理解：看懂图片里的文字内容                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 指令理解：理解&amp;quot;把XX改成YY&amp;quot;这种编辑指令          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 空间推理：知道物体在图片的哪个位置              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 多语言：中文、英文、日文等都能理解              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  在 Qwen-Image-Edit 中的状态：🔒 冻结（不训练）      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  为什么冻结？                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → 它已经足够强大了，不需要再训练                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → 冻结可以让它稳定地提供语义特征                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → 类比：请了一位经验丰富的顾问，                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│         让他提供专业意见，但不让他改变自己的风格      │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;zu-jian-2-vae-shi-jue-ya-suo-ji&quot;&gt;组件 2：VAE（视觉压缩机）&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;角色：图片的&amp;quot;压缩-解压&amp;quot;通道
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                       VAE                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Encoder（编码器 = 压缩机）：                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 参数量：19M（很轻量！）                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 功能：把高清图片压缩成小型 latent               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 状态：🔒 冻结                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 输出：保留颜色、纹理、光影的&amp;quot;数学快照&amp;quot;         │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Decoder（解码器 = 解压机）：                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 参数量：25M                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 功能：把 latent 解压回高清图片                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 状态：🔓 微调过                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 特殊：它需要学会解码&amp;quot;编辑后的内容&amp;quot;             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  类比：                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Encoder = JPEG 压缩：把照片变成小文件               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Decoder = JPEG 解压：把小文件变回照片               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  区别在于，编辑发生在&amp;quot;小文件&amp;quot;阶段                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  → 计算量减少 64 倍！                               │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;zu-jian-3-mmdit-kuo-san-zhu-gan-wang-luo&quot;&gt;组件 3：MMDiT（扩散主干网络）&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;角色：整个模型的&amp;quot;心脏&amp;quot;，执行实际的编辑工作
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                MMDiT 主干网络                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│    (Multimodal Diffusion Transformer)                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  核心思想：                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 多模态：同时处理图像和文本                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 扩散：通过&amp;quot;去噪&amp;quot;过程生成图像                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── Transformer：使用注意力机制融合信息             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  双流设计：                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────┐             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  图像流 ←──────────→ 文本流         │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    │     双向注意力     │            │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    │  (互相看对方)      │            │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    ▼                    ▼            │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  图像理解文本     文本理解图像       │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    │                    │            │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │    └──── 融合 ──────────┘            │             │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────┘             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  类比：                                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│  想象两个翻译在视频会议中：                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 一个看着图片说：&amp;quot;图上画了什么&amp;quot;                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ├── 一个看着文字说：&amp;quot;用户想要什么&amp;quot;                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └── 他们不停交流，最终达成共识                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  与 FLUX 的关系：                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  Qwen-Image-Edit 的 MMDiT 设计参考了 FLUX 等先进    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  扩散 Transformer，但在条件注入和位置编码上           │
+&lt;&#x2F;span&gt;&lt;span&gt;│  做了自己的创新（双流调控 + MSRoPE）                 │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;zu-jian-4-5-normalization-he-wei-zhi-bian-ma&quot;&gt;组件 4-5：Normalization 和位置编码&lt;&#x2F;h4&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;归一化策略：混合使用两种 Norm
+&lt;&#x2F;span&gt;&lt;span&gt;├── RMSNorm：用于 QK-Norm（注意力计算中的 Query 和 Key）
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── 特点：计算更快，效果好
+&lt;&#x2F;span&gt;&lt;span&gt;└── LayerNorm：用于其他所有层
+&lt;&#x2F;span&gt;&lt;span&gt;    └── 特点：更传统，稳定性好
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;位置编码（MSRoPE）：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 给每个 token 一个&amp;quot;坐标&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 图片 token：二维坐标 (x, y)
+&lt;&#x2F;span&gt;&lt;span&gt;├── 文字 token：一维坐标 (pos)
+&lt;&#x2F;span&gt;&lt;span&gt;└── 两种坐标可以互相&amp;quot;对话&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    → 模型知道&amp;quot;这个词描述的是图片的这个区域&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qwen-image-edit-如何工作&quot;&gt;Qwen-Image-Edit 如何工作&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;clapper-wan-zheng-gong-zuo-liu-cheng&quot;&gt;🎬 完整工作流程&lt;&#x2F;h3&gt;
+&lt;p&gt;让我们用一个具体例子来走一遍完整流程：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;任务：把一张海报上的&amp;quot;Hello World&amp;quot;改成&amp;quot;你好世界&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    完整编辑流程（6步）                                │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📥 Step 1: 输入准备                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 原始图片：一张带有 &amp;quot;Hello World&amp;quot; 文字的海报          │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 编辑指令：&amp;quot;把海报上的 Hello World 改成 你好世界&amp;quot;      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • (可选) Mask：标记需要编辑的区域                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🧠 Step 2: 双路特征提取                                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  路径 A：原图 → Qwen2.5-VL                             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  &amp;quot;我看到一张海报，上面有英文 Hello World，           │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │   字体是黑色粗体，背景是蓝色渐变&amp;quot;                   │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  输出：高级语义特征向量                              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │                                                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  路径 B：原图 → VAE Encoder                             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  &amp;quot;记录每个像素的颜色、纹理、光影细节&amp;quot;               │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  │  输出：latent 表示（低级外观特征）                   │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎲 Step 3: 噪声注入                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 随机生成一个高斯噪声 latent                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 或：对原图的 latent 加部分噪声（strength 控制）      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 类比：在原图上&amp;quot;撒一层沙子&amp;quot;，然后清理成新的图        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🔄 Step 4: MMDiT 迭代去噪（50步 or 自定义）                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  每一步：                                               │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 噪声 latent + 语义特征 + 外观特征 → MMDiT          │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 双流注意力：图像流和文本流互相交换信息            │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 预测这一步要去掉多少&amp;quot;沙子&amp;quot;                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 更新 latent（稍微清晰一点了）                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第 1 步：[██████████████████] 纯噪声                  │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第 10 步：[███████████] 模糊轮廓出现                  │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第 25 步：[██████] 文字形状清晰                       │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第 40 步：[███] 细节丰富                              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  第 50 步：[█] 完美结果！                              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🖼️ Step 5: VAE 解码                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  去噪完成的 latent → VAE Decoder → 高清图片             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  128×128 latent → 1024×1024 图片                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ✅ Step 6: 输出                                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  结果：海报上的文字变成了&amp;quot;你好世界&amp;quot;                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 字体风格保持一致（黑色粗体）                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 背景完美保留（蓝色渐变没变）                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  • 中文渲染清晰准确                                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;dart-qwen-image-edit-neng-zuo-shi-yao&quot;&gt;🎯 Qwen-Image-Edit 能做什么？&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;支持的编辑类型：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;1️⃣ 文字编辑（独家强项！）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 修改图片中的文字内容
+&lt;&#x2F;span&gt;&lt;span&gt;├── 保持原有字体&#x2F;大小&#x2F;材质&#x2F;风格
+&lt;&#x2F;span&gt;&lt;span&gt;├── 支持中文、英文和其他 CJK 文字
+&lt;&#x2F;span&gt;&lt;span&gt;└── 例子：&amp;quot;把招牌上的 OPEN 改成 营业中&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;2️⃣ 语义编辑（高级修改）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 物体替换：&amp;quot;把桌上的苹果换成橘子&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 物体旋转：&amp;quot;把杯子旋转 90°&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 视角变换：&amp;quot;换成鸟瞰视角&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 姿势操控：&amp;quot;让人物举手&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;└── 风格迁移：&amp;quot;变成吉卜力动画风格&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;3️⃣ 外观编辑（低级修改）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 添加&#x2F;删除元素：&amp;quot;去掉背景里的电线杆&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 颜色修改：&amp;quot;把兔子的颜色改成紫色&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 光影调整：&amp;quot;加上夕阳光效&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;└── 保持未编辑区域不变
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;4️⃣ 多图合成（2509+版本）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 人物+人物：&amp;quot;把两个人合成到一张图&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 人物+产品：&amp;quot;让模特拿着这个产品&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;├── 人物+场景：&amp;quot;把人物放到海滩背景&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;└── 支持 1-3 张输入图片
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;5️⃣ ControlNet 条件控制（2509+版本）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 深度图引导
+&lt;&#x2F;span&gt;&lt;span&gt;├── Canny 边缘引导
+&lt;&#x2F;span&gt;&lt;span&gt;├── OpenPose 姿态引导
+&lt;&#x2F;span&gt;&lt;span&gt;└── 精细控制输出结构
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;6️⃣ 分层编辑（Layered 版本）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 将图片分解为多个 RGBA 图层
+&lt;&#x2F;span&gt;&lt;span&gt;├── 类似 Photoshop 的图层概念
+&lt;&#x2F;span&gt;&lt;span&gt;├── 每个图层可独立编辑
+&lt;&#x2F;span&gt;&lt;span&gt;└── 适合精细的设计工作流
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;训练方法多任务渐进式&quot;&gt;训练方法：多任务渐进式&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;clipboard-xun-lian-san-ban-fu&quot;&gt;📋 训练三板斧&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                   Qwen-Image-Edit 训练策略                           │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  🎯 策略一：多任务联合训练                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  任务 1: T2I（文字 → 图片）                            │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输入：文字描述                                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输出：生成图片                                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 目的：学会&amp;quot;画画&amp;quot;                                 │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  任务 2: TI2I（文字+图片 → 新图片）                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输入：原图 + 编辑指令                             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输出：编辑后的图片                                │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 目的：学会&amp;quot;按指令修图&amp;quot;                           │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  任务 3: I2I（图片 → 图片重建）                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输入：原图                                        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 输出：重建的图片（应该和原图一样！）              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 目的：对齐 Qwen2.5-VL 和 MMDiT 的潜在空间        │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  为什么三个任务一起训练？                              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  → 类比：培训一个修图师                                │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │     T2I = 先学画画（建立基础审美）                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │     I2I = 再学临摹（学会精确复制）                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │     TI2I = 最后学修图（在复制基础上做修改）            │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📈 策略二：渐进式课程学习                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  阶段 1: 简单文字渲染                                  │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 学习没有文字的图片生成                            │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 打下画面基础                                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │           ↓                                             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  阶段 2: 简单 → 复杂文字                               │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 从单词到短语                                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 从英文到中文                                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │           ↓                                             │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  阶段 3: 段落级描述                                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ├── 处理长篇描述                                      │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  └── 最终掌握复杂排版                                  │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  类比：                                                │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  就像学写字——先学笔画，再学单字，                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  最后学写文章。不能一上来就写论文！                    │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  📊 策略三：大规模数据管线                                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────────────────────────────────────────┐        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  数据来源 → 过滤 → 标注 → 合成 → 平衡                 │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  1. 收集：海量图文对                                   │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  2. 过滤：去除低质量、不合适内容                       │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  3. 标注：为图片添加精确的文字描述                     │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  4. 合成：生成训练需要的编辑对（before&#x2F;after）         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  5. 平衡：确保各类编辑任务的数据量均衡                │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                                                         │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  ⚠️ 注意：具体数据集列表和规模未完全公开              │        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────────────────────────────────────────┘        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;turk-guan-jian-xun-lian-xi-jie&quot;&gt;🔑 关键训练细节&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目&lt;&#x2F;th&gt;&lt;th&gt;详情&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;冻结组件&lt;&#x2F;td&gt;&lt;td&gt;Qwen2.5-VL (全部), VAE Encoder&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;微调组件&lt;&#x2F;td&gt;&lt;td&gt;MMDiT (主干), VAE Decoder&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;优化器&lt;&#x2F;td&gt;&lt;td&gt;Adam (Layered 版本明确记录)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;训练阶段&lt;&#x2F;td&gt;&lt;td&gt;多阶段渐进（Layered: 500k+400k+400k 步）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;精度&lt;&#x2F;td&gt;&lt;td&gt;bf16 混合精度&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;目标&lt;&#x2F;td&gt;&lt;td&gt;对齐 Qwen2.5-VL latent 与 MMDiT latent&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;版本演进与-qwen-image-20&quot;&gt;版本演进与 Qwen Image 2.0&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;date-wan-zheng-ban-ben-shi-jian-xian&quot;&gt;📅 完整版本时间线&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    Qwen-Image 版本演进史                             │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.05 ─── 项目启动                                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        QwenLM&#x2F;Qwen-Image repo 创建                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.08.04 ── Qwen-Image v1 发布 🎉                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── 首个 20B MMDiT 模型                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── 文字到图片（T2I）                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── arXiv 技术报告: 2508.02324                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         └── Apache-2.0 开源                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.08.18 ── Qwen-Image-Edit 发布 🎨                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── 图像编辑版本                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── 双流调控 (Qwen2.5-VL + VAE)                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         └── 精准文字编辑能力                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.09.22 ── Qwen-Image-Edit-2509 📈                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── 多图输入支持（1-3张）                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         ├── ControlNet 条件控制                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         │   ├── 深度图                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         │   ├── Canny 边缘                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         │   └── OpenPose 姿态                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │         └── 整体质量提升                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.11 ─── Qwen-Image-Edit-2511                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        ├── 更强的逼真纹理                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        ├── 文字渲染精度提升                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        └── 质量进一步优化                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2025.12 ─── Qwen-Image-Layered 🔲                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        ├── RGBA 图层分解能力                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        ├── Text-to-RGBA &#x2F; Image-to-Multi-RGBA                │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        ├── 类似 Photoshop 图层概念                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │        └── arXiv: 2512.15603                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     │                                                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2026.02.10 ── Qwen Image 2.0 发布 🚀                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 重大架构升级！                                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 参数：20B → 7B（缩小近 3 倍）                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 生成+编辑统一为一个模型                            │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 原生 2K 分辨率（2048×2048）                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 专业信息图表支持                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│              ├── 1000 token 长提示词                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│              └── 编码器：Qwen3-VL (8B)                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;new-qwen-image-2-0-zhong-da-sheng-ji&quot;&gt;🆕 Qwen Image 2.0：重大升级&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                  Qwen-Image v1 vs Qwen Image 2.0                    │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌─────────────────────┐     ┌─────────────────────┐               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │   Qwen-Image v1     │     │  Qwen Image 2.0     │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │                     │     │                     │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  参数：20B          │     │  参数：7B ⬇️        │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  编码器：Qwen2.5-VL │     │  编码器：Qwen3-VL   │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  分辨率：1024×1024  │     │  分辨率：2048×2048  │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  模型：生成&#x2F;编辑分离│     │  模型：统一一个     │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  提示词：标准长度   │     │  提示词：1000 token │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  文字：好           │     │  文字：极好 ✨      │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  信息图：不支持     │     │  信息图：专业级     │               │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └─────────────────────┘     └─────────────────────┘               │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2.0 的五大突破：                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  1️⃣ 统一架构                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     v1: Qwen-Image (生成) + Qwen-Image-Edit (编辑) = 两个模型      │
+&lt;&#x2F;span&gt;&lt;span&gt;│     v2: 一个 7B 模型搞定一切                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     → 更简单的部署，更一致的风格                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  2️⃣ 专业排版                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     能直接生成 PPT、信息图表、电影海报、日历、漫画！                │
+&lt;&#x2F;span&gt;&lt;span&gt;│     支持 1000 token 的超长结构化指令                                │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  3️⃣ 原生 2K                                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│     不是&amp;quot;先 1K 再放大&amp;quot;，而是直接在 2K 分辨率下生成                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│     皮肤毛孔、织物纹理、建筑细节——微观级清晰度                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  4️⃣ 更轻更快                                                       │
+&lt;&#x2F;span&gt;&lt;span&gt;│     7B vs 20B → 推理更快，部署成本更低                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│     消费级 GPU (24GB VRAM) 有望本地运行                              │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  5️⃣ 更强的文字渲染                                                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│     五个特征：准确、大量、美观、真实、对齐                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│     → 能在玻璃、布料、纸张、招牌上正确渲染文字                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;实战部署与代码示例&quot;&gt;实战部署与代码示例&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;bu-shu-fang-shi-zong-lan&quot;&gt;🛠️ 部署方式总览&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌──────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    部署方式选择指南                                │
+&lt;&#x2F;span&gt;&lt;span&gt;├──────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  你的情况         →  推荐方式                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ─────────────       ────────                                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  想快速体验       →  Qwen Chat 网页版（免费）                    │
+&lt;&#x2F;span&gt;&lt;span&gt;│  需要 API 集成    →  阿里云 DashScope &#x2F; Replicate                │
+&lt;&#x2F;span&gt;&lt;span&gt;│  有 24GB+ GPU     →  本地部署（全精度 bf16）                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  有 12-16GB GPU   →  本地部署（量化 nf4&#x2F;Q4）                     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  用 ComfyUI       →  GGUF 量化 + ComfyUI 节点                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  需要微调         →  Musubi Tuner + LoRA                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                   │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;memo-kuai-su-kai-shi-diffusers-dai-ma&quot;&gt;📝 快速开始：Diffusers 代码&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;ji-chu-ban-dan-tu-bian-ji&quot;&gt;基础版：单图编辑&lt;&#x2F;h4&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安装最新版 diffusers（必须从 GitHub 安装）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# pip install git+https:&#x2F;&#x2F;github.com&#x2F;huggingface&#x2F;diffusers.git
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;os
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;torch
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;PIL &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;Image
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;diffusers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;QwenImageEditPipeline
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. 加载模型（首次会下载约 40GB）
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline = QwenImageEditPipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;from_pretrained&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image-Edit&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_dtype&lt;&#x2F;span&gt;&lt;span&gt;=torch.bfloat16  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用 bf16 节省显存
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;to&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cuda&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;set_progress_bar_config&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;disable&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. 准备输入
+&lt;&#x2F;span&gt;&lt;span&gt;image = Image.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;input.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;convert&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;RGB&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;prompt = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;把兔子的颜色改成紫色，背景加上闪光效果&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. 执行编辑
+&lt;&#x2F;span&gt;&lt;span&gt;inputs = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: image,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: prompt,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;generator&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: torch.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;manual_seed&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;42&lt;&#x2F;span&gt;&lt;span&gt;),       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 固定种子，结果可复现
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true_cfg_scale&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4.0&lt;&#x2F;span&gt;&lt;span&gt;,                     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# CFG 强度
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;negative_prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot; &amp;quot;,                     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 负面提示（避免不想要的内容）
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;num_inference_steps&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50&lt;&#x2F;span&gt;&lt;span&gt;,                  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 去噪步数（越多越精细，越慢）
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;torch.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inference_mode&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    output = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pipeline&lt;&#x2F;span&gt;&lt;span&gt;(inputs)
+&lt;&#x2F;span&gt;&lt;span&gt;    output.images.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;output_edit.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;编辑完成！&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;jin-jie-ban-duo-tu-he-cheng-2509&quot;&gt;进阶版：多图合成（2509+）&lt;&#x2F;h4&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;diffusers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;QwenImageEditPlusPipeline
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 加载 2509 或 2511 版本
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline = QwenImageEditPlusPipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;from_pretrained&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image-Edit-2509&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 或 &amp;quot;Qwen&#x2F;Qwen-Image-Edit-2511&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_dtype&lt;&#x2F;span&gt;&lt;span&gt;=torch.bfloat16
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;to&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cuda&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 准备多张输入图片
+&lt;&#x2F;span&gt;&lt;span&gt;image1 = Image.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;person.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 人物照
+&lt;&#x2F;span&gt;&lt;span&gt;image2 = Image.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;scenery.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 场景照
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;prompt = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;把人物放到海滩场景中，自然融合，光影一致&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;inputs = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [image1, image2],            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 注意：传入列表！
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: prompt,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;generator&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: torch.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;manual_seed&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;42&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true_cfg_scale&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4.0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;negative_prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot; &amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;num_inference_steps&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;40&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;guidance_scale&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;num_images_per_prompt&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;torch.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inference_mode&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    output = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pipeline&lt;&#x2F;span&gt;&lt;span&gt;(inputs)
+&lt;&#x2F;span&gt;&lt;span&gt;    output.images.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;output_composite.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h4 id=&quot;inpainting-ju-bu-xiu-fu&quot;&gt;Inpainting（局部修复）&lt;&#x2F;h4&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;diffusers &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;QwenImageInpaintPipeline
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;diffusers.utils &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;load_image
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline = QwenImageInpaintPipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;from_pretrained&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_dtype&lt;&#x2F;span&gt;&lt;span&gt;=torch.bfloat16
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;pipeline.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;to&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cuda&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;source = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;load_image&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;source.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 原图
+&lt;&#x2F;span&gt;&lt;span&gt;mask = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;load_image&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mask.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 遮罩（白色=要编辑的区域）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;prompt = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;一只黄色的猫，高分辨率，坐在公园长椅上&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;image = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pipeline&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;prompt&lt;&#x2F;span&gt;&lt;span&gt;=prompt,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;negative_prompt&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot; &amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;=source,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mask_image&lt;&#x2F;span&gt;&lt;span&gt;=mask,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strength&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.85                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 0=不改, 1=完全重画
+&lt;&#x2F;span&gt;&lt;span&gt;).images[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;image.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;inpainted.png&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bulb-guan-jian-can-shu-shuo-ming&quot;&gt;💡 关键参数说明&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;重要参数速查：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;num_inference_steps（去噪步数）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 推荐值：40-50
+&lt;&#x2F;span&gt;&lt;span&gt;├── 越多：质量越好，速度越慢
+&lt;&#x2F;span&gt;&lt;span&gt;├── 越少：速度快但可能模糊
+&lt;&#x2F;span&gt;&lt;span&gt;└── Lightning 模式：4 步（极速，需要特殊配置）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;true_cfg_scale（CFG 强度，真实的 Classifier-Free Guidance）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 推荐值：3.0-5.0
+&lt;&#x2F;span&gt;&lt;span&gt;├── 越高：越严格遵循提示词，但可能过饱和
+&lt;&#x2F;span&gt;&lt;span&gt;├── 越低：更自然，但可能偏离指令
+&lt;&#x2F;span&gt;&lt;span&gt;└── 典型值：4.0
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;guidance_scale（引导尺度）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 推荐值：1.0（2509&#x2F;2511 版本）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 与 true_cfg_scale 配合使用
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;strength（编辑强度，Inpainting 时）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 0.0 = 不改变原图
+&lt;&#x2F;span&gt;&lt;span&gt;├── 0.5 = 中等修改
+&lt;&#x2F;span&gt;&lt;span&gt;├── 0.85 = 大幅修改（推荐）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 1.0 = 完全重画
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;negative_prompt（负面提示词）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 用&amp;quot; &amp;quot;（空格）表示不使用
+&lt;&#x2F;span&gt;&lt;span&gt;├── 可加&amp;quot;NSFW, nude&amp;quot;排除不当内容
+&lt;&#x2F;span&gt;&lt;span&gt;└── 可加&amp;quot;blurry, low quality&amp;quot;提升质量
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;zap-xian-cun-you-hua-ji-qiao&quot;&gt;⚡ 显存优化技巧&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;显存不够？试试这些技巧：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;1️⃣ 量化加载（省约 50-70% 显存）
+&lt;&#x2F;span&gt;&lt;span&gt;   from transformers import BitsAndBytesConfig
+&lt;&#x2F;span&gt;&lt;span&gt;   quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+&lt;&#x2F;span&gt;&lt;span&gt;   # 注意：可能轻微降低质量
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;2️⃣ VAE Slicing&#x2F;Tiling
+&lt;&#x2F;span&gt;&lt;span&gt;   pipeline.enable_vae_slicing()    # 分片解码
+&lt;&#x2F;span&gt;&lt;span&gt;   pipeline.enable_vae_tiling()     # 分块解码
+&lt;&#x2F;span&gt;&lt;span&gt;   # 对大图特别有效
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;3️⃣ 使用 GGUF 量化模型
+&lt;&#x2F;span&gt;&lt;span&gt;   # 社区提供 Q4_K_M &#x2F; Q3_K_M 等量化版本
+&lt;&#x2F;span&gt;&lt;span&gt;   # 可在 12-16GB GPU 上运行
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;4️⃣ Lightning 模式（社区方案）
+&lt;&#x2F;span&gt;&lt;span&gt;   # 仅 4 步去噪，速度提升 10x+
+&lt;&#x2F;span&gt;&lt;span&gt;   # 质量有所牺牲，适合快速预览
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;⚠️ 量化注意事项：
+&lt;&#x2F;span&gt;&lt;span&gt;   社区发现量化 transformer_blocks.0.img_mod 层
+&lt;&#x2F;span&gt;&lt;span&gt;   可能导致严重伪影，建议跳过这个层的量化！
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;lora-微调指南&quot;&gt;LoRA 微调指南&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;mortar-board-wei-shi-yao-yao-wei-diao&quot;&gt;🎓 为什么要微调？&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;开箱即用的 Qwen-Image-Edit 已经很强了，但有时你需要：
+&lt;&#x2F;span&gt;&lt;span&gt;├── 训练特定角色&#x2F;人脸的 LoRA（一致性生成）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 训练特定产品的 LoRA（电商场景）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 训练特定风格的 LoRA（品牌风格统一）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 训练特定编辑行为的 LoRA（自定义编辑逻辑）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;package-gong-ju-xuan-ze&quot;&gt;📦 工具选择&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;推荐工具：Kohya Musubi Tuner
+&lt;&#x2F;span&gt;&lt;span&gt;├── GitHub: kohya-ss&#x2F;musubi-tuner
+&lt;&#x2F;span&gt;&lt;span&gt;├── 支持 LoRA 和 Full Fine-Tuning（DreamBooth）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 最低 6GB VRAM 即可训练！
+&lt;&#x2F;span&gt;&lt;span&gt;├── 提供 --model_version 参数选择模型版本
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── edit-2509
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── edit-2511
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── layered
+&lt;&#x2F;span&gt;&lt;span&gt;└── 社区有完整的 Windows 一键安装脚本
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wrench-lora-xun-lian-can-shu-tui-jian&quot;&gt;🔧 LoRA 训练参数推荐&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;参数&lt;&#x2F;th&gt;&lt;th&gt;人物&#x2F;角色&lt;&#x2F;th&gt;&lt;th&gt;产品&lt;&#x2F;th&gt;&lt;th&gt;风格&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;LoRA Rank&lt;&#x2F;td&gt;&lt;td&gt;32-64&lt;&#x2F;td&gt;&lt;td&gt;16-32&lt;&#x2F;td&gt;&lt;td&gt;8-16&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;LoRA Alpha&lt;&#x2F;td&gt;&lt;td&gt;rank&#x2F;2&lt;&#x2F;td&gt;&lt;td&gt;rank&#x2F;2&lt;&#x2F;td&gt;&lt;td&gt;rank&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;学习率&lt;&#x2F;td&gt;&lt;td&gt;1e-4&lt;&#x2F;td&gt;&lt;td&gt;1e-4&lt;&#x2F;td&gt;&lt;td&gt;5e-5&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;训练轮数&lt;&#x2F;td&gt;&lt;td&gt;150-200&lt;&#x2F;td&gt;&lt;td&gt;100-150&lt;&#x2F;td&gt;&lt;td&gt;75-100&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;数据集大小&lt;&#x2F;td&gt;&lt;td&gt;20-50 张&lt;&#x2F;td&gt;&lt;td&gt;10-30 张&lt;&#x2F;td&gt;&lt;td&gt;30-100 张&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;最低 VRAM&lt;&#x2F;td&gt;&lt;td&gt;6GB (量化)&lt;&#x2F;td&gt;&lt;td&gt;6GB (量化)&lt;&#x2F;td&gt;&lt;td&gt;6GB (量化)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;memo-xun-lian-ming-ling-shi-li&quot;&gt;📝 训练命令示例&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 使用 Musubi Tuner 训练 Qwen-Image-Edit LoRA
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. 缓存 latent（加速后续训练）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; cache_latents.py \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --model_version&lt;&#x2F;span&gt;&lt;span&gt; edit-2509 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --pretrained_model_name_or_path &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image-Edit-2509&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --dataset_config&lt;&#x2F;span&gt;&lt;span&gt; dataset.toml \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --cache_latents_to_disk
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. 缓存文本特征
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; cache_text_encoder_outputs.py \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --model_version&lt;&#x2F;span&gt;&lt;span&gt; edit-2509 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --pretrained_model_name_or_path &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image-Edit-2509&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --dataset_config&lt;&#x2F;span&gt;&lt;span&gt; dataset.toml \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --cache_text_encoder_outputs_to_disk
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. 开始 LoRA 训练
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;accelerate&lt;&#x2F;span&gt;&lt;span&gt; launch train_network.py \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --model_version&lt;&#x2F;span&gt;&lt;span&gt; edit-2509 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --pretrained_model_name_or_path &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Qwen&#x2F;Qwen-Image-Edit-2509&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --dataset_config&lt;&#x2F;span&gt;&lt;span&gt; dataset.toml \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --network_module&lt;&#x2F;span&gt;&lt;span&gt; networks.lora \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --network_dim&lt;&#x2F;span&gt;&lt;span&gt; 32 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --network_alpha&lt;&#x2F;span&gt;&lt;span&gt; 16 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --learning_rate&lt;&#x2F;span&gt;&lt;span&gt; 1e-4 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --lr_scheduler&lt;&#x2F;span&gt;&lt;span&gt; cosine \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --max_train_epochs&lt;&#x2F;span&gt;&lt;span&gt; 200 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --train_batch_size&lt;&#x2F;span&gt;&lt;span&gt; 1 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --gradient_checkpointing &lt;&#x2F;span&gt;&lt;span&gt;\
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --mixed_precision&lt;&#x2F;span&gt;&lt;span&gt; bf16 \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --optimizer_type&lt;&#x2F;span&gt;&lt;span&gt; AdamW8bit \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --output_dir&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;output_lora \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;  --save_every_n_epochs&lt;&#x2F;span&gt;&lt;span&gt; 25
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bar-chart-shu-ju-ji-zhun-bei-qing-dan&quot;&gt;📊 数据集准备清单&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;数据集准备 5 步走：
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;1️⃣ 图片收集
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 最低分辨率：512×512
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 推荐分辨率：1024×1024+
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 数量：20-100 张（根据任务）
+&lt;&#x2F;span&gt;&lt;span&gt;   └── 质量：清晰、多角度、多光照
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;2️⃣ 图片标注（Caption）
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 推荐工具：BLIP-2, WD14 Tagger, Google Gemini
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 或者手动写 caption
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 格式：每张图对应一个 .txt 文件
+&lt;&#x2F;span&gt;&lt;span&gt;   └── 内容：详细描述图片内容
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;3️⃣ 正则化图片（防过拟合）
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 准备一些同类但不同的图片
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 例如：训练特定人脸时，准备一些其他人脸
+&lt;&#x2F;span&gt;&lt;span&gt;   └── 数量：约等于训练图片的 1-2 倍
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;4️⃣ 数据增强
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 随机水平翻转（除人脸外）
+&lt;&#x2F;span&gt;&lt;span&gt;   ├── 随机裁剪（小心使用）
+&lt;&#x2F;span&gt;&lt;span&gt;   └── 启用 Bucket（支持不同宽高比）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;5️⃣ 配置文件
+&lt;&#x2F;span&gt;&lt;span&gt;   # dataset.toml 示例
+&lt;&#x2F;span&gt;&lt;span&gt;   [[datasets]]
+&lt;&#x2F;span&gt;&lt;span&gt;   resolution = 1024
+&lt;&#x2F;span&gt;&lt;span&gt;   batch_size = 1
+&lt;&#x2F;span&gt;&lt;span&gt;   [[datasets.subsets]]
+&lt;&#x2F;span&gt;&lt;span&gt;   image_dir = &amp;quot;.&#x2F;train_images&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;   caption_extension = &amp;quot;.txt&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;   num_repeats = 10
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;竞品对比与选型建议&quot;&gt;竞品对比与选型建议&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;trophy-2025-2026-ai-tu-xiang-bian-ji-mo-xing-quan-jing&quot;&gt;🏆 2025-2026 AI 图像编辑模型全景&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│                    AI 图像编辑模型全景图                             │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  开源阵营：                                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────────────────────────────────┐                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Qwen-Image-Edit (20B) ★                    │ ← 文字编辑王者   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  FLUX Kontext (12B)                          │ ← 上下文编辑     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  InstructPix2Pix (SD 1.5)                    │ ← 经典但较旧     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Stable Diffusion Inpainting                  │ ← 局部修复       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  OmniGen                                      │ ← 统一模型       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────────────────────────────────┘                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  闭源 &#x2F; API 阵营：                                                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│  ┌──────────────────────────────────────────────┐                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  GPT Image 1.5 (OpenAI)                      │ ← 对话式编辑     │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  DALL·E 3.5 (OpenAI)                          │ ← 简单易用       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Adobe Firefly 3 (Adobe)                      │ ← 专业生态       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Gemini 3 Pro Image (Google)                  │ ← 多模态         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Midjourney                                    │ ← 艺术感强       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  │  Seedream 4.5 (ByteDance)                     │ ← 高性价比       │
+&lt;&#x2F;span&gt;&lt;span&gt;│  └──────────────────────────────────────────────┘                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;dart-xuan-xing-jue-ce-shu&quot;&gt;🎯 选型决策树&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你应该选什么？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Q1: 需要在图片里编辑文字吗？
+&lt;&#x2F;span&gt;&lt;span&gt;├── 是 → Qwen-Image-Edit（尤其是中文！）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 否 → 继续往下看
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Q2: 需要开源&#x2F;本地部署吗？
+&lt;&#x2F;span&gt;&lt;span&gt;├── 是 → 继续 Q3
+&lt;&#x2F;span&gt;&lt;span&gt;└── 否 → 考虑 GPT Image 1.5 或 Adobe Firefly
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Q3: 有多少 GPU 显存？
+&lt;&#x2F;span&gt;&lt;span&gt;├── ≥24GB → Qwen-Image-Edit 全精度
+&lt;&#x2F;span&gt;&lt;span&gt;├── 12-16GB → Qwen-Image-Edit 量化版
+&lt;&#x2F;span&gt;&lt;span&gt;├── 6-12GB → FLUX Kontext 或 InstructPix2Pix
+&lt;&#x2F;span&gt;&lt;span&gt;└── 无 GPU → 使用 API (DashScope &#x2F; Replicate)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Q4: 具体任务是什么？
+&lt;&#x2F;span&gt;&lt;span&gt;├── 多图合成 → Qwen-Image-Edit-2509+
+&lt;&#x2F;span&gt;&lt;span&gt;├── 精准局部修改 → Qwen-Image Inpainting
+&lt;&#x2F;span&gt;&lt;span&gt;├── 风格迁移 → FLUX + LoRA 或 Qwen-Image-Edit
+&lt;&#x2F;span&gt;&lt;span&gt;├── 产品修图 → Qwen-Image-Edit（身份保持强）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 纯艺术创作 → Midjourney 或 DALL·E
+&lt;&#x2F;span&gt;&lt;span&gt;└── 专业设计流 → Adobe Firefly（Photoshop 集成）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bar-chart-xiang-xi-dui-bi-biao&quot;&gt;📊 详细对比表&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Qwen-Image-Edit&lt;&#x2F;th&gt;&lt;th&gt;GPT Image 1.5&lt;&#x2F;th&gt;&lt;th&gt;Adobe Firefly&lt;&#x2F;th&gt;&lt;th&gt;FLUX Kontext&lt;&#x2F;th&gt;&lt;th&gt;InstructPix2Pix&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;规模&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;20B&lt;&#x2F;td&gt;&lt;td&gt;未知(闭源)&lt;&#x2F;td&gt;&lt;td&gt;未知(闭源)&lt;&#x2F;td&gt;&lt;td&gt;12B&lt;&#x2F;td&gt;&lt;td&gt;~1B&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;文字编辑&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;中文文字&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;身份保持&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;多图合成&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;开源&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ Apache-2.0&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;本地部署&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ (需显存)&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅ (轻量)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;LoRA 微调&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;API 成本&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;~¥0.2-0.5&#x2F;张&lt;&#x2F;td&gt;&lt;td&gt;~$0.08&#x2F;张&lt;&#x2F;td&gt;&lt;td&gt;订阅制&lt;&#x2F;td&gt;&lt;td&gt;社区部署&lt;&#x2F;td&gt;&lt;td&gt;社区部署&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;推理速度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;中等(~37s)&lt;&#x2F;td&gt;&lt;td&gt;快(~5s)&lt;&#x2F;td&gt;&lt;td&gt;快&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;td&gt;快&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;分辨率&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1024² (v1) &#x2F; 2048² (v2)&lt;&#x2F;td&gt;&lt;td&gt;1024²&lt;&#x2F;td&gt;&lt;td&gt;4MP&lt;&#x2F;td&gt;&lt;td&gt;1024²&lt;&#x2F;td&gt;&lt;td&gt;512²&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;总结与速查卡&quot;&gt;总结与速查卡&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;clipboard-yi-ye-su-cha-qia&quot;&gt;📋 一页速查卡&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;╔═══════════════════════════════════════════════════════════════════╗
+&lt;&#x2F;span&gt;&lt;span&gt;║                  Qwen-Image-Edit 速查卡                          ║
+&lt;&#x2F;span&gt;&lt;span&gt;╠═══════════════════════════════════════════════════════════════════╣
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  🏷️ 是什么：阿里巴巴 Qwen 家族的 AI 图像编辑模型               ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  📐 规模：20B 参数（v1）&#x2F; 7B 参数（v2.0）                       ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  🧠 架构：MMDiT + Qwen2.5-VL + VAE 双流调控                    ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  📜 论文：arXiv:2508.02324                                      ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  📦 代码：github.com&#x2F;QwenLM&#x2F;Qwen-Image                          ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  🤗 模型：huggingface.co&#x2F;Qwen&#x2F;Qwen-Image-Edit                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  📄 协议：Apache-2.0（可商用）                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ⭐ 核心优势：                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 图内文字编辑（中英文）业界最强                              ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 语义+外观双流调控，编辑保真度高                             ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 多图合成、ControlNet 原生支持                               ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 完全开源，社区生态丰富                                      ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  └── v2.0 统一生成+编辑，原生 2K                                ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ⚠️ 注意事项：                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 全精度需要 ≥24GB VRAM                                      ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 量化时注意跳过 transformer_blocks.0.img_mod                 ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── 某些情况下会出现宽高比&#x2F;缩放问题                             ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  └── 具体训练数据集未完全公开                                    ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  🛠️ 快速上手：                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  pip install git+https:&#x2F;&#x2F;github.com&#x2F;huggingface&#x2F;diffusers.git    ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  from diffusers import QwenImageEditPipeline                     ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  pipeline = QwenImageEditPipeline.from_pretrained(               ║
+&lt;&#x2F;span&gt;&lt;span&gt;║      &amp;quot;Qwen&#x2F;Qwen-Image-Edit&amp;quot;, torch_dtype=torch.bfloat16)        ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  📊 关键超参：                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── num_inference_steps: 40-50                                  ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── true_cfg_scale: 3.0-5.0                                    ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  └── strength (inpaint): 0.85                                    ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  🔧 微调工具：kohya-ss&#x2F;musubi-tuner                              ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── --model_version edit-2509 &#x2F; edit-2511 &#x2F; layered             ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  ├── LoRA rank: 16-64 (看任务)                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;║  └── 最低 6GB VRAM 可训练                                        ║
+&lt;&#x2F;span&gt;&lt;span&gt;║                                                                   ║
+&lt;&#x2F;span&gt;&lt;span&gt;╚═══════════════════════════════════════════════════════════════════╝
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;xue-xi-lu-xian-tu&quot;&gt;🗺️ 学习路线图&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;小白 → 入门 → 进阶 → 专家
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Level 1: 体验者 🌱
+&lt;&#x2F;span&gt;&lt;span&gt;├── 去 Qwen Chat 网页版玩一玩
+&lt;&#x2F;span&gt;&lt;span&gt;├── 上传照片，尝试简单编辑
+&lt;&#x2F;span&gt;&lt;span&gt;└── 理解&amp;quot;AI 图像编辑&amp;quot;的概念
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Level 2: 使用者 🌿
+&lt;&#x2F;span&gt;&lt;span&gt;├── 安装 Diffusers，本地跑推理
+&lt;&#x2F;span&gt;&lt;span&gt;├── 尝试不同的 prompt 和参数
+&lt;&#x2F;span&gt;&lt;span&gt;├── 学会 Inpainting（局部修复）
+&lt;&#x2F;span&gt;&lt;span&gt;└── 在 ComfyUI 里搭建工作流
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Level 3: 开发者 🌳
+&lt;&#x2F;span&gt;&lt;span&gt;├── 训练自己的 LoRA
+&lt;&#x2F;span&gt;&lt;span&gt;├── 集成到自己的产品中（API&#x2F;本地）
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解双流调控的原理
+&lt;&#x2F;span&gt;&lt;span&gt;└── 掌握量化、优化部署
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Level 4: 研究者 🌲
+&lt;&#x2F;span&gt;&lt;span&gt;├── 阅读 arXiv 技术报告
+&lt;&#x2F;span&gt;&lt;span&gt;├── 理解 MMDiT、MSRoPE 的数学原理
+&lt;&#x2F;span&gt;&lt;span&gt;├── 对比不同图像编辑方法的优劣
+&lt;&#x2F;span&gt;&lt;span&gt;├── 尝试改进架构或训练策略
+&lt;&#x2F;span&gt;&lt;span&gt;└── 贡献开源社区
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;books-can-kao-zi-liao&quot;&gt;📚 参考资料&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;资源&lt;&#x2F;th&gt;&lt;th&gt;链接&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;GitHub 仓库&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;QwenLM&#x2F;Qwen-Image&quot;&gt;QwenLM&#x2F;Qwen-Image&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;官方代码和文档&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;HuggingFace 模型&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;huggingface.co&#x2F;Qwen&#x2F;Qwen-Image-Edit&quot;&gt;Qwen&#x2F;Qwen-Image-Edit&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;模型权重下载&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;技术报告&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2508.02324&quot;&gt;arXiv:2508.02324&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;核心论文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Layered 论文&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2512.15603&quot;&gt;arXiv:2512.15603&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;图层编辑论文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Musubi Tuner&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;musubi-tuner&quot;&gt;kohya-ss&#x2F;musubi-tuner&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;LoRA 训练工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Diffusers 文档&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;huggingface.co&#x2F;docs&#x2F;diffusers&#x2F;en&#x2F;api&#x2F;pipelines&#x2F;qwenimage&quot;&gt;QwenImage Pipeline&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;API 文档&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;ComfyUI 示例&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;comfyanonymous.github.io&#x2F;ComfyUI_examples&#x2F;qwen_image&#x2F;&quot;&gt;ComfyUI Examples&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;节点工作流&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2509 多图文档&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;QwenLM&#x2F;Qwen-Image&#x2F;blob&#x2F;main&#x2F;Qwen-Image-Edit-2509.md&quot;&gt;Qwen-Image-Edit-2509.md&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;多图+ControlNet&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Qwen Chat&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;qwen.ai&#x2F;&quot;&gt;qwen.ai&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;在线体验&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;量化指南&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;https:&#x2F;&#x2F;sandner.art&#x2F;qwen-image-and-edit-local-gguf-generations-with-lightning&#x2F;&quot;&gt;社区量化攻略&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;本地部署优化&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;最后更新：2026-02-25&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;如果这篇文章对你有帮助，欢迎在下方 Giscus 评论区留言交流！&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
