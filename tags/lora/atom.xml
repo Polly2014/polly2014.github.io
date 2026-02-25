@@ -1420,7 +1420,7 @@
 &lt;&#x2F;blockquote&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;整体架构两阶段-pipeline&quot;&gt;整体架构：两阶段 Pipeline&lt;&#x2F;h2&gt;
-&lt;p&gt;这是整个 VTON 系统的核心设计决策。参考 DigitalOcean 团队已经验证的方案，我采用&lt;strong&gt;两阶段 Pipeline&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;这是整个 VTON 系统的核心设计决策。参考 DigitalOcean 技术布道师 James Skelton 已验证的方案，我采用&lt;strong&gt;两阶段 Pipeline&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌──────────────────────────────────────────────────────────────────────┐
 &lt;&#x2F;span&gt;&lt;span&gt;│                   VTON 两阶段 Pipeline 架构                          │
 &lt;&#x2F;span&gt;&lt;span&gt;│                                                                      │
@@ -1631,7 +1631,7 @@
 &lt;h3 id=&quot;gong-ju-xuan-ze-musubi-tuner-vs-ai-toolkit&quot;&gt;工具选择：Musubi Tuner vs AI-Toolkit&lt;&#x2F;h3&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;Musubi Tuner (kohya-ss)&lt;&#x2F;th&gt;&lt;th&gt;AI-Toolkit (Ostris)&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Edit-2511 支持&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生 &lt;code&gt;--model_version edit-2511&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 有配置模板&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;社区活跃度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;高，1.7k+ stars&lt;&#x2F;td&gt;&lt;td&gt;高，DigitalOcean 验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;社区活跃度&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;高，1.7k+ stars&lt;&#x2F;td&gt;&lt;td&gt;高，James Skelton (DigitalOcean) 验证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;VRAM 优化&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Block swap，最低 6GB VRAM&lt;&#x2F;td&gt;&lt;td&gt;标准 gradient checkpointing&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;预缓存&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ Latent + Text Encoder&lt;&#x2F;td&gt;&lt;td&gt;✅ 支持&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Torch Compile&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 加速训练&lt;&#x2F;td&gt;&lt;td&gt;⚠️ 部分支持&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -1673,7 +1673,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;│ VRAM (舒适)  │  48 GB+ (A6000)          24 GB (BF16)      │
 &lt;&#x2F;span&gt;&lt;span&gt;│ 系统内存     │  64 GB+                  32 GB+             │
 &lt;&#x2F;span&gt;&lt;span&gt;│ 存储空间     │  100 GB+ (模型+缓存)     60 GB (模型)       │
-&lt;&#x2F;span&gt;&lt;span&gt;│ GPU 型号     │  RTX 4090 &#x2F; H100 &#x2F; H200  RTX 3060+         │
+&lt;&#x2F;span&gt;&lt;span&gt;│ GPU 型号     │  RTX 4090 &#x2F; H100 &#x2F; A6000  RTX 3060+         │
 &lt;&#x2F;span&gt;&lt;span&gt;├──────────────┼──────────────────────────────────────────────┤
 &lt;&#x2F;span&gt;&lt;span&gt;│ 云服务价格参考│                                              │
 &lt;&#x2F;span&gt;&lt;span&gt;│ RunPod       │  RTX 4090: ~$0.44&#x2F;hr                        │
@@ -1970,12 +1970,12 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;已验证的参考案例&quot;&gt;已验证的参考案例&lt;&#x2F;h2&gt;
-&lt;h3 id=&quot;digitalocean-de-clothing-try-on-app&quot;&gt;DigitalOcean 的 Clothing Try-On App&lt;&#x2F;h3&gt;
-&lt;p&gt;这是目前最完整的 Qwen-Image-Edit VTON 参考实现：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;james-skelton-de-clothing-try-on-app-digitalocean&quot;&gt;James Skelton 的 Clothing Try-On App (DigitalOcean)&lt;&#x2F;h3&gt;
+&lt;p&gt;这是目前最完整的 Qwen-Image-Edit VTON 参考实现，由 DigitalOcean 技术布道师 &lt;a href=&quot;https:&#x2F;&#x2F;www.digitalocean.com&#x2F;community&#x2F;tutorials&#x2F;qwen-image-edit-clothing-try-on-application&quot;&gt;James Skelton&lt;&#x2F;a&gt; 发布：&lt;&#x2F;p&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目&lt;&#x2F;th&gt;&lt;th&gt;详情&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;基座模型&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Qwen-Image-Edit-2509&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;训练工具&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Ostris AI-Toolkit&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;训练硬件&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;NVIDIA H200&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;训练硬件&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;NVIDIA H100 (GPU Droplet)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;训练步数&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;3000 步 &#x2F; LoRA&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;Batch Size&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;训练数据&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;20 组 &#x2F; LoRA&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -2111,7 +2111,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;新范式：通用大模型 + 轻量微调 = 解决特定问题
 &lt;&#x2F;span&gt;&lt;span&gt;  → 架构简洁、维护容易、底座升级免费享受
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Qwen-Image-Edit 的 LoRA VTON 方案目前已经被社区验证可行（DigitalOcean 20 张图 + 3000 步就能用），而且随着 Qwen-Image 2.0（7B 参数、2K 分辨率）的成熟，未来只会更好。&lt;&#x2F;p&gt;
+&lt;p&gt;Qwen-Image-Edit 的 LoRA VTON 方案目前已经被社区验证可行（James Skelton 的教程证明 20 张图 + 3000 步就能用），而且随着 Qwen-Image 2.0（7B 参数、2K 分辨率）的成熟，未来只会更好。&lt;&#x2F;p&gt;
 &lt;p&gt;最让我兴奋的一点是：&lt;strong&gt;这不只是换装&lt;&#x2F;strong&gt;。同样的思路可以扩展到发型试戴、配饰试戴、妆容试妆……只要你能构造出合适的训练三元组，LoRA 就能教模型学会新技能。&lt;&#x2F;p&gt;
 &lt;p&gt;下一步计划：先用 20 组数据做 POC 验证，确认 Pipeline 跑通后再扩大数据集做正式训练。欢迎关注后续的实战更新！&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -2119,7 +2119,7 @@
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;QwenLM&#x2F;Qwen-Image&quot;&gt;Qwen-Image GitHub&lt;&#x2F;a&gt; — 官方仓库&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;musubi-tuner&quot;&gt;Musubi Tuner&lt;&#x2F;a&gt; — 训练工具&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.digitalocean.com&#x2F;community&#x2F;tutorials&#x2F;qwen-image-edit-clothing-try-on-application&quot;&gt;DigitalOcean VTON Tutorial&lt;&#x2F;a&gt; — 已验证的参考实现&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.digitalocean.com&#x2F;community&#x2F;tutorials&#x2F;qwen-image-edit-clothing-try-on-application&quot;&gt;James Skelton: Clothing Try-On with Qwen Image Edit 2509 (DigitalOcean)&lt;&#x2F;a&gt; — 已验证的参考实现&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.runcomfy.com&#x2F;trainer&#x2F;ai-toolkit&#x2F;qwen-image-edit-2511-lora-training&quot;&gt;RunComfy Qwen 2511 LoRA Guide&lt;&#x2F;a&gt; — AI-Toolkit 训练指南&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;dev.to&#x2F;furkangozukara&#x2F;qwen-image-models-training-0-to-hero-level-tutorial-lora-fine-tuning-base-edit-model-2goj&quot;&gt;SECourses Training Tutorial&lt;&#x2F;a&gt; — 综合训练教程&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;shadow2496&#x2F;VITON-HD&quot;&gt;VITON-HD Dataset&lt;&#x2F;a&gt; — 公开 VTON 数据集&lt;&#x2F;li&gt;
