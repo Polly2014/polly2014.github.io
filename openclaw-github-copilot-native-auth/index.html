@@ -1,0 +1,106 @@
+<!doctype html><html><head><title>🦞 CopilotX 挂了？没关系，OpenClaw 原生 GitHub Copilot 认证上线</title><meta content="CopilotX 的 Azure VM 因微软员工订阅额度用完而停服，OpenClaw 的默认 AI 引擎突然断了。幸运的是，OpenClaw 内置了原生 GitHub Copilot Device Flow 认证——一条命令完成 OAuth，不再需要中间代理。记录从发现问题到切换成功的完整过程，以及两套方案并存的配置技巧。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/openclaw-github-copilot-native-auth/ property=og:url><meta content="🦞 CopilotX 挂了？没关系，OpenClaw 原生 GitHub Copilot 认证上线" property=og:title><meta content="CopilotX 的 Azure VM 因微软员工订阅额度用完而停服，OpenClaw 的默认 AI 引擎突然断了。幸运的是，OpenClaw 内置了原生 GitHub Copilot Device Flow 认证——一条命令完成 OAuth，不再需要中间代理。记录从发现问题到切换成功的完整过程，以及两套方案并存的配置技巧。" property=og:description><meta content=https://polly.wang/images/polly.png property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/openclaw-github-copilot-native-auth/ name=twitter:url><meta content="🦞 CopilotX 挂了？没关系，OpenClaw 原生 GitHub Copilot 认证上线" name=twitter:title><meta content="CopilotX 的 Azure VM 因微软员工订阅额度用完而停服，OpenClaw 的默认 AI 引擎突然断了。幸运的是，OpenClaw 内置了原生 GitHub Copilot Device Flow 认证——一条命令完成 OAuth，不再需要中间代理。记录从发现问题到切换成功的完整过程，以及两套方案并存的配置技巧。" name=twitter:description><meta content=https://polly.wang/images/polly.png name=twitter:image><meta content=2026-02-26T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=OpenClaw property=article:tag><meta content=CopilotX property=article:tag><meta content="GitHub Copilot" property=article:tag><meta content=OAuth property=article:tag><meta content=AI工程 property=article:tag><meta content="Device Flow" property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://polly.wang/vendor/purecss/pure-min.css rel=stylesheet><link href=https://polly.wang/vendor/purecss/grids-responsive-min.css rel=stylesheet><link href=https://polly.wang/vendor/font-awesome/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-8JD13N7PHS" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8JD13N7PHS';);</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change Log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>🦞 CopilotX 挂了？没关系，OpenClaw 原生 GitHub Copilot 认证上线</h1><div class=content><p>下午打算让小龙虾帮忙干活，发现它不说话了。<p>检查了一下，CopilotX 的 Azure VM 没响应——我这个月微软员工 150 美刀的 Azure 订阅额度用超了，虚机直接停了。<p>好消息是：<strong>OpenClaw 自己就能登录 GitHub Copilot</strong>。</p><span id=continue-reading></span><h2 id=bei-jing-copilotx-yu-openclaw-de-guan-xi>背景：CopilotX 与 OpenClaw 的关系</h2><p>如果你是第一次来，先简单介绍一下这几个角色。不熟悉的读者可以看看前两篇：<a href=/making-openclaw-run-with-copilotx>让小龙虾跑起来</a>和 <a href=/copilotx-v232-error-passthrough>CopilotX v2.3.2</a>。<ul><li><strong><a href=https://github.com/nicepkg/openclaw>OpenClaw</a>（小龙虾）</strong>：开源个人 AI 助手，能同时接入 Telegram、Discord、WhatsApp 等消息渠道<li><strong>CopilotX</strong>：我写的 API 代理，部署在 Azure VM（<code>api.polly.wang</code>），把 GitHub Copilot 订阅转成标准 Anthropic Messages API<li><strong>关系</strong>：OpenClaw 调用 CopilotX 获取 Claude 的能力</ul><p>这套架构跑了半个多月，很爽——直到今天 Azure VM 停了。<h2 id=copilotx-vs-github-copilot-liang-chong-chi-copilot-de-fang-shi>CopilotX vs github-copilot：两种吃 Copilot 的方式</h2><p>让 OpenClaw 用上 GitHub Copilot 的模型，其实有两条路：<table><thead><tr><th><th>CopilotX（自建代理）<th>github-copilot（原生认证）<tbody><tr><td><strong>原理</strong><td>Azure VM 上跑 FastAPI，转发请求到 Copilot 内部 API<td>OpenClaw 内置 Device Flow OAuth，直接调 GitHub API<tr><td><strong>部署</strong><td>需要一台服务器（<code>api.polly.wang</code>）<td>不需要，纯本地<tr><td><strong>认证</strong><td>CopilotX 自己登录 GitHub，客户端用 API Key<td>在浏览器里授权一次，token 自动管理<tr><td><strong>API 格式</strong><td>Anthropic Messages（<code>/v1/messages</code>）<td>OpenAI Completions（Copilot 原生格式）<tr><td><strong>依赖</strong><td>Azure VM 必须在线<td>只要 GitHub 不挂就行<tr><td><strong>适合场景</strong><td>多客户端共享、自定义路由<td>单机使用、快速切换</table><p>之前选 CopilotX 是因为 OpenClaw 初始版本不支持 Copilot，我只能通过代理桥接。但现在 OpenClaw 已经内置了原生的 <code>github-copilot</code> provider——不需要中间人了。<h2 id=shi-cao-san-bu-wan-cheng-qie-huan>实操：三步完成切换</h2><h3 id=step-1-geng-xin-openclaw>Step 1：更新 OpenClaw</h3><p>我的本地版本是 <code>v2026.2.14</code>，但配置格式要求 <code>v2026.2.17</code>，直接报版本不匹配：<pre style=background:#2b303b;color:#c0c5ce><code><span>Error: Configuration version mismatch. Config: 2026.2.17, Installed: 2026.2.14
+</span></code></pre><p>更新一下：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#96b5b4>cd</span><span> X-Workspace/openclaw
+</span><span style=color:#bf616a>git</span><span> stash && </span><span style=color:#bf616a>git</span><span> pull && </span><span style=color:#bf616a>pnpm</span><span> install && </span><span style=color:#bf616a>pnpm</span><span> build
+</span></code></pre><p>跳到了 <code>v2026.2.26</code>，问题解决。<h3 id=step-2-deng-lu-github-copilot>Step 2：登录 GitHub Copilot</h3><p>这一步我踩了个坑。直觉告诉我应该用：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># ❌ 这是错的
+</span><span style=color:#bf616a>openclaw</span><span> models auth login</span><span style=color:#bf616a> --provider</span><span> github-copilot
+</span></code></pre><p>报错 <code>Unknown provider: github-copilot</code>。试了半天 <code>copilot-proxy</code> 插件也是条死路（那是本地 VS Code 代理，需要 VS Code 扩展运行在 <code>localhost:3000</code>，完全不是我要的东西）。<p>正确的命令是一个<strong>独立子命令</strong>，不走 <code>--provider</code> 参数：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#65737e># ✅ 这才对
+</span><span style=color:#bf616a>pnpm</span><span> openclaw models auth login-github-copilot
+</span></code></pre><p>跑起来后，熟悉的 GitHub Device Flow：<pre style=background:#2b303b;color:#c0c5ce><code><span>🔑 GitHub Copilot Authentication
+</span><span>Please visit: https://github.com/login/device
+</span><span>Enter code: 223C-2FDC
+</span><span>Waiting for authorization...
+</span></code></pre><p>浏览器里输入设备码，点授权，终端里自动完成：<pre style=background:#2b303b;color:#c0c5ce><code><span>✅ GitHub Copilot authentication successful!
+</span><span>Auth profile saved: github-copilot:github (github-copilot/token)
+</span></code></pre><h3 id=step-3-qie-huan-mo-ren-mo-xing>Step 3：切换默认模型</h3><p>登录成功后，OpenClaw 的配置中已经有了 <code>github-copilot</code> 这个 provider。但默认模型还指向不可用的 <code>copilotx/claude-opus-4-6</code>。<p>编辑 <code>~/.openclaw/openclaw.json</code>，把默认模型改成：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>agents</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>defaults</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>model</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>primary</span><span>": "</span><span style=color:#a3be8c>github-copilot/claude-opus-4-6</span><span>"
+</span><span>      }
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre><p>搞定。小龙虾又能说话了。<h2 id=ji-zhu-yuan-li-wei-shi-yao-yi-tiao-ming-ling-jiu-gou-liao>技术原理：为什么一条命令就够了</h2><p>好奇心驱使我翻了一下 OpenClaw 的源码，看看 <code>login-github-copilot</code> 背后到底做了什么。<h3 id=device-flow-oauth>Device Flow OAuth</h3><p>这是 GitHub 为无浏览器设备设计的 OAuth 流程，整个过程不需要回调 URL：<pre style=background:#2b303b;color:#c0c5ce><code><span>OpenClaw                        GitHub                     浏览器
+</span><span>  │                               │                           │
+</span><span>  │─── POST /login/device/code ──►│                           │
+</span><span>  │◄── device_code + user_code ───│                           │
+</span><span>  │                               │                           │
+</span><span>  │  显示 "请访问 github.com/login/device 输入 223C-2FDC"     │
+</span><span>  │                               │         用户输入设备码 ──►│
+</span><span>  │─── POST /login/oauth/access_token（轮询）──►│             │
+</span><span>  │◄── authorization_pending ─────│                           │
+</span><span>  │─── POST（再次轮询）──────────►│                           │
+</span><span>  │◄── access_token ──────────────│                           │
+</span></code></pre><p>OpenClaw 用的 Client ID 是 <code>Iv1.b507a08c87ecfe98</code>，scope 是 <code>read:user</code>——这和 VS Code 里 GitHub Copilot 扩展用的 ID 非常接近。<h3 id=token-jiao-huan-guan-jian-yi-bu>Token 交换：关键一步</h3><p>拿到 GitHub access_token 后，还不能直接调 Copilot API。需要一步<strong>token 交换</strong>：<pre style=background:#2b303b;color:#c0c5ce><code><span>POST https://api.github.com/copilot_internal/v2/token
+</span><span>Authorization: token ghp_xxxxx
+</span></code></pre><p>返回的是一个短期 Copilot token（通常几十分钟有效期），包含在一串分号分隔的字符串里。OpenClaw 会：<ol><li>缓存到 <code>~/.openclaw/credentials/github-copilot.token.json</code><li>从 token 中提取 <code>proxy-ep</code> 字段，自动发现 API 端点<li>过期前 5 分钟自动刷新</ol><p>默认的 API 端点是 <code>https://api.individual.githubcopilot.com</code>，但 token 里的 <code>proxy-ep</code> 可能指向不同的区域代理。<p><strong>这就是 CopilotX 做的事情的简化版</strong>——CopilotX 本质上也是做同样的 token 交换，只不过它部署在服务器上，给多个客户端共享。而 OpenClaw 的原生实现把这一切搬到了本地。<h2 id=pei-zhi-gong-cun-liang-tao-fang-an-bing-xing-bu-bei>配置共存：两套方案并行不悖</h2><p>切换后我没有删掉 CopilotX 的配置。<code>openclaw.json</code> 里两套方案并存：<pre class=language-json data-lang=json style=background:#2b303b;color:#c0c5ce><code class=language-json data-lang=json><span>{
+</span><span>  "</span><span style=color:#a3be8c>models</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>providers</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>copilotx</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>baseUrl</span><span>": "</span><span style=color:#a3be8c>https://api.polly.wang</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>apiKey</span><span>": "</span><span style=color:#a3be8c>polly-copilotx-***</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>api</span><span>": "</span><span style=color:#a3be8c>anthropic-messages</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>models</span><span>": {
+</span><span>          "</span><span style=color:#a3be8c>claude-opus-4-6</span><span>": {},
+</span><span>          "</span><span style=color:#a3be8c>claude-sonnet-4-20250514</span><span>": {}
+</span><span>        }
+</span><span>      }
+</span><span>    }
+</span><span>  },
+</span><span>  "</span><span style=color:#a3be8c>auth</span><span>": {
+</span><span>    "</span><span style=color:#a3be8c>profiles</span><span>": {
+</span><span>      "</span><span style=color:#a3be8c>github-copilot:github</span><span>": {
+</span><span>        "</span><span style=color:#a3be8c>provider</span><span>": "</span><span style=color:#a3be8c>github-copilot</span><span>",
+</span><span>        "</span><span style=color:#a3be8c>mode</span><span>": "</span><span style=color:#a3be8c>token</span><span>"
+</span><span>      }
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre><p>这意味着：<ul><li><strong>Azure 恢复后</strong>：切回 <code>copilotx/claude-opus-4-6</code>，走自建代理<li><strong>Azure 挂了时</strong>：用 <code>github-copilot/claude-opus-4-6</code>，走原生认证<li><strong>随时切换</strong>：改一行 <code>primary</code> 字段就行</ul><p>两者的模型列表也不完全一样。github-copilot 默认提供 <code>gpt-4o</code>、<code>gpt-4.1</code> 等，但只要 Copilot 后端支持，加上 <code>claude-opus-4-6</code> 也能用。CopilotX 则完全走 Anthropic API 格式，对 Claude 系列的兼容性更好。<h2 id=jing-yan-zong-jie>经验总结</h2><ol><li><p><strong>不要把所有鸡蛋放在一个篮子里</strong>。自建代理再稳，也扛不住 Azure 额度用完。保留一条原生认证通道是必要的冗余。</p><li><p><strong>GitHub Copilot 订阅的隐藏价值</strong>。每月 150 美刀的订阅，不仅是 VS Code 里的代码补全——它实际上提供了 Claude、GPT-4o、Gemini 等一众模型的 API 访问权限。OpenClaw 的原生认证让这个价值释放得更彻底。</p><li><p><strong>copilot-proxy ≠ github-copilot</strong>。前者是 OpenClaw 的一个插件，需要本地跑 VS Code 扩展做代理；后者是内置的 Device Flow 认证。命令完全不同，别搞混了。</p><li><p><strong>CLI 命令的设计也是学问</strong>。<code>login --provider github-copilot</code> 报错，<code>login-github-copilot</code> 才对——因为 Device Flow 的交互流程完全不同于普通的 API Key 认证，设计成独立子命令是合理的。只是文档可以更显眼一点。</p></ol><h2 id=ban-ben-xian>版本线</h2><table><thead><tr><th>日期<th>事件<th>博文<tbody><tr><td>2026-02-11<td>OpenClaw + CopilotX 首次联通<td><a href=/making-openclaw-run-with-copilotx>让小龙虾跑起来</a><tr><td>2026-02-18<td>CopilotX v2.3.2 错误透传修复<td><a href=/copilotx-v232-error-passthrough>当 400 变成了「你猜怎么了」</a><tr><td>2026-02-26<td>Azure VM 停服，切换原生 GitHub Copilot 认证<td>本文</table></div><div class=navigation></div></div><div id=giscus-container><h2>Comments</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
