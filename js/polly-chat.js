@@ -384,10 +384,10 @@ class PollyChat {
         const assistantBubble = this.appendMessage('assistant', '');
         
         try {
-            await this.streamResponse(assistantBubble);
+            await this.streamResponseWithRetry(assistantBubble);
         } catch (error) {
             console.error('Stream error:', error);
-            assistantBubble.textContent = `Oops, something went wrong: ${error.message}`;
+            this.showFriendlyError(assistantBubble, error);
         } finally {
             this.input.disabled = false;
             this.sendBtn.disabled = false;
@@ -414,6 +414,122 @@ class PollyChat {
         return `\n\n## Current Time\nVisitor's local time: ${period}, ${hour}:${min}, ${day}. Adjust tone and topics accordingly.`;
     }
     
+    // ========== 重试 & 错误处理 ==========
+
+    /**
+     * 判断 HTTP 状态码是否可重试（仅临时性故障）
+     */
+    isRetryableStatus(status) {
+        // 502/503/504 = upstream 临时故障，值得重试
+        // 429 = rate limit, 稍等即可
+        // 522/524 = 服务器完全不可达（如 Azure VM 停机），不重试
+        return [429, 502, 503, 504].includes(status);
+    }
+
+    /**
+     * 带自动重试的流式响应
+     * 仅对临时性错误 (502/503/504/429) 重试 1 次
+     * 522/524 等服务器停机直接报错，不浪费用户等待时间
+     */
+    async streamResponseWithRetry(bubble, maxRetries = 1) {
+        let lastError;
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                if (attempt > 0) {
+                    console.log(`🔄 Retry attempt ${attempt}/${maxRetries}...`);
+                    bubble.innerHTML = `<span class="chat-retry-hint">⏳ Retrying...</span>`;
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+                return await this.streamResponse(bubble);
+            } catch (error) {
+                lastError = error;
+                const status = error._httpStatus || 0;
+                if (!this.isRetryableStatus(status) || attempt === maxRetries) {
+                    throw error;
+                }
+            }
+        }
+        throw lastError;
+    }
+
+    /**
+     * 显示友好的错误消息（非原始 HTTP 状态码）
+     */
+    showFriendlyError(bubble, error) {
+        const status = error._httpStatus || 0;
+        let icon, title, detail, showRetry = true;
+
+        if (status === 522 || status === 524) {
+            // 服务器不可达 — Azure VM 停机
+            icon = '😴';
+            title = 'Polly is sleeping...';
+            detail = 'My server is taking a nap (Azure subscription limit reached). It usually wakes up at the start of each month. Please try again later!';
+        } else if (status === 502 || status === 503 || status === 504) {
+            icon = '🔧';
+            title = 'Server is temporarily unavailable';
+            detail = 'The backend service is restarting or under maintenance. Please try again in a moment.';
+        } else if (status === 429) {
+            icon = '⏳';
+            title = 'Too many requests';
+            detail = 'Rate limit reached. Please wait a few seconds and try again.';
+        } else if (status === 401 || status === 403) {
+            icon = '🔒';
+            title = 'Authentication error';
+            detail = 'API key issue. This is a bug — Polly will fix it soon!';
+            showRetry = false;
+        } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+            icon = '📡';
+            title = 'Network error';
+            detail = 'Please check your internet connection and try again.';
+        } else {
+            icon = '😅';
+            title = 'Something went wrong';
+            detail = error.message || 'Unknown error';
+        }
+
+        bubble.innerHTML = `
+            <div class="chat-error">
+                <div class="chat-error-icon">${icon}</div>
+                <div class="chat-error-title">${title}</div>
+                <div class="chat-error-detail">${detail}</div>
+                ${showRetry ? '<button class="chat-error-retry" onclick="window.pollyChat.retryLast()"><i class="fas fa-redo-alt"></i> Retry</button>' : ''}
+            </div>
+        `;
+        this.scrollToBottom();
+    }
+
+    /**
+     * 重试最后一条消息（点击 Retry 按钮触发）
+     */
+    async retryLast() {
+        if (this.isStreaming) return;
+        // 移除最后一条 assistant 消息（错误消息）
+        const lastBubble = this.chatBox.querySelector('.message-container:last-child .polly-message');
+        if (!lastBubble) return;
+
+        // 移除消息历史中最后一条 assistant（如果有的话）
+        if (this.messages.length && this.messages[this.messages.length - 1].role === 'assistant') {
+            this.messages.pop();
+        }
+
+        this.isStreaming = true;
+        this.input.disabled = true;
+        this.sendBtn.disabled = true;
+        lastBubble.innerHTML = '';
+
+        try {
+            await this.streamResponseWithRetry(lastBubble);
+        } catch (error) {
+            console.error('Retry failed:', error);
+            this.showFriendlyError(lastBubble, error);
+        } finally {
+            this.input.disabled = false;
+            this.sendBtn.disabled = false;
+            this.isStreaming = false;
+            this.input.focus();
+        }
+    }
+
     async streamResponse(bubble) {
         const body = {
             model: this.model,
@@ -423,18 +539,37 @@ class PollyChat {
             stream: true
         };
         
-        const response = await fetch(`${this.apiUrl}/v1/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'text/event-stream'
-            },
-            body: JSON.stringify(body)
-        });
+        // 快速超时：5 秒内拿不到响应就中断（Cloudflare 522 通常要等 10-15 秒）
+        const controller = new AbortController();
+        const connectTimeout = setTimeout(() => controller.abort(), 5000);
+        
+        let response;
+        try {
+            response = await fetch(`${this.apiUrl}/v1/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/event-stream'
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal
+            });
+        } catch (e) {
+            clearTimeout(connectTimeout);
+            if (e.name === 'AbortError') {
+                const err = new Error('Server unreachable (connection timeout)');
+                err._httpStatus = 522; // 视为 522
+                throw err;
+            }
+            throw e;
+        }
+        clearTimeout(connectTimeout);
         
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            throw new Error(error.error?.message || `HTTP ${response.status}`);
+            const err = new Error(error.error?.message || `HTTP ${response.status}`);
+            err._httpStatus = response.status;
+            throw err;
         }
         
         const reader = response.body.getReader();

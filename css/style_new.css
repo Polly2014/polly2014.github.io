@@ -957,6 +957,55 @@ table td {
     align-self: flex-start;
 }
 
+/* ===== Chat Error & Retry States ===== */
+.chat-error {
+    text-align: center;
+    padding: 12px 16px;
+}
+
+.chat-error-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+}
+
+.chat-error-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: var(--text-color, #333);
+}
+
+.chat-error-detail {
+    font-size: 0.82rem;
+    color: #888;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.chat-error-retry {
+    display: inline-block;
+    padding: 6px 18px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-color, #555);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chat-error-retry:hover {
+    background: var(--accent-color, #4a90d9);
+    color: #fff;
+    border-color: var(--accent-color, #4a90d9);
+}
+
+.chat-retry-hint {
+    color: #999;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
 .chat-avatar {
     width: 40px;
     height: 40px;
