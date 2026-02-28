@@ -104,6 +104,14 @@ class PollyChat {
         // 快捷 chip 点击（3 种类型）
         document.querySelectorAll('.welcome-chips .chip').forEach(chip => {
             chip.addEventListener('click', () => {
+                // GA4: 追踪 chip 点击
+                if (typeof gtag === 'function') {
+                    gtag('event', 'chat_chip_click', {
+                        chip_label: chip.textContent.trim(),
+                        chip_action: chip.dataset.action || 'send_message'
+                    });
+                }
+
                 // 功能型：发张图试试 → 弹文件选择器
                 if (chip.dataset.action === 'upload-image') {
                     const fileInput = document.createElement('input');
@@ -376,6 +384,25 @@ class PollyChat {
         
         // D1 持久化: 同步用户消息 (fire-and-forget)
         this.syncMessage('user', userMessage || `[${imageCount} image${imageCount > 1 ? 's' : ''}]`, imageCount);
+        
+        // GA4: 追踪聊天事件
+        if (typeof gtag === 'function') {
+            const messageIndex = this.messages.length;
+            // 首条消息 = chat_start
+            if (messageIndex === 1) {
+                gtag('event', 'chat_start', {
+                    message_type: imageCount > 0 ? 'image' : 'text',
+                    first_message: userMessage?.slice(0, 100) || '[image]'
+                });
+            }
+            // 每条消息都追踪
+            gtag('event', 'chat_message', {
+                message_index: messageIndex,
+                message_type: imageCount > 0 ? 'image' : 'text',
+                has_images: imageCount > 0,
+                image_count: imageCount
+            });
+        }
         
         // 显示 New Chat 按钮
         this.showNewChatBtn();
