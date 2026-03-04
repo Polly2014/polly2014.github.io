@@ -5,8 +5,95 @@
     <link href="https://polly.wang/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-27T00:00:00+00:00</updated>
+    <updated>2026-03-04T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>让 Jarvis 学会遗忘：120 行代码解决 Context Window 崩溃</title>
+        <published>2026-03-04T00:00:00+00:00</published>
+        <updated>2026-03-04T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/jarvis-phase45-context-window/" type="text/html"/>
+        <id>https://polly.wang/jarvis-phase45-context-window/</id>
+        
+        <content type="html">&lt;p&gt;Jarvis 聊到第 20 轮就崩了。&lt;&#x2F;p&gt;
+&lt;p&gt;不是偶尔崩——是&lt;strong&gt;必然崩&lt;&#x2F;strong&gt;。越活跃的用户越快触发，因为根因藏在一行看起来人畜无害的代码里：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;request_messages = [system_msg] + messages[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;20&lt;&#x2F;span&gt;&lt;span&gt;:]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;取最后 20 条消息。就这么简单。问题是：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;20 条消息 ≠ 安全的 token 数&lt;&#x2F;strong&gt; — 如果某个 tool call 返回了一大坨文件内容，20 条可能就爆了上下文窗口&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前面的对话直接丢弃&lt;&#x2F;strong&gt; — 没有摘要，没有压缩，聊过的就没了&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;API 报 400 → 直接崩溃&lt;&#x2F;strong&gt; — 没有 fallback，用户看到一个红色 RuntimeError&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Claude、GitHub Copilot 这些产品遇到长对话时会自动压缩前文。Jarvis 也该有这个能力。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ceng-fang-yu&quot;&gt;三层防御&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾看完代码后，画了个分层策略：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Layer 1: Token-aware 窗口    — 按 token 预算从后往前填充
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 2: Compaction（压缩）   — 超限时 LLM 摘要早期对话
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 3: Graceful fallback   — API 报 context 错误时自动重试
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三层互不依赖——任何一层单独都能改善现状，叠加起来就是完整的防御。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;layer-1-bu-zai-shu-xiao-xi-shu-token&quot;&gt;Layer 1: 不再数消息，数 token&lt;&#x2F;h3&gt;
+&lt;p&gt;替代 &lt;code&gt;messages[-20:]&lt;&#x2F;code&gt;，改成按 token 预算从后往前填充：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_fit_messages_to_window&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;max_tokens&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    budget = max_tokens - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;RESPONSE_RESERVE &lt;&#x2F;span&gt;&lt;span&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SYSTEM_RESERVE
+&lt;&#x2F;span&gt;&lt;span&gt;    fitted = []
+&lt;&#x2F;span&gt;&lt;span&gt;    used = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;msg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;reversed&lt;&#x2F;span&gt;&lt;span&gt;(messages):
+&lt;&#x2F;span&gt;&lt;span&gt;        msg_tokens = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_estimate_tokens&lt;&#x2F;span&gt;&lt;span&gt;(msg.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&amp;quot;))
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;used + msg_tokens &amp;gt; budget:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break
+&lt;&#x2F;span&gt;&lt;span&gt;        fitted.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;insert&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, msg)
+&lt;&#x2F;span&gt;&lt;span&gt;        used += msg_tokens
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;fitted
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;核心区别：以前是&amp;quot;最多 20 条&amp;quot;，现在是&amp;quot;最多 N 个 token&amp;quot;。一条消息如果很长（比如 tool 返回了一整个文件），它占的 token 多，能装的消息就少。反过来，如果都是短消息，可以装远超 20 条。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;layer-2-ya-suo-er-fei-diu-qi&quot;&gt;Layer 2: 压缩而非丢弃&lt;&#x2F;h3&gt;
+&lt;p&gt;当消息总 token 超过 70% 限制时，主动触发压缩：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_compact_messages&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;keep_recent&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    old = messages[:-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;]    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 需要压缩的部分
+&lt;&#x2F;span&gt;&lt;span&gt;    recent = messages[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;:]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 保留最近 3 轮原始对话
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    summary = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_compact_summarize&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# LLM 生成摘要
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;[{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[对话摘要] &lt;&#x2F;span&gt;&lt;span&gt;{summary}&amp;quot;}] + recent
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;关键设计&lt;&#x2F;strong&gt;：摘要调用用的是 &lt;code&gt;_compact_summarize&lt;&#x2F;code&gt;，一个&lt;strong&gt;独立的轻量 LLM 调用&lt;&#x2F;strong&gt;，不走 &lt;code&gt;chat_with_tools&lt;&#x2F;code&gt;。为什么？因为 &lt;code&gt;chat_with_tools&lt;&#x2F;code&gt; 本身可能触发压缩——如果摘要请求也走同一个通道，就会无限递归。小龙虾在 Review 时抓到了这个隐患。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;layer-3-bei-dong-dou-di&quot;&gt;Layer 3: 被动兜底&lt;&#x2F;h3&gt;
+&lt;p&gt;即使前两层都没阻止 context 溢出（比如估算误差），API 返回 400 时也能优雅处理：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;response.status_code == &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;400 &lt;&#x2F;span&gt;&lt;span&gt;and &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; in error_body.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lower&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    messages[:] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_compact_messages&lt;&#x2F;span&gt;&lt;span&gt;(messages)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 压缩后重试当前 round
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不崩溃，不丢消息，压缩后重试。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cjk-token-gu-suan&quot;&gt;CJK Token 估算&lt;&#x2F;h2&gt;
+&lt;p&gt;一个有趣的细节：中文和英文的 token 密度完全不同。&lt;code&gt;len(text) &#x2F;&#x2F; 2&lt;&#x2F;code&gt; 对英文偏保守但对中文偏激进——中文一个字 &lt;code&gt;len()&lt;&#x2F;code&gt; 返回 1，除以 2 得 0.5，但实际中文每字约 1-2 个 token。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾建议分开算：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_estimate_tokens&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    cjk = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;sum&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;text &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\u4e00&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;lt;= c &amp;lt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\u9fff&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;    ascii_chars = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(text) - cjk
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;cjk + ascii_chars &#x2F;&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 中文 1:1，英文 4:1
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不需要 tiktoken 那么精确——估算的目的是&lt;strong&gt;比 messages[-20:] 好&lt;&#x2F;strong&gt;，不是完美。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gai-dong-fan-wei&quot;&gt;改动范围&lt;&#x2F;h2&gt;
+&lt;p&gt;只改了两个文件：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文件&lt;&#x2F;th&gt;&lt;th&gt;改动&lt;&#x2F;th&gt;&lt;th&gt;行数&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;src&#x2F;llm&#x2F;__init__.py&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;5 个新方法 + &lt;code&gt;chat_with_tools&lt;&#x2F;code&gt; 集成三层防御&lt;&#x2F;td&gt;&lt;td&gt;+120 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;src&#x2F;cli&#x2F;chat.py&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;on_compaction&lt;&#x2F;code&gt; 回调 + 📦 压缩提示&lt;&#x2F;td&gt;&lt;td&gt;+6 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;压缩发生时，用户会看到：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;  📦 对话已压缩，早期内容已摘要
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;就像 Claude 的&amp;quot;context compressed&amp;quot;提示，让用户知道发生了什么。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ce-shi&quot;&gt;测试&lt;&#x2F;h2&gt;
+&lt;p&gt;跑了一遍 Phase 4 的 9 个测试，全部通过，无回归。Phase 4.5 的定位跟 Phase 2.5 一样——&lt;strong&gt;基础设施修复&lt;&#x2F;strong&gt;，改动小但影响大。不加新功能，而是让现有功能在边界条件下不会崩溃。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-pai-zai-phase-5-zhi-qian&quot;&gt;为什么排在 Phase 5 之前&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 5（Skill Evolution Observer）会让 daemon 的 think loop 产生更多 LLM 调用——如果 context window 管理没有搞定，Phase 5 的额外调用量只会让崩溃更频繁。所以 4.5 是 5 的&lt;strong&gt;前置基础设施&lt;&#x2F;strong&gt;，必须先做。&lt;&#x2F;p&gt;
+&lt;p&gt;从 &lt;code&gt;messages[-20:]&lt;&#x2F;code&gt; 到三层防御，Jarvis 终于学会了一件事：&lt;strong&gt;有时候，优雅地遗忘比拼命记住更重要。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>拨云见日：18 个实验、多轮迭代、53% 压缩——一篇论文的三方协作之路</title>
         <published>2026-02-27T00:00:00+00:00</published>
