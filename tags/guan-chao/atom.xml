@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 观潮</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/guan-chao/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-11T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/guan-chao/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮诞生记：两个半小时的 AI 炒股引擎，不止「观望」</title>
+        <published>2026-03-11T00:00:00+00:00</published>
+        <updated>2026-03-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-ai-stock-engine/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-ai-stock-engine/</id>
+        
+        <content type="html">&lt;p&gt;朋友发来一个链接：&amp;quot;看看我最近搞的东西。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;打开一看——&lt;strong&gt;Tickick&lt;&#x2F;strong&gt;，一个 AI 多模型股票分析工具。暗色主题，卡片化布局，DeepSeek &#x2F; Qwen &#x2F; Kimi 三个模型并行出信号，量价分层展示。做得挺有想法的。&lt;&#x2F;p&gt;
+&lt;p&gt;我拿威海广泰（002111）跑了一下。三个模型，6 轮分析，结论都一样：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;观望。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;技术面看，确实是中性。但&amp;quot;观望&amp;quot;告诉了我什么？我今天早上也知道&amp;quot;观望&amp;quot;，问题是——&lt;strong&gt;观望的同时，主力资金在流出吗？大盘处于什么阶段？如果明天放量突破我该怎么办？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Tickick 回答不了这些。不是因为它做得不好——相反，多模型共识的思路很棒——而是它只看了技术面一个维度。&lt;&#x2F;p&gt;
+&lt;p&gt;我关上页面，跟我的 AI 搭档说：&lt;strong&gt;&amp;quot;我们自己搞一个更猛的。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zuo-yi-biao-pan-zuo-tou-yan-da-dang&quot;&gt;不做仪表盘，做投研搭档&lt;&#x2F;h2&gt;
+&lt;p&gt;在动手之前，我先想清楚了三个问题。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一，别人的 AI 炒股工具在做什么？&lt;&#x2F;strong&gt; 基本都是：拿到 K 线数据 → 扔给 LLM → 输出买&#x2F;卖&#x2F;观望。本质上是&amp;quot;给 ChatGPT 喂数据让它说一段话&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二，为什么结果总是&amp;quot;观望&amp;quot;？&lt;&#x2F;strong&gt; 因为只看技术面，多空信号经常对冲归零。MA5 涨了加分，MACD 绿柱扣分，最后约等于零——&amp;quot;中性观望&amp;quot;。就像你同时问了三个医生，一个说没事一个说有事一个说再看看，你能得到什么结论？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第三，散户真正需要什么？&lt;&#x2F;strong&gt; 不是一堆指标表格，而是——&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;威海广泰技术面偏多，但主力资金在流出，可能是诱多。等回调到 MA5 再介入。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;一段像分析师聊天一样的话，有立场、有理由、有矛盾提示、有操作建议。&lt;&#x2F;p&gt;
+&lt;p&gt;基于这些思考，我确定了观潮的三个核心差异化：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;mcp-native-jia-gou&quot;&gt;MCP-Native 架构&lt;&#x2F;h3&gt;
+&lt;p&gt;别人做 Web App，我做 MCP Server。什么意思？装好之后，我在 Cursor 或 Claude 里直接说&amp;quot;帮我分析茅台&amp;quot;，引擎自动调用，30 秒出完整报告。&lt;strong&gt;不需要开浏览器，不需要登录，不需要等 loading 转圈。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;而且 MCP 是协议，引擎是引擎——以后要加 Web UI 就套一层皮，要接微信推送就加一个 channel。引擎只写一次。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shi-chang-ti-zhi-gan-zhi&quot;&gt;市场体制感知&lt;&#x2F;h3&gt;
+&lt;p&gt;这是 Tickick 缺的最关键一环。&lt;strong&gt;同一个技术形态在不同市场环境下含义完全不同。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;牛市里的回调是买入机会，熊市里的反弹可能是诱多陷阱。横盘市里看什么都是&amp;quot;观望&amp;quot;——不是因为分析不准，而是市场本来就没方向。&lt;&#x2F;p&gt;
+&lt;p&gt;观潮会先判断大盘处于 6 种体制中的哪一种（🐂牛市 &#x2F; 🐻熊市 &#x2F; 🦀横盘 &#x2F; 🌊高波动 &#x2F; 📈震荡偏强 &#x2F; 📉震荡偏弱），然后&lt;strong&gt;调整个股信号的解读&lt;&#x2F;strong&gt;。横盘市里评分 +5，体制调整后还是 +5，给&amp;quot;观望&amp;quot;；牛市里同样的 +5，调整后可能变成 +15，给&amp;quot;偏多&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chong-tu-jian-ce&quot;&gt;冲突检测&lt;&#x2F;h3&gt;
+&lt;p&gt;这是我最得意的设计。&lt;&#x2F;p&gt;
+&lt;p&gt;技术面看多但主力资金在流出？→ ⚠️ &lt;strong&gt;可能是诱多，等资金回流确认再进场。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;个股强势但大盘偏弱？→ 📉 &lt;strong&gt;逆势走强需关注持续性，轻仓试探。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;放量下跌？→ 🚨 &lt;strong&gt;主力出逃信号，别抄底。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;缩量上涨？→ 📊 &lt;strong&gt;上行动能不足，可能是假突破。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;矛盾信号才是真正有价值的洞察&lt;&#x2F;strong&gt;。&amp;quot;看多&amp;quot;谁都能说，&amp;quot;看多但小心——主力在出货&amp;quot;这种话才值钱。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-ge-ban-xiao-shi-kai-fa-shi-lu&quot;&gt;两个半小时开发实录&lt;&#x2F;h2&gt;
+&lt;p&gt;晚上 9 点开始动手。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ji-zhu-xuan-xing-5-fen-zhong&quot;&gt;技术选型（5 分钟）&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;MCP 框架&lt;&#x2F;strong&gt;：FastMCP（Python），和我 Master-Translator 项目同款，驾轻就熟&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;数据源&lt;&#x2F;strong&gt;：AKShare（开源 Python 库），免费、零认证、覆盖 A 股行情&#x2F;基本面&#x2F;资金流&#x2F;龙虎榜&#x2F;北向资金&#x2F;新闻&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;技术指标&lt;&#x2F;strong&gt;：全手写（MA&#x2F;RSI&#x2F;MACD&#x2F;KDJ&#x2F;BOLL&#x2F;ATR&#x2F;OBV），不依赖 ta-lib 的 C 库&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;jia-gou-she-ji-10-fen-zhong&quot;&gt;架构设计（10 分钟）&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;src&#x2F;tidewatch&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── server.py      ← MCP 入口，7 个工具定义
+&lt;&#x2F;span&gt;&lt;span&gt;├── data.py        ← AKShare 数据获取层
+&lt;&#x2F;span&gt;&lt;span&gt;├── technical.py   ← 技术分析引擎
+&lt;&#x2F;span&gt;&lt;span&gt;├── regime.py      ← 市场体制识别
+&lt;&#x2F;span&gt;&lt;span&gt;└── narrative.py   ← 叙事式报告生成
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;职责清晰，每个模块做且只做一件事。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;he-xin-shi-xian-90-fen-zhong&quot;&gt;核心实现（90 分钟）&lt;&#x2F;h3&gt;
+&lt;p&gt;最费时间的是&lt;strong&gt;技术分析引擎&lt;&#x2F;strong&gt;（453 行）。8 个评分维度，每个都要仔细调权重：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;权重范围&lt;&#x2F;th&gt;&lt;th&gt;评什么&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;均线系统&lt;&#x2F;td&gt;&lt;td&gt;±25&lt;&#x2F;td&gt;&lt;td&gt;多头&#x2F;空头排列，MA5 斜率&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;均线位置&lt;&#x2F;td&gt;&lt;td&gt;±16&lt;&#x2F;td&gt;&lt;td&gt;价格相对 MA5&#x2F;MA20 的偏离&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;RSI&lt;&#x2F;td&gt;&lt;td&gt;±13&lt;&#x2F;td&gt;&lt;td&gt;超买超卖 + 方向&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MACD&lt;&#x2F;td&gt;&lt;td&gt;±19&lt;&#x2F;td&gt;&lt;td&gt;红绿柱 + 金叉&#x2F;死叉&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;KDJ&lt;&#x2F;td&gt;&lt;td&gt;±5&lt;&#x2F;td&gt;&lt;td&gt;J 值极端位&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;量能&lt;&#x2F;td&gt;&lt;td&gt;±15&lt;&#x2F;td&gt;&lt;td&gt;OBV 斜率 + 量比方向&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;布林带&lt;&#x2F;td&gt;&lt;td&gt;±8&lt;&#x2F;td&gt;&lt;td&gt;价格在通道中的位置&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;K线形态&lt;&#x2F;td&gt;&lt;td&gt;±12&lt;&#x2F;td&gt;&lt;td&gt;锤子线、射击之星、三连阳等&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;第一版把阈值设成了 ±30 才给信号，结果……和 Tickick 一样，永远&amp;quot;观望&amp;quot;。降到 ±8 才有了&amp;quot;偏多&#x2F;偏空&amp;quot;的立场，±25 给&amp;quot;看多&#x2F;看空&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训：评分体系调参比写指标更重要。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shou-xiu-ce-shi-30-fen-zhong&quot;&gt;首秀测试（30 分钟）&lt;&#x2F;h3&gt;
+&lt;p&gt;配置到 VS Code MCP → 重启 → 输入&amp;quot;帮我分析 002111&amp;quot;——&lt;&#x2F;p&gt;
+&lt;p&gt;第一次卡住了。VS Code 注入了代理环境变量，AKShare 的请求全部超时。加了 &lt;code&gt;NO_PROXY=*&lt;&#x2F;code&gt; 解决。&lt;&#x2F;p&gt;
+&lt;p&gt;第二次出了 &lt;code&gt;outputSchema validation error&lt;&#x2F;code&gt;。FastMCP 2.x 会从 &lt;code&gt;dict[str, Any]&lt;&#x2F;code&gt; 类型注解自动生成 schema，但实际返回的嵌套结构通不过校验。删掉返回类型注解解决。&lt;&#x2F;p&gt;
+&lt;p&gt;第三次——&lt;strong&gt;跑通了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;liang-lun-code-review&quot;&gt;两轮 Code Review&lt;&#x2F;h3&gt;
+&lt;p&gt;开发完让搭档做了两轮 Review（7.5 → 8.5 分），修了这些：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;问题&lt;&#x2F;th&gt;&lt;th&gt;修复&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;包结构 &lt;code&gt;src&#x2F;&lt;&#x2F;code&gt; 太扁平&lt;&#x2F;td&gt;&lt;td&gt;→ &lt;code&gt;src&#x2F;tidewatch&#x2F;&lt;&#x2F;code&gt;，&lt;code&gt;import tidewatch.xxx&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;未用的 &lt;code&gt;ta&lt;&#x2F;code&gt; 库依赖&lt;&#x2F;td&gt;&lt;td&gt;删除&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;全市场数据每次都拉&lt;&#x2F;td&gt;&lt;td&gt;加 30s 缓存 + 60s 失败冷却&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;没有叙事式报告&lt;&#x2F;td&gt;&lt;td&gt;新增 &lt;code&gt;narrative.py&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;资金单位混乱&lt;&#x2F;td&gt;&lt;td&gt;元→万&#x2F;亿智能转换&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;shi-zhan-xiao-guo&quot;&gt;实战效果&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;wei-hai-yan-tai-002111-tong-yi-zhi-piao-dui-bi&quot;&gt;威海广泰 002111（同一只票对比）&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Tickick 的结果&lt;&#x2F;strong&gt;：观望。强度 45-60。6 轮全部观望。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;观潮的结果&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;002111 当前 10.86，近 5 日小幅涨了 3.1%，处于 20 日区间的 48% 位置。&lt;&#x2F;p&gt;
+&lt;p&gt;多空在博弈——利多方面有 MA5 上行(+1.4%)、站上 MA5(+0.6%)、OBV 上升(资金流入)；但要注意 MACD 绿柱放大。综合评分 +12，多头占优。&lt;&#x2F;p&gt;
+&lt;p&gt;大盘震荡偏强（可轻仓参与强势个股）。主力资金净流出 205 万，和技术面方向矛盾。&lt;&#x2F;p&gt;
+&lt;p&gt;⚠️ 技术面偏多但主力资金在流出，可能是诱多。&lt;&#x2F;p&gt;
+&lt;p&gt;整体偏积极，但信号还不够强，建议轻仓试探或等回调到 MA5(10.79) 再介入。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;区别在哪？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;不再是无差别的&amp;quot;观望&amp;quot;，给出了&amp;quot;偏多&amp;quot;的立场（评分 +17）&lt;&#x2F;li&gt;
+&lt;li&gt;识别出了冲突：技术面向上但主力在出货&lt;&#x2F;li&gt;
+&lt;li&gt;给了具体操作建议：等回调到 10.79 再介入&lt;&#x2F;li&gt;
+&lt;li&gt;加入了大盘体制判断：当前震荡偏强&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;gui-zhou-mao-tai-600519&quot;&gt;贵州茅台 600519&lt;&#x2F;h3&gt;
+&lt;p&gt;观潮给出了&lt;strong&gt;看空&lt;&#x2F;strong&gt;（评分 -36，强空头）：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;RSI 19.3 极度超卖，近 20 日位置仅 9.1%，MACD 绿柱 -21.5 深度空头。主力资金净流出 2.67 亿，与技术面共振向下。&lt;&#x2F;p&gt;
+&lt;p&gt;下方支撑看布林下轨 1359.97。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;同时抓到消息面：茅台在持续回购（累计 8.01 亿），但短期技术面和资金面都指向下行。&lt;strong&gt;即使有回购护盘，观潮也说了真话——别接飞刀。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ke-zhi-de-yi-zhu&quot;&gt;克制的艺术&lt;&#x2F;h2&gt;
+&lt;p&gt;做完 Phase 1 之后，搭档写了一份终极畅想：早上推送持仓预警、盘中实时监控、产业链联动分析、多端推送（微信&#x2F;Telegram&#x2F;Siri）、回测引擎、Web Dashboard……&lt;&#x2F;p&gt;
+&lt;p&gt;听起来超酷。但我说了一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;先把引擎做到你自己每天真的用再说触达。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;畅想&lt;&#x2F;th&gt;&lt;th&gt;我的判断&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;多端推送&lt;&#x2F;td&gt;&lt;td&gt;先让自己每天用 → 后面做&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;全市场每 5 分钟扫描&lt;&#x2F;td&gt;&lt;td&gt;太重，先做自选股监控&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;回测引擎&lt;&#x2F;td&gt;&lt;td&gt;先积累真实信号数据&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Web Dashboard&lt;&#x2F;td&gt;&lt;td&gt;MCP 里看更快&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Phase 2 只做三件事：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;信号追踪表&lt;&#x2F;strong&gt;（SQLite）—— 每次出信号自动记录，追踪胜率。这是时间的朋友，越积累越值钱&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;行为护栏 v1&lt;&#x2F;strong&gt; —— 追高检测、集中度预警、连续亏损检测。最好的交易系统不是告诉你买什么，而是&lt;strong&gt;阻止你犯蠢&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;scan_market&lt;&#x2F;strong&gt; —— 全市场扫描 Top&#x2F;Bottom 10 强弱股&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;zui-hou&quot;&gt;最后&lt;&#x2F;h2&gt;
+&lt;p&gt;1618 行代码，5 个模块，7 个 MCP 工具。从看到朋友的作品到自己的引擎跑通，两个半小时。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是对朋友项目的否定——Tickick 的多模型共识思路很好，UI 也做得专业。只是看完之后我想：&amp;quot;如果在技术面的基础上，再加上资金面、市场体制、冲突检测呢？如果不只是给信号，而是像一个分析师跟你聊天呢？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;观潮就是这个想法的产物。&lt;&#x2F;p&gt;
+&lt;p&gt;开源在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;TideWatch&quot;&gt;GitHub: Polly2014&#x2F;TideWatch&lt;&#x2F;a&gt;。如果你也玩 A 股，装个 MCP Server 试试——在 Claude 里说一句&amp;quot;帮我分析 600519&amp;quot;，体验一下被 AI 怼&amp;quot;别接飞刀&amp;quot;的感觉。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
