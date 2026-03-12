@@ -5,8 +5,149 @@
     <link href="https://polly.wang/tags/mcp/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-11T00:00:00+00:00</updated>
+    <updated>2026-03-12T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/mcp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮进化记：24 commits，从本地引擎到云端投研搭档</title>
+        <published>2026-03-12T00:00:00+00:00</published>
+        <updated>2026-03-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-cloud-deployment/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-cloud-deployment/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;观潮诞生记&lt;&#x2F;a&gt;——两个半小时搭了个 MCP-Native 的 AI 投研引擎。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇文章的结尾我说了，Phase 2 只做三件事：信号追踪、行为护栏、全市场扫描。实际上，第二天我做了远不止三件事。&lt;&#x2F;p&gt;
+&lt;p&gt;24 个 commit，2495 行代码，从本地的 stdio 工具变成了 &lt;code&gt;https:&#x2F;&#x2F;tidewatch.polly.wang&#x2F;mcp&lt;&#x2F;code&gt; 上的云端服务。这篇记录一下这个进化过程。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;phase-2-rang-yin-qing-you-ji-yi-you-di-xian&quot;&gt;Phase 2：让引擎有记忆、有底线&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;xin-hao-zhui-zong-shi-jian-de-peng-you&quot;&gt;信号追踪：时间的朋友&lt;&#x2F;h3&gt;
+&lt;p&gt;第一版观潮每次分析完就忘。分析了 14 只票，哪些涨了哪些跌了，全靠我自己记。&lt;&#x2F;p&gt;
+&lt;p&gt;信号追踪系统用 SQLite 解决了这个问题。每次 &lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 出结论，自动记一条：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;#14 002111 看空(-32) @ 10.59  2026-03-12
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;5、10、20 日后自动回填实际走势，算胜率。这是时间的朋友——分析 100 只票之后，才能知道引擎到底准不准。&lt;&#x2F;p&gt;
+&lt;p&gt;为了防止焦虑式重复分析（同一只票 5 分钟内看 3 次），加了 &lt;strong&gt;5 分钟去重窗口&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;xing-wei-hu-lan-zu-zhi-ni-fan-chun&quot;&gt;行为护栏：阻止你犯蠢&lt;&#x2F;h3&gt;
+&lt;p&gt;最好的交易系统不是告诉你买什么，而是&lt;strong&gt;阻止你犯蠢&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;三条规则：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;护栏&lt;&#x2F;th&gt;&lt;th&gt;触发条件&lt;&#x2F;th&gt;&lt;th&gt;提醒&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;追高检测&lt;&#x2F;td&gt;&lt;td&gt;20 日新高 + 涨幅 &amp;gt; 5%&lt;&#x2F;td&gt;&lt;td&gt;⚠️ &amp;quot;追高风险极高&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;分析频次&lt;&#x2F;td&gt;&lt;td&gt;当天分析 &amp;gt; 10 只票&lt;&#x2F;td&gt;&lt;td&gt;📊 &amp;quot;是不是有点焦虑？聚焦 2-3 只最有把握的&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;连续看空&lt;&#x2F;td&gt;&lt;td&gt;连续 3 次以上看空&lt;&#x2F;td&gt;&lt;td&gt;🔴 &amp;quot;要么市场真的不好，要么心态不对&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;那天下午我连着分析了 13 只票，护栏真的弹出了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;📊 今天已经分析了 13 只票（002402, 512400, 601127, 601899, 300750...），是不是有点焦虑？分析太多反而犹豫不决。聚焦 2-3 只最有把握的，其他的放一放。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;被自己的工具教育了一把。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;phase-3-rang-yin-qing-hui-shuo-hua&quot;&gt;Phase 3：让引擎会说话&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;llm-xu-shi-run-se&quot;&gt;LLM 叙事润色&lt;&#x2F;h3&gt;
+&lt;p&gt;Phase 1 的报告是模板拼接的——虽然信息密度高，但读起来像机器吐出来的表格：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;评分+17，偏多。均线上行。RSI 中性。主力净流入 466 万。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;加了 LLM 润色之后（通过 CopilotX API 调 Claude Sonnet 4），同样的数据变成了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;002111 现在 10.59，这票有点纠结啊。技术面确实不太好看，跌破了 5 日线，离 20 日线也有点远，MACD 绿柱还在放大。但是！主力资金今天净流入 466 万，技术面在跌但资金在进，这种背离要么是洗盘，要么就是诱多。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;关键设计：LLM 失败时 fallback 到模板叙事，&lt;strong&gt;不能因为 API 抽风就整个分析挂掉&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;etf-ye-yao-fen-xi&quot;&gt;ETF 也要分析&lt;&#x2F;h3&gt;
+&lt;p&gt;有人问了一句&amp;quot;帮我看看有色金属 ETF（512400）&amp;quot;——然后报错了。&lt;&#x2F;p&gt;
+&lt;p&gt;原来 AKShare 的 A 股历史接口 &lt;code&gt;stock_zh_a_hist&lt;&#x2F;code&gt; 不支持 ETF，得用 &lt;code&gt;fund_etf_hist_em&lt;&#x2F;code&gt;。加了一个 &lt;code&gt;_is_etf()&lt;&#x2F;code&gt; 方法，根据代码前缀（51&#x2F;15&#x2F;16&#x2F;56&#x2F;58）自动路由到 ETF 接口。ETF 没有资金流向和新闻（东方财富不提供），分析时自动跳过。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;phase-4-cong-ben-di-dao-yun-duan&quot;&gt;Phase 4：从本地到云端&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;wei-shi-yao-yao-bu-shu-dao-yun&quot;&gt;为什么要部署到云&lt;&#x2F;h3&gt;
+&lt;p&gt;两个原因。&lt;&#x2F;p&gt;
+&lt;p&gt;第一，本地的 MCP Server 是 stdio 模式——VS Code 启动它、VS Code 关掉它。换台电脑或者用手机就没法用了。&lt;&#x2F;p&gt;
+&lt;p&gt;第二，有个 bug 让我以为部署到服务器能修好（剧透：不能，后面会说）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fastmcp-de-you-ya&quot;&gt;FastMCP 的优雅&lt;&#x2F;h3&gt;
+&lt;p&gt;Stylist-MCP-Server（我的另一个项目）用的是原生 MCP SDK + Starlette + 手写路由。观潮用的是 FastMCP 2.x，部署比 Stylist 简单多了。&lt;&#x2F;p&gt;
+&lt;p&gt;核心代码只有这几行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    parser = argparse.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ArgumentParser&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    parser.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_argument&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;--http&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;action&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;store_true&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;    parser.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add_argument&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;--port&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;=int, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;8889&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    args = parser.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parse_args&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;args.http:
+&lt;&#x2F;span&gt;&lt;span&gt;        mcp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;transport&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;streamable-http&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;port&lt;&#x2F;span&gt;&lt;span&gt;=args.port,
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;middleware&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_build_middleware&lt;&#x2F;span&gt;&lt;span&gt;(), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;stateless_http&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        mcp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;()  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# stdio
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;同一个引擎，&lt;code&gt;poetry run tidewatch&lt;&#x2F;code&gt; 是本地模式，加个 &lt;code&gt;--http&lt;&#x2F;code&gt; 就是远程 HTTP 服务。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;api-key-ren-zheng&quot;&gt;API Key 认证&lt;&#x2F;h3&gt;
+&lt;p&gt;远程服务必须有认证。写了一个纯 ASGI 中间件，支持 &lt;code&gt;X-API-Key&lt;&#x2F;code&gt; header 和 &lt;code&gt;Bearer&lt;&#x2F;code&gt; token，&lt;code&gt;&#x2F;health&lt;&#x2F;code&gt; 端点免认证：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;无 Key  → POST &#x2F;mcp  → 401 Unauthorized
+&lt;&#x2F;span&gt;&lt;span&gt;错 Key  → POST &#x2F;mcp  → 401 Unauthorized
+&lt;&#x2F;span&gt;&lt;span&gt;对的 Key → POST &#x2F;mcp  → MCP 正常握手 ✅
+&lt;&#x2F;span&gt;&lt;span&gt;无需 Key → GET &#x2F;health → 200 {&amp;quot;status&amp;quot;:&amp;quot;healthy&amp;quot;} ✅
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;setup.sh&lt;&#x2F;code&gt; 用 &lt;code&gt;openssl rand -hex 12&lt;&#x2F;code&gt; 自动生成 API Key，不用人工编密码。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bu-shu-wu-bu-zou&quot;&gt;部署五步走&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;客户端 (VS Code &#x2F; Claude Desktop)
+&lt;&#x2F;span&gt;&lt;span&gt;    │ HTTPS + API Key
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;tidewatch.polly.wang:443 (Nginx + Let&amp;#39;s Encrypt SSL)
+&lt;&#x2F;span&gt;&lt;span&gt;    │ proxy_pass
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;127.0.0.1:8889 (FastMCP Streamable HTTP)
+&lt;&#x2F;span&gt;&lt;span&gt;    │ systemd 守护
+&lt;&#x2F;span&gt;&lt;span&gt;    ▼
+&lt;&#x2F;span&gt;&lt;span&gt;Poetry venv (Python 3.12 via miniforge3)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;实际部署过程比画架构图精彩——Azure VM 上的 Python 是 3.8（Poetry 2.x 要求 3.10+），好在 Stylist 的 venv 里有 miniforge3 的 Python 3.12，借来用了。systemd 的 &lt;code&gt;ExecStart&lt;&#x2F;code&gt; 也踩了坑：Poetry 装在 &lt;code&gt;miniforge3&#x2F;bin&#x2F;&lt;&#x2F;code&gt; 而不是 &lt;code&gt;.local&#x2F;bin&#x2F;&lt;&#x2F;code&gt;，第一次启动 &lt;code&gt;status=203&#x2F;EXEC&lt;&#x2F;code&gt;，调了两版才跑起来。&lt;&#x2F;p&gt;
+&lt;p&gt;最后的验证：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl&lt;&#x2F;span&gt;&lt;span&gt; https:&#x2F;&#x2F;tidewatch.polly.wang&#x2F;health
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# {&amp;quot;status&amp;quot;:&amp;quot;healthy&amp;quot;,&amp;quot;server&amp;quot;:&amp;quot;TideWatch-观潮&amp;quot;,&amp;quot;version&amp;quot;:&amp;quot;0.2.0&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#  &amp;quot;tools_count&amp;quot;:10,&amp;quot;auth_enabled&amp;quot;:true}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;10 个工具，认证开启，HTTPS，在线。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-fan-zhuan-de-bug-gu-shi&quot;&gt;一个反转的 Bug 故事&lt;&#x2F;h2&gt;
+&lt;p&gt;这个 debug 过程值得单独讲。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wen-ti&quot;&gt;问题&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;scan_market&lt;&#x2F;code&gt;（全市场扫描）在本地一直报 &lt;code&gt;ConnectionError&lt;&#x2F;code&gt;。AKShare 的 &lt;code&gt;stock_zh_a_spot_em()&lt;&#x2F;code&gt; 接口请求 &lt;code&gt;push2.eastmoney.com&lt;&#x2F;code&gt;，SSL 握手成功但返回 &lt;strong&gt;Empty reply&lt;&#x2F;strong&gt;（空响应）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-ci-wu-zhen-dns&quot;&gt;第一次误诊：DNS&lt;&#x2F;h3&gt;
+&lt;p&gt;用 &lt;code&gt;nslookup&lt;&#x2F;code&gt; 发现，Google DNS (8.8.8.8) 把 &lt;code&gt;push2.eastmoney.com&lt;&#x2F;code&gt; 解析到了腾讯云 IP &lt;code&gt;43.144.251.121&lt;&#x2F;code&gt;，而国内 DNS (114.114.114.114) 解析到阿里云 IP &lt;code&gt;47.112.165.11&lt;&#x2F;code&gt;。中间还有个 Azure Traffic Manager（&lt;code&gt;push2ipv6.trafficmanager.cn&lt;&#x2F;code&gt;）做区域路由。&lt;&#x2F;p&gt;
+&lt;p&gt;我当时的结论：&lt;strong&gt;DNS 问题，部署到 Azure VM 上就好了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这成了我推动云端部署的动力之一。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fan-zhuan&quot;&gt;反转&lt;&#x2F;h3&gt;
+&lt;p&gt;部署完之后，兴冲冲地在 VM 上跑 &lt;code&gt;scan_market&lt;&#x2F;code&gt;——&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;全市场数据获取失败，请稍后重试&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;VM 上也是一样的 Empty reply。DNS 解析到了不同的 IP（&lt;code&gt;61.129.129.196&lt;&#x2F;code&gt;，上海电信），但照样空回复。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ci-chang-shi-mo-ni-liu-lan-qi&quot;&gt;第二次尝试：模拟浏览器&lt;&#x2F;h3&gt;
+&lt;p&gt;给 requests session 加了完整的浏览器 headers（User-Agent、Referer、Accept-Language）——还是空回复。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhen-xiang&quot;&gt;真相&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;push2.eastmoney.com&lt;&#x2F;code&gt; 不是在检查 DNS 或 User-Agent。它对&lt;strong&gt;非浏览器环境的请求&lt;&#x2F;strong&gt;做了更深层的反爬限制——可能是 TLS 指纹、IP 信誉，或者其他我们看不到的机制。&lt;&#x2F;p&gt;
+&lt;p&gt;有趣的是，AKShare 最常用的其他接口全部正常：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;API&lt;&#x2F;th&gt;&lt;th&gt;域名&lt;&#x2F;th&gt;&lt;th&gt;状态&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;日K线 &lt;code&gt;stock_zh_a_hist&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;finance.eastmoney.com&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 正常&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;资金流向&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;push2his.eastmoney.com&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 正常&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;新闻&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;search-api-web.eastmoney.com&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 正常&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;全市场实时&lt;&#x2F;strong&gt; &lt;code&gt;stock_zh_a_spot_em&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;push2.eastmoney.com&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;❌ 被封&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;只有 &lt;code&gt;push2&lt;&#x2F;code&gt;（实时行情推送服务）做了反爬。这是它的特殊性——实时行情有商业价值，东方财富不希望被程序化抓取。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;jie-jue-fang-an&quot;&gt;解决方案&lt;&#x2F;h3&gt;
+&lt;p&gt;既然绕不过 &lt;code&gt;push2&lt;&#x2F;code&gt;，那就不用它。下一版 &lt;code&gt;scan_market&lt;&#x2F;code&gt; 会改成&lt;strong&gt;板块扫描模式&lt;&#x2F;strong&gt;：通过行业板块接口（走 &lt;code&gt;datacenter-web&lt;&#x2F;code&gt;，可用）获取热门行业的成分股，再批量拉 K 线做技术评分。不需要全市场 5000 只，扫热门板块 200-300 只就够了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;教训：先验证核心假设再做大改动。&lt;&#x2F;strong&gt; 如果我在 VM 上先测过 &lt;code&gt;push2&lt;&#x2F;code&gt; 再决定部署，可以省掉一些不必要的期待。但也没关系——云端部署本来就是该做的，只是动力来源搞反了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hui-wang&quot;&gt;回望&lt;&#x2F;h2&gt;
+&lt;p&gt;两天的 commit 历史铺开来看：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;时间&lt;&#x2F;th&gt;&lt;th&gt;里程碑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;11 23:36&lt;&#x2F;td&gt;&lt;td&gt;🌊 Phase 1：MCP 引擎诞生，5 模块 7 工具&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12 00:15&lt;&#x2F;td&gt;&lt;td&gt;Phase 2：信号追踪 + 护栏 + 全市场扫描&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12 00:33&lt;&#x2F;td&gt;&lt;td&gt;Phase 3：LLM 叙事润色（CopilotX + Claude Sonnet 4）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12 11:23&lt;&#x2F;td&gt;&lt;td&gt;ETF 支持（自动路由 stock vs fund API）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12 22:54&lt;&#x2F;td&gt;&lt;td&gt;Phase 4：HTTP 双模式 + API Key 认证&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12 23:35&lt;&#x2F;td&gt;&lt;td&gt;✅ 云端部署完成：&lt;code&gt;tidewatch.polly.wang&#x2F;mcp&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;24 个 commit，从 1618 行到 2495 行，从 7 个工具到 10 个。从一个在 VS Code 里跑的本地脚本，变成了一个有认证、有 SSL、有 systemd 守护的云端投研引擎。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步？先让 &lt;code&gt;scan_market&lt;&#x2F;code&gt; 用板块扫描绕过反爬，然后积累足够的信号数据，看看这个引擎到底准不准。&lt;&#x2F;p&gt;
+&lt;p&gt;毕竟，&lt;strong&gt;引擎是否有价值，不是我说了算，是时间和市场说了算。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;开源在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;TideWatch-MCP-Server&quot;&gt;GitHub: Polly2014&#x2F;TideWatch-MCP-Server&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮诞生记：两个半小时的 AI 炒股引擎，不止「观望」</title>
         <published>2026-03-11T00:00:00+00:00</published>
