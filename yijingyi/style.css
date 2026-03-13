@@ -744,15 +744,16 @@ a {
   z-index: 2;
 }
 
-/* Last artwork → closing: bottom gradient */
-.gallery .artwork:last-child::after {
+/* Last artwork → closing: use closing's ::before instead to avoid
+   overwriting the last artwork's top transition gradient */
+.closing::before {
   content: '';
   position: absolute;
-  bottom: -2px;
+  top: -2px;
   left: 0;
   right: 0;
   height: 30vh;
-  background: linear-gradient(to top, var(--dark-bg) 0%, transparent 100%);
+  background: linear-gradient(to bottom, var(--light-bg) 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -867,7 +868,7 @@ a {
   .artwork--dark + .artwork--light::after,
   .artwork--light + .artwork--dark::after,
   .gallery .artwork:first-child::after,
-  .gallery .artwork:last-child::after {
+  .closing::before {
     height: 15vh;
   }
 
