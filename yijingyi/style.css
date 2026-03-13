@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   HUcares · 一境忆 Art Exhibition
+   Yijingyi · 一境忆 Art Exhibition
    Apple-inspired immersive gallery
    ═══════════════════════════════════════════════════════════ */
 
@@ -543,12 +543,19 @@ a {
   gap: 0.8rem;
 }
 
-.closing__hucares {
-  font-family: var(--font-english);
+.closing__studio {
+  font-family: var(--font-display);
   font-size: clamp(1.2rem, 2vw, 1.6rem);
   font-weight: 600;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.closing__studio-en {
+  font-family: var(--font-english);
+  font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+  color: var(--dark-text-muted);
+  letter-spacing: 0.15em;
+  margin-top: 0.3rem;
 }
 
 .closing__slogan {
@@ -674,6 +681,17 @@ a {
 
 /* ─── Mobile-first: phones (< 600px) ────────────────────── */
 @media (max-width: 599px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+
+  .section,
+  .artwork {
+    height: 100dvh;
+    height: 100vh;
+    overflow: hidden;
+  }
+
   .values {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
