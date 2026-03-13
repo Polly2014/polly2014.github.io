@@ -307,6 +307,16 @@ a {
   font-size: clamp(1.3rem, 3vw, 2.2rem);
   line-height: 1.6;
   color: var(--light-text-muted);
+  margin-bottom: 0.6em;
+}
+
+.manifesto__question-en {
+  font-family: var(--font-english);
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--light-text-muted);
+  opacity: 0.6;
+  letter-spacing: 0.03em;
   margin-bottom: clamp(2rem, 4vh, 4rem);
 }
 
@@ -324,6 +334,17 @@ a {
   color: var(--light-text);
   background: linear-gradient(transparent 60%, var(--accent-soft) 60%);
   padding: 0 0.15em;
+}
+
+.manifesto__belief-en {
+  font-family: var(--font-english);
+  font-size: clamp(0.8rem, 1.3vw, 1rem);
+  line-height: 2;
+  color: var(--light-text-muted);
+  opacity: 0.55;
+  letter-spacing: 0.02em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .manifesto__signature {
@@ -466,6 +487,7 @@ a {
 .price-badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.4em;
   font-family: var(--font-body);
   font-size: clamp(0.75rem, 1.1vw, 0.9rem);
   letter-spacing: 0.08em;
@@ -475,10 +497,23 @@ a {
   border-radius: 100px;
 }
 
+.price-badge span[lang="en"] {
+  font-family: var(--font-english);
+  opacity: 0.7;
+  font-size: 0.85em;
+}
+
 .artwork__caption {
   font-size: clamp(0.75rem, 1.1vw, 0.9rem);
   color: var(--dark-text-muted);
   letter-spacing: 0.05em;
+  line-height: 1.8;
+}
+
+.artwork__caption span[lang="en"] {
+  font-family: var(--font-english);
+  font-size: 0.85em;
+  opacity: 0.6;
 }
 .artwork--light .artwork__caption {
   color: var(--light-text-muted);
