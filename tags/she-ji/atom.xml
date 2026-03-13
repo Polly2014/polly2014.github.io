@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 设计</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/she-ji/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-13T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/she-ji/atom.xml</id>
+    <entry xml:lang="en">
+        <title>看见生命的灵思之美 — 为特殊儿童画展重写一个网站</title>
+        <published>2026-03-13T00:00:00+00:00</published>
+        <updated>2026-03-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/see-the-beauty-of-life/" type="text/html"/>
+        <id>https://polly.wang/see-the-beauty-of-life/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-feng-lai-zi-hackathon-de-yao-qing&quot;&gt;一封来自 Hackathon 的邀请&lt;&#x2F;h2&gt;
+&lt;p&gt;今年三月，我收到了一封邀请 —— 担任 &lt;strong&gt;AI for Good 公益黑客松 2026&lt;&#x2F;strong&gt; 的项目导师。&lt;&#x2F;p&gt;
+&lt;p&gt;在申报的几十个项目里，我选中了一个叫**「看见生命」**的项目。它的背后是一个叫 &lt;strong&gt;一境忆（Yijingyi）&lt;&#x2F;strong&gt; 的上海艺术工作室，2020 年成立，专注于特殊儿童（自闭症、罕见病等心智障碍孩子）的融合康复 —— 用艺术疗愈、音乐疗愈、马术疗愈等方式，帮助这些孩子表达自己。&lt;&#x2F;p&gt;
+&lt;p&gt;他们发起了一场画展：&lt;strong&gt;全球首届青少年线上融合画展&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;六幅画，每幅标价 ¥1 —— 象征性定价。不是为了卖画，而是为了说一句话：&lt;strong&gt;每一幅画都值得被世界看见&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wen-ti-yi-ge-hao-gu-shi-cang-zai-liao-yi-ge-pi-wang-zhan-li&quot;&gt;问题：一个好故事藏在了一个坏网站里&lt;&#x2F;h2&gt;
+&lt;p&gt;画展挂在 HUcares（hucares.com.hk）网站的一个子页面上 —— ASP.NET WebForms，.NET 4.0 时代的产物。打开一看：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;机构介绍和画作混在一起，层次不清&lt;&#x2F;li&gt;
+&lt;li&gt;每幅画重复出现 2-3 次同样的缩略图（轮播图没渲染对）&lt;&#x2F;li&gt;
+&lt;li&gt;其他页面甚至直接抛 NullReferenceException&lt;&#x2F;li&gt;
+&lt;li&gt;移动端？别想了&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这是一个社会价值 &amp;gt;&amp;gt; 技术水平的典型案例。&lt;strong&gt;内容和理念远远走在了呈现方式的前面。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;作为导师，我的本能反应不是写 PPT 讲方法论，而是 —— &lt;strong&gt;直接动手写一个&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;she-ji-li-nian-mei-fu-hua-du-zhi-de-yi-ge-wu-tai&quot;&gt;设计理念：每幅画都值得一个舞台&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你去过 apple.com 的产品页，你会注意到一个模式：每个产品都有自己的「舞台」—— 满屏展示，慷慨的留白，滚动驱动的叙事，一次只讲一件事。&lt;&#x2F;p&gt;
+&lt;p&gt;我想让这些孩子的画也得到同样的待遇。&lt;&#x2F;p&gt;
+&lt;p&gt;不是缩略图网格，不是轮播图，而是 —— &lt;strong&gt;你滚一屏，就进入一幅画的世界&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;xu-shi-jie-gou&quot;&gt;叙事结构&lt;&#x2F;h3&gt;
+&lt;p&gt;页面像走进一个画廊：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;入口大厅 → 策展宣言 → 画作1 → 画作2 → ... → 画作6 → 价值观 → 尾厅
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;12 个全屏 section，从深色的入口大厅开始，明暗交替，最后回到深色的尾厅。像呼吸一样的节奏。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ce-zhan-xuan-yan&quot;&gt;策展宣言&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;什么是美？谁来定义？
+&lt;&#x2F;span&gt;&lt;span&gt;美的背后是什么？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;我们相信，美来自人类与生俱来的情感和感受力
+&lt;&#x2F;span&gt;&lt;span&gt;我们相信，在孩子的画作中蕴藏着生命的灵思之美
+&lt;&#x2F;span&gt;&lt;span&gt;我们相信，这灵思之美将创造不一样的世界
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段文字在滚动时逐行淡入 —— 每一句信念都有自己出场的时刻。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;see-the-beauty-of-life&#x2F;gallery-preview.png&quot; alt=&quot;画展页面效果 — 鲸鱼宝宝从深色背景中浮现&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-ling-yi-lai-de-1400-xing&quot;&gt;技术：零依赖的 1400 行&lt;&#x2F;h2&gt;
+&lt;p&gt;整个项目：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文件&lt;&#x2F;th&gt;&lt;th&gt;行数&lt;&#x2F;th&gt;&lt;th&gt;作用&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;yijingyi.html&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;242&lt;&#x2F;td&gt;&lt;td&gt;语义化 HTML，12 个 section&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;style.css&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;1056&lt;&#x2F;td&gt;&lt;td&gt;Apple 风格视觉系统&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;app.js&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;112&lt;&#x2F;td&gt;&lt;td&gt;滚动动画 + 进度导航&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;零依赖&lt;&#x2F;strong&gt; —— 没有 React，没有 Tailwind，没有 npm install。打开 HTML 文件就能看。这是 Hackathon 最需要的：&lt;strong&gt;任何人拿到代码都能直接跑&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ji-ge-zhi-de-yi-ti-de-xi-jie&quot;&gt;几个值得一提的细节&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;明暗交替的呼吸感&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span&gt;--&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dark-bg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;: #0a0a0a;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 近乎纯黑 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;--&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;light-bg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;#fafaf7&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 暖白，不是刺眼的纯白 *&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;六幅画作在深色和浅色背景间交替展示。深色背景上，画作仿佛从黑暗中浮现；浅色背景上，画作沐浴在温暖的光线里。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;滚动驱动的渐显系统&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;整个动画系统只靠一个 IntersectionObserver —— 元素进入视口 12% 时触发 &lt;code&gt;revealed&lt;&#x2F;code&gt; class：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;var &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;revealObserver &lt;&#x2F;span&gt;&lt;span&gt;= new IntersectionObserver(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entries&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entries&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;forEach&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entry&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entry&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isIntersecting&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entry&lt;&#x2F;span&gt;&lt;span&gt;.target.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classList&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;revealed&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;);
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;revealObserver&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;unobserve&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;entry&lt;&#x2F;span&gt;&lt;span&gt;.target);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  });
+&lt;&#x2F;span&gt;&lt;span&gt;}, { threshold: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.12 &lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;CSS 负责定义过渡 —— &lt;code&gt;translateY(40px)&lt;&#x2F;code&gt; 上移淡入，&lt;code&gt;scale(0.9)&lt;&#x2F;code&gt; 放大定格，子元素 &lt;code&gt;stagger&lt;&#x2F;code&gt; 错开 150ms 逐个登场。所有动画都用 &lt;code&gt;cubic-bezier(0.25, 0.46, 0.45, 0.94)&lt;&#x2F;code&gt; 这条曲线，就是 Apple 官网用的那个 ease-out。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;胶片质感噪点&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Hero 区域叠了一层 SVG 噪点纹理（&lt;code&gt;feTurbulence&lt;&#x2F;code&gt;），&lt;code&gt;opacity: 0.5&lt;&#x2F;code&gt;，&lt;code&gt;mix-blend-mode: overlay&lt;&#x2F;code&gt; —— 给数字画面增添了一丝胶片的颗粒感，和艺术画展的气质很搭。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;¥1 象征定价徽章&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;price-badge &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  border: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1px &lt;&#x2F;span&gt;&lt;span&gt;solid &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;var&lt;&#x2F;span&gt;&lt;span&gt;(--accent);
+&lt;&#x2F;span&gt;&lt;span&gt;  border-radius: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100px&lt;&#x2F;span&gt;&lt;span&gt;;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 药丸形态 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;  color: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;var&lt;&#x2F;span&gt;&lt;span&gt;(--accent);   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* 琥珀金 *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不抢画的风头，安静地待在画作下方，但你不会错过它。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;右侧进度导航&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;九个小圆点固定在右侧，随滚动高亮当前 section。点击可以跳转。经过深色 section 时自动变白，浅色 section 时自动变深。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-zhang-ai-bu-shi-fu-jia-ti-er-shi-zhu-ti&quot;&gt;无障碍：不是附加题，而是主题&lt;&#x2F;h2&gt;
+&lt;p&gt;这是一个关于&lt;strong&gt;融合教育&lt;&#x2F;strong&gt;的画展 —— 关于特殊儿童的包容和可见性。如果页面本身不是无障碍的，那就是在打自己的脸。&lt;&#x2F;p&gt;
+&lt;p&gt;所以：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;每幅画都有双语 &lt;code&gt;alt&lt;&#x2F;code&gt; 文本（中文画名 + 英文描述）&lt;&#x2F;li&gt;
+&lt;li&gt;语义化的 &lt;code&gt;&amp;lt;article&amp;gt;&lt;&#x2F;code&gt;、&lt;code&gt;&amp;lt;figure&amp;gt;&lt;&#x2F;code&gt;、&lt;code&gt;&amp;lt;figcaption&amp;gt;&lt;&#x2F;code&gt; 结构&lt;&#x2F;li&gt;
+&lt;li&gt;顶部有 &lt;code&gt;skip-link&lt;&#x2F;code&gt;，Tab 键可达&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;prefers-reduced-motion: reduce&lt;&#x2F;code&gt; 时所有动画直接跳过&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;:focus-visible&lt;&#x2F;code&gt; 焦点环使用琥珀金色，和品牌色一致&lt;&#x2F;li&gt;
+&lt;li&gt;所有文本用 &lt;code&gt;rem&lt;&#x2F;code&gt; + &lt;code&gt;clamp()&lt;&#x2F;code&gt;，尊重用户的浏览器字号设置&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;lang=&amp;quot;zh-Hans&amp;quot;&lt;&#x2F;code&gt; 主语言声明，英文段落加 &lt;code&gt;lang=&amp;quot;en&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;href&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#gallery&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;class&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skip-link&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;跳转到画展 &#x2F; Skip to Gallery&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这行代码平时看不见，但屏幕阅读器的用户按 Tab 时，它会跳出来让你直达画廊。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hui-dao-chu-zhong&quot;&gt;回到初衷&lt;&#x2F;h2&gt;
+&lt;p&gt;写完代码 build 通过的那一刻，我又从头到尾滚了一遍。&lt;&#x2F;p&gt;
+&lt;p&gt;鲸鱼宝宝从黑色背景中浮现，声音的奔跑在暖白里奔腾，飞之眷展开翅膀，星怪露出奇异的笑容，猫咪蜷在角落，最后 —— &lt;strong&gt;爱&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;六幅画，六个孩子，六个世界。&lt;&#x2F;p&gt;
+&lt;p&gt;标价 ¥1，不是打折，是在说：&lt;strong&gt;你愿意花一块钱，看见他们吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我不确定这个页面会不会最终上线，Hackathon 项目的命运往往不在导师手里。但至少现在，这六幅画不再藏在 ASP.NET 的 NullReferenceException 后面了。&lt;&#x2F;p&gt;
+&lt;p&gt;它们有了自己的舞台。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;画展地址：&lt;a href=&quot;&#x2F;yijingyi.html&quot;&gt;polly.wang&#x2F;yijingyi.html&lt;&#x2F;a&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;「看见生命的灵思之美」—— 一境忆艺术工作室，上海，2020 年至今。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
