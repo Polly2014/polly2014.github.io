@@ -657,7 +657,7 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION TRANSITIONS (gradient blending)
+   SECTION TRANSITIONS — soft, breathable gradients
    ═══════════════════════════════════════════════════════════ */
 .section--dark + .section--light::before {
   content: '';
@@ -665,8 +665,8 @@ a {
   top: -2px;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, var(--dark-bg), var(--light-bg));
+  height: 30vh;
+  background: linear-gradient(to bottom, var(--dark-bg) 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -678,8 +678,8 @@ a {
   top: -2px;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, var(--dark-bg), var(--light-bg));
+  height: 30vh;
+  background: linear-gradient(to bottom, var(--dark-bg) 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -690,8 +690,8 @@ a {
   top: -2px;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, var(--light-bg), var(--dark-bg));
+  height: 30vh;
+  background: linear-gradient(to bottom, var(--light-bg) 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -703,8 +703,21 @@ a {
   top: -2px;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, var(--light-bg), var(--dark-bg));
+  height: 30vh;
+  background: linear-gradient(to bottom, var(--light-bg) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Last artwork → closing: bottom gradient */
+.gallery .artwork:last-child::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 30vh;
+  background: linear-gradient(to top, var(--dark-bg) 0%, transparent 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -783,12 +796,13 @@ a {
     gap: clamp(2rem, 4vh, 3rem);
   }
 
-  /* Reduce gradient overlays on mobile — less content coverage */
+  /* Softer gradient overlays on mobile */
   .section--dark + .section--light::before,
   .artwork--dark + .artwork--light::after,
   .artwork--light + .artwork--dark::after,
-  .gallery .artwork:first-child::after {
-    height: 60px;
+  .gallery .artwork:first-child::after,
+  .gallery .artwork:last-child::after {
+    height: 15vh;
   }
 
   .values__zh {
@@ -868,8 +882,15 @@ a {
   .artwork .artwork__figure {
     grid-column: 2;
     grid-row: 1 / -1;
-    width: min(50vw, 600px);
     justify-self: center;
+    width: auto;
+    max-width: min(55vw, 700px);
+  }
+
+  .artwork .artwork__figure img {
+    width: auto;
+    max-width: 100%;
+    max-height: 78vh;
   }
 
   .artwork .artwork__meta {
@@ -891,6 +912,7 @@ a {
 
   .artwork:nth-child(even) .artwork__figure {
     grid-column: 1;
+    justify-self: center;
   }
 
   .artwork:nth-child(even) .artwork__meta {
