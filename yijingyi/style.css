@@ -185,13 +185,26 @@ a {
   top: clamp(1.5rem, 3vh, 2.5rem);
   left: 50%;
   transform: translateX(-50%);
-  font-family: var(--font-english);
   font-size: clamp(0.75rem, 1.2vw, 1rem);
   font-weight: 500;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
+  letter-spacing: 0.2em;
   color: var(--dark-text-muted);
   z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+}
+
+.hero__brand-zh {
+  font-family: var(--font-display);
+  letter-spacing: 0.15em;
+}
+
+.hero__brand-en {
+  font-family: var(--font-english);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.85em;
 }
 
 .hero__content {
@@ -624,6 +637,14 @@ a {
   transform: scale(1.3);
 }
 
+/* Hover feedback */
+@media (hover: hover) {
+  .progress-dot:hover {
+    border-color: var(--accent);
+    transform: scale(1.2);
+  }
+}
+
 /* Light section context — dots become dark */
 .progress-nav.is-light .progress-dot {
   border-color: rgba(29, 29, 31, 0.25);
@@ -637,8 +658,7 @@ a {
 /* ═══════════════════════════════════════════════════════════
    SECTION TRANSITIONS (gradient blending)
    ═══════════════════════════════════════════════════════════ */
-.section--dark + .section--light::before,
-.artwork--dark + .artwork--light::before {
+.section--dark + .section--light::before {
   content: '';
   position: absolute;
   top: -2px;
@@ -650,7 +670,20 @@ a {
   z-index: 2;
 }
 
-.artwork--light + .artwork--dark::before {
+/* Use ::after for artwork gradients to avoid conflict with ::before glow */
+.artwork--dark + .artwork--light::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--dark-bg), var(--light-bg));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.artwork--light + .artwork--dark::after {
   content: '';
   position: absolute;
   top: -2px;
@@ -685,11 +718,21 @@ a {
     scroll-snap-type: y mandatory;
   }
 
-  .section,
+  /* Hero & artworks: fixed viewport height for crisp snap */
+  .hero,
   .artwork {
     height: 100dvh;
     height: 100vh;
     overflow: hidden;
+  }
+
+  /* Content-rich sections: allow natural height to prevent clipping */
+  .manifesto,
+  .closing {
+    min-height: 100dvh;
+    min-height: 100vh;
+    height: auto;
+    overflow: visible;
   }
 
   .values {
@@ -699,7 +742,7 @@ a {
 
   /* Progress dots: smaller visually, but 44px touch target */
   .progress-nav {
-    right: 0;
+    right: 6px;
     gap: 2px;
   }
 

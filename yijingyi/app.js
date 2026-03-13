@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   HUcares · 一境忆 Art Exhibition
+   Yijingyi · 一境忆 Art Exhibition
    Scroll reveal + progress navigation
-   ~60 lines, zero dependencies
+   ~100 lines, zero dependencies
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
