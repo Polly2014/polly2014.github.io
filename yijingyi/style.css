@@ -809,11 +809,42 @@ a {
   }
 
   .artwork__figure {
-    width: 94vw;
+    width: 85vw;
   }
 
   .artwork__figure img {
     border-radius: 8px;
+    max-height: 55vh;
+    width: auto;
+    max-width: 85vw;
+    margin: 0 auto;
+  }
+
+  /* Tighter gaps on mobile to fit title + image + meta in viewport */
+  .artwork__inner {
+    gap: clamp(0.8rem, 2vh, 1.5rem);
+  }
+
+  .artwork__number {
+    margin-bottom: 0.3em;
+  }
+
+  .artwork__title {
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+  }
+
+  .artwork__title-en {
+    font-size: clamp(0.65rem, 3vw, 0.8rem);
+    margin-top: 0.3em;
+  }
+
+  .price-badge {
+    font-size: clamp(0.65rem, 3vw, 0.8rem);
+    padding: 0.35em 1em;
+  }
+
+  .artwork__caption {
+    font-size: clamp(0.65rem, 3vw, 0.8rem);
   }
 
   /* Manifesto: tighter spacing on phones */
