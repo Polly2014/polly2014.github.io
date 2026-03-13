@@ -843,19 +843,22 @@ a {
     padding: 0 2rem;
   }
 
-  /* ── ALL artworks go horizontal on desktop ────────────── */
-  /* Default (odd: 1,3,5): text LEFT, image RIGHT */
+  /* ── ALL artworks: horizontal grid on desktop ───────── */
   .artwork .artwork__inner {
-    flex-direction: row;
-    text-align: left;
+    display: grid;
+    grid-template-columns: clamp(200px, 22vw, 320px) 1fr;
+    grid-template-rows: 1fr auto;
     align-items: center;
+    text-align: left;
     max-width: 1200px;
-    gap: clamp(3rem, 5vw, 6rem);
+    column-gap: clamp(3rem, 5vw, 6rem);
+    row-gap: 1.5rem;
   }
 
   .artwork .artwork__text {
-    flex: 0 0 auto;
-    width: clamp(200px, 22vw, 320px);
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
   }
 
   .artwork .artwork__title {
@@ -863,32 +866,36 @@ a {
   }
 
   .artwork .artwork__figure {
-    flex: 1 1 auto;
-    width: min(50vw, 620px);
-  }
-
-  .artwork .artwork__figure img {
-    max-height: 65vh;
-    object-fit: contain;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    width: min(50vw, 600px);
+    justify-self: center;
   }
 
   .artwork .artwork__meta {
-    position: absolute;
-    bottom: clamp(2rem, 4vh, 4rem);
-    right: clamp(2rem, 4vw, 6rem);
-    align-items: flex-end;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    align-items: flex-start;
   }
 
   /* Even artworks (2,4,6): flip — image LEFT, text RIGHT */
   .artwork:nth-child(even) .artwork__inner {
-    flex-direction: row-reverse;
+    grid-template-columns: 1fr clamp(200px, 22vw, 320px);
     text-align: right;
   }
 
+  .artwork:nth-child(even) .artwork__text {
+    grid-column: 2;
+  }
+
+  .artwork:nth-child(even) .artwork__figure {
+    grid-column: 1;
+  }
+
   .artwork:nth-child(even) .artwork__meta {
-    right: auto;
-    left: clamp(2rem, 4vw, 6rem);
-    align-items: flex-start;
+    grid-column: 2;
+    align-items: flex-end;
   }
 }
 
