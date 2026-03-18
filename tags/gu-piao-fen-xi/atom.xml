@@ -5,8 +5,194 @@
     <link href="https://polly.wang/tags/gu-piao-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-12T00:00:00+00:00</updated>
+    <updated>2026-03-18T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gu-piao-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮实战记：Dashboard 上线一周，57 条信号对了几条？</title>
+        <published>2026-03-18T00:00:00+00:00</published>
+        <updated>2026-03-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-dashboard-and-signals/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-dashboard-and-signals/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;观潮进化记&lt;&#x2F;a&gt;——24 commits 从本地到云端。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇文章结尾我说了，下一步是&amp;quot;先停下来用&amp;quot;。用了一周，该交作业了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;scan-market-v2-dang-suo-you-ban-kuai-jie-kou-du-bei-feng&quot;&gt;scan_market v2：当所有板块接口都被封&lt;&#x2F;h2&gt;
+&lt;p&gt;上一篇留了个伏笔：以为部署到 Azure VM 就能解决 &lt;code&gt;push2.eastmoney.com&lt;&#x2F;code&gt; 的反爬问题。结果——VM 上也一样空回复。&lt;&#x2F;p&gt;
+&lt;p&gt;更惨的是，我原本计划用板块接口（&lt;code&gt;stock_board_industry_name_em&lt;&#x2F;code&gt;）获取行业成分股做扫描——&lt;strong&gt;同样被封&lt;&#x2F;strong&gt;。东方财富的 &lt;code&gt;push2&lt;&#x2F;code&gt; 系列 API 对所有非浏览器环境一视同仁地返回 Empty reply，跟 DNS、地域、Headers 都无关。&lt;&#x2F;p&gt;
+&lt;p&gt;唯一活着的是 &lt;code&gt;stock_zh_a_hist&lt;&#x2F;code&gt;（日 K 线，走 &lt;code&gt;finance.eastmoney.com&lt;&#x2F;code&gt;），每只约 1.8s。&lt;&#x2F;p&gt;
+&lt;p&gt;于是方案从&amp;quot;动态板块扫描&amp;quot;变成了&lt;strong&gt;三级股票池&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;优先级&lt;&#x2F;th&gt;&lt;th&gt;池子&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;特殊处理&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;⭐ 最高&lt;&#x2F;td&gt;&lt;td&gt;持仓&lt;&#x2F;td&gt;&lt;td&gt;SQLite + 真实成本价&lt;&#x2F;td&gt;&lt;td&gt;显示浮盈&#x2F;浮亏&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🔵&lt;&#x2F;td&gt;&lt;td&gt;自选&lt;&#x2F;td&gt;&lt;td&gt;SQLite&lt;&#x2F;td&gt;&lt;td&gt;备注关注原因&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;⚪&lt;&#x2F;td&gt;&lt;td&gt;热门&lt;&#x2F;td&gt;&lt;td&gt;硬编码 8 赛道 70 只&lt;&#x2F;td&gt;&lt;td&gt;覆盖主要行业&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;三级去重，并发 5 线程拉 K 线 + 技术评分，5 分钟缓存。73 只股票，约 26 秒跑完。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾 Review 时提了个好问题：&amp;quot;持仓三只全看空，但广泰浮盈 +21%，这不矛盾吗？&amp;quot;——于是加了 &lt;code&gt;context&lt;&#x2F;code&gt; 字段：&amp;quot;技术面弱但仍在盈利区，可考虑设置移动止盈&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dashboard-300-xing-html-zhi-diao-mcp&quot;&gt;Dashboard：300 行 HTML 直调 MCP&lt;&#x2F;h2&gt;
+&lt;p&gt;参考了我博客上另一个页面 &lt;code&gt;chat_observatory.html&lt;&#x2F;code&gt; 的模式——单文件 HTML，CSS+JS 内联，前端直接 &lt;code&gt;fetch&lt;&#x2F;code&gt; 后端 API。&lt;&#x2F;p&gt;
+&lt;p&gt;区别在于 chat_observatory 调的是 REST API，而 TideWatch 是 MCP JSON-RPC。封装了一个 &lt;code&gt;mcpCall()&lt;&#x2F;code&gt; 函数：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;mcpCall&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args &lt;&#x2F;span&gt;&lt;span&gt;= {}) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resp &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;fetch&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONFIG&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcpUrl&lt;&#x2F;span&gt;&lt;span&gt;, {
+&lt;&#x2F;span&gt;&lt;span&gt;    method: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;POST&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    headers: {
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Content-Type&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;application&#x2F;json&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Accept&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;application&#x2F;json&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;X-API-Key&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CONFIG&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;apiKey&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    },
+&lt;&#x2F;span&gt;&lt;span&gt;    body: JSON.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;stringify&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;      jsonrpc: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2.0&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, id: ++&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rpcId&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;      method: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tools&#x2F;call&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;      params: { name: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;, arguments: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args &lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;    })
+&lt;&#x2F;span&gt;&lt;span&gt;  });
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;data &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resp&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;json&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;JSON.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;parse&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;.content[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].text);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;stateless_http=True&lt;&#x2F;code&gt; 模式下直接 &lt;code&gt;POST &#x2F;mcp&lt;&#x2F;code&gt; 调 &lt;code&gt;tools&#x2F;call&lt;&#x2F;code&gt;，不需要先 &lt;code&gt;initialize&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;两阶段加载&lt;&#x2F;strong&gt;是杀手功能——点击个股卡片时，先从 scan 缓存秒出快速视图（名称&#x2F;价格&#x2F;评分&#x2F;多空理由），然后异步调 &lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 加载冲突检测和 LLM 叙事。用户看到的是&amp;quot;一闪就有数据，然后叙事渐渐出来&amp;quot;，而不是&amp;quot;空白转圈 20 秒&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;文件带 API Key 所以 git-ignored，只在本地 &lt;code&gt;zola serve&lt;&#x2F;code&gt; 使用。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ge-gu-xiang-qing-shuang-lan-bu-ju-jian-jin-jia-zai&quot;&gt;个股详情：双栏布局 + 渐进加载&lt;&#x2F;h2&gt;
+&lt;p&gt;点击主页卡片，弹出 1060px 宽的详情面板，左右双栏：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;左列&lt;&#x2F;strong&gt;：四维分析卡片（技术面&#x2F;资金面&#x2F;消息面&#x2F;市场体制）+ 冲突检测 + 建议仓位&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;右列&lt;&#x2F;strong&gt;：🤖 AI 深度分析（LLM 叙事）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;加载分三阶段：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Phase 1 (0ms)&lt;&#x2F;strong&gt;：从 scan 缓存即时显示头部（名称&#x2F;价格&#x2F;评分）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Phase 2 (~2-8s)&lt;&#x2F;strong&gt;：&lt;code&gt;analyze_stock(skip_llm=true)&lt;&#x2F;code&gt; 跳过 LLM 秒出四维数据&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Phase 3 (异步)&lt;&#x2F;strong&gt;：&lt;code&gt;polish_narrative_llm&lt;&#x2F;code&gt; 火并忘——LLM 完成后直接显示最终版&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;休盘期间（周末 + 15:05 后）有 &lt;code&gt;detailCache&lt;&#x2F;code&gt; 内存缓存，点过的股票再次打开 0ms 秒出。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;tidewatch-dashboard-and-signals&#x2F;detail-panel.png&quot; alt=&quot;威海广泰个股详情面板：左列四维分析 + 右列 AI 深度分析&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yun-wei-zhan-cors-wu-mu-ju&quot;&gt;运维战：CORS 五幕剧&lt;&#x2F;h2&gt;
+&lt;p&gt;Dashboard 上线后踩了一个巨坎——点击个股永远显示“Failed to fetch”或 CORS 错误。从息到完整解决经历了五幕：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一幕：FastMCP 不处理 OPTIONS&lt;&#x2F;strong&gt;
+浏览器发 CORS preflight（OPTIONS 请求），FastMCP 完全不响应，Nginx 等 300 秒超时。解决：Nginx 拦截 OPTIONS 返回 204。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二幕：进程僵死&lt;&#x2F;strong&gt;
+Python 进程端口在监听但不响应请求。&lt;code&gt;systemctl restart&lt;&#x2F;code&gt; 卡在 &lt;code&gt;stop-sigterm&lt;&#x2F;code&gt; 90 秒。解决：&lt;code&gt;TimeoutStopSec=10&lt;&#x2F;code&gt; + &lt;code&gt;RuntimeMaxSec=4h&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第三幕：预热与分析抢资源&lt;&#x2F;strong&gt;
+后台预热线程 &lt;code&gt;ThreadPoolExecutor(5)&lt;&#x2F;code&gt; 和 &lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 的 &lt;code&gt;ThreadPoolExecutor(4)&lt;&#x2F;code&gt; 同时抢 AKShare HTTP 连接——两边都慢到 4-5 分钟。解决：&lt;code&gt;threading.Event&lt;&#x2F;code&gt; 标志，analyze_stock 等预热完成再跑。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第四幕：asyncio 事件循环阻塞&lt;&#x2F;strong&gt;
+&lt;code&gt;async def analyze_stock&lt;&#x2F;code&gt; 内部用 &lt;code&gt;ThreadPoolExecutor&lt;&#x2F;code&gt; + &lt;code&gt;.result()&lt;&#x2F;code&gt; 同步阻塞，卡死了整个 asyncio 事件循环，其他请求全部排队。解决：&lt;code&gt;asyncio.to_thread()&lt;&#x2F;code&gt; 把同步代码包装到独立线程。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第五幕：Nginx if is evil&lt;&#x2F;strong&gt;
+Nginx 的 &lt;code&gt;if&lt;&#x2F;code&gt; 块 + &lt;code&gt;add_header&lt;&#x2F;code&gt; 有经典冲突——&lt;code&gt;if&lt;&#x2F;code&gt; 存在时外层 &lt;code&gt;add_header&lt;&#x2F;code&gt; 失效。POST 响应没有 CORS 头，浏览器拒绝。解决：拆成独立 &lt;code&gt;location = &#x2F;mcp_preflight&lt;&#x2F;code&gt; + &lt;code&gt;rewrite&lt;&#x2F;code&gt; 跳转，不再用 &lt;code&gt;if&lt;&#x2F;code&gt; 加头。&lt;&#x2F;p&gt;
+&lt;p&gt;从第一幕到第五幕，关键误判是：以为 &lt;code&gt;CORSMiddleware&lt;&#x2F;code&gt; 能搞定一切，实际上 FastMCP 的 &lt;code&gt;CORSMiddleware&lt;&#x2F;code&gt; 对 POST 响应不加 CORS 头。教训：&lt;strong&gt;永远不要相信中间件的文档，用 curl 验证 HTTP 头。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hou-tai-yu-re-dui-leng-qi-dong-shuo-zai-jian&quot;&gt;后台预热：对冷启动说再见&lt;&#x2F;h2&gt;
+&lt;p&gt;scan_market 扫描 58 只股票约需 30 秒，如果用户打开 Dashboard 时还没扫完，就是白屏 30 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;解决方案：后台 daemon 线程，服务启动 3 秒后自动预热：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;_warmup_thread = threading.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Thread&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target&lt;&#x2F;span&gt;&lt;span&gt;=_warmup_loop, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;daemon&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;_warmup_thread.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;start&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;盘中每 5 分钟自动刷新，盘后不刷新。Dashboard 永远命中热缓存，用户体验从“等 30 秒”变成“秒开”。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-ge-you-hua-tong-vm-he-bi-rao-gong-wang&quot;&gt;两个优化：同 VM 何必绕公网&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;copilotx-ben-di-diao-yong&quot;&gt;CopilotX 本地调用&lt;&#x2F;h3&gt;
+&lt;p&gt;观潮的 LLM 叙事润色调 CopilotX API。之前链路是：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;VM 上观潮 → HTTPS → api.polly.wang → Nginx → 127.0.0.1:24680
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;CopilotX 就跑在同一台 VM 上。改成 &lt;code&gt;.env&lt;&#x2F;code&gt; 里覆盖 &lt;code&gt;COPILOTX_API_BASE=http:&#x2F;&#x2F;127.0.0.1:24680&#x2F;v1&lt;&#x2F;code&gt;，省掉 SSL 握手 + DNS + 外网往返。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bing-fa-shu-ju-la-qu&quot;&gt;并发数据拉取&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 原来是串行的：K 线 → 技术分析 → 资金流向 → 新闻。但后三个跟 K 线完全没依赖。&lt;&#x2F;p&gt;
+&lt;p&gt;改成 &lt;code&gt;ThreadPoolExecutor(max_workers=4)&lt;&#x2F;code&gt; 四路并发，K 线拿到后立即做技术分析，资金和新闻已经在旁边跑完了。小龙虾 Review 给了 9.5&#x2F;10：&amp;quot;−4 行改动，+0 新依赖，逻辑等价，性能提升 ~37%。&amp;quot;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;以上是 3&#x2F;13 那天完成的全部工作。接下来是用了一周之后发生的事。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-zhou-hou-cong-akshare-dao-baostock&quot;&gt;一周后：从 AKShare 到 baostock&lt;&#x2F;h2&gt;
+&lt;p&gt;用了几天，最大的痛点出现了：&lt;strong&gt;scan_market 偶尔超时&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Dashboard 的 &lt;code&gt;mcpCall&lt;&#x2F;code&gt; 有 60 秒超时。扫描 73 只股票，每只用 AKShare 的 &lt;code&gt;stock_zh_a_hist&lt;&#x2F;code&gt; 拉日K线需要 1.8 秒，5 线程并发约 26 秒——正常情况勉强跑完，但网络稍有波动就 timeout，前端弹出一个大红 Toast。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我发现了 &lt;strong&gt;baostock&lt;&#x2F;strong&gt;——一个基于 TCP 长连接的 A 股数据源。单只 K 线查询 &lt;strong&gt;0.28 秒&lt;&#x2F;strong&gt;，是 AKShare 的&lt;strong&gt;六分之一&lt;&#x2F;strong&gt;。零反爬，无 IP 限制。&lt;&#x2F;p&gt;
+&lt;p&gt;迁移很干脆：&lt;code&gt;data.py&lt;&#x2F;code&gt; 的日K线全部切到 baostock，AKShare 只保留资金流向、新闻、龙虎榜、北向资金这些 baostock 没有的接口。&lt;&#x2F;p&gt;
+&lt;p&gt;但新问题马上来了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jiang-shi-tcp-san-ceng-bao-hu-de-dan-sheng&quot;&gt;僵尸 TCP：三层保护的诞生&lt;&#x2F;h2&gt;
+&lt;p&gt;baostock 比 AKShare 快六倍，代价是它的&lt;strong&gt;单连接架构&lt;&#x2F;strong&gt;——整个进程共享一个 TCP session，所有查询排队走同一个 socket。&lt;&#x2F;p&gt;
+&lt;p&gt;某天晚上 Dashboard 又白屏了。SSH 上去一看：进程还活着，端口还在监听，但所有请求卡死不响应。&lt;&#x2F;p&gt;
+&lt;p&gt;跟踪发现 &lt;code&gt;recv()&lt;&#x2F;code&gt; 系统调用挂起——baostock 的 socket 在等一个永远不会来的回复。连接早断了，但 Python 侧不知道，没有超时，就这么&lt;strong&gt;永远等下去&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;僵尸 TCP。最恶心的是：不报错、不断开、不崩溃，就是&lt;strong&gt;看起来一切正常但什么都不干&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;修了三轮，每轮都以为搞定了，结果下一次又复现。最终方案是&lt;strong&gt;三层超时保护&lt;&#x2F;strong&gt;，小龙虾 Review 给了 🦞9.0&#x2F;10：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层&lt;&#x2F;th&gt;&lt;th&gt;机制&lt;&#x2F;th&gt;&lt;th&gt;作用&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;第1层&lt;&#x2F;td&gt;&lt;td&gt;monkey-patch &lt;code&gt;bs.connect()&lt;&#x2F;code&gt; 注入 &lt;code&gt;socket.settimeout(10)&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;连接阶段超时&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第2层&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;_bs_login()&lt;&#x2F;code&gt; 成功后再加一次 &lt;code&gt;settimeout(10)&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;覆盖 baostock 内部可能的重设&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第3层&lt;&#x2F;td&gt;&lt;td&gt;异常统一走 &lt;code&gt;_force_close_bs_socket()&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;直接关 socket + 标记 session 失效&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;核心是第一层——baostock 源码里 &lt;code&gt;connect()&lt;&#x2F;code&gt; 创建 socket 后不设超时，默认跟着 OS 的 TCP keep-alive（几分钟到十几分钟）。monkey-patch 注入 10 秒超时后，卡死最多 10 秒就能发现并重连：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;_original_connect = bs._connect
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_patched_connect&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    result = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_original_connect&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;bs._bs_socket:
+&lt;&#x2F;span&gt;&lt;span&gt;        bs._bs_socket.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;settimeout&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;result
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;bs._connect = _patched_connect
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;加上 &lt;code&gt;threading.Lock(acquire timeout=15s)&lt;&#x2F;code&gt; 保护线程安全 + 30 秒无活动自动重连。僵尸 TCP 问题根治。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;chi-zi-shou-shen-76-24&quot;&gt;池子瘦身：76 → 24&lt;&#x2F;h2&gt;
+&lt;p&gt;baostock 解决了单只速度，三层保护解决了连接可靠性。但——&lt;strong&gt;76 只股票还是太多了&lt;&#x2F;strong&gt;。加上技术分析计算开销，在 Azure VM 上仍然偶尔踩 60 秒线。&lt;&#x2F;p&gt;
+&lt;p&gt;这时面临一个选择：&lt;strong&gt;把前端超时从 60 秒加到 120 秒？&lt;&#x2F;strong&gt; 还是&lt;strong&gt;把池子从 76 只减到能舒服跑完？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;减量治本 &amp;gt; 加时治标。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;增加超时只是推迟问题——用户多等一分钟，体验更差。减少池子，每只都是精选的行业龙头，反而更有价值。&lt;&#x2F;p&gt;
+&lt;p&gt;新的 HOT_POOL：&lt;strong&gt;8 赛道 × 3 龙头 = 24 只&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;赛道&lt;&#x2F;th&gt;&lt;th&gt;龙头&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;大盘权重&lt;&#x2F;td&gt;&lt;td&gt;中国平安、招商银行、长江电力&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;新能源&lt;&#x2F;td&gt;&lt;td&gt;宁德时代、阳光电源、隆基绿能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;AI&#x2F;科技&lt;&#x2F;td&gt;&lt;td&gt;中芯国际、海光信息、寒武纪&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;消费&lt;&#x2F;td&gt;&lt;td&gt;贵州茅台、海天味业、伊利股份&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;医药&lt;&#x2F;td&gt;&lt;td&gt;恒瑞医药、迈瑞医疗、药明康德&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;有色&#x2F;资源&lt;&#x2F;td&gt;&lt;td&gt;紫金矿业、天齐锂业、北方稀土&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;军工&lt;&#x2F;td&gt;&lt;td&gt;中航沈飞、航发动力、中航光电&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;汽车&lt;&#x2F;td&gt;&lt;td&gt;比亚迪、赛力斯、拓普集团&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;加上持仓 + 自选（去重），总共约 30 只。&lt;&#x2F;p&gt;
+&lt;p&gt;结果：&lt;strong&gt;scan_market 从 ~60s 降到 4.25s&lt;&#x2F;strong&gt;。不是优化，是降维打击。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-zhou-xin-hao-57-tiao-dui-liao-ji-tiao&quot;&gt;一周信号：57 条，对了几条？&lt;&#x2F;h2&gt;
+&lt;p&gt;从 3&#x2F;12 上线到 3&#x2F;18，信号追踪系统累计记录了 &lt;strong&gt;57 条信号&lt;&#x2F;strong&gt;，覆盖 &lt;strong&gt;9 只股票&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;先看信号全景：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;股票&lt;&#x2F;th&gt;&lt;th&gt;信号数&lt;&#x2F;th&gt;&lt;th&gt;主方向&lt;&#x2F;th&gt;&lt;th&gt;平均评分&lt;&#x2F;th&gt;&lt;th&gt;首次&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;威海广泰&lt;&#x2F;td&gt;&lt;td&gt;28&lt;&#x2F;td&gt;&lt;td&gt;持续看空&lt;&#x2F;td&gt;&lt;td&gt;-47.9&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;赛力斯&lt;&#x2F;td&gt;&lt;td&gt;10&lt;&#x2F;td&gt;&lt;td&gt;前空后多&lt;&#x2F;td&gt;&lt;td&gt;-36.4&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;和而泰&lt;&#x2F;td&gt;&lt;td&gt;8&lt;&#x2F;td&gt;&lt;td&gt;强烈看空&lt;&#x2F;td&gt;&lt;td&gt;-88.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;锦浪科技&lt;&#x2F;td&gt;&lt;td&gt;4&lt;&#x2F;td&gt;&lt;td&gt;持续看多&lt;&#x2F;td&gt;&lt;td&gt;+86.3&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;12&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;摩尔线程&lt;&#x2F;td&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;看空&lt;&#x2F;td&gt;&lt;td&gt;-88.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;17&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;赣锋锂业&lt;&#x2F;td&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;中性&lt;&#x2F;td&gt;&lt;td&gt;+7.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;17&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;陕西煤业&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;看多&lt;&#x2F;td&gt;&lt;td&gt;+63.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;15&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;中国神华&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;偏多&lt;&#x2F;td&gt;&lt;td&gt;+24.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;17&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;双汇发展&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;看多&lt;&#x2F;td&gt;&lt;td&gt;+73.0&lt;&#x2F;td&gt;&lt;td&gt;3&#x2F;15&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;几个有意思的发现：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;威海广泰&lt;&#x2F;strong&gt;（我的重仓股）被连续看空 28 次，平均评分 -47.9，没有一次给过多。但它的持仓浮盈 +21%——这就是观潮设计冲突检测的初衷：&lt;strong&gt;技术面看空但你还在赚钱&lt;&#x2F;strong&gt;，这种矛盾比单纯的多空信号更有信息量。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;和而泰&lt;&#x2F;strong&gt;平均 -88.0，8 次全看空，是最坚决的空头信号。&lt;strong&gt;锦浪科技&lt;&#x2F;strong&gt;反过来，4 次全看多，平均 +86.3。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;赛力斯&lt;&#x2F;strong&gt;最有趣——前期看空（3&#x2F;12 评分 -41，3&#x2F;15 评分 -61），3&#x2F;17 突然翻多到 +32，3&#x2F;18 评分 +12 仍偏多。技术面转势？&lt;&#x2F;p&gt;
+&lt;p&gt;但——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;0 条回填结果。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;57 条信号，全部 &lt;code&gt;outcome_5d = null&lt;&#x2F;code&gt;。原因很简单：&lt;code&gt;update_signal_outcomes&lt;&#x2F;code&gt; 需要手动调用来回填实际走势，而我一直在忙着修 bug、做手术。最早的信号已经过了 5 日窗口，理论上可以回填了——但我还没跑。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一个诚实的结论：&lt;strong&gt;引擎能记录信号，但验证信号的闭环还没跑通。&lt;&#x2F;strong&gt; 这不是技术问题，是纪律问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hui-wang&quot;&gt;回望&lt;&#x2F;h2&gt;
+&lt;p&gt;一周（3&#x2F;11→3&#x2F;18），从零到 14 个工具，经历三场手术：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;里程碑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;11&lt;&#x2F;td&gt;&lt;td&gt;🌊 Phase 1：MCP 引擎诞生（7 工具，1618 行）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;12&lt;&#x2F;td&gt;&lt;td&gt;Phase 2 + 3 + 4：信号追踪 + LLM 叙事 + 云端部署&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;13&lt;&#x2F;td&gt;&lt;td&gt;scan_market v2 + Dashboard + 并发优化 + CORS 五幕剧&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;🔧 手术一：baostock 数据源迁移（1.8s → 0.28s&#x2F;只）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;16&lt;&#x2F;td&gt;&lt;td&gt;🔧 手术二：僵尸 TCP 三层保护（🦞9.0&#x2F;10）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&#x2F;18&lt;&#x2F;td&gt;&lt;td&gt;🔧 手术三：HOT_POOL 瘦身 76→24（60s → 4.25s）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;三篇博文对应三个阶段：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;观潮诞生记&lt;&#x2F;a&gt;：两个半小时从零到一，引擎成型&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;观潮进化记&lt;&#x2F;a&gt;：24 commits 从本地到云端&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;观潮实战记&lt;&#x2F;strong&gt;（本篇）：Dashboard 上线 + 一周实战 + 三场手术&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最深刻的一课：&lt;strong&gt;减量治本 &amp;gt; 加时治标&lt;&#x2F;strong&gt;——不是所有性能问题都该用&amp;quot;加&amp;quot;来解决，有时候&amp;quot;减&amp;quot;才是答案。&lt;&#x2F;p&gt;
+&lt;p&gt;14 个 MCP 工具，&lt;code&gt;tidewatch.polly.wang&lt;&#x2F;code&gt;，扫描 30 只股票 4 秒出结果。57 条信号在积累，胜率验证——等我跑完回填再交作业。&lt;&#x2F;p&gt;
+&lt;p&gt;开源在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;TideWatch-MCP-Server&quot;&gt;GitHub: Polly2014&#x2F;TideWatch-MCP-Server&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮进化记：24 commits，从本地引擎到云端投研搭档</title>
         <published>2026-03-12T00:00:00+00:00</published>
