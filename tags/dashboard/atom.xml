@@ -5,8 +5,105 @@
     <link href="https://polly.wang/tags/dashboard/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-18T00:00:00+00:00</updated>
+    <updated>2026-03-19T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/dashboard/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮验证记：首批信号回填，76.9% 的胜率是真的吗？</title>
+        <published>2026-03-19T00:00:00+00:00</published>
+        <updated>2026-03-19T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-signal-validation/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-signal-validation/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;观潮实战记&lt;&#x2F;a&gt;——Dashboard 上线一周，57 条信号对了几条？&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结尾留了悬念：&amp;quot;信号追踪系统埋了种子，但回填还没跑。&amp;quot;今天，种子发芽了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hui-tian-cong-0-dao-76-9&quot;&gt;回填：从 0 到 76.9%&lt;&#x2F;h2&gt;
+&lt;p&gt;执行很简单，盘后调一次 &lt;code&gt;update_signal_outcomes&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;13 conditions 5d filled, 0 errors
+&lt;&#x2F;span&gt;&lt;span&gt;5d win rate = 76.9% (10&#x2F;13 correct)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;看空胜率 83%（10&#x2F;12），看多胜率 0%（0&#x2F;1，只有一条看多信号）。平均收益：正确信号 4.0%，错误信号 1.3%。&lt;&#x2F;p&gt;
+&lt;p&gt;数字看着漂亮。但我知道，这只是 3 月 12 日那天的 13 条信号——因为 5 天回填窗口，只有最早那天的信号够龄了。样本太小，先别急着开香槟。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-cang-liao-yi-zhou-de-sql-bug&quot;&gt;一个藏了一周的 SQL Bug&lt;&#x2F;h2&gt;
+&lt;p&gt;回填不是一帆风顺的。第一次跑，&lt;strong&gt;60 条信号全部报错&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;60 errors, 0 success
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;翻日志——没有日志（MCP 在 stdout 通信，stderr 才有日志，而我忘了配 journalctl 重定向）。只好读代码。&lt;&#x2F;p&gt;
+&lt;p&gt;找到根因：&lt;code&gt;update_outcomes()&lt;&#x2F;code&gt; 的 SELECT 语句只查了 6 个字段——&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;SELECT&lt;&#x2F;span&gt;&lt;span&gt; id, symbol, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;timestamp&lt;&#x2F;span&gt;&lt;span&gt;, score, direction, price_at_signal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; signals
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;但代码紧接着就试图读 &lt;code&gt;row[&amp;quot;price_5d&amp;quot;]&lt;&#x2F;code&gt;、&lt;code&gt;row[&amp;quot;price_10d&amp;quot;]&lt;&#x2F;code&gt;、&lt;code&gt;row[&amp;quot;price_20d&amp;quot;]&lt;&#x2F;code&gt;。SQLite 的 &lt;code&gt;Row&lt;&#x2F;code&gt; 对象没有这些 key，直接抛 &lt;code&gt;&amp;quot;No item with that key&amp;quot;&lt;&#x2F;code&gt;，每条信号都撞上同一块石头。&lt;&#x2F;p&gt;
+&lt;p&gt;修复只需一行：把那三个列加进 SELECT。但教训是——&lt;strong&gt;不跑真数据，单元测试永远发现不了这种 &amp;quot;SELECT 列缺失&amp;quot; 的问题&lt;&#x2F;strong&gt;。这是积分测试的价值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;60-tiao-xin-hao-wei-shi-yao-zhi-you-29-tiao-shi-you-xiao-de&quot;&gt;60 条信号，为什么只有 29 条是有效的？&lt;&#x2F;h2&gt;
+&lt;p&gt;回填成功后，我打开信号列表，发现 3 月 17 日的摩尔线程出现了两次，赣锋锂业也出现了两次——分数一模一样。&lt;&#x2F;p&gt;
+&lt;p&gt;挖下去，发现问题更大：60 条信号里，按 &lt;code&gt;(日期, 股票, 分数)&lt;&#x2F;code&gt; 去重后只有 29 条。&lt;strong&gt;31 条是重复的&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;根因：去重窗口只有 5 分钟。同一只股票如果在一天内被分析了多次（间隔大于 5 分钟），每次都会写入一条新信号。比如 3 月 13 日的威海广泰，被分析了 10 次，每次因为超过 5 分钟的窗口而全部入库。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;san-ceng-xiu-fu&quot;&gt;三层修复&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;后端去重升级&lt;&#x2F;strong&gt;：从&amp;quot;同一 symbol 5 分钟内不重复&amp;quot;改成&amp;quot;同一 symbol + 同一 score + 当天内不重复&amp;quot;。评分变了说明有新信息，值得记录；评分没变的重复分析不再入库。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Before: 5 分钟窗口
+&lt;&#x2F;span&gt;&lt;span&gt;cutoff = (datetime.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;now&lt;&#x2F;span&gt;&lt;span&gt;() - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;timedelta&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;minutes&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;)).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isoformat&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;existing = conn.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;SELECT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; signals &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;WHERE&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; symbol &lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ? &lt;&#x2F;span&gt;&lt;span&gt;AND &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;timestamp &lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ?&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    (symbol, cutoff)).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fetchone&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# After: 当天 + 同 score
+&lt;&#x2F;span&gt;&lt;span&gt;today_start = datetime.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;now&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;hour&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;minute&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;second&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isoformat&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;existing = conn.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;execute&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;SELECT&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; signals &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;WHERE&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; symbol &lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ? &lt;&#x2F;span&gt;&lt;span&gt;AND&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; score &lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ? &lt;&#x2F;span&gt;&lt;span&gt;AND &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;timestamp &lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; ?&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    (symbol, score, today_start)).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fetchone&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;历史数据清洗&lt;&#x2F;strong&gt;：写了个脚本登上 Azure VM，按 &lt;code&gt;(日期, 股票, 分数)&lt;&#x2F;code&gt; 分组，每组保留有回填数据的那条，没回填数据就保留最早的一条，删掉其余。60 → 29，干干净净。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;前端双保险&lt;&#x2F;strong&gt;：Dashboard 的信号复盘面板加了前端去重——同一天同一股票只展示最后一次分析。这样即使后端遗漏了什么，用户看到的也是干净数据。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xin-hao-fu-pan-kan-ban-bu-shi-biao-ge-shi-shi-jian-xian&quot;&gt;信号复盘看板：不是表格，是时间线&lt;&#x2F;h2&gt;
+&lt;p&gt;信号回填解决了&amp;quot;数据有没有&amp;quot;，接下来是&amp;quot;怎么看&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;给 Dashboard 加了第二个 Tab——&lt;strong&gt;🎯信号复盘&lt;&#x2F;strong&gt;。设计思路：不是做一个表格，而是做一个&lt;strong&gt;按日期分组的时间线&lt;&#x2F;strong&gt;，每条信号一张卡片，跟主面板的持仓卡片风格统一。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ding-bu-tong-ji-lan&quot;&gt;顶部统计栏&lt;&#x2F;h3&gt;
+&lt;p&gt;五张 stat 卡横排：5d 胜率、看多胜率、看空胜率、平均收益（正确 vs 错误）、已回填&#x2F;总信号。看多胜率只有一个样本时不显示百分比，而是灰色的&amp;quot;0&#x2F;1 样本不足&amp;quot;——小龙虾特别提的，&amp;quot;0% 看着太吓人了&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;qia-pian-she-ji-de-san-ci-die-dai&quot;&gt;卡片设计的三次迭代&lt;&#x2F;h3&gt;
+&lt;p&gt;第一版：左侧 3px 粗边框，蓝色=正确，金色=错误。小龙虾说&amp;quot;有点 material design 的旧味道&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;第二版：顶部 3px 边框 + 背景色。还是单边框，被 Polly 打回来说&amp;quot;好丑，参考主面板&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;第三版：&lt;strong&gt;对齐主面板的 box-shadow 柔光语言&lt;&#x2F;strong&gt;——正确卡片浅绿底 + 绿色光晕环绕，错误卡片浅红底 + 红色光晕环绕，待验证卡片降低透明度。零边框差异化，只用颜色和光影说话。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;signal-review-card&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;correct &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  background: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;22&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;163&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;74&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.06&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;  box-shadow: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 0 0 1px &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;22&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;163&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;74&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.2&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 4px 16px &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;22&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;163&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;74&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.07&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;signal-review-card&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;wrong &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  background: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;220&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.05&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;  box-shadow: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 0 0 1px &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;220&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.2&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 4px 16px &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgba&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;220&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;38&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.06&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;小龙虾的最后一条建议点睛：&amp;quot;用绿对红而不是蓝对红——绿=对、红=错，比蓝=对更直觉。&amp;quot;确实如此。&lt;&#x2F;p&gt;
+&lt;p&gt;最终效果：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;tidewatch-signal-validation&#x2F;signal_page.png&quot; alt=&quot;信号复盘看板——按日期分组的时间线，绿色=正确，红色=错误，灰色=待验证&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;dai-yan-zheng-qia-pian-de-jian-fa&quot;&gt;待验证卡片的减法&lt;&#x2F;h3&gt;
+&lt;p&gt;25 张待验证卡片底部都显示着 &lt;code&gt;5日 — 10日 — 20日 —&lt;&#x2F;code&gt;，三个破折号。没有任何信息量却占了一行高度。砍掉——&lt;strong&gt;只在有回填数据时才展示 outcomes 行&lt;&#x2F;strong&gt;。空间立刻清爽了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shu-zi-bei-hou-de-fan-si&quot;&gt;数字背后的反思&lt;&#x2F;h2&gt;
+&lt;p&gt;76.9% 的 5 天胜率——听起来不错，但有几个限定词：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;样本量只有 13&lt;&#x2F;strong&gt;。统计学上这什么都说明不了。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;看空为主&lt;&#x2F;strong&gt;（12 空 1 多）。这一周大盘是熊市体制，看空本身就是顺势，不能说明引擎有什么独特 alpha。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;时间窗口只有 5 天&lt;&#x2F;strong&gt;。5 天够短，很多&amp;quot;正确&amp;quot;只是短期波动符合方向，不代表中期预判准确。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;真正有价值的验证要等：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;10 天和 20 天回填完成（看方向持续性）&lt;&#x2F;li&gt;
+&lt;li&gt;更多交易日的信号积累（至少 100 条）&lt;&#x2F;li&gt;
+&lt;li&gt;不同市场体制下的表现对比（现在都是熊市数据）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;jin-ri-commits&quot;&gt;今日 commits&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;dc8fa6e fix(tracker): 修复信号回填 SQL 缺少 price_5d&#x2F;10d&#x2F;20d 列
+&lt;&#x2F;span&gt;&lt;span&gt;4d649e6 feat(review): review_signals limit 50→200
+&lt;&#x2F;span&gt;&lt;span&gt;01b8c57 refactor: 信号去重窗口从5min升级为当天+同score
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个 commit，但背后是：一个半隐藏的 SQL bug → 回填成功 → 发现数据重复 → 根因分析 → 三层修复 → 复盘看板三次设计迭代。工程的日常就是这样——计划一件事，解决三件事。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步：盘前播报。每天 9:15 自动推送到 Telegram，这样不用打开电脑也能知道今天的持仓体检报告。从&amp;quot;我去看数据&amp;quot;变成&amp;quot;数据来找我&amp;quot;——这才是&amp;quot;主动触达&amp;quot;的意义。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮实战记：Dashboard 上线一周，57 条信号对了几条？</title>
         <published>2026-03-18T00:00:00+00:00</published>
