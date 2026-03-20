@@ -5,8 +5,160 @@
     <link href="https://polly.wang/tags/gu-piao-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-19T00:00:00+00:00</updated>
+    <updated>2026-03-20T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gu-piao-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮出海记：让 A 股引擎看懂美股，8 个文件 180 行代码</title>
+        <published>2026-03-20T00:00:00+00:00</published>
+        <updated>2026-03-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-us-stock-support/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-us-stock-support/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;观潮验证记&lt;&#x2F;a&gt;——首批信号回填，5 天胜率 76.9%。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇的结论是：信号系统跑通了，数据说话，观潮不是随手一写的玩具。但有个问题一直搁着没动——它只看 A 股。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;neng-kan-tsla-ma&quot;&gt;&amp;quot;能看 TSLA 吗？&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;这个问题的答案，在今天之前是&amp;quot;不能&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;观潮的数据层建立在 baostock（A 股日 K 线）和 AKShare（资金流向、新闻、龙虎榜、北向资金）之上。这两个数据源提供了丰富的 A 股生态数据，但也把观潮牢牢钉在了 A 股的地盘上。&lt;&#x2F;p&gt;
+&lt;p&gt;我一直在想：一个投研引擎如果只能看一个市场，那它的视野就永远有天花板。美股不只是&amp;quot;另一个市场&amp;quot;，它是全球科技股定价的锚。AAPL、TSLA、MSFT——这些名字每天都在影响 A 股的半导体、新能源、云计算板块。&lt;&#x2F;p&gt;
+&lt;p&gt;所以今天的任务很明确：&lt;strong&gt;让观潮出海&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-han-shu-jue-ding-liang-ge-shi-chang&quot;&gt;一个函数决定两个市场&lt;&#x2F;h2&gt;
+&lt;p&gt;设计的第一个问题：怎么区分 A 股和美股？&lt;&#x2F;p&gt;
+&lt;p&gt;A 股代码是纯数字（&lt;code&gt;002111&lt;&#x2F;code&gt;、&lt;code&gt;600519&lt;&#x2F;code&gt;），美股代码是字母（&lt;code&gt;AAPL&lt;&#x2F;code&gt;、&lt;code&gt;TSLA&lt;&#x2F;code&gt;）。这意味着只需要一个判断：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;is_us_stock&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; bool:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;首字母是字母就是美股&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt;(symbol) and symbol[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isalpha&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三行代码，但它贯穿了整个架构——从数据拉取、体制识别、叙事生成、LLM 润色到行为护栏，所有模块都用这一个函数做路由分发。&lt;&#x2F;p&gt;
+&lt;p&gt;数据源选择上，我用了 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ranaroussi&#x2F;yfinance&quot;&gt;yfinance&lt;&#x2F;a&gt;——免费、零反爬、覆盖全球市场。实测 AAPL 的 120 天 K 线拉取只要 0.2 秒，比 baostock 的 0.28 秒还快。而且不需要像 AKShare 那样担心东方财富的反爬机制。&lt;&#x2F;p&gt;
+&lt;p&gt;路由设计很直接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_stock_daily&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;days&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;120&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;adjust&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;qfq&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;is_us_stock&lt;&#x2F;span&gt;&lt;span&gt;(symbol):
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get_us_stock_daily&lt;&#x2F;span&gt;&lt;span&gt;(symbol, days)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# yfinance
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# A 股走 baostock...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;get_stock_name()&lt;&#x2F;code&gt;、&lt;code&gt;get_index_daily()&lt;&#x2F;code&gt; 同理——一个 &lt;code&gt;if&lt;&#x2F;code&gt; 分发两个市场，该走 yfinance 走 yfinance，该走 baostock 走 baostock。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ba-ge-wen-jian-de-lian-suo-fan-ying&quot;&gt;八个文件的连锁反应&lt;&#x2F;h2&gt;
+&lt;p&gt;看起来只是&amp;quot;加个数据源&amp;quot;，但实际改动波及了 8 个文件、180 行代码。因为&amp;quot;看美股&amp;quot;不只是拉 K 线那么简单——整个分析链路都需要&lt;strong&gt;市场感知&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shu-ju-ceng-bu-zhi-shi-la-shu-ju&quot;&gt;数据层：不只是拉数据&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;data.py&lt;&#x2F;code&gt; 是改动最大的文件。除了 yfinance K 线接入，还有两个关键设计：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;名称缓存&lt;&#x2F;strong&gt;。&lt;code&gt;yf.Ticker(&amp;quot;AAPL&amp;quot;).info&lt;&#x2F;code&gt; 会触发一次完整的 HTTP 请求拿全量公司信息，只为取一个名字。在 &lt;code&gt;scan_market&lt;&#x2F;code&gt; 的循环扫描中，每只美股都调一次就太慢了。解决方案是加一个类级别的内存缓存：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;_us_name_cache: dict[str, str] = {}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_us_stock_name&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;symbol in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;._us_name_cache:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;._us_name_cache[symbol]
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 首次调用才走 HTTP，之后都从缓存读
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;yfinance 参数选择&lt;&#x2F;strong&gt;。最初用 &lt;code&gt;period=&amp;quot;240d&amp;quot;&lt;&#x2F;code&gt; 拉数据，但 yfinance 最大只支持 &lt;code&gt;&amp;quot;730d&amp;quot;&lt;&#x2F;code&gt;。如果 &lt;code&gt;days=365&lt;&#x2F;code&gt;，&lt;code&gt;days*2=730&lt;&#x2F;code&gt; 刚好踩线，再大就报错。改用 &lt;code&gt;start&lt;&#x2F;code&gt; 参数更精确：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;start = (datetime.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;now&lt;&#x2F;span&gt;&lt;span&gt;() - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;timedelta&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;days&lt;&#x2F;span&gt;&lt;span&gt;=days * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strftime&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%Y&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%d&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;df = ticker.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;history&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;start&lt;&#x2F;span&gt;&lt;span&gt;=start)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yin-qing-ceng-spy-ti-dai-shang-zheng-zhi-shu&quot;&gt;引擎层：SPY 替代上证指数&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;server.py&lt;&#x2F;code&gt; 的核心改动在 &lt;code&gt;_analyze_stock_sync()&lt;&#x2F;code&gt;——这是观潮的主分析函数。&lt;&#x2F;p&gt;
+&lt;p&gt;A 股分析时，市场体制用上证指数（&lt;code&gt;000001&lt;&#x2F;code&gt;）做基准。美股显然不能用上证——SPY（标普 500 ETF）是更合适的锚：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;index_code = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;SPY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;_is_us &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;000001&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;同时，A 股独有的资金流向（主力资金净流入&#x2F;流出）、新闻（AKShare 爬取东方财富）、北向资金——这些在美股世界里不存在。解决方案是 graceful fallback：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;_skip_money = _is_us or is_etf or not include_money_flow
+&lt;&#x2F;span&gt;&lt;span&gt;_skip_news = _is_us or is_etf or not include_news
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不报错、不崩溃，只是返回空数据。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;scan_market&lt;&#x2F;code&gt; 也需要适配——如果持仓或自选里有美股，扫描时的体制调整必须分市场计算。A 股用上证的 regime bias，美股用 SPY 的 regime bias：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;_regime_biases = {}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;market_key, idx_code &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;[(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;A&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;000001&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;), (&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;US&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;SPY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)]:
+&lt;&#x2F;span&gt;&lt;span&gt;    idx_df = market_data.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get_index_daily&lt;&#x2F;span&gt;&lt;span&gt;(idx_code, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;days&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;120&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    r = regime_detector.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;detect&lt;&#x2F;span&gt;&lt;span&gt;(idx_df)
+&lt;&#x2F;span&gt;&lt;span&gt;    _regime_biases[market_key] = regime_detector.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get_regime_adjustment&lt;&#x2F;span&gt;&lt;span&gt;(r[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;regime&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;])[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;signal_bias&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;fen-xi-ceng-spy-xiang-dui-qiang-ruo-ti-dai-zi-jin-mian&quot;&gt;分析层：SPY 相对强弱替代资金面&lt;&#x2F;h3&gt;
+&lt;p&gt;美股没有资金流向数据，叙事报告会&amp;quot;少一段&amp;quot;——显得比 A 股分析薄。&lt;&#x2F;p&gt;
+&lt;p&gt;我用 SPY 相对强弱来填补这个空缺。在 &lt;code&gt;server.py&lt;&#x2F;code&gt; 里计算好数据，通过 &lt;code&gt;money[&amp;quot;_us_relative&amp;quot;]&lt;&#x2F;code&gt; 传递给 &lt;code&gt;narrative.py&lt;&#x2F;code&gt; 消费：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# server.py: 计算 SPY 相对强弱
+&lt;&#x2F;span&gt;&lt;span&gt;spy_pct_5d = (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt;(index_df.iloc[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;][&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;close&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]) &#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt;(index_df.iloc[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;][&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;close&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]) - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100
+&lt;&#x2F;span&gt;&lt;span&gt;money[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;_us_relative&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] = {
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;spy_pct_5d&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;(spy_pct_5d, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;relative&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;(stock_pct_5d - spy_pct_5d, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# narrative.py: 三种情况的叙事化
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;abs&lt;&#x2F;span&gt;&lt;span&gt;(rel) &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    context_parts.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;近5日与SPY走势同步（SPY &lt;&#x2F;span&gt;&lt;span&gt;{spy_pct&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;:+.1f&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;%）&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span&gt;rel &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    context_parts.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;近5日跑赢SPY &lt;&#x2F;span&gt;&lt;span&gt;{rel&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;:.1f&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;个百分点，相对强势&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    context_parts.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;近5日跑输SPY &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;abs&lt;&#x2F;span&gt;&lt;span&gt;(rel)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;:.1f&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;个百分点，相对弱势&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这样 TSLA 的叙事就变成了：&amp;quot;近5日跑输SPY 3.3个百分点（SPY -0.4%），相对弱势&amp;quot;——比&amp;quot;无资金面数据&amp;quot;有价值得多。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;run-se-ceng-yu-hu-lan-shi-chang-jiao-se-qie-huan&quot;&gt;润色层与护栏：市场角色切换&lt;&#x2F;h3&gt;
+&lt;p&gt;LLM 叙事润色的 prompt 也做了市场感知。A 股用&amp;quot;A股分析师&amp;quot;的人设和规则（1手=100股），美股用&amp;quot;美股分析师&amp;quot;（支持碎股交易）：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;is_us:
+&lt;&#x2F;span&gt;&lt;span&gt;    market_role = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;美股分析师&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    market_rules = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- 美股支持碎股交易，无最小交易单位限制&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    market_role = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;A股分析师&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    market_rules = &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- A股交易规则：最小交易单位1手=100股...&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;行为护栏的追高检测也需要调整——美股没有涨跌停限制，波动比 A 股大得多。5 日涨 8% 在 A 股算追高，在美股很常见。阈值从 8% 提高到 15%：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;threshold = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;15 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;is_us_stock&lt;&#x2F;span&gt;&lt;span&gt;(symbol) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;8
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;还有一个容易忽略的细节：我的账户资金都是人民币。美股分析如果告诉 LLM&amp;quot;你还有 1.2 万可用&amp;quot;，它会按美元理解，给出完全错误的仓位建议。所以美股分析时直接跳过账户资金上下文。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;qian-duan-san-jian-tao-gao-ding-bi-chong-gua-pei&quot;&gt;前端：三件套搞定币种适配&lt;&#x2F;h3&gt;
+&lt;p&gt;Dashboard 的改动集中在三个工具函数上：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isUSCode&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;) { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&amp;amp; &#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;^&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[A-Za-z]&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;test&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;); }
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cur&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;) { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isUSCode&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;) ? &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; : &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;¥&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;; }
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;displayName&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isUSCode&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.code)) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.code;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; MSFT 做主标题
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.name || &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.code;              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 比亚迪 做主标题
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;A 股习惯用公司简称（&amp;quot;比亚迪&amp;quot;），美股习惯用 ticker（&amp;quot;MSFT&amp;quot;）。如果用全名&amp;quot;Microsoft Corporation&amp;quot;做卡片标题，会占两行，跟 A 股的四字简称格格不入。&lt;&#x2F;p&gt;
+&lt;p&gt;顶部摘要栏也做了智能标注——检测持仓组成，纯 A 股显示&amp;quot;持仓总浮盈（¥）&amp;quot;，纯美股显示&amp;quot;持仓总浮盈（$）&amp;quot;，混合则显示&amp;quot;持仓总浮盈（混合币种）&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-lun-dai-ma-shen-cha-cong-7-5-dao-9-5&quot;&gt;三轮代码审查：从 7.5 到 9.5&lt;&#x2F;h2&gt;
+&lt;p&gt;代码写完不算完。我让&amp;quot;小龙虾&amp;quot;（AI Code Reviewer）做了三轮审查，这个过程本身比写代码更有收获。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-yi-lun-7-5-10-san-ge-p0&quot;&gt;第一轮：7.5&#x2F;10，三个 P0&lt;&#x2F;h3&gt;
+&lt;p&gt;小龙虾看完全部代码后给了 7.5 分——&amp;quot;骨架搭得不错，路由设计干净，但有几个问题上线会踩坑&amp;quot;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P0-1&lt;&#x2F;strong&gt;：&lt;code&gt;scan_market&lt;&#x2F;code&gt; 的体制识别写死了上证指数 &lt;code&gt;&amp;quot;000001&amp;quot;&lt;&#x2F;code&gt;。如果自选里加了美股，扫描时会用 A 股的体制做评分调整——这是错的。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;P0-2&lt;&#x2F;strong&gt;：&lt;code&gt;get_us_stock_name&lt;&#x2F;code&gt; 每次调用都走 HTTP 请求，在扫描循环里会很慢。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;P0-3&lt;&#x2F;strong&gt;：如果有人 &lt;code&gt;analyze_stock(&amp;quot;SPY&amp;quot;)&lt;&#x2F;code&gt;，regime 会用 SPY 跟自己比——等于没有 market context。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;还有 5 个 P1（guardrails 阈值、narrator 少一段、tracker 交易日对齐、manage_account 币种、compare_stocks 跨市场说明）和 2 个 nit（yfinance period 上限、CLAUDE.md Dashboard 状态不准）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;quan-xiu-hou-re-review-9-10&quot;&gt;全修后 Re-Review：9&#x2F;10&lt;&#x2F;h3&gt;
+&lt;p&gt;10 项全部修完后，小龙虾重新看了一遍：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;9&#x2F;10&lt;&#x2F;strong&gt; — 10 项全部修复，质量扎实。特别点名表扬 P1-5 的 SPY 相对强弱实现——不是简单加句话，而是 server 算数据 → money dict 传递 → narrative 消费的完整链路，这是正确的工程做法。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;被点名表扬的那个设计，核心思路是&lt;strong&gt;职责分离&lt;&#x2F;strong&gt;：数据计算在 &lt;code&gt;server.py&lt;&#x2F;code&gt;（它有 index_df），通过 &lt;code&gt;money[&amp;quot;_us_relative&amp;quot;]&lt;&#x2F;code&gt; 传递给 &lt;code&gt;narrative.py&lt;&#x2F;code&gt;（它只管生成文本），不让叙事层自己去拉数据。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;dashboard-gua-pei-re-review-9-5-10&quot;&gt;Dashboard 适配 Re-Review：9.5&#x2F;10&lt;&#x2F;h3&gt;
+&lt;p&gt;前端适配也过了一轮审查。扣的 0.5 分很实在：&amp;quot;混合币种摘要把人民币和美元的浮盈直接加在一起了&amp;quot;——但因为我目前只在 A 股有持仓，美股只做观察不买入，这个问题不阻塞。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;dai-ma-shen-cha-de-jie-zhi&quot;&gt;代码审查的价值&lt;&#x2F;h3&gt;
+&lt;p&gt;三轮 review 教会我一件事：&lt;strong&gt;自己写的代码里，最危险的 bug 不是你不会，而是你看不到。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;scan_market&lt;&#x2F;code&gt; 写死上证指数——我知道应该区分市场，但在两处不同的扫描函数里各复制了一份 &lt;code&gt;&amp;quot;000001&amp;quot;&lt;&#x2F;code&gt;，就是忘了改。名称缓存——我知道 &lt;code&gt;.info&lt;&#x2F;code&gt; 慢，但&amp;quot;就几只美股，能慢到哪去&amp;quot;的想法让我跳过了它。&lt;&#x2F;p&gt;
+&lt;p&gt;这些不是能力问题，是注意力盲区。有个 reviewer 帮你盯着，值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-guo-msft-389-02-kan-kong-55&quot;&gt;效果：MSFT $389.02，看空 -55&lt;&#x2F;h2&gt;
+&lt;p&gt;最终效果是这样的——点开 MSFT 的详情面板：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;tidewatch-us-stock-support&#x2F;msft_detail.png&quot; alt=&quot;MSFT 详情面板：$389.02，看空信号，SPY 体制&amp;quot;震荡偏弱&amp;quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主标题&lt;&#x2F;strong&gt;是 ticker「MSFT」，不是冗长的&amp;quot;Microsoft Corporation&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;价格&lt;&#x2F;strong&gt;前面是 &lt;code&gt;$&lt;&#x2F;code&gt; 而不是 &lt;code&gt;¥&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;市场体制&lt;&#x2F;strong&gt;用 SPY 识别为&amp;quot;震荡偏弱&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;AI 深度分析&lt;&#x2F;strong&gt;用&amp;quot;美股分析师&amp;quot;视角，没有出现人民币、1手100股这些 A 股概念&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SPY 相对强弱&lt;&#x2F;strong&gt;替代了资金面段落：&amp;quot;跑输大盘快3个点了&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;整个分析从发起请求到 LLM 润色完成，大约 3 秒。其中 yfinance 拉数据 0.2 秒，技术分析 0.01 秒，LLM 润色约 2.5 秒。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;guan-chao-chu-hai-liao&quot;&gt;观潮出海了&lt;&#x2F;h2&gt;
+&lt;p&gt;回看今天的改动——8 个文件、180 行代码、6 个 commit、三轮代码审查。不多，但每一行都在回答同一个问题：&lt;strong&gt;一个投研引擎怎么做到&amp;quot;市场感知&amp;quot;？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;不是简单地换个数据源。是体制识别要换锚（SPY vs 上证），叙事要补段（相对强弱 vs 资金流），护栏要调阈值（15% vs 8%），LLM 要切角色（美股分析师 vs A股分析师），前端要适配币种（$ vs ¥），账户上下文要知道什么该说什么不该说（人民币账户对美股没有参考价值）。&lt;&#x2F;p&gt;
+&lt;p&gt;这些细节单独看都不难，但它们加在一起就构成了「市场感知」这个概念。一个真正理解市场的引擎，不是什么数据都往里塞，而是知道哪些信息在当前上下文里有意义。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步：回测引擎 v1——用历史数据验证观潮的信号策略能不能跑赢沪深 300。信号验证的 76.9% 胜率是在少量样本上的，要真正有说服力，得跑回测。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;观潮系列&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;诞生记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;云端部署&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;Dashboard + 信号&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;信号验证&lt;&#x2F;a&gt; → &lt;strong&gt;出海记&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮验证记：首批信号回填，76.9% 的胜率是真的吗？</title>
         <published>2026-03-19T00:00:00+00:00</published>
