@@ -1,0 +1,83 @@
+<!doctype html><html><head><title>观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码</title><meta content="观潮系列第六篇。一次代码审计揭开了 LLM 分析的真相：它不是在分析股票，而是在改作文。PE/PB 永远是 0，新闻拉回来没喂给它，龙虎榜代码写好了没调。7 项数据增强、173 行代码、8 个 commit——让 AI 从「你这票近5日偏弱」进化到「PE72倍估值不便宜 + 主力可能在洗盘 + 建议减20手」。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/tidewatch-data-enhancement/ property=og:url><meta content="观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码" property=og:title><meta content="观潮系列第六篇。一次代码审计揭开了 LLM 分析的真相：它不是在分析股票，而是在改作文。PE/PB 永远是 0，新闻拉回来没喂给它，龙虎榜代码写好了没调。7 项数据增强、173 行代码、8 个 commit——让 AI 从「你这票近5日偏弱」进化到「PE72倍估值不便宜 + 主力可能在洗盘 + 建议减20手」。" property=og:description><meta content=https://polly.wang/tidewatch-data-enhancement/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/tidewatch-data-enhancement/ name=twitter:url><meta content="观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码" name=twitter:title><meta content="观潮系列第六篇。一次代码审计揭开了 LLM 分析的真相：它不是在分析股票，而是在改作文。PE/PB 永远是 0，新闻拉回来没喂给它，龙虎榜代码写好了没调。7 项数据增强、173 行代码、8 个 commit——让 AI 从「你这票近5日偏弱」进化到「PE72倍估值不便宜 + 主力可能在洗盘 + 建议减20手」。" name=twitter:description><meta content=https://polly.wang/tidewatch-data-enhancement/cover.jpg name=twitter:image><meta content=2026-03-21T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=MCP property=article:tag><meta content=股票分析 property=article:tag><meta content=观潮 property=article:tag><meta content=LLM property=article:tag><meta content=数据增强 property=article:tag><meta content=代码审计 property=article:tag><meta content=baostock property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://polly.wang/vendor/purecss/pure-min.css rel=stylesheet><link href=https://polly.wang/vendor/purecss/grids-responsive-min.css rel=stylesheet><link href=https://polly.wang/vendor/font-awesome/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-1N289C8N8W" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-1N289C8N8W')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change Log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a onclick="gtag('event','social_click',{platform:'email'});" href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a onclick="gtag('event','social_click',{platform:'twitter'});" href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a onclick="gtag('event','social_click',{platform:'linkedin'});" href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a onclick="gtag('event','social_click',{platform:'github'});" href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码</h1><div class=cover-image><img alt="观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码" loading=lazy src=/tidewatch-data-enhancement/cover.jpg></div><div class=content><p>接上回：<a href=/tidewatch-us-stock-support>观潮出海记</a>——美股支持上线，AAPL 和 TSLA 能分析了。<p>出海那天很兴奋，但第二天小龙虾做了一件事让我冷静下来——它读完了观潮的全部代码，然后问了一个问题：<p><strong>"你的 LLM 分析股票时，到底看到了什么数据？"</strong><h2 id=zhe-bu-shi-ai-fen-xi-zhe-shi-ai-gai-zuo-wen>"这不是 AI 分析，这是 AI 改作文"</h2><p>答案让人尴尬。<p>观潮的分析链路是这样的：数据层拉 K 线 → 技术分析引擎算评分 → 模板叙事生成一段中文文本 → LLM 把这段文本"润色"成更自然的语气。<p>问题在于，LLM 拿到的只有三样东西：<ol><li><strong>一段模板叙事文本</strong>（"威海广泰近5日偏弱，均线空头排列..."）<li><strong>一个评分数字</strong>（-82）<li><strong>持仓上下文</strong>（"4600股，成本¥8.75，浮盈+13.2%"）</ol><p>它看不到新闻、看不到估值、看不到龙虎榜。PE/PB 字段写了但永远是 0。新闻数据明明拉回来了，但没人传给 LLM。<code>get_lhb()</code> 方法写好了，<code>_analyze_stock_sync()</code> 里根本没调。<p>用小龙虾的话说："<strong>LLM 润色 ≠ LLM 分析</strong>，它只是在改写模板叙事的语气，不是基于原始数据做独立判断。"<p>这就是一次代码审计的价值——你自己写的东西，你以为它在"分析"，其实它只是在"改作文"。<h2 id=t1-xian-ba-cun-huo-yong-jin>T1：先把存货用尽</h2><p>最讽刺的发现是：很多数据<strong>代码已经写好了</strong>，只是没接到主分析流里。小龙虾把这些叫做"存货"——写好没用的代码比没写更浪费。<p>三项改动，一个下午：<p><strong>龙虎榜接线</strong>。<code>get_lhb()</code> 方法一直在 <code>data.py</code> 里躺着，只是 <code>_analyze_stock_sync()</code> 的并发拉取里没调它。加一行 <code>executor.submit(market_data.get_lhb, symbol)</code> 就行——但 AKShare 更新了 API 签名，从 <code>symbol</code> 参数变成了日期范围查全市场再筛个股，多花了二十分钟做适配。<p><strong>新闻喂 LLM</strong>。新闻数据明明在 <code>news</code> 变量里，<code>polish_narrative()</code> 的参数列表里就是没有它。加个 <code>news</code> 参数，在 prompt 里插入新闻标题列表，告诉 LLM"如有重大利好/利空务必提及"。<p>效果立竿见影。改之前，威海广泰的叙事是"近5日偏弱，均线空头排列"。改之后：<blockquote><p>消息面倒是有些亮点，收购空港股权、获得国际奖项、无人机试飞成功，都算利好。</blockquote><p>LLM 终于不是个"瞎子"了。<p><strong>美股新闻</strong>。之前美股分析直接跳过了新闻（<code>_skip_news = _is_us</code>）。yfinance 的 <code>ticker.news</code> 是免费的，只是返回格式比较坑—— title 藏在 <code>content.title</code> 里面，不是顶层的 <code>title</code> 字段。一个 hotfix 解决。TSLA 分析里出现了"US jury finds Elon Musk misled Twitter shareholders"。<p>三个 fix 跟着三个 commit，T1 的教训是：<strong>第三方 API 永远在变，代码写好不代表能用，必须实际跑一遍验证</strong>。<h2 id=t2-pe-pb-de-liang-xi>T2：PE/PB 的惊喜</h2><p>T2 的第一项是补基本面——PE/PB/ROE，小龙虾审计中标注的"最大缺口"。<p>原始规划是用 baostock 的 <code>query_profit_data()</code> 单独拉季报数据，预估 60 行代码。但我在验证数据质量时发现了一个惊喜：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># baostock K线查询，原来支持这些字段
+</span><span>rs = bs.</span><span style=color:#bf616a>query_history_k_data_plus</span><span>(
+</span><span>    bs_code,
+</span><span>    "</span><span style=color:#a3be8c>date,open,high,low,close,volume,pctChg,turn,peTTM,pbMRQ</span><span>",
+</span><span>    </span><span style=color:#d08770>...
+</span><span>)
+</span></code></pre><p><strong><code>peTTM</code> 和 <code>pbMRQ</code> 就在 K 线接口里</strong>。不需要额外请求、不需要新方法、不需要缓存策略——只要在查询字符串里多写两个字段名。<p>预估 60 行，实际改动 1 行查询字段 + 2 行列名映射 + 3 行 server.py 提取。PE 从永远的 0 变成了 24.07。<p>同一个 commit 里还顺手加了换手率（<code>turn</code> 字段），在技术分析里做了异常检测：换手率 >8% 配合方向判断是放量上攻还是主力出货，突然萧条（从 2% 跌到 0.5%）提示市场关注度下降。和已有的量比、OBV 形成三角交叉验证。<h2 id=t2-3-cong-gai-zuo-wen-dao-zuo-pan-duan>T2-3：从"改作文"到"做判断"</h2><p>前面补的所有数据——新闻、PE/PB、换手率——最终都要汇聚到一个地方：LLM 的 prompt。<p>之前的 prompt 是这样的：<pre style=background:#2b303b;color:#c0c5ce><code><span>你是一位经验丰富的A股分析师，正在和朋友聊投资。
+</span><span>请将以下分析报告润色为更自然、更有"聊天感"的短评。
+</span><span>...
+</span><span>原始分析：
+</span><span>{template_narrative}
+</span></code></pre><p>"请润色"——定位就是改语气。LLM 再聪明，你只给它一段文字让它改写，它也只能改写。<p>改造后的 prompt：<pre style=background:#2b303b;color:#c0c5ce><code><span>你是一位经验丰富的A股分析师，正在和朋友聊投资。
+</span><span>请基于以下数据和分析，输出一段自然的、有"聊天感"的投资短评。
+</span><span>
+</span><span>要求：
+</span><span>- 基于结构化数据做独立交叉验证，不要只改写模板叙事
+</span><span>- 如果数据之间有矛盾（技术vs基本面、资金vs价格），要重点分析
+</span><span>...
+</span><span>
+</span><span>结构化数据：
+</span><span>方向: 看空 | 综合评分: -82 (原始-77, 体制调整-5)
+</span><span>价格: 9.91 | 5日涨跌: -5.8% | 20日位置: 6%
+</span><span>均线: 空头排列 | MA5偏离: -1.3% | MA20偏离: -8.0%
+</span><span>动量: RSI 30 | MACD 死叉
+</span><span>量能: 量比 0.75x | OBV斜率 -0.839 | 换手率 0.9% (5日均 1.2%)
+</span><span>估值: PE(TTM) 72.1 | PB(MRQ) 5.12
+</span><span>布林: 位置 6% | ATR 0.39
+</span><span>体制: 熊市 — 趋势向下 | 建议仓位 ≤20%
+</span><span>冲突: 技术面看空但主力资金净流入（可能洗盘）
+</span><span>
+</span><span>模板分析（供参考，不要照搬）：
+</span><span>{template_narrative}
+</span></code></pre><p>关键变化：<strong>"请润色"变成了"请基于数据做独立判断"</strong>，模板叙事从"原始分析"降级为"供参考，不要照搬"。<p>效果对比：<p><strong>Before</strong>（T1 之后，有新闻但无结构化数据）：<blockquote><p>威海广泰这两天确实有点难受，连续走弱跌了5.8%...消息面倒是有些亮点，收购空港股权...</blockquote><p><strong>After</strong>（T2-3，完整结构化数据）：<blockquote><p>技术面这么空，主力资金却在悄悄吸筹，这可能是在洗盘。你8.75的成本还不错，现在浮盈13.2%，<strong>但我建议先减个20-30手锁定部分利润。原因是现在大盘还在熊市格局，反弹很可能是陷阱，而且这票PE72倍估值不算便宜</strong>。</blockquote><p>区别一目了然：<ul><li>会用 PE 判断估值了（"72倍不算便宜"）<li>会发现矛盾信号了（"技术面空但主力吸筹 → 可能洗盘"）<li>会给具体操作建议了（"减20-30手"，而不是笼统的"减仓"）<li>会结合体制做风险判断了（"大盘熊市，反弹可能是陷阱"）</ul><p>这不再是"改作文"，是真正的"做判断"。<h2 id=yi-ge-bug-he-yi-ge-jiao-xun>一个 bug 和一个教训</h2><p>T2-3 上线后，小龙虾做了 re-review，给了 9.5/10。但它抓到了一个隐藏 bug：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#65737e># 我写的
+</span><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>MACD </span><span>{'</span><span style=color:#a3be8c>金叉</span><span>' </span><span style=color:#b48ead>if </span><span>_mom.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>macd_cross</span><span>') == '</span><span style=color:#a3be8c>golden</span><span>' </span><span style=color:#b48ead>else </span><span>'</span><span style=color:#a3be8c>死叉</span><span>' </span><span style=color:#b48ead>if </span><span>_mom.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>macd_cross</span><span>') == '</span><span style=color:#a3be8c>death</span><span>' </span><span style=color:#b48ead>else </span><span>'</span><span style=color:#a3be8c>无交叉</span><span>'}"
+</span><span>
+</span><span style=color:#65737e># technical.py 实际返回的
+</span><span>macd_cross: "</span><span style=color:#a3be8c>金叉</span><span>" / "</span><span style=color:#a3be8c>死叉</span><span>" / "</span><span style=color:#a3be8c>无</span><span>"
+</span></code></pre><p>我在用英文 <code>golden</code>/<code>death</code> 去匹配中文 <code>金叉</code>/<code>死叉</code>——永远匹配不上，LLM 看到的永远是"无交叉"。一个本应该在写代码时就发现的问题，因为两个模块之间的格式约定不一致，悄悄丢失了一个重要的技术指标。<p>修复只需要一行：<pre class=language-python data-lang=python style=background:#2b303b;color:#c0c5ce><code class=language-python data-lang=python><span style=color:#b48ead>f</span><span>"</span><span style=color:#a3be8c>动量: RSI </span><span>{_mom.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>rsi_14</span><span>', </span><span style=color:#d08770>50</span><span>)</span><span style=color:#d08770>:.0f</span><span>}</span><span style=color:#a3be8c> | MACD </span><span>{_mom.</span><span style=color:#bf616a>get</span><span>('</span><span style=color:#a3be8c>macd_cross</span><span>', '</span><span style=color:#a3be8c>无</span><span>')}"
+</span></code></pre><p>教训很简单：<strong>数据从 A 模块流到 B 模块时，格式约定必须一致。不要在消费端硬编码生产端的值——直接用生产端返回的原始值。</strong><h2 id=173-xing-dai-ma-de-quan-jing>173 行代码的全景</h2><p>回看这一天的改动——5 个文件、173 行代码、8 个 commit：<table><thead><tr><th>层<th>改动<th>效果<tbody><tr><td><strong>data.py</strong><td>K 线加 turn/peTTM/pbMRQ 字段 + 美股新闻 + 龙虎榜适配<td>数据从"有但没用"变成"有且可用"<tr><td><strong>technical.py</strong><td>换手率异常检测 + 三角交叉验证<td>评分维度从 8 维扩展到 9 维<tr><td><strong>server.py</strong><td>PE/PB 提取 + 结构化摘要构建 + data_summary 传递<td>LLM 看到完整数据画面<tr><td><strong>llm.py</strong><td>prompt 升级 + news/data_summary 注入<td>从"改作文"到"做判断"</table><p>最让我印象深刻的不是代码量，而是发现 baostock K 线自带 PE/PB 那一刻——<strong>最好的优化不是写新代码，而是发现数据就在手边只是没取</strong>。预估 60 行的改动变成了 1 行，这才是工程效率的真正体现。<p>下一步：回测引擎——用历史数据验证优化后的信号策略是否比优化前更准。173 行代码改了 LLM 的"视野"，但信号评分体系没变，胜率会不会因为新数据（换手率±5分）而提升？只有回测能给出答案。<hr><p><strong>观潮系列</strong>：<a href=/tidewatch-ai-stock-engine>诞生记</a> → <a href=/tidewatch-cloud-deployment>云端部署</a> → <a href=/tidewatch-dashboard-and-signals>Dashboard + 信号</a> → <a href=/tidewatch-signal-validation>信号验证</a> → <a href=/tidewatch-us-stock-support>出海记</a> → <strong>锐评记</strong></div><div class=navigation></div></div><div id=giscus-container><h2>Comments</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><script>(function(){if(typeof gtag!=='function')return;var a=document.querySelector('.blog-post .content');if(a&&'IntersectionObserver' in window){var b=false;var c=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!b){b=true;gtag('event','blog_read_complete',{article_title:document.title,article_path:location.pathname});c.disconnect()}},{threshold:0.1});var d=a.lastElementChild||a;c.observe(d)};var e=document.getElementById('giscus-container');if(e&&'IntersectionObserver' in window){var f=false;var g=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!f){f=true;gtag('event','comment_view',{article_title:document.title,article_path:location.pathname});g.disconnect()}},{threshold:0.1});g.observe(e)}})()</script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

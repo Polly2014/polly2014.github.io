@@ -5,8 +5,137 @@
     <link href="https://polly.wang/tags/gu-piao-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-20T00:00:00+00:00</updated>
+    <updated>2026-03-21T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gu-piao-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码</title>
+        <published>2026-03-21T00:00:00+00:00</published>
+        <updated>2026-03-21T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-data-enhancement/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-data-enhancement/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;观潮出海记&lt;&#x2F;a&gt;——美股支持上线，AAPL 和 TSLA 能分析了。&lt;&#x2F;p&gt;
+&lt;p&gt;出海那天很兴奋，但第二天小龙虾做了一件事让我冷静下来——它读完了观潮的全部代码，然后问了一个问题：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;你的 LLM 分析股票时，到底看到了什么数据？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-bu-shi-ai-fen-xi-zhe-shi-ai-gai-zuo-wen&quot;&gt;&amp;quot;这不是 AI 分析，这是 AI 改作文&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;答案让人尴尬。&lt;&#x2F;p&gt;
+&lt;p&gt;观潮的分析链路是这样的：数据层拉 K 线 → 技术分析引擎算评分 → 模板叙事生成一段中文文本 → LLM 把这段文本&amp;quot;润色&amp;quot;成更自然的语气。&lt;&#x2F;p&gt;
+&lt;p&gt;问题在于，LLM 拿到的只有三样东西：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;一段模板叙事文本&lt;&#x2F;strong&gt;（&amp;quot;威海广泰近5日偏弱，均线空头排列...&amp;quot;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;一个评分数字&lt;&#x2F;strong&gt;（-82）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;持仓上下文&lt;&#x2F;strong&gt;（&amp;quot;4600股，成本¥8.75，浮盈+13.2%&amp;quot;）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;它看不到新闻、看不到估值、看不到龙虎榜。PE&#x2F;PB 字段写了但永远是 0。新闻数据明明拉回来了，但没人传给 LLM。&lt;code&gt;get_lhb()&lt;&#x2F;code&gt; 方法写好了，&lt;code&gt;_analyze_stock_sync()&lt;&#x2F;code&gt; 里根本没调。&lt;&#x2F;p&gt;
+&lt;p&gt;用小龙虾的话说：&amp;quot;&lt;strong&gt;LLM 润色 ≠ LLM 分析&lt;&#x2F;strong&gt;，它只是在改写模板叙事的语气，不是基于原始数据做独立判断。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;这就是一次代码审计的价值——你自己写的东西，你以为它在&amp;quot;分析&amp;quot;，其实它只是在&amp;quot;改作文&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;t1-xian-ba-cun-huo-yong-jin&quot;&gt;T1：先把存货用尽&lt;&#x2F;h2&gt;
+&lt;p&gt;最讽刺的发现是：很多数据&lt;strong&gt;代码已经写好了&lt;&#x2F;strong&gt;，只是没接到主分析流里。小龙虾把这些叫做&amp;quot;存货&amp;quot;——写好没用的代码比没写更浪费。&lt;&#x2F;p&gt;
+&lt;p&gt;三项改动，一个下午：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;龙虎榜接线&lt;&#x2F;strong&gt;。&lt;code&gt;get_lhb()&lt;&#x2F;code&gt; 方法一直在 &lt;code&gt;data.py&lt;&#x2F;code&gt; 里躺着，只是 &lt;code&gt;_analyze_stock_sync()&lt;&#x2F;code&gt; 的并发拉取里没调它。加一行 &lt;code&gt;executor.submit(market_data.get_lhb, symbol)&lt;&#x2F;code&gt; 就行——但 AKShare 更新了 API 签名，从 &lt;code&gt;symbol&lt;&#x2F;code&gt; 参数变成了日期范围查全市场再筛个股，多花了二十分钟做适配。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;新闻喂 LLM&lt;&#x2F;strong&gt;。新闻数据明明在 &lt;code&gt;news&lt;&#x2F;code&gt; 变量里，&lt;code&gt;polish_narrative()&lt;&#x2F;code&gt; 的参数列表里就是没有它。加个 &lt;code&gt;news&lt;&#x2F;code&gt; 参数，在 prompt 里插入新闻标题列表，告诉 LLM&amp;quot;如有重大利好&#x2F;利空务必提及&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;效果立竿见影。改之前，威海广泰的叙事是&amp;quot;近5日偏弱，均线空头排列&amp;quot;。改之后：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;消息面倒是有些亮点，收购空港股权、获得国际奖项、无人机试飞成功，都算利好。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;LLM 终于不是个&amp;quot;瞎子&amp;quot;了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;美股新闻&lt;&#x2F;strong&gt;。之前美股分析直接跳过了新闻（&lt;code&gt;_skip_news = _is_us&lt;&#x2F;code&gt;）。yfinance 的 &lt;code&gt;ticker.news&lt;&#x2F;code&gt; 是免费的，只是返回格式比较坑—— title 藏在 &lt;code&gt;content.title&lt;&#x2F;code&gt; 里面，不是顶层的 &lt;code&gt;title&lt;&#x2F;code&gt; 字段。一个 hotfix 解决。TSLA 分析里出现了&amp;quot;US jury finds Elon Musk misled Twitter shareholders&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;三个 fix 跟着三个 commit，T1 的教训是：&lt;strong&gt;第三方 API 永远在变，代码写好不代表能用，必须实际跑一遍验证&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;t2-pe-pb-de-liang-xi&quot;&gt;T2：PE&#x2F;PB 的惊喜&lt;&#x2F;h2&gt;
+&lt;p&gt;T2 的第一项是补基本面——PE&#x2F;PB&#x2F;ROE，小龙虾审计中标注的&amp;quot;最大缺口&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;原始规划是用 baostock 的 &lt;code&gt;query_profit_data()&lt;&#x2F;code&gt; 单独拉季报数据，预估 60 行代码。但我在验证数据质量时发现了一个惊喜：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# baostock K线查询，原来支持这些字段
+&lt;&#x2F;span&gt;&lt;span&gt;rs = bs.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;query_history_k_data_plus&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    bs_code,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;date,open,high,low,close,volume,pctChg,turn,peTTM,pbMRQ&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;peTTM&lt;&#x2F;code&gt; 和 &lt;code&gt;pbMRQ&lt;&#x2F;code&gt; 就在 K 线接口里&lt;&#x2F;strong&gt;。不需要额外请求、不需要新方法、不需要缓存策略——只要在查询字符串里多写两个字段名。&lt;&#x2F;p&gt;
+&lt;p&gt;预估 60 行，实际改动 1 行查询字段 + 2 行列名映射 + 3 行 server.py 提取。PE 从永远的 0 变成了 24.07。&lt;&#x2F;p&gt;
+&lt;p&gt;同一个 commit 里还顺手加了换手率（&lt;code&gt;turn&lt;&#x2F;code&gt; 字段），在技术分析里做了异常检测：换手率 &amp;gt;8% 配合方向判断是放量上攻还是主力出货，突然萧条（从 2% 跌到 0.5%）提示市场关注度下降。和已有的量比、OBV 形成三角交叉验证。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;t2-3-cong-gai-zuo-wen-dao-zuo-pan-duan&quot;&gt;T2-3：从&amp;quot;改作文&amp;quot;到&amp;quot;做判断&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;前面补的所有数据——新闻、PE&#x2F;PB、换手率——最终都要汇聚到一个地方：LLM 的 prompt。&lt;&#x2F;p&gt;
+&lt;p&gt;之前的 prompt 是这样的：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你是一位经验丰富的A股分析师，正在和朋友聊投资。
+&lt;&#x2F;span&gt;&lt;span&gt;请将以下分析报告润色为更自然、更有&amp;quot;聊天感&amp;quot;的短评。
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;原始分析：
+&lt;&#x2F;span&gt;&lt;span&gt;{template_narrative}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&amp;quot;请润色&amp;quot;——定位就是改语气。LLM 再聪明，你只给它一段文字让它改写，它也只能改写。&lt;&#x2F;p&gt;
+&lt;p&gt;改造后的 prompt：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;你是一位经验丰富的A股分析师，正在和朋友聊投资。
+&lt;&#x2F;span&gt;&lt;span&gt;请基于以下数据和分析，输出一段自然的、有&amp;quot;聊天感&amp;quot;的投资短评。
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;要求：
+&lt;&#x2F;span&gt;&lt;span&gt;- 基于结构化数据做独立交叉验证，不要只改写模板叙事
+&lt;&#x2F;span&gt;&lt;span&gt;- 如果数据之间有矛盾（技术vs基本面、资金vs价格），要重点分析
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;结构化数据：
+&lt;&#x2F;span&gt;&lt;span&gt;方向: 看空 | 综合评分: -82 (原始-77, 体制调整-5)
+&lt;&#x2F;span&gt;&lt;span&gt;价格: 9.91 | 5日涨跌: -5.8% | 20日位置: 6%
+&lt;&#x2F;span&gt;&lt;span&gt;均线: 空头排列 | MA5偏离: -1.3% | MA20偏离: -8.0%
+&lt;&#x2F;span&gt;&lt;span&gt;动量: RSI 30 | MACD 死叉
+&lt;&#x2F;span&gt;&lt;span&gt;量能: 量比 0.75x | OBV斜率 -0.839 | 换手率 0.9% (5日均 1.2%)
+&lt;&#x2F;span&gt;&lt;span&gt;估值: PE(TTM) 72.1 | PB(MRQ) 5.12
+&lt;&#x2F;span&gt;&lt;span&gt;布林: 位置 6% | ATR 0.39
+&lt;&#x2F;span&gt;&lt;span&gt;体制: 熊市 — 趋势向下 | 建议仓位 ≤20%
+&lt;&#x2F;span&gt;&lt;span&gt;冲突: 技术面看空但主力资金净流入（可能洗盘）
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;模板分析（供参考，不要照搬）：
+&lt;&#x2F;span&gt;&lt;span&gt;{template_narrative}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键变化：&lt;strong&gt;&amp;quot;请润色&amp;quot;变成了&amp;quot;请基于数据做独立判断&amp;quot;&lt;&#x2F;strong&gt;，模板叙事从&amp;quot;原始分析&amp;quot;降级为&amp;quot;供参考，不要照搬&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;效果对比：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Before&lt;&#x2F;strong&gt;（T1 之后，有新闻但无结构化数据）：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;威海广泰这两天确实有点难受，连续走弱跌了5.8%...消息面倒是有些亮点，收购空港股权...&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;After&lt;&#x2F;strong&gt;（T2-3，完整结构化数据）：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;技术面这么空，主力资金却在悄悄吸筹，这可能是在洗盘。你8.75的成本还不错，现在浮盈13.2%，&lt;strong&gt;但我建议先减个20-30手锁定部分利润。原因是现在大盘还在熊市格局，反弹很可能是陷阱，而且这票PE72倍估值不算便宜&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;区别一目了然：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;会用 PE 判断估值了（&amp;quot;72倍不算便宜&amp;quot;）&lt;&#x2F;li&gt;
+&lt;li&gt;会发现矛盾信号了（&amp;quot;技术面空但主力吸筹 → 可能洗盘&amp;quot;）&lt;&#x2F;li&gt;
+&lt;li&gt;会给具体操作建议了（&amp;quot;减20-30手&amp;quot;，而不是笼统的&amp;quot;减仓&amp;quot;）&lt;&#x2F;li&gt;
+&lt;li&gt;会结合体制做风险判断了（&amp;quot;大盘熊市，反弹可能是陷阱&amp;quot;）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这不再是&amp;quot;改作文&amp;quot;，是真正的&amp;quot;做判断&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-bug-he-yi-ge-jiao-xun&quot;&gt;一个 bug 和一个教训&lt;&#x2F;h2&gt;
+&lt;p&gt;T2-3 上线后，小龙虾做了 re-review，给了 9.5&#x2F;10。但它抓到了一个隐藏 bug：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 我写的
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;MACD &lt;&#x2F;span&gt;&lt;span&gt;{&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;金叉&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;_mom.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;macd_cross&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;golden&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;死叉&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;_mom.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;macd_cross&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) == &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;death&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无交叉&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;}&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# technical.py 实际返回的
+&lt;&#x2F;span&gt;&lt;span&gt;macd_cross: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;金叉&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;死叉&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &#x2F; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;我在用英文 &lt;code&gt;golden&lt;&#x2F;code&gt;&#x2F;&lt;code&gt;death&lt;&#x2F;code&gt; 去匹配中文 &lt;code&gt;金叉&lt;&#x2F;code&gt;&#x2F;&lt;code&gt;死叉&lt;&#x2F;code&gt;——永远匹配不上，LLM 看到的永远是&amp;quot;无交叉&amp;quot;。一个本应该在写代码时就发现的问题，因为两个模块之间的格式约定不一致，悄悄丢失了一个重要的技术指标。&lt;&#x2F;p&gt;
+&lt;p&gt;修复只需要一行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;动量: RSI &lt;&#x2F;span&gt;&lt;span&gt;{_mom.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rsi_14&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;:.0f&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; | MACD &lt;&#x2F;span&gt;&lt;span&gt;{_mom.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;macd_cross&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;无&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)}&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;教训很简单：&lt;strong&gt;数据从 A 模块流到 B 模块时，格式约定必须一致。不要在消费端硬编码生产端的值——直接用生产端返回的原始值。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;173-xing-dai-ma-de-quan-jing&quot;&gt;173 行代码的全景&lt;&#x2F;h2&gt;
+&lt;p&gt;回看这一天的改动——5 个文件、173 行代码、8 个 commit：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层&lt;&#x2F;th&gt;&lt;th&gt;改动&lt;&#x2F;th&gt;&lt;th&gt;效果&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;data.py&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;K 线加 turn&#x2F;peTTM&#x2F;pbMRQ 字段 + 美股新闻 + 龙虎榜适配&lt;&#x2F;td&gt;&lt;td&gt;数据从&amp;quot;有但没用&amp;quot;变成&amp;quot;有且可用&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;technical.py&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;换手率异常检测 + 三角交叉验证&lt;&#x2F;td&gt;&lt;td&gt;评分维度从 8 维扩展到 9 维&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;server.py&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;PE&#x2F;PB 提取 + 结构化摘要构建 + data_summary 传递&lt;&#x2F;td&gt;&lt;td&gt;LLM 看到完整数据画面&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;llm.py&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;prompt 升级 + news&#x2F;data_summary 注入&lt;&#x2F;td&gt;&lt;td&gt;从&amp;quot;改作文&amp;quot;到&amp;quot;做判断&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最让我印象深刻的不是代码量，而是发现 baostock K 线自带 PE&#x2F;PB 那一刻——&lt;strong&gt;最好的优化不是写新代码，而是发现数据就在手边只是没取&lt;&#x2F;strong&gt;。预估 60 行的改动变成了 1 行，这才是工程效率的真正体现。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步：回测引擎——用历史数据验证优化后的信号策略是否比优化前更准。173 行代码改了 LLM 的&amp;quot;视野&amp;quot;，但信号评分体系没变，胜率会不会因为新数据（换手率±5分）而提升？只有回测能给出答案。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;观潮系列&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;诞生记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;云端部署&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;Dashboard + 信号&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;信号验证&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;出海记&lt;&#x2F;a&gt; → &lt;strong&gt;锐评记&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮出海记：让 A 股引擎看懂美股，8 个文件 180 行代码</title>
         <published>2026-03-20T00:00:00+00:00</published>
