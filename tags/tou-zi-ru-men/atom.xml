@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 投资入门</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/tou-zi-ru-men/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-23T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/tou-zi-ru-men/atom.xml</id>
+    <entry xml:lang="en">
+        <title>给股市新手的 AI 信号课：什么是「回填」，为什么你的预测需要一本成绩单</title>
+        <published>2026-03-23T00:00:00+00:00</published>
+        <updated>2026-03-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/stock-signal-backfill-explained/" type="text/html"/>
+        <id>https://polly.wang/stock-signal-backfill-explained/</id>
+        
+        <content type="html">&lt;p&gt;你用过 AI 分析股票吗？&lt;&#x2F;p&gt;
+&lt;p&gt;不管是哪个工具，流程大概都差不多：你输入一只股票代码，AI 哗啦啦给你一大段分析，最后来一句「看多」或「看空」。&lt;&#x2F;p&gt;
+&lt;p&gt;然后呢？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;然后就没有然后了。&lt;&#x2F;strong&gt; 它说完就忘了。下次你再问同一只股票，它不记得上次说了什么，也不知道上次说的对不对。&lt;&#x2F;p&gt;
+&lt;p&gt;这就像一个天气预报员，每天在电视上播报「明天晴天」「后天下雨」，但从来不回头看自己预报得准不准。你会信这样的预报员吗？&lt;&#x2F;p&gt;
+&lt;p&gt;我花了 12 天做了一个叫「观潮」的 &lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;AI 投研引擎&lt;&#x2F;a&gt;，它和别的工具最大的区别就是——&lt;strong&gt;它给自己建了一本成绩单&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-yao-shi-xin-hao&quot;&gt;什么是「信号」？&lt;&#x2F;h2&gt;
+&lt;p&gt;每次观潮分析一只股票时，它会做一件额外的事：&lt;strong&gt;把自己的判断存下来&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;存什么？三件事：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;什么时候说的&lt;&#x2F;strong&gt; — 2026年3月15日&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;说的时候股价多少&lt;&#x2F;strong&gt; — 10.93元&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;判断是什么&lt;&#x2F;strong&gt; — 看多，+40分&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这就是一条「信号」。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;信号 = 某个时刻的快照判断。不是预测「哪天涨到多少钱」，而是说「我觉得接下来会涨」。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;把它存下来的意义是什么？是为了以后翻旧账。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-yao-shi-hui-tian&quot;&gt;什么是「回填」？&lt;&#x2F;h2&gt;
+&lt;p&gt;五个交易日后（大约一周），我让系统做一件事：&lt;strong&gt;回去翻旧账&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;系统去查 3 月 15 日那天的信号，然后看：说看涨的时候股价 10.93 元，五天后的真实收盘价是多少？&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;3月15日 → 看多 → 当时 10.93 元
+&lt;&#x2F;span&gt;&lt;span&gt;                  ↓ 五天后
+&lt;&#x2F;span&gt;&lt;span&gt;3月22日 → 实际 9.91 元 → 跌了 9.3%
+&lt;&#x2F;span&gt;&lt;span&gt;                  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;            说看涨，结果跌了 → ❌ 判错了
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个过程就叫「回填」——&lt;strong&gt;回到过去的预测，用现在的真实价格去打分&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;数据库里那条信号原本有三个空位（5天后、10天后、20天后），回填就是把真实价格填进去，然后自动算对错。&lt;&#x2F;p&gt;
+&lt;p&gt;像不像考完试后老师发答案？区别是：这个「考试」永远不会结束，每天都有新题目，每过五天就能批一批旧卷子。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-yong-san-ba-chi-zi&quot;&gt;为什么用三把尺子？&lt;&#x2F;h2&gt;
+&lt;p&gt;你可能好奇：为什么不只看 5 天，而是 5 天、10 天、20 天都看？&lt;&#x2F;p&gt;
+&lt;p&gt;因为同一个判断，在不同时间窗口里，可能是不同的「对错」：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;5天&lt;&#x2F;th&gt;&lt;th&gt;10天&lt;&#x2F;th&gt;&lt;th&gt;20天&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;方向对，来得快&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;完美预测&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;方向对，来得慢&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;判断对但太早了，耐心是对的&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;短期波动，长期回归&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;抓到了短期机会，但别贪&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;大方向错了&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;彻底看错&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;三把尺子，量出来的是不同的能力。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;5天胜率高 → 系统擅长抓短期趋势&lt;&#x2F;li&gt;
+&lt;li&gt;10天胜率高 → 系统判断有持续性&lt;&#x2F;li&gt;
+&lt;li&gt;20天胜率高 → 系统对大方向有把握&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;如果 5 天对了但 20 天错了，说明系统适合做短线参考，不适合做长期持有的依据。反过来也成立。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xin-hao-xu-yao-fen-chang-zhong-duan-qi-ma&quot;&gt;信号需要分「长中短期」吗？&lt;&#x2F;h2&gt;
+&lt;p&gt;你可能会想：是不是应该有三种信号——短期信号、中期信号、长期信号？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;目前不需要，但原因值得解释。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;观潮用的分析工具（RSI、MACD、均线、布林带）本身就是 &lt;strong&gt;5-20 天量级&lt;&#x2F;strong&gt; 的技术指标。它们不是用来回答「明天涨不涨」（那是日内交易的事），也不是用来回答「明年值不值得拿」（那是基本面分析的事）。&lt;&#x2F;p&gt;
+&lt;p&gt;所以一条信号配三个时间窗口的组合刚好：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;信号&lt;&#x2F;strong&gt;负责回答「方向是什么」&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;5&#x2F;10&#x2F;20天三把尺子&lt;&#x2F;strong&gt;负责回答「这个方向对了多久」&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;将来如果引入基本面分析（PE、行业趋势），那确实需要匹配更长的验证窗口。但现在的技术面信号配 5-20 天窗口，是匹配的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;工具决定了你能看多远，尺子要和望远镜匹配。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-cheng-ji-dan-dao-xin-ji-lu&quot;&gt;从成绩单到新纪律&lt;&#x2F;h2&gt;
+&lt;p&gt;光有成绩单还不够。关键是&lt;strong&gt;看完成绩单之后做了什么&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;观潮运行 12 天，52 条信号里有 18 条完成了 5 天回填，胜率 77.8%。但胜率本身不是重点——重点是翻车的那 4 条。&lt;&#x2F;p&gt;
+&lt;p&gt;我去翻了翻车的细节，发现一个规律：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;当系统自己都不太确定（评分低）、又检测到了矛盾信号时，判断基本是错的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;具体来说：评分只有 +40（满分 ±100），而且系统自己检测到了「技术面看多但主力在出货」的矛盾——结果五天后暴跌 9.3%。&lt;&#x2F;p&gt;
+&lt;p&gt;而另一只股票评分 +92，同样有矛盾，但五天后涨了 15.8%。&lt;strong&gt;高分能穿越矛盾，低分穿不过去。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;于是我加了一条新规则：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;评分绝对值 &amp;lt; 50 且存在矛盾信号 → 系统直接说「我不确定，别交易」。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;31 行代码，从发现规律到上线，一共 20 分钟。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;记录信号 → 回填结果 → 发现规律 → 写成规则 → 上线运行
+&lt;&#x2F;span&gt;&lt;span&gt;   ↑                                              |
+&lt;&#x2F;span&gt;&lt;span&gt;   └──────────── 新信号继续记录 ←────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;这个闭环，才是信号追踪的真正价值。&lt;&#x2F;strong&gt; 不是为了看「胜率多少」得意或沮丧，而是为了从错误里提炼出可以自动执行的纪律。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gei-xin-shou-de-san-ge-qi-fa&quot;&gt;给新手的三个启发&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你刚开始接触股票分析（不管是不是用 AI），这些原则也许有用：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-xie-xia-ni-de-pan-duan&quot;&gt;1. 写下你的判断&lt;&#x2F;h3&gt;
+&lt;p&gt;不用多复杂。打开备忘录，每次买卖的时候写一行：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;3月15日，买了威海广泰，因为觉得最近跌多了要反弹。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;一个月后回来看，你会惊讶于自己错了多少次——以及错在哪里。&lt;strong&gt;人的记忆会美化历史，文字不会。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-yong-duo-ba-chi-zi-liang-zi-ji&quot;&gt;2. 用多把尺子量自己&lt;&#x2F;h3&gt;
+&lt;p&gt;「我买的这只票涨了」不等于「我的判断是对的」。也许它涨了 2% 但大盘涨了 5%，你其实跑输了。也许它三天涨了然后十天跌回去，你只是恰好在高点看了一眼。&lt;&#x2F;p&gt;
+&lt;p&gt;设定几个固定的检查点（一周后、两周后、一个月后），老老实实记下来。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-ji-lu-bi-yu-ce-zhi-qian&quot;&gt;3. 纪律比预测值钱&lt;&#x2F;h3&gt;
+&lt;p&gt;观潮的四条行为护栏：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;🚨 追高警告（近 5 天涨超 8%）&lt;&#x2F;li&gt;
+&lt;li&gt;📊 焦虑检测（一天分析超 5 只票）&lt;&#x2F;li&gt;
+&lt;li&gt;🎣 抄底警告（连续看空还在反复看）&lt;&#x2F;li&gt;
+&lt;li&gt;⚠️ 矛盾+低信心 = 不交易&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这些规则拦截的亏损，比任何「看多」「看空」的信号都值钱。投资里最反直觉的事实是：&lt;strong&gt;「知道什么时候不动手」比「知道什么时候动手」重要得多。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;如果你对观潮的技术实现感兴趣，可以看完整系列：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;诞生记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;进化记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;实战记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;验证记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;出海记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-data-enhancement&quot;&gt;锐评记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-self-reflection&quot;&gt;自省记&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
