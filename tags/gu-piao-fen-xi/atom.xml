@@ -5,8 +5,147 @@
     <link href="https://polly.wang/tags/gu-piao-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-21T00:00:00+00:00</updated>
+    <updated>2026-03-23T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gu-piao-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮自省记：52 条信号回头看，AI 引擎学会了第四条纪律</title>
+        <published>2026-03-23T00:00:00+00:00</published>
+        <updated>2026-03-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-self-reflection/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-self-reflection/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-data-enhancement&quot;&gt;观潮锐评记&lt;&#x2F;a&gt;——让 AI 从「改语气」到「做判断」。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇讲的是喂给 LLM 更多数据。这篇讲的是另一件事：&lt;strong&gt;让系统回头看自己的成绩单，然后改自己的行为&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cheng-ji-dan-52-tiao-xin-hao-de-x-guang-pian&quot;&gt;成绩单：52 条信号的 X 光片&lt;&#x2F;h2&gt;
+&lt;p&gt;观潮运行了 12 天（3&#x2F;12 → 3&#x2F;23），积累了 52 条信号，其中 18 条完成了 5 天回填。先看全貌：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;总信号&lt;&#x2F;td&gt;&lt;td&gt;52 条&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;5d 已回填&lt;&#x2F;td&gt;&lt;td&gt;18 条&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;5d 胜率&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;14&#x2F;18 = 77.8%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;10d &#x2F; 20d&lt;&#x2F;td&gt;&lt;td&gt;尚未到期&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;比&lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;上次的 76.9%&lt;&#x2F;a&gt; 略有上升，新增了 5 条回填数据。&lt;&#x2F;p&gt;
+&lt;p&gt;但 77.8% 这个数字本身不是重点。重点是——&lt;strong&gt;哪些对了，哪些错了，为什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bear-ti-zhi-xia-de-wan-mei-zhan-ji&quot;&gt;Bear 体制下的完美战绩&lt;&#x2F;h2&gt;
+&lt;p&gt;先说好消息。按市场体制拆分后，有个数字非常醒目：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;体制&lt;&#x2F;th&gt;&lt;th&gt;信号数&lt;&#x2F;th&gt;&lt;th&gt;已回填&lt;&#x2F;th&gt;&lt;th&gt;胜率&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;bear (熊市)&lt;&#x2F;td&gt;&lt;td&gt;28&lt;&#x2F;td&gt;&lt;td&gt;7&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;100%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;mild_bull (温和牛)&lt;&#x2F;td&gt;&lt;td&gt;9&lt;&#x2F;td&gt;&lt;td&gt;9&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;78%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;mild_bear (温和熊)&lt;&#x2F;td&gt;&lt;td&gt;13&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;0%（样本=1）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Bear 体制下 7 判 7 中。&lt;&#x2F;p&gt;
+&lt;p&gt;这说明什么？&lt;strong&gt;在趋势明确的市场里，观潮的判断非常靠谱。&lt;&#x2F;strong&gt; 熊市里该跌的果然跌了，系统没有逆势看多。这其实验证了当初设计「体制感知」的核心假设——体制是被忽略的上下文，横盘市里什么都是观望，但趋势市里信号就是信号。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fan-che-xian-chang-wei-hai-yan-tai-de-liang-ci-9-3&quot;&gt;翻车现场：威海广泰的两次 -9.3%&lt;&#x2F;h2&gt;
+&lt;p&gt;再说坏消息。18 条回填里有 4 条判错，其中 2 条来自同一只股票：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;2026-03-15 | 002111 威海广泰 | score=+40 看多 | @10.93 → 5d=-9.3% ❌
+&lt;&#x2F;span&gt;&lt;span&gt;2026-03-15 | 002111 威海广泰 | score=+45 看多 | @10.93 → 5d=-9.3% ❌
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;3 月 15 日，观潮给威海广泰打了 +40 和 +45 分，方向「看多」。五天后暴跌了 9.3%。&lt;&#x2F;p&gt;
+&lt;p&gt;有意思的是，它自己在 3&#x2F;12、3&#x2F;13 还给威海广泰打的是 -32、-47、-60 分（看空），全对。到了 3&#x2F;15 突然翻多，就翻车了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;同一时期，锦浪科技也翻多了：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;2026-03-15 | 300763 锦浪科技 | score=+92 看多 | @103.16 → 5d=+15.8% ✅
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;评分 +92，五天后涨了 15.8%，大获全胜。&lt;&#x2F;p&gt;
+&lt;p&gt;这两个案例放在一起，规律就很清楚了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;威海广泰 +40&#x2F;+45 → 翻车
+锦浪科技 +92 → 穿越&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;chong-tu-xin-hao-yin-cang-de-guan-jian-xian-suo&quot;&gt;冲突信号：隐藏的关键线索&lt;&#x2F;h2&gt;
+&lt;p&gt;光看分数还不够。我去翻了这些信号的冲突检测记录：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;威海广泰 3&#x2F;15（翻车）：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;⚠️ 技术面偏多但主力资金在流出，可能是诱多&lt;&#x2F;li&gt;
+&lt;li&gt;📉 个股技术面强但大盘偏弱，逆势走强需关注持续性&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;锦浪科技 3&#x2F;15（穿越）：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;⚠️ 技术面偏多但主力资金在流出，可能是诱多&lt;&#x2F;li&gt;
+&lt;li&gt;📉 个股技术面强但大盘偏弱，逆势走强需关注持续性&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;一模一样的冲突，一个翻车一个穿越。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;区别在哪？&lt;strong&gt;分数&lt;&#x2F;strong&gt;。威海广泰只有 +40&#x2F;+45，说明看多的理由很勉强，多空博弈中多头只勉强赢了一点点。锦浪科技 +92，看多的理由压倒性地强——技术面、均线、动量全线看多，即使主力在出货，大趋势也能碾过去。&lt;&#x2F;p&gt;
+&lt;p&gt;规律：&lt;strong&gt;高分（|score| ≥ 50）能穿越冲突，低分（|score| &amp;lt; 50）穿不过去。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;换个说法：当系统自己都不太确定（评分低），又检测到了矛盾信号（冲突存在），这种时候的判断大概率是错的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-shu-ju-dao-gui-ze-hu-lan-di-si-tiao&quot;&gt;从数据到规则：护栏第四条&lt;&#x2F;h2&gt;
+&lt;p&gt;观潮原来有三条行为护栏：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;🚨 追高检测：近 5 日涨幅超 8%（美股 15%）&lt;&#x2F;li&gt;
+&lt;li&gt;📊 分析频次提醒：一天分析超 5 只不同票&lt;&#x2F;li&gt;
+&lt;li&gt;🎣 抄底警告：连续 3 次看空还在反复查看&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;现在，基于回填数据，我加了第四条：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;规则 4：⚠️ 冲突 + 低分 = 不交易&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;触发条件：&lt;code&gt;|score| &amp;lt; 50&lt;&#x2F;code&gt; 且存在矛盾信号（conflicts 非空）&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_check_conflict_low_score&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;score&lt;&#x2F;span&gt;&lt;span&gt;: int, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;conflicts&lt;&#x2F;span&gt;&lt;span&gt;: list[dict] | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; dict | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;冲突+低分检测：有矛盾信号且评分绝对值&amp;lt;50时，历史数据表明胜率极低&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not conflicts:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None
+&lt;&#x2F;span&gt;&lt;span&gt;    abs_score = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;abs&lt;&#x2F;span&gt;&lt;span&gt;(score)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;abs_score &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;50&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;None
+&lt;&#x2F;span&gt;&lt;span&gt;    conflict_descs = [c.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&amp;quot;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;conflicts]
+&lt;&#x2F;span&gt;&lt;span&gt;    conflict_text = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;；&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(conflict_descs)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;conflict_low_conviction&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;severity&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;high&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;⚠️ 信号矛盾 + 低置信度：评分仅 &lt;&#x2F;span&gt;&lt;span&gt;{score&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;:+d&lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;（|&lt;&#x2F;span&gt;&lt;span&gt;{abs_score}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;| &amp;lt; 50）&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;                   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;且存在矛盾信号（&lt;&#x2F;span&gt;&lt;span&gt;{conflict_text}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;）。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;                   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;历史回测显示此类信号胜率显著低于平均水平。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;advice&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;多空拉锯且系统没有明确倾向，建议观望。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;                  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;等评分绝对值 &amp;gt; 50 或冲突消除后再考虑操作。&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;改动很小：3 个文件，31 行代码。&lt;code&gt;guardrails.py&lt;&#x2F;code&gt; 新增规则函数，&lt;code&gt;server.py&lt;&#x2F;code&gt; 把 &lt;code&gt;adjusted_score&lt;&#x2F;code&gt; 和 &lt;code&gt;conflicts&lt;&#x2F;code&gt; 传进去。commit &lt;code&gt;d5e24c9&lt;&#x2F;code&gt;，Azure VM 即时部署。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;效果验证&lt;&#x2F;strong&gt;：如果当时有这条规则——&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;信号&lt;&#x2F;th&gt;&lt;th&gt;score&lt;&#x2F;th&gt;&lt;th&gt;冲突&lt;&#x2F;th&gt;&lt;th&gt;是否拦截&lt;&#x2F;th&gt;&lt;th&gt;实际走势&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;威海广泰 3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;+40&lt;&#x2F;td&gt;&lt;td&gt;✅ 有&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;strong&gt;会被拦&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;-9.3% 翻车&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;威海广泰 3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;+45&lt;&#x2F;td&gt;&lt;td&gt;✅ 有&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;strong&gt;会被拦&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;-9.3% 翻车&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;锦浪科技 3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;+92&lt;&#x2F;td&gt;&lt;td&gt;✅ 有&lt;&#x2F;td&gt;&lt;td&gt;❌ 不会被拦&lt;&#x2F;td&gt;&lt;td&gt;+15.8% 穿越&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;双汇发展 3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;+73&lt;&#x2F;td&gt;&lt;td&gt;✅ 有&lt;&#x2F;td&gt;&lt;td&gt;❌ 不会被拦&lt;&#x2F;td&gt;&lt;td&gt;+1.3% 小涨&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;陕西煤业 3&#x2F;15&lt;&#x2F;td&gt;&lt;td&gt;+63&lt;&#x2F;td&gt;&lt;td&gt;✅ 有&lt;&#x2F;td&gt;&lt;td&gt;❌ 不会被拦&lt;&#x2F;td&gt;&lt;td&gt;+3.5% 小涨&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;两个翻车被拦住，三个正确不受影响。完美。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;50-fen-de-yu-zhi-cong-na-lai&quot;&gt;50 分的阈值从哪来？&lt;&#x2F;h2&gt;
+&lt;p&gt;有人可能会问：为什么是 50 不是 40 或 60？&lt;&#x2F;p&gt;
+&lt;p&gt;坦率地说，这不是严格的统计优化，而是&lt;strong&gt;从案例中提炼的经验阈值&lt;&#x2F;strong&gt;。看数据：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;翻车案例：score = +40, +45（都 &amp;lt; 50）&lt;&#x2F;li&gt;
+&lt;li&gt;穿越案例：score = +92, +73, +63（都 ≥ 50）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;50 恰好是分水岭。更严格地说，我需要更多样本才能精确校准。但在目前 18 条回填的数据量下，50 是个合理的起点。&lt;&#x2F;p&gt;
+&lt;p&gt;这算过拟合吗？有这个风险。毕竟我是看着这 18 条数据定的规则。不过有两个理由让我觉得这个规则比较稳健：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;逻辑自洽&lt;&#x2F;strong&gt;：系统自己都犹豫（低分）且检测到了矛盾（冲突），凭什么让用户去冒险？这不需要数据也说得通。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;单调性&lt;&#x2F;strong&gt;：阈值不管定在 40 还是 60，都不改变规则的方向——分数越低、冲突越多，就越应该观望。50 只是「哪里画线」的问题，不是「要不要画线」的问题。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;随着更多信号回填（下周三首批 10d 数据到期），这个阈值可以继续调整。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bi-huan-de-yi-yi&quot;&gt;闭环的意义&lt;&#x2F;h2&gt;
+&lt;p&gt;观潮从 3&#x2F;11 诞生到今天，第一次完成了一个完整的自我进化闭环：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;记录信号 → 回填结果 → 分析规律 → 生成规则 → 部署上线
+&lt;&#x2F;span&gt;&lt;span&gt;   ↑                                              |
+&lt;&#x2F;span&gt;&lt;span&gt;   └──────────── 新信号继续记录 ←────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这比加任何新功能都重要。&lt;&#x2F;p&gt;
+&lt;p&gt;做信号追踪的时候（&lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;第三篇&lt;&#x2F;a&gt;），我写过一句话：「信号追踪系统现在只是在默默记分，但这些数据未来会成为改进引擎的燃料。」&lt;&#x2F;p&gt;
+&lt;p&gt;今天兑现了。&lt;&#x2F;p&gt;
+&lt;p&gt;第二篇写行为护栏的时候我也说过：「行为护栏比信号本身更值钱。」当时是直觉，现在有数据支撑了——拦住一次 -9.3% 的亏损，比抓到一次 +1% 的小涨有价值得多。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xia-yi-bu&quot;&gt;下一步&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;3&#x2F;26（周三）&lt;&#x2F;strong&gt;：首批 10d 回填数据到期，更长的时间窗口会暴露更多规律&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;持续积累&lt;&#x2F;strong&gt;：52 条信号里只有 18 条完成回填，需要至少 50+ 条才能认真对待统计数字&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;阈值校准&lt;&#x2F;strong&gt;：随着样本增加，50 分的阈值可能需要微调&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;更多规则&lt;&#x2F;strong&gt;？比如「bear 体制下的看多信号要打折」——数据还不够，先记着&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;观潮还很年轻，12 天，52 条信号。但它已经学会做一件很多人类投资者一辈子不做的事——&lt;strong&gt;回头看自己的判断对不对，然后改&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;观潮系列&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;诞生记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;进化记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;实战记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;验证记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;出海记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-data-enhancement&quot;&gt;锐评记&lt;&#x2F;a&gt; → &lt;strong&gt;自省记&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮锐评记：让 AI 从「改语气」到「做判断」，7 项数据增强 173 行代码</title>
         <published>2026-03-21T00:00:00+00:00</published>
