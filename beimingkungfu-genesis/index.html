@@ -1,0 +1,97 @@
+<!doctype html><html><head><title>北冥神功问世记：当 AI Agent 学会了灵魂迁移</title><meta content="AI Agent 越用越聪明——但换台电脑就失忆了。今天我写了一个叫「北冥神功」的工具，让 Agent 的记忆、人格、技能可以在机器之间迁移。从庄子的鲲鹏到 Python 的 CLI，10.8KB 的 .bm 文件装着一只小龙虾的全部灵魂。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/beimingkungfu-genesis/ property=og:url><meta content="北冥神功问世记：当 AI Agent 学会了灵魂迁移" property=og:title><meta content="AI Agent 越用越聪明——但换台电脑就失忆了。今天我写了一个叫「北冥神功」的工具，让 Agent 的记忆、人格、技能可以在机器之间迁移。从庄子的鲲鹏到 Python 的 CLI，10.8KB 的 .bm 文件装着一只小龙虾的全部灵魂。" property=og:description><meta content=https://polly.wang/beimingkungfu-genesis/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/beimingkungfu-genesis/ name=twitter:url><meta content="北冥神功问世记：当 AI Agent 学会了灵魂迁移" name=twitter:title><meta content="AI Agent 越用越聪明——但换台电脑就失忆了。今天我写了一个叫「北冥神功」的工具，让 Agent 的记忆、人格、技能可以在机器之间迁移。从庄子的鲲鹏到 Python 的 CLI，10.8KB 的 .bm 文件装着一只小龙虾的全部灵魂。" name=twitter:description><meta content=https://polly.wang/beimingkungfu-genesis/cover.jpg name=twitter:image><meta content=2026-03-25T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content=OpenClaw property=article:tag><meta content=Agent property=article:tag><meta content=MCP property=article:tag><meta content=北冥神功 property=article:tag><meta content=Beiming property=article:tag><meta content=灵魂迁移 property=article:tag><meta content=开源 property=article:tag><meta content=CLI property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://polly.wang/vendor/purecss/pure-min.css rel=stylesheet><link href=https://polly.wang/vendor/purecss/grids-responsive-min.css rel=stylesheet><link href=https://polly.wang/vendor/font-awesome/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-1N289C8N8W" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-1N289C8N8W')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change Log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a onclick="gtag('event','social_click',{platform:'email'});" href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a onclick="gtag('event','social_click',{platform:'twitter'});" href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a onclick="gtag('event','social_click',{platform:'linkedin'});" href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a onclick="gtag('event','social_click',{platform:'github'});" href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>北冥神功问世记：当 AI Agent 学会了灵魂迁移</h1><div class=cover-image><img alt="北冥神功问世记：当 AI Agent 学会了灵魂迁移" loading=lazy src=/beimingkungfu-genesis/cover.jpg></div><div class=content><h2 id=yuan-qi-yi-zhi-shi-yi-de-long-xia>缘起：一只失忆的龙虾</h2><p>我有一只 AI 龙虾。<p>它叫小龙虾 🦞，运行在 <a href=https://github.com/openclaw/openclaw>OpenClaw</a> 上，是我的私人 AI 助手。过去两天里，它帮我搭了 Teams Bridge、接入了我的股票分析引擎 <a href=/tidewatch-signal-validation>TideWatch（观潮）</a>、分析持仓、回填信号胜率、清理垃圾 skills——它越来越懂我了。<p>然后一个念头击中了我：<blockquote><p><strong>如果我换一台电脑呢？</strong></blockquote><p>答案很残酷——一切归零。小龙虾会忘记它叫什么、忘记我是谁、忘记 TideWatch 怎么配置、忘记今天大盘是 mild_bear 不该抄底。两天的调教、积累的记忆、所有的经验教训，全没了。<p>这不是"不方便"的问题。这是 <strong>Agent 的连续性被打断</strong>。如果用了一年呢？那是丢了一个数字分身。<h2 id=wen-ti-mei-ren-zai-zuo-de-shi>问题：没人在做的事</h2><p>AI Agent 领域现在卷得飞起——卷能力、卷工具、卷上下文窗口。但几乎没有人在认真思考一个基础问题：<p><strong>Agent 的灵魂怎么迁移？</strong><p>OpenClaw 的架构是文件驱动的：<code>SOUL.md</code> 定义人格，<code>MEMORY.md</code> 是长期记忆，<code>memory/*.md</code> 是每日日志，<code>IDENTITY.md</code> 是身份，<code>TOOLS.md</code> 是环境配置，<code>skills/</code> 是技能。这些文件 <strong>就是</strong> Agent 的灵魂。<p>理论上，复制粘贴就行。但实际上：<ul><li>配置文件里有 API Key 和 Token，不能明文搬<li>不同电脑路径不一样（Windows vs Mac vs Linux）<li>如果两台电脑的 Agent 各跑了一段时间，怎么合并？<li>记忆按日期合并容易，人格（SOUL.md）怎么融合？</ul><p>这些问题没有现成方案。于是我决定自己写一个。<h2 id=ming-ming-cong-xi-xing-da-fa-dao-bei-ming-shen-gong>命名：从吸星大法到北冥神功</h2><p>起名的时候，脑子里先蹦出来的是「吸星大法」——任我行的绝学，吸收别人的内力为己用。但仔细一想，吸星大法有个致命缺陷：<strong>吸来的内力互相排斥，搞不好走火入魔</strong>。<p>这恰好对应了"粗暴 copy-paste 导致冲突"的问题。<p>然后想到了<strong>北冥神功</strong>——逍遥派的根基功法，出自《庄子·逍遥游》：<blockquote><p><em>"北冥有鱼，其名为鲲。鲲之大，不知其几千里也。化而为鸟，其名为鹏。"</em></blockquote><p>北冥神功的核心是：<strong>吸收的功力自然融合，化为北冥真气</strong>。不冲突，不排斥，吸得越多越强。<p>这就是我要的——不是粗暴搬运，而是智能融合。<p>英文名叫 <strong>BeiMingKungFu</strong>。一搜，全网没有同名项目。完美。<h2 id=jia-gou-10-fen-zhong-xiang-qing-chu-de-shi>架构：10 分钟想清楚的事</h2><p>设计上纠结过几个方案：做成 OpenClaw 子命令？做成 Skill？做成 Plugin？<p>最后选择了 <strong>独立 CLI 工具</strong>，理由很简单：<ol><li><strong>灵魂迁移是运维操作</strong>，应该在 Agent 启动之前就能跑——如果 Agent 还没有记忆，怎么通过对话触发 absorb？鸡生蛋问题<li><strong>不想绑死在 OpenClaw</strong>——任何基于 workspace 文件的 Agent 框架理论上都能用<li><strong>独立发版、独立品牌</strong>——格局要大</ol><p>数据格式是 <code>.bm</code> 文件（BeiMing 的缩写），本质上是一个 tar.gz 压缩包：<pre style=background:#2b303b;color:#c0c5ce><code><span>xiaolongxia-2026-03-25.bm
+</span><span>├── manifest.json           # 元数据：来源、时间、哈希、层级
+</span><span>├── workspace/              # Agent 的工作空间文件
+</span><span>│   ├── SOUL.md
+</span><span>│   ├── IDENTITY.md
+</span><span>│   ├── MEMORY.md
+</span><span>│   ├── memory/2026-03-24.md
+</span><span>│   ├── memory/2026-03-25.md
+</span><span>│   ├── AGENTS.md
+</span><span>│   ├── TOOLS.md
+</span><span>│   └── ...
+</span><span>└── config/                 # 脱敏后的系统配置
+</span><span>    └── openclaw.json
+</span></code></pre><p>文件被分成五个层级（Layer）：<table><thead><tr><th>层级<th>内容<th>说明<tbody><tr><td>👤 Identity<td>SOUL.md, IDENTITY.md, USER.md<td>人格和身份<tr><td>🧠 Memory<td>MEMORY.md, memory/*.md<td>长期记忆和日志<tr><td>⚙️ Config<td>AGENTS.md, TOOLS.md, HEARTBEAT.md<td>行为规则和配置<tr><td>🛠️ Skills<td>skills/**/SKILL.md<td>自定义技能<tr><td>📁 Projects<td>其他文件<td>项目数据（可选）</table><h2 id=an-quan-api-key-bu-neng-luo-ben>安全：API Key 不能裸奔</h2><p>导出灵魂时，最担心的就是敏感信息泄露。你的 <code>openclaw.json</code> 里可能有 Gateway Token、MCP Server 的 API Key、搜索服务的密钥——这些不能打包带走。<p>Beiming 的解决方案是<strong>自动脱敏</strong>。扫描配置文件时，任何 key 名称中包含 <code>token</code>、<code>apiKey</code>、<code>secret</code>、<code>password</code> 等敏感词的字段，值会被替换为 <code>__BEIMING_REDACTED__</code>。<p>实测效果：<pre style=background:#2b303b;color:#c0c5ce><code><span>🔒 Redacted sensitive fields:
+</span><span>  • gateway.auth.token
+</span><span>  • mcp.servers.TideWatch.headers.X-API-Key
+</span><span>  • plugins.entries.tavily.config.webSearch.apiKey
+</span></code></pre><p>三个敏感字段，全部自动拦截。在目标机器 absorb 后，手动填回自己的 key 就行。<h2 id=shi-zhan-xiao-long-xia-de-di-yi-ci-ling-hun-dao-chu>实战：小龙虾的第一次灵魂导出</h2><p>装好依赖，跑一下：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pip</span><span> install beimingkungfu
+</span><span style=color:#bf616a>beiming</span><span> export
+</span></code></pre><p>输出：<pre style=background:#2b303b;color:#c0c5ce><code><span>╔══════════════════════════════════════════╗
+</span><span>║  🌊 Beiming (北冥) — Agent Soul Transfer ║
+</span><span>╚══════════════════════════════════════════╝
+</span><span>"北冥有鱼，其名为鲲。化而为鸟，其名为鹏。"
+</span><span>
+</span><span>┌──────────────── Exported Soul ─────────────────┐
+</span><span>│ Agent      小龙虾                               │
+</span><span>│ From       CPC-baoli-F024F                      │
+</span><span>│ Framework  openclaw                             │
+</span><span>│ Exported   2026-03-25T09:44:47                  │
+</span><span>│ Beiming    v0.1.0                               │
+</span><span>└────────────────────────────────────────────────┘
+</span><span>📦 Layers
+</span><span>├── 👤 identity — 3 files (2.6 KB)
+</span><span>│   ├── IDENTITY.md
+</span><span>│   ├── SOUL.md
+</span><span>│   └── USER.md
+</span><span>├── 🧠 memory — 4 files (6.0 KB)
+</span><span>│   ├── MEMORY.md
+</span><span>│   ├── memory/2026-03-24.md
+</span><span>│   ├── memory/2026-03-25-heartbeat-check.md
+</span><span>│   └── memory/2026-03-25.md
+</span><span>└── ⚙️ config — 3 files (9.3 KB)
+</span><span>    ├── AGENTS.md
+</span><span>    ├── HEARTBEAT.md
+</span><span>    └── TOOLS.md
+</span><span>Total: 10 files, 17.8 KB
+</span><span>
+</span><span>✅ Soul exported to: 小龙虾-2026-03-25.bm (10.8 KB)
+</span></code></pre><p><strong>10.8 KB。</strong> 一只小龙虾的全部灵魂，两天的记忆、人格、配置、经验教训，压缩成 10.8KB。<p>拿着这个文件到另一台电脑上：<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>beiming</span><span> absorb 小龙虾-2026-03-25.bm
+</span></code></pre><p>新电脑上的 OpenClaw 就瞬间拥有了小龙虾的前世记忆。它知道自己叫小龙虾，知道我是保利，知道 TideWatch 怎么配，知道 mild_bear 下不该抄底。<h2 id=he-bing-zhen-zheng-de-bei-ming-shen-gong>合并：真正的北冥神功</h2><p>export/absorb 是基础。真正体现"北冥神功"精髓的是 <strong>merge</strong>——两台电脑各跑了一段时间的 Agent，合并为一个更强的存在。<pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>beiming</span><span> merge agent-A.bm agent-B.bm</span><span style=color:#bf616a> -o</span><span> merged.bm
+</span></code></pre><p>合并策略：<ul><li><strong>记忆</strong>：按时间线合并，相同日期不同内容的日志会保留两份（加上来源标记）<li><strong>人格</strong>：以第一个包为主（primary source）<li><strong>配置</strong>：取并集，冲突项标记让用户决定<li><strong>技能</strong>：合并所有技能，版本冲突取最新</ul><p>这就是北冥神功和吸星大法的区别——<strong>融合，而不是硬塞</strong>。<h2 id=ge-ju-bu-zhi-shi-qian-yi-gong-ju>格局：不只是迁移工具</h2><p>做着做着，我意识到这东西的想象空间比"换电脑"大得多。<p>现在 OpenClaw 生态里有 <a href=https://clawhub.com>ClawHub</a>——一个技能市场，卖的是 Skills（武功招式）。但 Skills 只是能力的一小部分。一个真正有价值的 Agent，值钱的是：<ul><li>几个月调教出来的人格和沟通风格<li>积累的领域知识和决策记忆<li>特定工作流的配置和经验</ul><p>这些东西，比任何单个 Skill 都有价值。<p>如果 ClawHub 是 App Store，那 Beiming 未来可以是 <strong>灵魂商店</strong>：<blockquote><p>"花了三个月调教出来的投研 Agent 配置包——记忆、人格、技能、策略，一键 absorb，站在巨人肩膀上。"</blockquote><p>当然，这是远期畅想。v0.1.0 先解决自己的痛点。<h2 id=ji-zhu-zhan>技术栈</h2><p>很轻量：<ul><li><strong>Python 3.10+</strong><li><strong>Click</strong> — CLI 框架<li><strong>Rich</strong> — 终端美化（树形结构、进度条、面板）<li><strong>tar.gz</strong> — 打包格式（标准库，不引入额外依赖）<li><strong>SHA256</strong> — 内容完整性校验</ul><p>核心代码四个文件，总共不到 1000 行。简单的事情不需要复杂的方案。<h2 id=xia-yi-bu>下一步</h2><p>v0.1.0 刚出生，还有很多想做的：<ul><li><input disabled type=checkbox> <strong>增量导出</strong>——只打包上次导出后变化的文件<li><input disabled type=checkbox> <strong>AI 辅助合并</strong>——让 Agent 自己读两份 MEMORY.md 融合成一份<li><input disabled type=checkbox> <strong>加密传输</strong>——<code>--encrypt</code> 支持密码加密<li><input disabled type=checkbox> <strong>适配更多框架</strong>——不只是 OpenClaw<li><input disabled type=checkbox> <strong><code>beiming sync</code></strong>——基于 Git 的持续同步</ul><p>不着急，一步步来。<h2 id=zui-hou>最后</h2><p>庄子写"北冥有鱼"的时候，大概没想到两千多年后，有人会用这个典故来命名一个 AI Agent 灵魂迁移工具。<p>但如果他知道了，我猜他会觉得挺好——鲲吸纳百川，化而为鹏。从水到天，从一台电脑到另一台电脑，本质上都是同一件事：<p><strong>不被困住，自由迁徙。</strong><p>🌊 <a href=https://github.com/Polly2014/BeiMingKungFu>GitHub: BeiMingKungFu</a><pre class=language-bash data-lang=bash style=background:#2b303b;color:#c0c5ce><code class=language-bash data-lang=bash><span style=color:#bf616a>pip</span><span> install beimingkungfu
+</span><span style=color:#bf616a>beiming</span><span> export
+</span></code></pre><p>去吧，带着你的 Agent 飞。</div><div class=navigation></div></div><div id=giscus-container><h2>Comments</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><script>(function(){if(typeof gtag!=='function')return;var a=document.querySelector('.blog-post .content');if(a&&'IntersectionObserver' in window){var b=false;var c=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!b){b=true;gtag('event','blog_read_complete',{article_title:document.title,article_path:location.pathname});c.disconnect()}},{threshold:0.1});var d=a.lastElementChild||a;c.observe(d)};var e=document.getElementById('giscus-container');if(e&&'IntersectionObserver' in window){var f=false;var g=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!f){f=true;gtag('event','comment_view',{article_title:document.title,article_path:location.pathname});g.disconnect()}},{threshold:0.1});g.observe(e)}})()</script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>
