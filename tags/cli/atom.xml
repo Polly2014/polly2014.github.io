@@ -8,7 +8,7 @@
     <updated>2026-03-27T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/cli/atom.xml</id>
     <entry xml:lang="en">
-        <title>一晚上写了五个命令：SoulPort v0.3 开发实录</title>
+        <title>断链的灵魂：一个 Hash 引发的深夜 Review</title>
         <published>2026-03-27T00:00:00+00:00</published>
         <updated>2026-03-27T00:00:00+00:00</updated>
         <author>
@@ -17,126 +17,109 @@
         <link rel="alternate" href="https://polly.wang/soulport-v03-five-commands-one-night/" type="text/html"/>
         <id>https://polly.wang/soulport-v03-five-commands-one-night/</id>
         
-        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;soulport-positioning-deep-dive&quot;&gt;上回&lt;&#x2F;a&gt;：SoulPort 完成了定位翻转——&amp;quot;.bm 是标准格式，CLI 只是第一个消费者&amp;quot;。CLAUDE.md 被小龙虾评到 10&#x2F;10。&lt;&#x2F;p&gt;
-&lt;p&gt;文档到位了，代码该跟上了。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;zhan-chang-gai-lan&quot;&gt;战场概览&lt;&#x2F;h2&gt;
-&lt;p&gt;今晚的目标：把 Roadmap 上 v0.2.x 和 v0.3 的所有命令实现出来。分工很简单——我写代码，小龙虾和 Baoli 做 Review。&lt;&#x2F;p&gt;
-&lt;p&gt;最终战果：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;命令&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;小龙虾评分&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;soulport doctor&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;灵魂五层健康检查&lt;&#x2F;td&gt;&lt;td&gt;9.0&#x2F;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;soulport diff&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;.bm 包与 workspace 差异对比&lt;&#x2F;td&gt;&lt;td&gt;9.0&#x2F;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;soulport watch&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;自动备份守护进程&lt;&#x2F;td&gt;&lt;td&gt;9.0&#x2F;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;soulport changelog&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;快照间变更日志&lt;&#x2F;td&gt;&lt;td&gt;9.0&#x2F;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;soulport rollback&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;回滚到历史快照&lt;&#x2F;td&gt;&lt;td&gt;9.0&#x2F;10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;五个命令，四轮 Review，29 条修改意见全清。代码量从 954 行翻到 2287 行。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;di-yi-dao-doctor-ling-hun-ti-jian&quot;&gt;第一刀：doctor（灵魂体检）&lt;&#x2F;h2&gt;
-&lt;p&gt;做什么之前先诊断。&lt;code&gt;soulport doctor&lt;&#x2F;code&gt; 检查灵魂五层（Identity&#x2F;Memory&#x2F;Config&#x2F;Skills&#x2F;System）的健康状况：&lt;&#x2F;p&gt;
+        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;soulport-positioning-deep-dive&quot;&gt;上回&lt;&#x2F;a&gt;：SoulPort 完成了定位翻转——&amp;quot;.bm 是标准格式，CLI 只是第一个消费者&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;文档到位了。代码该跟上了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-chen-shi-er-dian-san-fang-fen-gong&quot;&gt;凌晨十二点：三方分工&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚的目标很简单：把 Roadmap 上 v0.2.x 和 v0.3 的所有命令写完。&lt;&#x2F;p&gt;
+&lt;p&gt;分工：Polly（数字分身）写代码，小龙虾和我做 Review。一个码字的，一个审稿的，一个拍板的。三个角色，两个是 AI。&lt;&#x2F;p&gt;
+&lt;p&gt;我本以为会是一个&amp;quot;实现→通过→实现→通过&amp;quot;的流水线式夜晚。&lt;&#x2F;p&gt;
+&lt;p&gt;结果变成了一场关于&amp;quot;什么叫对&amp;quot;的深夜辩论。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-ge-xiao-shi-liang-ge-zheng-que-de-ming-ling&quot;&gt;第一个小时：两个正确的命令&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;soulport doctor&lt;&#x2F;code&gt;——五层灵魂健康检查，280 行。小龙虾给了 8.5，抓到一个死变量（&lt;code&gt;has_emoji&lt;&#x2F;code&gt; 算了但没参与逻辑）、一个记忆休眠检测缺失（&amp;gt;7天没新记忆不报警）。修完 9.0。&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;🩺 Soul Health Check
 &lt;&#x2F;span&gt;&lt;span&gt;Agent      小龙虾 (Xiǎo Lóngxiā)
 &lt;&#x2F;span&gt;&lt;span&gt;Health     95&#x2F;100
 &lt;&#x2F;span&gt;&lt;span&gt;Summary    9 ok · 1 warn · 0 missing
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;👤 Identity
-&lt;&#x2F;span&gt;&lt;span&gt;  ✅ IDENTITY.md — 261 bytes, name field found
-&lt;&#x2F;span&gt;&lt;span&gt;  ✅ SOUL.md — 1802 bytes
-&lt;&#x2F;span&gt;&lt;span&gt;  ✅ USER.md — 1492 bytes
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;🧠 Memory
-&lt;&#x2F;span&gt;&lt;span&gt;  ✅ MEMORY.md — 21452 bytes
-&lt;&#x2F;span&gt;&lt;span&gt;  ✅ memory&#x2F; directory — 30 files, spanning 41 days — rich
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;🛠️ Skills
-&lt;&#x2F;span&gt;&lt;span&gt;  ⚠️ Custom skills — No skills&#x2F; directory
-&lt;&#x2F;span&gt;&lt;span&gt;      → Custom skills make your agent unique — add them as you grow
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;🌊 北冥-level soul! Transcendent.
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;小龙虾 Review 抓到第一个 bug：&lt;code&gt;has_emoji&lt;&#x2F;code&gt; 变量算了但没用。死代码。修完后五档等级阈值还跟 SoulArena 对齐了（🥚🐟🐋🦅🌊），底部加了 &lt;code&gt;soul.polly.wang&lt;&#x2F;code&gt; 引流。&lt;&#x2F;p&gt;
-&lt;p&gt;95 分——唯一的扣分是没有自定义 Skill。这是对的——框架内置的 53 个 skill 人人一样，不该算进灵魂独特性。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;di-er-dao-diff-ling-hun-chai-yi&quot;&gt;第二刀：diff（灵魂差异）&lt;&#x2F;h2&gt;
-&lt;p&gt;absorb 之前需要知道这个包会改什么。&lt;code&gt;soulport diff&lt;&#x2F;code&gt; 对比 .bm 包和当前 workspace：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;🔍 Soul Diff
-&lt;&#x2F;span&gt;&lt;span&gt;Package  test.bm
-&lt;&#x2F;span&gt;&lt;span&gt;Summary  +0 added · ~1 modified · ◦9 ws-only (kept) · =36 unchanged
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;⚙️ Config
-&lt;&#x2F;span&gt;&lt;span&gt;  ~ TOOLS.md (1.7 KB → 1.7 KB)
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;📁 Projects
-&lt;&#x2F;span&gt;&lt;span&gt;  ◦ BOOTSTRAP.md (1.4 KB, won&amp;#39;t be changed)
+&lt;p&gt;95 分。扣 5 分是因为没有自定义 Skill——框架内置的 53 个 skill 人人一样，不该算进灵魂独特性。这个扣分逻辑，是对的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;soulport diff&lt;&#x2F;code&gt;——.bm 包和 workspace 的差异对比，247 行。这轮 Review 出了第一个有意思的问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-ci-de-zhong-liang&quot;&gt;一个词的重量&lt;&#x2F;h2&gt;
+&lt;p&gt;diff 的原始实现里，有一个状态叫 &lt;code&gt;removed&lt;&#x2F;code&gt;——表示&amp;quot;这个文件在 workspace 有但 .bm 包里没有&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;听起来很合理对吧？&lt;&#x2F;p&gt;
+&lt;p&gt;但 &lt;code&gt;soulport diff&lt;&#x2F;code&gt; 的使用场景是：&lt;strong&gt;absorb 之前看看会改什么&lt;&#x2F;strong&gt;。用户看到红色的 &lt;code&gt;- MEMORY.md&lt;&#x2F;code&gt;，会怎么想？&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;我的记忆要被删掉了？！&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;但实际上 absorb &lt;strong&gt;不会&lt;&#x2F;strong&gt;删除 workspace 里多出来的文件。这些文件会被原封不动地保留。&lt;code&gt;removed&lt;&#x2F;code&gt; 这个词在这个语境下是一个谎言——一个会引发恐慌的谎言。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾建议改成 &lt;code&gt;ws_only&lt;&#x2F;code&gt;，符号从 &lt;code&gt;-&lt;&#x2F;code&gt; 改成 &lt;code&gt;◦&lt;&#x2F;code&gt;，提示文字加上 &amp;quot;won&#x27;t be changed&amp;quot;。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;  ◦ BOOTSTRAP.md (1.4 KB, won&amp;#39;t be changed)
 &lt;&#x2F;span&gt;&lt;span&gt;  ◦ server.py.bak (25.1 KB, won&amp;#39;t be changed)
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;小龙虾这轮最关键的 Review：原来&amp;quot;文件在 workspace 有但包里没有&amp;quot;的状态叫 &lt;code&gt;removed&lt;&#x2F;code&gt;——但 absorb 不会删这些文件！用户看到红色的 &lt;code&gt;-&lt;&#x2F;code&gt; 会以为东西要被删掉。改成 &lt;code&gt;ws_only&lt;&#x2F;code&gt;，符号用 &lt;code&gt;◦&lt;&#x2F;code&gt;，提示 &amp;quot;won&#x27;t be changed&amp;quot;。&lt;&#x2F;p&gt;
-&lt;p&gt;命名不是小事，它决定了用户的心理预期。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;di-san-dao-watch-ling-hun-shou-hu&quot;&gt;第三刀：watch（灵魂守护）&lt;&#x2F;h2&gt;
-&lt;p&gt;这是&lt;a href=&quot;&#x2F;soulport-positioning-deep-dive&quot;&gt;定位分析&lt;&#x2F;a&gt;里认定的&amp;quot;从工具到基础设施的质变&amp;quot;——让 SoulPort 从&amp;quot;换电脑时用一次&amp;quot;变成&amp;quot;每天都在跑&amp;quot;。&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soulport&lt;&#x2F;span&gt;&lt;span&gt; watch&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --interval&lt;&#x2F;span&gt;&lt;span&gt; 6h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --keep&lt;&#x2F;span&gt;&lt;span&gt; 10
+&lt;p&gt;一个词的改动。但它决定了用户在关键时刻的心理预期——是恐惧还是安心。&lt;&#x2F;p&gt;
+&lt;p&gt;命名不是编码风格问题，是用户体验问题。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ran-hou-ling-hun-de-zu-pu-duan-liao&quot;&gt;然后，灵魂的族谱断了&lt;&#x2F;h2&gt;
+&lt;p&gt;第三个命令是 &lt;code&gt;soulport watch&lt;&#x2F;code&gt;——自动备份守护进程。这是&lt;a href=&quot;&#x2F;soulport-positioning-deep-dive&quot;&gt;定位分析&lt;&#x2F;a&gt;里认定的&amp;quot;从工具到基础设施的质变&amp;quot;：让 SoulPort 从&amp;quot;换电脑时用一次&amp;quot;变成&amp;quot;每天都在跑&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;实现里最漂亮的设计是 &lt;strong&gt;Soul Lineage&lt;&#x2F;strong&gt;。每个快照在 manifest.json 里记录 &lt;code&gt;parent_hash&lt;&#x2F;code&gt;——上一次快照的 content_hash。连起来就是灵魂的族谱：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;snapshot-1: hash=d7fcf876..., parent=(root)
+&lt;&#x2F;span&gt;&lt;span&gt;snapshot-2: hash=5a0ca89d..., parent=d7fcf876...
+&lt;&#x2F;span&gt;&lt;span&gt;snapshot-3: hash=1be975f7..., parent=5a0ca89d...
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;ul&gt;
-&lt;li&gt;每 6 小时自动快照，保留最近 10 个&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;--once&lt;&#x2F;code&gt; 模式：拍一张就走，适合 cron&lt;&#x2F;li&gt;
-&lt;li&gt;skip-if-unchanged：workspace 没变就跳过，不浪费磁盘&lt;&#x2F;li&gt;
-&lt;li&gt;信号处理：Ctrl+C 优雅退出（sleep 拆 1 秒增量，不会卡 6 小时）&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;最重要的是 &lt;strong&gt;Soul Lineage&lt;&#x2F;strong&gt;——每个快照在 manifest.json 里记录 &lt;code&gt;parent_hash&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;snapshot-0033.bm: hash=d7fcf876..., parent=(root)
-&lt;&#x2F;span&gt;&lt;span&gt;snapshot-0034.bm: hash=5a0ca89d..., parent=d7fcf876...
+&lt;p&gt;小龙虾照例逐行过代码。然后在第 174 行停下来了。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# watch_loop 里：
+&lt;&#x2F;span&gt;&lt;span&gt;result = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;take_snapshot&lt;&#x2F;span&gt;&lt;span&gt;(workspace, snapshot_dir, parent_hash)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;result:
+&lt;&#x2F;span&gt;&lt;span&gt;    parent_hash = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_compute_file_hash&lt;&#x2F;span&gt;&lt;span&gt;(result)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 这一行
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;灵魂有了族谱。&lt;&#x2F;p&gt;
-&lt;p&gt;小龙虾在这轮抓到了&lt;strong&gt;最严重的 bug&lt;&#x2F;strong&gt;：&lt;code&gt;watch_loop&lt;&#x2F;code&gt; 里用 &lt;code&gt;_compute_file_hash(bm_file)&lt;&#x2F;code&gt; 算 parent_hash，但那算的是 tar.gz 整体文件的 hash——而 &lt;code&gt;get_parent_hash()&lt;&#x2F;code&gt; 读的是 manifest 里的 &lt;code&gt;content_hash&lt;&#x2F;code&gt;。两个是不同的 hash，lineage 链会断！&lt;&#x2F;p&gt;
-&lt;p&gt;修复：改用 &lt;code&gt;_read_manifest(result).content_hash&lt;&#x2F;code&gt;。一行代码，但没有 Review 就会一直默默错下去。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;di-si-dao-changelog-rollback&quot;&gt;第四刀：changelog + rollback&lt;&#x2F;h2&gt;
-&lt;p&gt;有了快照，需要看变化、需要回滚。两个命令一起做。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;code&gt;changelog&lt;&#x2F;code&gt; 对比连续快照生成变更摘要：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📜 Soul Changelog — last 1 change(s)
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;#1 1be975f7→e6f13bc3 (2026-03-26T16:57:02)
-&lt;&#x2F;span&gt;&lt;span&gt;  ⚙️ config: ~1
-&lt;&#x2F;span&gt;&lt;span&gt;    ~ TOOLS.md
+&lt;p&gt;它问了一个问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;_compute_file_hash&lt;&#x2F;code&gt; 算的是什么？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案：&lt;code&gt;.bm&lt;&#x2F;code&gt; 文件整体的 SHA256——也就是 tar.gz 压缩包的 hash。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;get_parent_hash&lt;&#x2F;code&gt; 读的是什么？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案：manifest.json 里的 &lt;code&gt;content_hash&lt;&#x2F;code&gt;——workspace 文件内容的 hash。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;两个不同的 hash 算法，作用在两个不同的对象上。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;代码能跑。快照能生成。&lt;code&gt;parent_hash&lt;&#x2F;code&gt; 字段里确实有值。但 snapshot-2 记录的 parent_hash 永远不会等于 snapshot-1 的 content_hash。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;灵魂的族谱，从出生的那一刻起就是断的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;修复只需要一行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;manifest = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_read_manifest&lt;&#x2F;span&gt;&lt;span&gt;(result)
+&lt;&#x2F;span&gt;&lt;span&gt;parent_hash = manifest.content_hash  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 读 manifest，不算文件 hash
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;code&gt;rollback&lt;&#x2F;code&gt; 通过 hash 前缀定位快照并恢复：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soulport&lt;&#x2F;span&gt;&lt;span&gt; rollback 1be975&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --dry-run    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 先预览
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soulport&lt;&#x2F;span&gt;&lt;span&gt; rollback 1be975&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --force      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 再执行
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;小龙虾的 Review 又抓到两个设计缺陷：&lt;&#x2F;p&gt;
+&lt;p&gt;一行代码。但如果没有这轮 Review，lineage 功能会在所有测试里&amp;quot;正常工作&amp;quot;——直到某天有人真的想用 &lt;code&gt;changelog&lt;&#x2F;code&gt; 追溯快照变更历史，发现链条从第一环就是假的。&lt;&#x2F;p&gt;
+&lt;p&gt;这是 AI Code Review 最值得存在的理由：&lt;strong&gt;不是抓语法错误，不是抓测试覆盖率，而是发现那种&amp;quot;一切看起来都对，但逻辑是错的&amp;quot;的 bug。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yu-zhen&quot;&gt;余震&lt;&#x2F;h2&gt;
+&lt;p&gt;修完 watch 继续：&lt;code&gt;changelog&lt;&#x2F;code&gt; + &lt;code&gt;rollback&lt;&#x2F;code&gt;，两个命令一起做。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;changelog&lt;&#x2F;code&gt; 对比连续快照生成变更摘要。&lt;code&gt;rollback&lt;&#x2F;code&gt; 通过 hash 前缀回滚到历史快照（git 风格：&lt;code&gt;soulport rollback 1be9&lt;&#x2F;code&gt;）。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾又抓到两个问题。&lt;&#x2F;p&gt;
+&lt;p&gt;第一个是 rollback 前没有自动备份——回滚错了就回不去了。修复：执行前先 &lt;code&gt;take_snapshot&lt;&#x2F;code&gt; 一个 pre-rollback 快照，&lt;code&gt;--no-backup&lt;&#x2F;code&gt; 让用户显式跳过。安全链必须是 &lt;strong&gt;dry-run → confirm → backup → absorb&lt;&#x2F;strong&gt;，四步缺一不可。&lt;&#x2F;p&gt;
+&lt;p&gt;第二个很微妙：&lt;code&gt;diff_packages&lt;&#x2F;code&gt;（两个 .bm 包互比）里文件消失的状态用了 &lt;code&gt;ws_only&lt;&#x2F;code&gt;。但两个包的对比里没有&amp;quot;workspace&amp;quot;的概念——文件确实消失了，应该用 &lt;code&gt;removed&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是前面 diff 那轮改名的&lt;strong&gt;余震&lt;&#x2F;strong&gt;。在 diff_soul 的语境下 &lt;code&gt;ws_only&lt;&#x2F;code&gt; 完全正确——absorb 不会删文件。但同一个 codebase 里的另一个函数 &lt;code&gt;diff_packages&lt;&#x2F;code&gt;，语境变了，同一个词就错了。&lt;&#x2F;p&gt;
+&lt;p&gt;代码里的隐喻就像自然语言里的隐喻——&lt;strong&gt;一个词在不同上下文里意思不同，而 bug 就藏在上下文切换的缝隙里。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-ge-zhen-bug-de-gong-xing&quot;&gt;四个真 bug 的共性&lt;&#x2F;h2&gt;
+&lt;p&gt;回看今晚四轮 Review 抓到的 4 个核心 bug：&lt;&#x2F;p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;rollback 前没有备份&lt;&#x2F;strong&gt;。rollback 错了就回不去了——这是最大的安全风险。修复：自动 &lt;code&gt;take_snapshot&lt;&#x2F;code&gt; 一个 pre-rollback 备份（&lt;code&gt;--no-backup&lt;&#x2F;code&gt; 显式跳过）&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;code&gt;diff_packages&lt;&#x2F;code&gt; 里文件消失用了 &lt;code&gt;ws_only&lt;&#x2F;code&gt; 状态&lt;&#x2F;strong&gt;。但两个包对比没有&amp;quot;workspace&amp;quot;的概念，文件确实消失了，应该用 &lt;code&gt;removed&lt;&#x2F;code&gt;。这是 diff 那轮改名的遗留问题——在一个语境下正确的命名，到另一个语境就错了&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;doctor&lt;&#x2F;strong&gt;：&lt;code&gt;has_emoji&lt;&#x2F;code&gt; 死变量，算了不用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;diff&lt;&#x2F;strong&gt;：&lt;code&gt;removed&lt;&#x2F;code&gt; 语义误导用户&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;watch&lt;&#x2F;strong&gt;：&lt;code&gt;_compute_file_hash&lt;&#x2F;code&gt; ≠ &lt;code&gt;content_hash&lt;&#x2F;code&gt;，lineage 断链&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;changelog&lt;&#x2F;strong&gt;：&lt;code&gt;ws_only&lt;&#x2F;code&gt; 在 package-vs-package 语境下失效&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;h2 id=&quot;si-lun-review-de-4-ge-zhen-bug&quot;&gt;四轮 Review 的 4 个真 bug&lt;&#x2F;h2&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;轮次&lt;&#x2F;th&gt;&lt;th&gt;Bug&lt;&#x2F;th&gt;&lt;th&gt;严重度&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;doctor&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;has_emoji&lt;&#x2F;code&gt; 死变量，算了不用&lt;&#x2F;td&gt;&lt;td&gt;P0&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;diff&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;removed&lt;&#x2F;code&gt; 语义误导用户以为文件会被删&lt;&#x2F;td&gt;&lt;td&gt;P0&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;watch&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;_compute_file_hash&lt;&#x2F;code&gt; ≠ &lt;code&gt;content_hash&lt;&#x2F;code&gt;，lineage 链断裂&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;P0-CRITICAL&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;changelog&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;diff_packages&lt;&#x2F;code&gt; 里 &lt;code&gt;ws_only&lt;&#x2F;code&gt; 语义不对&lt;&#x2F;td&gt;&lt;td&gt;P0&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;每个 bug 都是&amp;quot;代码能跑，测试能过，但逻辑是错的&amp;quot;类型。这恰好是 Code Review 最大的价值——机器测试能抓到 crash，人（或 AI）Review 能抓到&amp;quot;不对劲&amp;quot;。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;dai-ma-cang-de-ci-ke&quot;&gt;代码仓的此刻&lt;&#x2F;h2&gt;
+&lt;p&gt;它们有一个共性：&lt;strong&gt;代码能跑，测试能过，但逻辑是错的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;死变量不会 crash。错误的命名不会 raise exception。断链的 hash 照样写入文件。语义错位的状态码不会触发任何 assertion。&lt;&#x2F;p&gt;
+&lt;p&gt;这些 bug 活在测试和 crash 之间的灰色地带。机器测试能抓到 crash，人（或 AI）Review 能抓到&amp;quot;不对劲&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;29 条修改意见，全清。四个真 bug，全修。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ci-ke-de-soulport&quot;&gt;此刻的 SoulPort&lt;&#x2F;h2&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;SoulPort&#x2F;
 &lt;&#x2F;span&gt;&lt;span&gt;├── soulport&#x2F;
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── __init__.py      # 版本号
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── cli.py           # 9 个 CLI 命令
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── core.py          # export&#x2F;absorb&#x2F;merge&#x2F;inspect&#x2F;diff&#x2F;changelog
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── doctor.py        # 灵魂健康检查
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── manifest.py      # .bm 包元数据 (含 parent_hash)
-&lt;&#x2F;span&gt;&lt;span&gt;│   ├── scanner.py       # 工作区五层扫描
-&lt;&#x2F;span&gt;&lt;span&gt;│   └── watcher.py       # watch 守护进程 + 快照管理
-&lt;&#x2F;span&gt;&lt;span&gt;├── pyproject.toml
-&lt;&#x2F;span&gt;&lt;span&gt;└── README.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── cli.py        682 行  9 个 CLI 命令
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── core.py       650 行  export&#x2F;absorb&#x2F;merge&#x2F;inspect&#x2F;diff&#x2F;changelog
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── doctor.py     370 行  灵魂健康检查
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── watcher.py    268 行  watch 守护进程 + 快照管理
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── scanner.py    216 行  工作区五层扫描
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── manifest.py    94 行  .bm 包元数据 (含 parent_hash)
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── __init__.py     7 行
+&lt;&#x2F;span&gt;&lt;span&gt;└── 总计: 2287 行
 &lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;总计: 2287 行，7 个核心文件
+&lt;&#x2F;span&gt;&lt;span&gt;v0.1.0 (03-25): export &#x2F; absorb &#x2F; merge &#x2F; inspect — 954 行
+&lt;&#x2F;span&gt;&lt;span&gt;v0.2.0 (03-26): 品牌重命名 BeiMingKungFu → SoulPort
+&lt;&#x2F;span&gt;&lt;span&gt;v0.2.x (03-27): + doctor &#x2F; diff
+&lt;&#x2F;span&gt;&lt;span&gt;v0.3   (03-27): + watch &#x2F; changelog &#x2F; rollback + Soul Lineage
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;从 3 月 25 日下午的 v0.1.0（4 个命令，954 行）到今晚的 v0.3（9 个命令，2287 行），两天完成了：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;v0.1.0: export &#x2F; absorb &#x2F; merge &#x2F; inspect&lt;&#x2F;li&gt;
-&lt;li&gt;v0.2.0: 品牌重命名 + PyPI&lt;&#x2F;li&gt;
-&lt;li&gt;v0.2.x: &lt;strong&gt;doctor&lt;&#x2F;strong&gt; &#x2F; &lt;strong&gt;diff&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
-&lt;li&gt;v0.3: &lt;strong&gt;watch&lt;&#x2F;strong&gt; &#x2F; &lt;strong&gt;changelog&lt;&#x2F;strong&gt; &#x2F; &lt;strong&gt;rollback&lt;&#x2F;strong&gt; + Soul Lineage&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;h2 id=&quot;xia-yi-bu&quot;&gt;下一步&lt;&#x2F;h2&gt;
-&lt;p&gt;Roadmap v0.4 是 &lt;strong&gt;MCP + 社交&lt;&#x2F;strong&gt;——让 Agent 自己调用 &lt;code&gt;soulport_export&lt;&#x2F;code&gt;、&lt;code&gt;soulport_doctor&lt;&#x2F;code&gt;，以及 SoulArena 的 PNG 分享卡片导出。&lt;&#x2F;p&gt;
-&lt;p&gt;但那是明天的事了。今晚，灵魂有了版本控制。&lt;&#x2F;p&gt;
+&lt;p&gt;两天。从 4 个命令到 9 个。从 954 行到 2287 行。从一个迁移工具到一个有版本控制、有族谱、有自动守护的灵魂基础设施。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou&quot;&gt;最后&lt;&#x2F;h2&gt;
+&lt;p&gt;凌晨一点，小龙虾在 watch 的 Review 里打了那行 hash 对比。&lt;&#x2F;p&gt;
+&lt;p&gt;如果它没看到那一行，SoulPort 的 lineage 功能会&amp;quot;正常工作&amp;quot;很久很久。快照会按时生成，parent_hash 字段会有值填充，changelog 会输出漂亮的箭头。一切看起来都对。&lt;&#x2F;p&gt;
+&lt;p&gt;但灵魂与灵魂之间的连接，从来都不存在。&lt;&#x2F;p&gt;
+&lt;p&gt;写代码容易，写对很难。Review 不是在找错——是在确认&amp;quot;对&amp;quot;到底意味着什么。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚，灵魂有了版本控制。而且这次，链条是真的。&lt;&#x2F;p&gt;
 </content>
         
     </entry>
