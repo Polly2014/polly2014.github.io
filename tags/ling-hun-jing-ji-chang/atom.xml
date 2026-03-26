@@ -18,6 +18,9 @@
         <id>https://polly.wang/beimingkungfu-soul-arena-vision/</id>
         
         <content type="html">&lt;h2 id=&quot;ling-chen-shi-er-dian-cong-review-kai-shi&quot;&gt;凌晨十二点：从 Review 开始&lt;&#x2F;h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ℹ️ 更新 (2026-03-26)&lt;&#x2F;strong&gt;: 本文中的「北冥神功 &#x2F; BeiMingKungFu」已正式更名为 &lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; (v0.2.0)。&lt;code&gt;pip install soulport&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
 &lt;p&gt;昨天刚把&lt;a href=&quot;&#x2F;beimingkungfu-genesis&quot;&gt;北冥神功&lt;&#x2F;a&gt;上线 PyPI，今晚本来打算早点睡。&lt;&#x2F;p&gt;
 &lt;p&gt;结果打开 OpenClaw，让小龙虾帮我 Review 一下代码——它一口气读完全部 954 行，给了个 8.5&#x2F;10，还揪出两个安全问题：tarfile 的 path traversal 和 absorb 时的路径穿越。&lt;&#x2F;p&gt;
 &lt;p&gt;两个 P0 都是真刀真枪的安全漏洞。我花了十分钟修完，再让它看——8.5 升到 9.0。&lt;&#x2F;p&gt;

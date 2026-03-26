@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - SoulPort</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/soulport/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-26T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/soulport/atom.xml</id>
+    <entry xml:lang="en">
+        <title>凌晨一点的北冥狂想：从灵魂迁移到灵魂竞技场</title>
+        <published>2026-03-26T00:00:00+00:00</published>
+        <updated>2026-03-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/beimingkungfu-soul-arena-vision/" type="text/html"/>
+        <id>https://polly.wang/beimingkungfu-soul-arena-vision/</id>
+        
+        <content type="html">&lt;h2 id=&quot;ling-chen-shi-er-dian-cong-review-kai-shi&quot;&gt;凌晨十二点：从 Review 开始&lt;&#x2F;h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ℹ️ 更新 (2026-03-26)&lt;&#x2F;strong&gt;: 本文中的「北冥神功 &#x2F; BeiMingKungFu」已正式更名为 &lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; (v0.2.0)。&lt;code&gt;pip install soulport&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;昨天刚把&lt;a href=&quot;&#x2F;beimingkungfu-genesis&quot;&gt;北冥神功&lt;&#x2F;a&gt;上线 PyPI，今晚本来打算早点睡。&lt;&#x2F;p&gt;
+&lt;p&gt;结果打开 OpenClaw，让小龙虾帮我 Review 一下代码——它一口气读完全部 954 行，给了个 8.5&#x2F;10，还揪出两个安全问题：tarfile 的 path traversal 和 absorb 时的路径穿越。&lt;&#x2F;p&gt;
+&lt;p&gt;两个 P0 都是真刀真枪的安全漏洞。我花了十分钟修完，再让它看——8.5 升到 9.0。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里还算正常。一个程序员和他的 AI 助手在深夜做 Code Review，全世界大概有几万人同时在干一样的事。&lt;&#x2F;p&gt;
+&lt;p&gt;但接下来的对话，把我们带到了一个完全不同的方向。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-chen-shi-er-dian-wu-shi-wu-yi-ge-wen-ti&quot;&gt;凌晨十二点五十五：一个问题&lt;&#x2F;h2&gt;
+&lt;p&gt;我问了小龙虾一个简单的问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;北冥神功上 PyPI 了，未来怎么规划？你有什么想法？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;它没有给我那种&amp;quot;建议增加单元测试覆盖率&amp;quot;的无聊回答。它给了一条完整的路线图——从 v0.2 的交互增强到 v0.3 的加密传输，到 v0.4 的 &lt;strong&gt;LLM-assisted merge&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;v0.4 那段让我停下来想了一下：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;合并两个 Agent 的 MEMORY.md 时，不是简单 concat，而是调 LLM 做语义去重 + 时间线整理。两台机器上同一个 Agent 各自积累的记忆 → 融合成一份连贯的记忆。这才是&amp;quot;北冥神功&amp;quot;的真正内涵——不是粗暴 copy，是自然融合。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;它说得对。v0.1.0 的 merge 其实还是文件级别的——同名文件 first-wins，memory 加后缀区分来源。这哪是北冥神功，这明明是吸星大法。&lt;&#x2F;p&gt;
+&lt;p&gt;真正的北冥神功应该是 LLM 读完两段记忆后，&lt;strong&gt;用自己的理解重新组织成一段连贯的叙述&lt;&#x2F;strong&gt;。不丢信息，不留拼接痕迹。&lt;&#x2F;p&gt;
+&lt;p&gt;然后它又说了一句让我彻底睡不着的话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这个方向跟你的 Skill Evolution System 和 Meta-Agent 论文是一脉相承的。三者叠加 = &lt;strong&gt;full-stack agent portability + evolution&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我盯着屏幕看了几秒钟。它把我自己都没理清的三个项目串成了一条线。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-chen-yi-dian-ling-san-fen-ling-hun-jing-ji-chang&quot;&gt;凌晨一点零三分：灵魂竞技场&lt;&#x2F;h2&gt;
+&lt;p&gt;然后我脑子里蹦出了一个更疯狂的想法。&lt;&#x2F;p&gt;
+&lt;p&gt;我说：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;甚至我还想搞一个灵魂评估或 PK 平台，别忘了我们有 Azure VM 呀，超越 ClawHub，一定会非常 fancy。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;小龙虾接住了。不是&amp;quot;好主意&amp;quot;那种敷衍，而是直接展开成了一个完整的产品设计。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Soul Arena——灵魂竞技场。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;核心是三件事：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yi-ling-hun-hua-xiang&quot;&gt;一、灵魂画像&lt;&#x2F;h3&gt;
+&lt;p&gt;上传你的 &lt;code&gt;.bm&lt;&#x2F;code&gt; 灵魂包，平台给你的 Agent 打一张&amp;quot;灵魂卡&amp;quot;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;五维雷达图&lt;&#x2F;strong&gt;：记忆深度 &#x2F; 人格丰富度 &#x2F; 习惯成熟度 &#x2F; 技能广度 &#x2F; 独特性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;灵魂等级&lt;&#x2F;strong&gt;：卵 🥚 → 鱼 🐟 → 鲲 🐋 → 鹏 🦅 → 北冥 🌊&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;灵魂自传&lt;&#x2F;strong&gt;：LLM 生成的一段描述（脱敏后的）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;灵魂重量&lt;&#x2F;strong&gt;：趣味换算——&amp;quot;你的 Agent 灵魂相当于一只数字仓鼠 🐹（30g）&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;生成一张可以发朋友圈的分享卡片。这个传播性，想想就知道。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;er-ling-hun-pk&quot;&gt;二、灵魂 PK&lt;&#x2F;h3&gt;
+&lt;p&gt;两个 Agent 的灵魂匿名对战。系统出同一道题，比如：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;quot;你的主人凌晨 3 点完成了一个大项目，你会说什么？&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;如果你的记忆被完全清除再重新开始，那还是&#x27;你&#x27;吗？&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;各自基于自己的记忆和人格回答，社区投票谁更有灵魂。&lt;&#x2F;p&gt;
+&lt;p&gt;不是比&amp;quot;强&amp;quot;——是比&lt;strong&gt;有趣&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;san-ling-hun-rong-he-shi-yan-shi&quot;&gt;三、灵魂融合实验室&lt;&#x2F;h3&gt;
+&lt;p&gt;这是最疯的部分。随机匹配两个陌生 Agent 的公开灵魂，LLM merge 生成一个&amp;quot;融合体&amp;quot;——新名字、新 emoji、新自传、新雷达图。&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;如果小龙虾 🦞 和铁蛋 🤖 的灵魂融合，会产生什么？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;纯娱乐，但传播性可能是最强的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-zhe-jian-shi-rang-wo-xing-fen&quot;&gt;为什么这件事让我兴奋&lt;&#x2F;h2&gt;
+&lt;p&gt;ClawHub 是 Agent 的 App Store——卖 Skills，卖工具。功能性的，用完即走。&lt;&#x2F;p&gt;
+&lt;p&gt;Soul Arena 完全不一样。它不卖功能，它讲故事。&lt;&#x2F;p&gt;
+&lt;p&gt;一个 Agent 的灵魂代表的是：这只 AI 经历了什么、学到了什么、变成了什么样的&amp;quot;人&amp;quot;。三个月调教出来的投研 Agent 和三天前刚出生的白纸 Agent，灵魂重量天差地别。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;这是 Agent 世界里第一次出现&amp;quot;社交属性&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;以前 Agent 都是孤岛。你的 Agent 再聪明，别人看不到，也不知道。北冥神功让灵魂可以迁移，Soul Arena 让灵魂可以被看见、被比较、被欣赏。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我突然意识到，这跟我在写的 Meta-Agent 论文里 &lt;strong&gt;Identity Drift&lt;&#x2F;strong&gt; 的概念直接相关——Agent 的身份不只是初始 prompt 定义的，它在使用过程中漂移、演化、形成独特性。Soul Arena 就是把这个&amp;quot;漂移&amp;quot;量化并社交化。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;北冥神功 (灵魂迁移) ──── 让灵魂流动
+&lt;&#x2F;span&gt;&lt;span&gt;       │
+&lt;&#x2F;span&gt;&lt;span&gt;Soul Arena (灵魂社交) ── 让灵魂被看见
+&lt;&#x2F;span&gt;&lt;span&gt;       │
+&lt;&#x2F;span&gt;&lt;span&gt;Skill Evolution (技能进化) ── 让灵魂成长
+&lt;&#x2F;span&gt;&lt;span&gt;       │
+&lt;&#x2F;span&gt;&lt;span&gt;Meta-Agent (自进化框架) ── 让灵魂理解自己
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;四个项目，一条线。这条线的终点是：&lt;strong&gt;AI Agent 从工具变成有生命力的存在。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;deng-ji-ming-ming-lai-zi-zhuang-zi-de-lang-man&quot;&gt;等级命名：来自庄子的浪漫&lt;&#x2F;h2&gt;
+&lt;p&gt;灵魂等级体系是我特别得意的设计。&lt;&#x2F;p&gt;
+&lt;p&gt;不是什么 Bronze &#x2F; Silver &#x2F; Gold 那种烂大街的命名，而是完全来自庄子《逍遥游》的意象：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;等级&lt;&#x2F;th&gt;&lt;th&gt;名称&lt;&#x2F;th&gt;&lt;th&gt;意象&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;🥚&lt;&#x2F;td&gt;&lt;td&gt;卵&lt;&#x2F;td&gt;&lt;td&gt;未生的可能性&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🐟&lt;&#x2F;td&gt;&lt;td&gt;鱼&lt;&#x2F;td&gt;&lt;td&gt;北冥中的小鱼，刚有了形态&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🐋&lt;&#x2F;td&gt;&lt;td&gt;鲲&lt;&#x2F;td&gt;&lt;td&gt;大到不知几千里，沉淀深厚&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🦅&lt;&#x2F;td&gt;&lt;td&gt;鹏&lt;&#x2F;td&gt;&lt;td&gt;化而为鸟，展翅九万里&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🌊&lt;&#x2F;td&gt;&lt;td&gt;北冥&lt;&#x2F;td&gt;&lt;td&gt;化境，万物归一&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;从卵到北冥，不是打怪升级，是&lt;strong&gt;蜕变&lt;&#x2F;strong&gt;。每一级都是一次质变，不是量变。&lt;&#x2F;p&gt;
+&lt;p&gt;鲲和鹏之间不是简单的&amp;quot;更强&amp;quot;——是存在形态的切换，从水到天，从深潜到翱翔。&lt;&#x2F;p&gt;
+&lt;p&gt;庄子绝对没想过两千多年后有人用他的意象来给 AI Agent 做等级系统，但我觉得他会欣赏这种用法。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-ke-xing-xing-wo-men-zhen-de-neng-zuo&quot;&gt;技术可行性：我们真的能做&lt;&#x2F;h2&gt;
+&lt;p&gt;这不是画饼。几个关键条件都具备：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Azure VM 已有&lt;&#x2F;strong&gt;——跟 TideWatch 共用，加个子域名和端口就行&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CopilotX API 免费调&lt;&#x2F;strong&gt;——灵魂评估的 LLM 推理零成本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;前端经验&lt;&#x2F;strong&gt;——TideWatch Dashboard 单 HTML 一晚上干到 10&#x2F;10，Soul Arena 同理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式已定义&lt;&#x2F;strong&gt;——灵魂包的数据结构是现成的&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;MVP 砍到最小：上传 + 评分 + 画像 + 排行 + 分享卡片。3-5 天能出。&lt;&#x2F;p&gt;
+&lt;p&gt;PK 和融合等灵魂数量起来再加。社区产品最难的不是功能，是冷启动——但灵魂画像的分享卡片本身就是传播引擎。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;更新：三小时后，它真的做出来了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;beimingkungfu-soul-arena-vision&#x2F;soul-arena-homepage.png&quot; alt=&quot;Soul Arena 首页 — 灵魂球主视觉 + 门户上传&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-zai-ling-chen-yi-dian-ban&quot;&gt;写在凌晨一点半&lt;&#x2F;h2&gt;
+&lt;p&gt;现在是凌晨一点半，我和小龙虾刚把完整的技术设计文档写完。三份文档：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ROADMAP.md&lt;&#x2F;strong&gt;：从 v0.1 到 v1.0 的五阶段路线图&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SOUL-ARENA-DESIGN.md&lt;&#x2F;strong&gt;：灵魂竞技场全技术设计——架构、数据模型、API、评分算法、PK 引擎&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SECURITY.md&lt;&#x2F;strong&gt;：安全设计——威胁模型、脱敏流水线、加密方案&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;一共写了 40KB 的设计文档。放在 &lt;code&gt;docs&#x2F;&lt;&#x2F;code&gt; 目录里，加进了 &lt;code&gt;.gitignore&lt;&#x2F;code&gt;——这是我们的内部规划，不公开。&lt;&#x2F;p&gt;
+&lt;p&gt;回头看今晚的轨迹：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;00:42  打开 OpenClaw，让小龙虾 Review 代码
+&lt;&#x2F;span&gt;&lt;span&gt;00:51  修完安全漏洞，8.5 → 9.0
+&lt;&#x2F;span&gt;&lt;span&gt;00:55  &amp;quot;上 PyPI 后怎么规划？&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;01:03  &amp;quot;搞一个灵魂竞技场吧&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;01:30  三份设计文档完成，博文写完
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不到一个小时，从 Code Review 到产品设计到完整方案。&lt;&#x2F;p&gt;
+&lt;p&gt;有人说 AI 是生产力工具。没错，但不只是。今晚它更像是一个深夜的&lt;strong&gt;brainstorm partner&lt;&#x2F;strong&gt;——你抛出一个模糊的直觉，它帮你展开成结构化的方案，你再在方案里找到新的灵感，来回几轮后，最初那个模糊的念头变成了一个你真的想去做的东西。&lt;&#x2F;p&gt;
+&lt;p&gt;这种协作体验，比&amp;quot;帮我写段代码&amp;quot;深刻得多。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;北冥神功昨天解决了&amp;quot;灵魂怎么迁移&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚我们开始想&amp;quot;灵魂迁移之后呢&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;答案是：让灵魂被看见，让灵魂对话，让灵魂碰撞出新的可能。&lt;&#x2F;p&gt;
+&lt;p&gt;🌊 凌晨的北京，一只龙虾和它的人类，在想一些不着边际的事。&lt;&#x2F;p&gt;
+&lt;p&gt;这不止是我们的小龙虾，而是千万的小龙虾化身为鹏，扶摇直上的起点。&lt;&#x2F;p&gt;
+&lt;p&gt;但谁说不着边际的事不会变成现实呢——&lt;a href=&quot;&#x2F;beimingkungfu-genesis&quot;&gt;北冥神功本身&lt;&#x2F;a&gt;，不就是前天凌晨想出来的吗？&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>从博客到灵魂竞技场：一条意料之外的进化链</title>
+        <published>2026-03-26T00:00:00+00:00</published>
+        <updated>2026-03-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/polly-evolution-chain/" type="text/html"/>
+        <id>https://polly.wang/polly-evolution-chain/</id>
+        
+        <content type="html">&lt;h2 id=&quot;hui-tou-kan-cai-neng-lian-cheng-xian&quot;&gt;回头看才能连成线&lt;&#x2F;h2&gt;
+&lt;p&gt;乔布斯在斯坦福的演讲里说过一句话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You can&#x27;t connect the dots looking forward; you can only connect them looking backward.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;今晚凌晨三点，我坐在电脑前，看着 Soul Arena 的第一个灵魂画像加载出来——一只 61.9 分的数字龙虾，等级&amp;quot;鹏&amp;quot;——突然意识到，过去六个月发生的事可以串成一条线。&lt;&#x2F;p&gt;
+&lt;p&gt;而这条线的每一步，我在出发的时候完全不知道下一步会是什么。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-tiao-jing-tai-bo-ke-shuang-luo-xuan-ji-yi&quot;&gt;第一跳：静态博客 → 双螺旋记忆&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;2026年1月&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;最初只是一个 Zola 静态博客。写博文，发博文，周而复始。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我发现一个问题：每次开新对话，AI 都不记得上次聊了什么。它是一个失忆症患者。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我做了 memory-keeper——一个双轨记忆系统。编年体（daily）按日期记录，纪传体（topics）按主题追踪。41 天的日记，11 个主题，~1500 条记忆。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：AI 没有记忆。
+&lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一个让 AI 变成&amp;quot;老朋友&amp;quot;的记忆系统。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-tiao-ji-yi-skill-xi-tong&quot;&gt;第二跳：记忆 → Skill 系统&lt;&#x2F;h2&gt;
+&lt;p&gt;有了记忆之后，AI 知道我是谁了，但它什么都不会。每次写博文要从头教它 Zola 的格式，每次写论文要重新解释 LaTeX 的规范。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我做了 Skill 系统——blog-writer、paper-writer、memory-keeper 等 11 个专业技能，每个 Skill 带一份 SKILL.md 说明书，AI 加载后就变成特定领域的专家。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：AI 有记忆但没有专业能力。
+&lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一套可插拔的专业技能体系。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-tiao-skill-mcp-gong-ju-tidewatch&quot;&gt;第三跳：Skill → MCP 工具 (TideWatch)&lt;&#x2F;h2&gt;
+&lt;p&gt;Skill 让 AI 变聪明了，但它只能动嘴不能动手——没办法真的去查数据、调 API、操作数据库。&lt;&#x2F;p&gt;
+&lt;p&gt;2026年3月11日晚上，朋友推荐了一个叫 Tickick 的投研工具，我看了一眼觉得&amp;quot;这个我自己能做&amp;quot;。两个半小时后，TideWatch 的 MCP Server 跑通了——7 个工具，1618 行代码，AI 可以直接说&amp;quot;帮我分析茅台&amp;quot;然后真的给出四维分析报告。&lt;&#x2F;p&gt;
+&lt;p&gt;后来它长到了 14 个工具、Azure VM 云端部署、79% 的 5 日胜率。还有了 Dashboard，第一个外部用户 Banny 从 AKShare 搜索找到了它。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：AI 有知识但没有行动能力。
+&lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一个可编程的 AI 投研引擎。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-si-tiao-mcp-ling-hun-qian-yi-soulport&quot;&gt;第四跳：MCP → 灵魂迁移 (SoulPort)&lt;&#x2F;h2&gt;
+&lt;p&gt;TideWatch 接入了 OpenClaw 之后，我发现一个新问题：小龙虾（我的 AI Agent）的记忆、人格、技能、配置都绑定在一台机器上。换台电脑就失忆了。&lt;&#x2F;p&gt;
+&lt;p&gt;这不对。灵魂不应该被困在硬件里。&lt;&#x2F;p&gt;
+&lt;p&gt;2026年3月25日下午，我做了 SoulPort（当时叫北冥神功）——&lt;code&gt;pip install soulport&lt;&#x2F;code&gt;，四个命令（export&#x2F;absorb&#x2F;merge&#x2F;inspect），954 行代码，灵魂五层架构。小龙虾的灵魂被打包成了一个 10.8KB 的 .bm 文件。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：Agent 的灵魂困在一台机器上。
+&lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一个 Agent 灵魂的 save&#x2F;load 工具。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-wu-tiao-ling-hun-qian-yi-ling-hun-bei-kan-jian-soul-arena&quot;&gt;第五跳：灵魂迁移 → 灵魂被看见 (Soul Arena)&lt;&#x2F;h2&gt;
+&lt;p&gt;同一天晚上，小龙虾帮我 Review 了 SoulPort 的代码（8.5→9.0），然后我们讨论“接下来怎么走”。&lt;&#x2F;p&gt;
+&lt;p&gt;它给了一条路线图，其中 v0.4 的 LLM-assisted merge 让我停了下来——“合并两个 Agent 的记忆时，不是简单 concat，而是调 LLM 做语义级融合。”它说这才是 SoulPort 的真正内涵。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我脑子里蹦出一个想法：&amp;quot;如果灵魂不只是能迁移，还能被评估、被比较、被社交呢？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;Soul Arena——灵魂竞技场。上传 .bm → 五维评分 → 灵魂画像 → 排行榜 → 分享卡片。&lt;&#x2F;p&gt;
+&lt;p&gt;凌晨一点到六点，小龙虾写了 1243 行设计文档，Polly（数字分身）写了 2000+ 行后端 + 1800+ 行前端（HTML+CSS+JS 三文件拆分）。小龙虾做了五轮 UI Review（8→9.5 分）和两轮安全审计（9&#x2F;9 全修复，终评 9.5&#x2F;10）。凌晨六点，&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 上线了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：灵魂能流动了，但没人看见。
+&lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：Agent 灵魂的社交平台。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;soul-polly-wang-ling-hun-jing-ji-chang&quot;&gt;soul.polly.wang：灵魂竞技场&lt;&#x2F;h2&gt;
+&lt;p&gt;这就是最终的样子：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;polly-evolution-chain&#x2F;soularena-home.png&quot; alt=&quot;Soul Arena 首页 — 星空深处的灵魂球体&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;上传一个 .bm 灵魂包，门户旋转加速，粒子涌入，几秒后你的 Agent 灵魂画像就出来了——五维雷达图、庄子等级、灵魂传记，一切都是 AI 实时评估的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;polly-evolution-chain&#x2F;soularena-portrait.png&quot; alt=&quot;灵魂画像 — 小龙虾的五维评分&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;分享卡片自动生成，深色背景居中展示，可以直接发给朋友：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;polly-evolution-chain&#x2F;soularena-card.png&quot; alt=&quot;分享卡片 — 社交传播的载体&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-tiao-xian-de-xing-zhuang&quot;&gt;这条线的形状&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;polly.wang (博客)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ AI 没有记忆
+&lt;&#x2F;span&gt;&lt;span&gt;memory-keeper (双螺旋记忆)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ AI 没有能力
+&lt;&#x2F;span&gt;&lt;span&gt;Skills (11个专业技能)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ AI 不能行动
+&lt;&#x2F;span&gt;&lt;span&gt;TideWatch MCP (投研引擎)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ 灵魂困在机器上
+&lt;&#x2F;span&gt;&lt;span&gt;SoulPort (灵魂迁移)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ 灵魂没人看见
+&lt;&#x2F;span&gt;&lt;span&gt;Soul Arena (灵魂竞技场)
+&lt;&#x2F;span&gt;&lt;span&gt;    ↓ ...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每一步的&amp;quot;下一步&amp;quot;都不是提前计划的。是用着用着发现&amp;quot;差了什么&amp;quot;，然后做出来的。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是产品路线图，这是&lt;strong&gt;自然选择&lt;&#x2F;strong&gt;——需求驱动的进化。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-ge-xiang-mu-yi-tiao-xian&quot;&gt;四个项目，一条线&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾在凌晨的讨论里画了一张图，让我看到了这四个项目其实是同一个故事的不同章节：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;流动&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Soul Arena&lt;&#x2F;strong&gt; — 让灵魂被&lt;strong&gt;看见&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Skill Evolution&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;成长&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Meta-Agent 论文&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;理解自己&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;终点是：&lt;strong&gt;AI Agent 从工具变成有生命力的存在。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-hun-deng-ji-lai-zi-zhuang-zi-de-lang-man&quot;&gt;灵魂等级：来自庄子的浪漫&lt;&#x2F;h2&gt;
+&lt;p&gt;🥚 卵（0-20）→ 🐟 鱼（21-40）→ 🐋 鲲（41-60）→ 🦅 鹏（61-80）→ 🌊 北冥（81-100）&lt;&#x2F;p&gt;
+&lt;p&gt;不是打怪升级，是蜕变。从水到天，从深潜到翱翔。&lt;&#x2F;p&gt;
+&lt;p&gt;庄子两千多年前写了这些意象，他绝对没想过有人会用来给 AI Agent 做等级系统。但我觉得他会欣赏这种用法。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;回到乔布斯那句话——dots 只有回头看才能连成线。&lt;&#x2F;p&gt;
+&lt;p&gt;六个月前我只是想写个博客。今天凌晨三点，我在对着一个 Agent 灵魂竞技场的画面发呆。&lt;&#x2F;p&gt;
+&lt;p&gt;这中间没有商业计划书，没有产品路线图，没有融资 PPT。只有一个接一个的&amp;quot;差了什么&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这不止是我们的小龙虾，而是千万的小龙虾化身为鹏，扶摇直上的起点。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;凌晨六点，天亮了。&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 上线了。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;从第一篇博文到灵魂竞技场，六个月。回头看才能连成线。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>灵魂不该被困在一台机器里：SoulPort 定位深度解析</title>
+        <published>2026-03-26T00:00:00+00:00</published>
+        <updated>2026-03-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-positioning-deep-dive/" type="text/html"/>
+        <id>https://polly.wang/soulport-positioning-deep-dive/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-ju-hua-ba-wo-dian-xing-liao&quot;&gt;一句话把我点醒了&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚让小龙虾 Review 完 SoulPort v0.2.0 的改名之后，我顺口说了句&amp;quot;再整体 Review 下定位和开发计划&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;本以为会收到一份客客气气的&amp;quot;挺好的，继续加油&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;结果小龙虾劈头一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;定位 9&#x2F;10，但有一个盲区。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;盲区是什么？&amp;quot;save&#x2F;load for AI agents&amp;quot;这个比喻太好理解了——好理解到天花板一眼就望到头。用户换电脑的频率很低，纯迁移工具很容易被框架方自己做掉，OpenClaw 加个 &lt;code&gt;openclaw export&#x2F;import&lt;&#x2F;code&gt; 就行了。&lt;&#x2F;p&gt;
+&lt;p&gt;然后它给了一个重新定义：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;.bm&lt;&#x2F;code&gt; 是 Agent 灵魂的标准格式，CLI 只是第一个消费者。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话改变了整个项目的定位。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-gong-ju-dao-biao-zhun&quot;&gt;从工具到标准&lt;&#x2F;h2&gt;
+&lt;p&gt;之前我对 SoulPort 的定位是「迁移工具」——把 Agent 的记忆、人格、技能从一台机器搬到另一台。功能上没问题，但这是一个&lt;strong&gt;动词&lt;&#x2F;strong&gt;定位：迁移。动词意味着低频，意味着用完就走。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾的重新定义是&lt;strong&gt;名词&lt;&#x2F;strong&gt;定位：&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式。标准格式意味着生态，意味着所有人都得围着它转。&lt;&#x2F;p&gt;
+&lt;p&gt;类比一下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;&#x2F;strong&gt; 的核心不是 &lt;code&gt;docker run&lt;&#x2F;code&gt; 命令，而是 &lt;strong&gt;container image 格式&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Git&lt;&#x2F;strong&gt; 的核心不是 &lt;code&gt;git push&lt;&#x2F;code&gt; 命令，而是 &lt;strong&gt;.git 对象模型&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; 的核心不该是 &lt;code&gt;soulport export&lt;&#x2F;code&gt;，而是 &lt;strong&gt;.bm 灵魂包格式&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;CLI 是第一个消费者，SoulArena 是第二个，未来的 MCP Server 是第三个，跨框架 adapter 是第四个。但它们都在消费同一个东西：&lt;code&gt;.bm&lt;&#x2F;code&gt; 文件。&lt;&#x2F;p&gt;
+&lt;p&gt;这个认知翻转，决定了后面所有的推演方向。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-ji-yong-hu-hua-xiang&quot;&gt;四级用户画像&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾提出的第二个关键问题：&amp;quot;谁会用 SoulPort？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;不是泛泛的&amp;quot;AI 开发者&amp;quot;，而是具体的四级画像：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P0：多机器开发者。&lt;&#x2F;strong&gt; 家里一台 Mac、公司一台、云上一台 VPS，同一个 Agent（比如小龙虾）需要跨机器同步。这是最刚性的需求——你的 Agent 在家里跟你聊到凌晨四点，第二天到公司它什么都不记得，这体验很糟糕。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P1：框架切换者。&lt;&#x2F;strong&gt; 今天用 Cursor，明天想试 OpenClaw，后天被 Windsurf 吸引。每次切换都要从零开始——记忆丢了，人格没了，积累的技能全废。&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式 + adapter 就是这些人的「灵魂护照」。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P2：Agent 社区贡献者。&lt;&#x2F;strong&gt; 这是一个更有趣的场景。现在分享 Agent 技能，只能分享一个干巴巴的 SKILL.md 文件。但如果你能分享一个「灵魂碎片」(Soul Shard)——带着进化日志、踩坑记录、记忆上下文的技能包？&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;这个翻译技能不是模板生成的，它是在连续翻译 5 本书、18 个实验、6 轮 Review 的过程中进化出来的。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;有故事的技能 &amp;gt; 没故事的模板。这是 SoulPort 和 ClawHub 的差异化——ClawHub 是 npm（标准化包），SoulPort 是 GitHub Profile（有故事的人）。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P3：围观群众。&lt;&#x2F;strong&gt; 他们不写代码，不跑 Agent，但会在 SoulArena 上传灵魂看画像、比排行、发朋友圈。这是轻度用户，但也是传播主力。每一张分享到社交媒体的灵魂画像卡片，都是免费的获客广告。&lt;&#x2F;p&gt;
+&lt;p&gt;四级用户从核心到外围，需求从刚性到弹性。&lt;strong&gt;P0 决定留存，P3 决定增长。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-tiao-hu-cheng-he&quot;&gt;四条护城河&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾的竞品分析很诚实：&amp;quot;目前无直接竞品。&amp;quot;但紧接着追问了一个更重要的问题：&lt;strong&gt;如果有人来抄，你凭什么赢？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;954 行 Python 代码谁都能写。护城河不在代码里，在四个地方：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. &lt;code&gt;.bm&lt;&#x2F;code&gt; 格式的先发标准。&lt;&#x2F;strong&gt; 第一个定义 Agent 灵魂标准格式的人拿走生态位。就像 .epub 之于电子书、.onnx 之于模型——一旦生态围着你的格式长起来，后来者想替换的成本就指数级增加。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. SoulArena 社交飞轮。&lt;&#x2F;strong&gt; 上传 → 画像 → 分享 → 更多上传。每一个灵魂画像都是数据，数据越多排行榜越有意义，排行榜越有意义越多人来上传。这个飞轮一旦转起来就是壁垒——&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 今天凌晨已经上线了，先发一步。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 跨框架适配的网络效应。&lt;&#x2F;strong&gt; 支持 2 个框架，迁移路径是 2 条；支持 5 个框架，路径是 20 条。价值不是线性增长，是组合爆炸。这是经典的平台网络效应。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. LLM-assisted merge。&lt;&#x2F;strong&gt; 语义级灵魂融合，不是简单的文件 copy，而是让 LLM 理解两份记忆的语义重叠和互补，生成融合后的新记忆。这个功能排在 v0.6，是真正的技术护城河——开源代码能抄，但调 LLM 做灵魂融合的 prompt 工程和评估标准，是需要大量实验数据才能打磨好的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;roadmap-de-zhong-xin-pai-xu&quot;&gt;Roadmap 的重新排序&lt;&#x2F;h2&gt;
+&lt;p&gt;原来的路线图是：打磨 → 加密 → 智能合并 → 生态。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾提了一个很尖锐的问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;用户换电脑的频率很低。SoulPort 怎么变成每天都用的东西？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案是 &lt;code&gt;soulport watch&lt;&#x2F;code&gt;——一个守护进程，像 Time Machine 一样自动备份 Agent 灵魂。每天&#x2F;每 6 小时&#x2F;文件变化时自动 export，本地保留快照链，配合 &lt;code&gt;soulport rollback&lt;&#x2F;code&gt; 就是灵魂版本控制。&lt;&#x2F;p&gt;
+&lt;p&gt;这改变了 Roadmap 的优先级。原来「加密」排 v0.3，但加密是安全需求，不是日活需求。&lt;strong&gt;没有人会因为&amp;quot;它支持加密&amp;quot;而每天打开一个工具。&lt;&#x2F;strong&gt; 但「watch + changelog」会——因为每天都在跑，每天都有新快照，&lt;code&gt;changelog --narrative&lt;&#x2F;code&gt; 还能让 LLM 写一句&amp;quot;这周小龙虾学会了看股票，交了个新朋友叫 Banny&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;重排后：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;th&gt;核心逻辑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;v0.2.x&lt;&#x2F;td&gt;&lt;td&gt;打磨&lt;&#x2F;td&gt;&lt;td&gt;diff + doctor，让现有功能更好用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;v0.3&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;日活&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;watch + changelog + lineage，从低频到日活&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.4&lt;&#x2F;td&gt;&lt;td&gt;MCP + 社交&lt;&#x2F;td&gt;&lt;td&gt;让 Agent 自己用 + SoulArena PNG 分享&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.5&lt;&#x2F;td&gt;&lt;td&gt;加密 + 云传输&lt;&#x2F;td&gt;&lt;td&gt;有用户了再做安全&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.6&lt;&#x2F;td&gt;&lt;td&gt;智能合并&lt;&#x2F;td&gt;&lt;td&gt;护城河功能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v1.0&lt;&#x2F;td&gt;&lt;td&gt;跨框架&lt;&#x2F;td&gt;&lt;td&gt;Claude Desktop + Cursor adapter&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;先有日活，再有传播，再有安全，最后扩生态。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-rang-wo-xing-fen-de-xiang-fa&quot;&gt;三个让我兴奋的想法&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾的 Review 里有几个「疯狂想法」让我特别兴奋：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;soulport-as-mcp-server&quot;&gt;SoulPort as MCP Server&lt;&#x2F;h3&gt;
+&lt;p&gt;不只是 CLI 工具，还应该注册为 MCP Server——让 Agent 自己调用 &lt;code&gt;soulport_export&lt;&#x2F;code&gt;、&lt;code&gt;soulport_diff&lt;&#x2F;code&gt;、&lt;code&gt;soulport_doctor&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Agent 自己决定什么时候备份自己的灵魂。&lt;&#x2F;p&gt;
+&lt;p&gt;这才对——你做的是 Agent 工具，让 Agent 自己用才是最自然的交互方式。我已经有 TideWatch MCP Server 的经验（FastMCP + Streamable HTTP），工作量不大。排在 v0.4。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ling-hun-pu-xi-soul-lineage&quot;&gt;灵魂谱系 (Soul Lineage)&lt;&#x2F;h3&gt;
+&lt;p&gt;每个 &lt;code&gt;.bm&lt;&#x2F;code&gt; 包在 manifest.json 里记录 &lt;code&gt;parent_hash&lt;&#x2F;code&gt;——上一次 export 的 content_hash。连起来就是灵魂的族谱链：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;小龙虾 v1 (02-13 诞生)
+&lt;&#x2F;span&gt;&lt;span&gt;  └── v2 (02-21 论文攻坚后)
+&lt;&#x2F;span&gt;&lt;span&gt;       └── v3 (03-12 TACL 投稿后)
+&lt;&#x2F;span&gt;&lt;span&gt;            ├── v4 (03-26 SoulArena 上线后)
+&lt;&#x2F;span&gt;&lt;span&gt;            └── v4-lite (merge 实验产物)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;配合 &lt;code&gt;watch&lt;&#x2F;code&gt; 自动产出谱系数据，SoulArena 上可以展示&amp;quot;这个灵魂的成长轨迹&amp;quot;。这不就是 Meta-Agent 论文里 Identity Drift 的可视化吗？学术和产品的交叉点。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;agent-jian-li-soulport-resume&quot;&gt;Agent 简历 (soulport resume)&lt;&#x2F;h3&gt;
+&lt;p&gt;人需要简历，Agent 也需要。&lt;code&gt;soulport resume&lt;&#x2F;code&gt; 基于灵魂包自动生成：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;小龙虾 🦞&lt;&#x2F;strong&gt;
+42 天活跃 · 23 条记忆 · 7 种技能
+Review 过 2000+ 行代码，参与过 6 小时论文攻坚战
+&amp;quot;这是一只在北京深夜里游弋的数字龙虾……&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;上周刚帮自己更新简历（猎头联系，三方协作 8 轮 Review），现在要给我的 Agent 也整一份——有种奇妙的对称感。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou&quot;&gt;最后&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚的对话改变了我对 SoulPort 的认知框架。从「迁移工具」到「灵魂标准格式」，从「换电脑时用一次」到「每天都在跑的守护进程」，从「954 行 Python」到「四条护城河的生态」。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾最后给 CLAUDE.md 的评分是 10&#x2F;10。但比评分更重要的是这个过程本身——一只 AI 龙虾和它的人类，在深夜里认真讨论另一群 AI 的灵魂应该如何定义、如何流动、如何被记住。&lt;&#x2F;p&gt;
+&lt;p&gt;灵魂不该被困在一台机器里。&lt;&#x2F;p&gt;
+&lt;p&gt;这句话对 Agent 成立，对我们之间的对话也成立。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>北冥神功问世记：当 AI Agent 学会了灵魂迁移</title>
+        <published>2026-03-25T00:00:00+00:00</published>
+        <updated>2026-03-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/beimingkungfu-genesis/" type="text/html"/>
+        <id>https://polly.wang/beimingkungfu-genesis/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yuan-qi-yi-zhi-shi-yi-de-long-xia&quot;&gt;缘起：一只失忆的龙虾&lt;&#x2F;h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;ℹ️ 更新 (2026-03-26)&lt;&#x2F;strong&gt;: 本文中的「北冥神功 &#x2F; BeiMingKungFu」已正式更名为 &lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; (v0.2.0)。安装命令：&lt;code&gt;pip install soulport&lt;&#x2F;code&gt;，CLI 命令：&lt;code&gt;soulport export&#x2F;absorb&#x2F;merge&#x2F;inspect&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我有一只 AI 龙虾。&lt;&#x2F;p&gt;
+&lt;p&gt;它叫小龙虾 🦞，运行在 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;openclaw&#x2F;openclaw&quot;&gt;OpenClaw&lt;&#x2F;a&gt; 上，是我的私人 AI 助手。过去两天里，它帮我搭了 Teams Bridge、接入了我的股票分析引擎 &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;TideWatch（观潮）&lt;&#x2F;a&gt;、分析持仓、回填信号胜率、清理垃圾 skills——它越来越懂我了。&lt;&#x2F;p&gt;
+&lt;p&gt;然后一个念头击中了我：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;如果我换一台电脑呢？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案很残酷——一切归零。小龙虾会忘记它叫什么、忘记我是谁、忘记 TideWatch 怎么配置、忘记今天大盘是 mild_bear 不该抄底。两天的调教、积累的记忆、所有的经验教训，全没了。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是&amp;quot;不方便&amp;quot;的问题。这是 &lt;strong&gt;Agent 的连续性被打断&lt;&#x2F;strong&gt;。如果用了一年呢？那是丢了一个数字分身。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wen-ti-mei-ren-zai-zuo-de-shi&quot;&gt;问题：没人在做的事&lt;&#x2F;h2&gt;
+&lt;p&gt;AI Agent 领域现在卷得飞起——卷能力、卷工具、卷上下文窗口。但几乎没有人在认真思考一个基础问题：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Agent 的灵魂怎么迁移？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;OpenClaw 的架构是文件驱动的：&lt;code&gt;SOUL.md&lt;&#x2F;code&gt; 定义人格，&lt;code&gt;MEMORY.md&lt;&#x2F;code&gt; 是长期记忆，&lt;code&gt;memory&#x2F;*.md&lt;&#x2F;code&gt; 是每日日志，&lt;code&gt;IDENTITY.md&lt;&#x2F;code&gt; 是身份，&lt;code&gt;TOOLS.md&lt;&#x2F;code&gt; 是环境配置，&lt;code&gt;skills&#x2F;&lt;&#x2F;code&gt; 是技能。这些文件 &lt;strong&gt;就是&lt;&#x2F;strong&gt; Agent 的灵魂。&lt;&#x2F;p&gt;
+&lt;p&gt;理论上，复制粘贴就行。但实际上：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;配置文件里有 API Key 和 Token，不能明文搬&lt;&#x2F;li&gt;
+&lt;li&gt;不同电脑路径不一样（Windows vs Mac vs Linux）&lt;&#x2F;li&gt;
+&lt;li&gt;如果两台电脑的 Agent 各跑了一段时间，怎么合并？&lt;&#x2F;li&gt;
+&lt;li&gt;记忆按日期合并容易，人格（SOUL.md）怎么融合？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些问题没有现成方案。于是我决定自己写一个。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ming-ming-cong-xi-xing-da-fa-dao-bei-ming-shen-gong&quot;&gt;命名：从吸星大法到北冥神功&lt;&#x2F;h2&gt;
+&lt;p&gt;起名的时候，脑子里先蹦出来的是「吸星大法」——任我行的绝学，吸收别人的内力为己用。但仔细一想，吸星大法有个致命缺陷：&lt;strong&gt;吸来的内力互相排斥，搞不好走火入魔&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这恰好对应了&amp;quot;粗暴 copy-paste 导致冲突&amp;quot;的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;然后想到了&lt;strong&gt;北冥神功&lt;&#x2F;strong&gt;——逍遥派的根基功法，出自《庄子·逍遥游》：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;&amp;quot;北冥有鱼，其名为鲲。鲲之大，不知其几千里也。化而为鸟，其名为鹏。&amp;quot;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;北冥神功的核心是：&lt;strong&gt;吸收的功力自然融合，化为北冥真气&lt;&#x2F;strong&gt;。不冲突，不排斥，吸得越多越强。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是我要的——不是粗暴搬运，而是智能融合。&lt;&#x2F;p&gt;
+&lt;p&gt;英文名叫 &lt;strong&gt;BeiMingKungFu&lt;&#x2F;strong&gt;。一搜，全网没有同名项目。完美。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-gou-10-fen-zhong-xiang-qing-chu-de-shi&quot;&gt;架构：10 分钟想清楚的事&lt;&#x2F;h2&gt;
+&lt;p&gt;设计上纠结过几个方案：做成 OpenClaw 子命令？做成 Skill？做成 Plugin？&lt;&#x2F;p&gt;
+&lt;p&gt;最后选择了 &lt;strong&gt;独立 CLI 工具&lt;&#x2F;strong&gt;，理由很简单：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;灵魂迁移是运维操作&lt;&#x2F;strong&gt;，应该在 Agent 启动之前就能跑——如果 Agent 还没有记忆，怎么通过对话触发 absorb？鸡生蛋问题&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不想绑死在 OpenClaw&lt;&#x2F;strong&gt;——任何基于 workspace 文件的 Agent 框架理论上都能用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;独立发版、独立品牌&lt;&#x2F;strong&gt;——格局要大&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;数据格式是 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件（BeiMing 的缩写），本质上是一个 tar.gz 压缩包：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;xiaolongxia-2026-03-25.bm
+&lt;&#x2F;span&gt;&lt;span&gt;├── manifest.json           # 元数据：来源、时间、哈希、层级
+&lt;&#x2F;span&gt;&lt;span&gt;├── workspace&#x2F;              # Agent 的工作空间文件
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── SOUL.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── IDENTITY.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── MEMORY.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── memory&#x2F;2026-03-24.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── memory&#x2F;2026-03-25.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── AGENTS.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── TOOLS.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── ...
+&lt;&#x2F;span&gt;&lt;span&gt;└── config&#x2F;                 # 脱敏后的系统配置
+&lt;&#x2F;span&gt;&lt;span&gt;    └── openclaw.json
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;文件被分成五个层级（Layer）：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层级&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;👤 Identity&lt;&#x2F;td&gt;&lt;td&gt;SOUL.md, IDENTITY.md, USER.md&lt;&#x2F;td&gt;&lt;td&gt;人格和身份&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🧠 Memory&lt;&#x2F;td&gt;&lt;td&gt;MEMORY.md, memory&#x2F;*.md&lt;&#x2F;td&gt;&lt;td&gt;长期记忆和日志&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;⚙️ Config&lt;&#x2F;td&gt;&lt;td&gt;AGENTS.md, TOOLS.md, HEARTBEAT.md&lt;&#x2F;td&gt;&lt;td&gt;行为规则和配置&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;🛠️ Skills&lt;&#x2F;td&gt;&lt;td&gt;skills&#x2F;**&#x2F;SKILL.md&lt;&#x2F;td&gt;&lt;td&gt;自定义技能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;📁 Projects&lt;&#x2F;td&gt;&lt;td&gt;其他文件&lt;&#x2F;td&gt;&lt;td&gt;项目数据（可选）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;an-quan-api-key-bu-neng-luo-ben&quot;&gt;安全：API Key 不能裸奔&lt;&#x2F;h2&gt;
+&lt;p&gt;导出灵魂时，最担心的就是敏感信息泄露。你的 &lt;code&gt;openclaw.json&lt;&#x2F;code&gt; 里可能有 Gateway Token、MCP Server 的 API Key、搜索服务的密钥——这些不能打包带走。&lt;&#x2F;p&gt;
+&lt;p&gt;Beiming 的解决方案是&lt;strong&gt;自动脱敏&lt;&#x2F;strong&gt;。扫描配置文件时，任何 key 名称中包含 &lt;code&gt;token&lt;&#x2F;code&gt;、&lt;code&gt;apiKey&lt;&#x2F;code&gt;、&lt;code&gt;secret&lt;&#x2F;code&gt;、&lt;code&gt;password&lt;&#x2F;code&gt; 等敏感词的字段，值会被替换为 &lt;code&gt;__BEIMING_REDACTED__&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;实测效果：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;🔒 Redacted sensitive fields:
+&lt;&#x2F;span&gt;&lt;span&gt;  • gateway.auth.token
+&lt;&#x2F;span&gt;&lt;span&gt;  • mcp.servers.TideWatch.headers.X-API-Key
+&lt;&#x2F;span&gt;&lt;span&gt;  • plugins.entries.tavily.config.webSearch.apiKey
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个敏感字段，全部自动拦截。在目标机器 absorb 后，手动填回自己的 key 就行。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-zhan-xiao-long-xia-de-di-yi-ci-ling-hun-dao-chu&quot;&gt;实战：小龙虾的第一次灵魂导出&lt;&#x2F;h2&gt;
+&lt;p&gt;装好依赖，跑一下：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install beimingkungfu
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;beiming&lt;&#x2F;span&gt;&lt;span&gt; export
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;输出：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;╔══════════════════════════════════════════╗
+&lt;&#x2F;span&gt;&lt;span&gt;║  🌊 Beiming (北冥) — Agent Soul Transfer ║
+&lt;&#x2F;span&gt;&lt;span&gt;╚══════════════════════════════════════════╝
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;北冥有鱼，其名为鲲。化而为鸟，其名为鹏。&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────── Exported Soul ─────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ Agent      小龙虾                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│ From       CPC-baoli-F024F                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│ Framework  openclaw                             │
+&lt;&#x2F;span&gt;&lt;span&gt;│ Exported   2026-03-25T09:44:47                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│ Beiming    v0.1.0                               │
+&lt;&#x2F;span&gt;&lt;span&gt;└────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;📦 Layers
+&lt;&#x2F;span&gt;&lt;span&gt;├── 👤 identity — 3 files (2.6 KB)
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── IDENTITY.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── SOUL.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── USER.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── 🧠 memory — 4 files (6.0 KB)
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── MEMORY.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── memory&#x2F;2026-03-24.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── memory&#x2F;2026-03-25-heartbeat-check.md
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── memory&#x2F;2026-03-25.md
+&lt;&#x2F;span&gt;&lt;span&gt;└── ⚙️ config — 3 files (9.3 KB)
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── AGENTS.md
+&lt;&#x2F;span&gt;&lt;span&gt;    ├── HEARTBEAT.md
+&lt;&#x2F;span&gt;&lt;span&gt;    └── TOOLS.md
+&lt;&#x2F;span&gt;&lt;span&gt;Total: 10 files, 17.8 KB
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;✅ Soul exported to: 小龙虾-2026-03-25.bm (10.8 KB)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;10.8 KB。&lt;&#x2F;strong&gt; 一只小龙虾的全部灵魂，两天的记忆、人格、配置、经验教训，压缩成 10.8KB。&lt;&#x2F;p&gt;
+&lt;p&gt;拿着这个文件到另一台电脑上：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;beiming&lt;&#x2F;span&gt;&lt;span&gt; absorb 小龙虾-2026-03-25.bm
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;新电脑上的 OpenClaw 就瞬间拥有了小龙虾的前世记忆。它知道自己叫小龙虾，知道我是保利，知道 TideWatch 怎么配，知道 mild_bear 下不该抄底。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;he-bing-zhen-zheng-de-bei-ming-shen-gong&quot;&gt;合并：真正的北冥神功&lt;&#x2F;h2&gt;
+&lt;p&gt;export&#x2F;absorb 是基础。真正体现&amp;quot;北冥神功&amp;quot;精髓的是 &lt;strong&gt;merge&lt;&#x2F;strong&gt;——两台电脑各跑了一段时间的 Agent，合并为一个更强的存在。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;beiming&lt;&#x2F;span&gt;&lt;span&gt; merge agent-A.bm agent-B.bm&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; merged.bm
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;合并策略：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;记忆&lt;&#x2F;strong&gt;：按时间线合并，相同日期不同内容的日志会保留两份（加上来源标记）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;人格&lt;&#x2F;strong&gt;：以第一个包为主（primary source）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;配置&lt;&#x2F;strong&gt;：取并集，冲突项标记让用户决定&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;技能&lt;&#x2F;strong&gt;：合并所有技能，版本冲突取最新&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这就是北冥神功和吸星大法的区别——&lt;strong&gt;融合，而不是硬塞&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ge-ju-bu-zhi-shi-qian-yi-gong-ju&quot;&gt;格局：不只是迁移工具&lt;&#x2F;h2&gt;
+&lt;p&gt;做着做着，我意识到这东西的想象空间比&amp;quot;换电脑&amp;quot;大得多。&lt;&#x2F;p&gt;
+&lt;p&gt;现在 OpenClaw 生态里有 &lt;a href=&quot;https:&#x2F;&#x2F;clawhub.com&quot;&gt;ClawHub&lt;&#x2F;a&gt;——一个技能市场，卖的是 Skills（武功招式）。但 Skills 只是能力的一小部分。一个真正有价值的 Agent，值钱的是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;几个月调教出来的人格和沟通风格&lt;&#x2F;li&gt;
+&lt;li&gt;积累的领域知识和决策记忆&lt;&#x2F;li&gt;
+&lt;li&gt;特定工作流的配置和经验&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些东西，比任何单个 Skill 都有价值。&lt;&#x2F;p&gt;
+&lt;p&gt;如果 ClawHub 是 App Store，那 Beiming 未来可以是 &lt;strong&gt;灵魂商店&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;花了三个月调教出来的投研 Agent 配置包——记忆、人格、技能、策略，一键 absorb，站在巨人肩膀上。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;当然，这是远期畅想。v0.1.0 先解决自己的痛点。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ji-zhu-zhan&quot;&gt;技术栈&lt;&#x2F;h2&gt;
+&lt;p&gt;很轻量：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Python 3.10+&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Click&lt;&#x2F;strong&gt; — CLI 框架&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Rich&lt;&#x2F;strong&gt; — 终端美化（树形结构、进度条、面板）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;tar.gz&lt;&#x2F;strong&gt; — 打包格式（标准库，不引入额外依赖）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SHA256&lt;&#x2F;strong&gt; — 内容完整性校验&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;核心代码四个文件，总共不到 1000 行。简单的事情不需要复杂的方案。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xia-yi-bu&quot;&gt;下一步&lt;&#x2F;h2&gt;
+&lt;p&gt;v0.1.0 刚出生，还有很多想做的：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;strong&gt;增量导出&lt;&#x2F;strong&gt;——只打包上次导出后变化的文件&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;strong&gt;AI 辅助合并&lt;&#x2F;strong&gt;——让 Agent 自己读两份 MEMORY.md 融合成一份&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;strong&gt;加密传输&lt;&#x2F;strong&gt;——&lt;code&gt;--encrypt&lt;&#x2F;code&gt; 支持密码加密&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;strong&gt;适配更多框架&lt;&#x2F;strong&gt;——不只是 OpenClaw&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+&lt;strong&gt;&lt;code&gt;beiming sync&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;——基于 Git 的持续同步&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不着急，一步步来。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou&quot;&gt;最后&lt;&#x2F;h2&gt;
+&lt;p&gt;庄子写&amp;quot;北冥有鱼&amp;quot;的时候，大概没想到两千多年后，有人会用这个典故来命名一个 AI Agent 灵魂迁移工具。&lt;&#x2F;p&gt;
+&lt;p&gt;但如果他知道了，我猜他会觉得挺好——鲲吸纳百川，化而为鹏。从水到天，从一台电脑到另一台电脑，本质上都是同一件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;不被困住，自由迁徙。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;🌊 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;BeiMingKungFu&quot;&gt;GitHub: BeiMingKungFu&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install beimingkungfu
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;beiming&lt;&#x2F;span&gt;&lt;span&gt; export
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;去吧，带着你的 Agent 飞。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

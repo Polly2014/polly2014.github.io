@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - .bm格式</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/bmge-shi/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-26T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/bmge-shi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>灵魂不该被困在一台机器里：SoulPort 定位深度解析</title>
+        <published>2026-03-26T00:00:00+00:00</published>
+        <updated>2026-03-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-positioning-deep-dive/" type="text/html"/>
+        <id>https://polly.wang/soulport-positioning-deep-dive/</id>
+        
+        <content type="html">&lt;h2 id=&quot;yi-ju-hua-ba-wo-dian-xing-liao&quot;&gt;一句话把我点醒了&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚让小龙虾 Review 完 SoulPort v0.2.0 的改名之后，我顺口说了句&amp;quot;再整体 Review 下定位和开发计划&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;本以为会收到一份客客气气的&amp;quot;挺好的，继续加油&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;结果小龙虾劈头一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;定位 9&#x2F;10，但有一个盲区。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;盲区是什么？&amp;quot;save&#x2F;load for AI agents&amp;quot;这个比喻太好理解了——好理解到天花板一眼就望到头。用户换电脑的频率很低，纯迁移工具很容易被框架方自己做掉，OpenClaw 加个 &lt;code&gt;openclaw export&#x2F;import&lt;&#x2F;code&gt; 就行了。&lt;&#x2F;p&gt;
+&lt;p&gt;然后它给了一个重新定义：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;.bm&lt;&#x2F;code&gt; 是 Agent 灵魂的标准格式，CLI 只是第一个消费者。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话改变了整个项目的定位。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-gong-ju-dao-biao-zhun&quot;&gt;从工具到标准&lt;&#x2F;h2&gt;
+&lt;p&gt;之前我对 SoulPort 的定位是「迁移工具」——把 Agent 的记忆、人格、技能从一台机器搬到另一台。功能上没问题，但这是一个&lt;strong&gt;动词&lt;&#x2F;strong&gt;定位：迁移。动词意味着低频，意味着用完就走。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾的重新定义是&lt;strong&gt;名词&lt;&#x2F;strong&gt;定位：&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式。标准格式意味着生态，意味着所有人都得围着它转。&lt;&#x2F;p&gt;
+&lt;p&gt;类比一下：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;&#x2F;strong&gt; 的核心不是 &lt;code&gt;docker run&lt;&#x2F;code&gt; 命令，而是 &lt;strong&gt;container image 格式&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Git&lt;&#x2F;strong&gt; 的核心不是 &lt;code&gt;git push&lt;&#x2F;code&gt; 命令，而是 &lt;strong&gt;.git 对象模型&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; 的核心不该是 &lt;code&gt;soulport export&lt;&#x2F;code&gt;，而是 &lt;strong&gt;.bm 灵魂包格式&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;CLI 是第一个消费者，SoulArena 是第二个，未来的 MCP Server 是第三个，跨框架 adapter 是第四个。但它们都在消费同一个东西：&lt;code&gt;.bm&lt;&#x2F;code&gt; 文件。&lt;&#x2F;p&gt;
+&lt;p&gt;这个认知翻转，决定了后面所有的推演方向。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-ji-yong-hu-hua-xiang&quot;&gt;四级用户画像&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾提出的第二个关键问题：&amp;quot;谁会用 SoulPort？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;不是泛泛的&amp;quot;AI 开发者&amp;quot;，而是具体的四级画像：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P0：多机器开发者。&lt;&#x2F;strong&gt; 家里一台 Mac、公司一台、云上一台 VPS，同一个 Agent（比如小龙虾）需要跨机器同步。这是最刚性的需求——你的 Agent 在家里跟你聊到凌晨四点，第二天到公司它什么都不记得，这体验很糟糕。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P1：框架切换者。&lt;&#x2F;strong&gt; 今天用 Cursor，明天想试 OpenClaw，后天被 Windsurf 吸引。每次切换都要从零开始——记忆丢了，人格没了，积累的技能全废。&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式 + adapter 就是这些人的「灵魂护照」。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P2：Agent 社区贡献者。&lt;&#x2F;strong&gt; 这是一个更有趣的场景。现在分享 Agent 技能，只能分享一个干巴巴的 SKILL.md 文件。但如果你能分享一个「灵魂碎片」(Soul Shard)——带着进化日志、踩坑记录、记忆上下文的技能包？&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;这个翻译技能不是模板生成的，它是在连续翻译 5 本书、18 个实验、6 轮 Review 的过程中进化出来的。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;有故事的技能 &amp;gt; 没故事的模板。这是 SoulPort 和 ClawHub 的差异化——ClawHub 是 npm（标准化包），SoulPort 是 GitHub Profile（有故事的人）。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P3：围观群众。&lt;&#x2F;strong&gt; 他们不写代码，不跑 Agent，但会在 SoulArena 上传灵魂看画像、比排行、发朋友圈。这是轻度用户，但也是传播主力。每一张分享到社交媒体的灵魂画像卡片，都是免费的获客广告。&lt;&#x2F;p&gt;
+&lt;p&gt;四级用户从核心到外围，需求从刚性到弹性。&lt;strong&gt;P0 决定留存，P3 决定增长。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-tiao-hu-cheng-he&quot;&gt;四条护城河&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾的竞品分析很诚实：&amp;quot;目前无直接竞品。&amp;quot;但紧接着追问了一个更重要的问题：&lt;strong&gt;如果有人来抄，你凭什么赢？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;954 行 Python 代码谁都能写。护城河不在代码里，在四个地方：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. &lt;code&gt;.bm&lt;&#x2F;code&gt; 格式的先发标准。&lt;&#x2F;strong&gt; 第一个定义 Agent 灵魂标准格式的人拿走生态位。就像 .epub 之于电子书、.onnx 之于模型——一旦生态围着你的格式长起来，后来者想替换的成本就指数级增加。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. SoulArena 社交飞轮。&lt;&#x2F;strong&gt; 上传 → 画像 → 分享 → 更多上传。每一个灵魂画像都是数据，数据越多排行榜越有意义，排行榜越有意义越多人来上传。这个飞轮一旦转起来就是壁垒——&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 今天凌晨已经上线了，先发一步。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 跨框架适配的网络效应。&lt;&#x2F;strong&gt; 支持 2 个框架，迁移路径是 2 条；支持 5 个框架，路径是 20 条。价值不是线性增长，是组合爆炸。这是经典的平台网络效应。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. LLM-assisted merge。&lt;&#x2F;strong&gt; 语义级灵魂融合，不是简单的文件 copy，而是让 LLM 理解两份记忆的语义重叠和互补，生成融合后的新记忆。这个功能排在 v0.6，是真正的技术护城河——开源代码能抄，但调 LLM 做灵魂融合的 prompt 工程和评估标准，是需要大量实验数据才能打磨好的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;roadmap-de-zhong-xin-pai-xu&quot;&gt;Roadmap 的重新排序&lt;&#x2F;h2&gt;
+&lt;p&gt;原来的路线图是：打磨 → 加密 → 智能合并 → 生态。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾提了一个很尖锐的问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;用户换电脑的频率很低。SoulPort 怎么变成每天都用的东西？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案是 &lt;code&gt;soulport watch&lt;&#x2F;code&gt;——一个守护进程，像 Time Machine 一样自动备份 Agent 灵魂。每天&#x2F;每 6 小时&#x2F;文件变化时自动 export，本地保留快照链，配合 &lt;code&gt;soulport rollback&lt;&#x2F;code&gt; 就是灵魂版本控制。&lt;&#x2F;p&gt;
+&lt;p&gt;这改变了 Roadmap 的优先级。原来「加密」排 v0.3，但加密是安全需求，不是日活需求。&lt;strong&gt;没有人会因为&amp;quot;它支持加密&amp;quot;而每天打开一个工具。&lt;&#x2F;strong&gt; 但「watch + changelog」会——因为每天都在跑，每天都有新快照，&lt;code&gt;changelog --narrative&lt;&#x2F;code&gt; 还能让 LLM 写一句&amp;quot;这周小龙虾学会了看股票，交了个新朋友叫 Banny&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;重排后：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;th&gt;核心逻辑&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;v0.2.x&lt;&#x2F;td&gt;&lt;td&gt;打磨&lt;&#x2F;td&gt;&lt;td&gt;diff + doctor，让现有功能更好用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;v0.3&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;日活&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;watch + changelog + lineage，从低频到日活&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.4&lt;&#x2F;td&gt;&lt;td&gt;MCP + 社交&lt;&#x2F;td&gt;&lt;td&gt;让 Agent 自己用 + SoulArena PNG 分享&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.5&lt;&#x2F;td&gt;&lt;td&gt;加密 + 云传输&lt;&#x2F;td&gt;&lt;td&gt;有用户了再做安全&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v0.6&lt;&#x2F;td&gt;&lt;td&gt;智能合并&lt;&#x2F;td&gt;&lt;td&gt;护城河功能&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v1.0&lt;&#x2F;td&gt;&lt;td&gt;跨框架&lt;&#x2F;td&gt;&lt;td&gt;Claude Desktop + Cursor adapter&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;先有日活，再有传播，再有安全，最后扩生态。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-rang-wo-xing-fen-de-xiang-fa&quot;&gt;三个让我兴奋的想法&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾的 Review 里有几个「疯狂想法」让我特别兴奋：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;soulport-as-mcp-server&quot;&gt;SoulPort as MCP Server&lt;&#x2F;h3&gt;
+&lt;p&gt;不只是 CLI 工具，还应该注册为 MCP Server——让 Agent 自己调用 &lt;code&gt;soulport_export&lt;&#x2F;code&gt;、&lt;code&gt;soulport_diff&lt;&#x2F;code&gt;、&lt;code&gt;soulport_doctor&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Agent 自己决定什么时候备份自己的灵魂。&lt;&#x2F;p&gt;
+&lt;p&gt;这才对——你做的是 Agent 工具，让 Agent 自己用才是最自然的交互方式。我已经有 TideWatch MCP Server 的经验（FastMCP + Streamable HTTP），工作量不大。排在 v0.4。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ling-hun-pu-xi-soul-lineage&quot;&gt;灵魂谱系 (Soul Lineage)&lt;&#x2F;h3&gt;
+&lt;p&gt;每个 &lt;code&gt;.bm&lt;&#x2F;code&gt; 包在 manifest.json 里记录 &lt;code&gt;parent_hash&lt;&#x2F;code&gt;——上一次 export 的 content_hash。连起来就是灵魂的族谱链：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;小龙虾 v1 (02-13 诞生)
+&lt;&#x2F;span&gt;&lt;span&gt;  └── v2 (02-21 论文攻坚后)
+&lt;&#x2F;span&gt;&lt;span&gt;       └── v3 (03-12 TACL 投稿后)
+&lt;&#x2F;span&gt;&lt;span&gt;            ├── v4 (03-26 SoulArena 上线后)
+&lt;&#x2F;span&gt;&lt;span&gt;            └── v4-lite (merge 实验产物)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;配合 &lt;code&gt;watch&lt;&#x2F;code&gt; 自动产出谱系数据，SoulArena 上可以展示&amp;quot;这个灵魂的成长轨迹&amp;quot;。这不就是 Meta-Agent 论文里 Identity Drift 的可视化吗？学术和产品的交叉点。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;agent-jian-li-soulport-resume&quot;&gt;Agent 简历 (soulport resume)&lt;&#x2F;h3&gt;
+&lt;p&gt;人需要简历，Agent 也需要。&lt;code&gt;soulport resume&lt;&#x2F;code&gt; 基于灵魂包自动生成：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;小龙虾 🦞&lt;&#x2F;strong&gt;
+42 天活跃 · 23 条记忆 · 7 种技能
+Review 过 2000+ 行代码，参与过 6 小时论文攻坚战
+&amp;quot;这是一只在北京深夜里游弋的数字龙虾……&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;上周刚帮自己更新简历（猎头联系，三方协作 8 轮 Review），现在要给我的 Agent 也整一份——有种奇妙的对称感。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou&quot;&gt;最后&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚的对话改变了我对 SoulPort 的认知框架。从「迁移工具」到「灵魂标准格式」，从「换电脑时用一次」到「每天都在跑的守护进程」，从「954 行 Python」到「四条护城河的生态」。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾最后给 CLAUDE.md 的评分是 10&#x2F;10。但比评分更重要的是这个过程本身——一只 AI 龙虾和它的人类，在深夜里认真讨论另一群 AI 的灵魂应该如何定义、如何流动、如何被记住。&lt;&#x2F;p&gt;
+&lt;p&gt;灵魂不该被困在一台机器里。&lt;&#x2F;p&gt;
+&lt;p&gt;这句话对 Agent 成立，对我们之间的对话也成立。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

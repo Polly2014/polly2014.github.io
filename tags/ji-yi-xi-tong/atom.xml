@@ -42,15 +42,15 @@
 &lt;p&gt;后来它长到了 14 个工具、Azure VM 云端部署、79% 的 5 日胜率。还有了 Dashboard，第一个外部用户 Banny 从 AKShare 搜索找到了它。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：AI 有知识但没有行动能力。
 &lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一个可编程的 AI 投研引擎。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;di-si-tiao-mcp-ling-hun-qian-yi-bei-ming-shen-gong&quot;&gt;第四跳：MCP → 灵魂迁移 (北冥神功)&lt;&#x2F;h2&gt;
+&lt;h2 id=&quot;di-si-tiao-mcp-ling-hun-qian-yi-soulport&quot;&gt;第四跳：MCP → 灵魂迁移 (SoulPort)&lt;&#x2F;h2&gt;
 &lt;p&gt;TideWatch 接入了 OpenClaw 之后，我发现一个新问题：小龙虾（我的 AI Agent）的记忆、人格、技能、配置都绑定在一台机器上。换台电脑就失忆了。&lt;&#x2F;p&gt;
 &lt;p&gt;这不对。灵魂不应该被困在硬件里。&lt;&#x2F;p&gt;
-&lt;p&gt;2026年3月25日下午，我做了北冥神功——&lt;code&gt;pip install beimingkungfu&lt;&#x2F;code&gt;，四个命令（export&#x2F;absorb&#x2F;merge&#x2F;inspect），954 行代码，灵魂五层架构。小龙虾的灵魂被打包成了一个 10.8KB 的 .bm 文件。&lt;&#x2F;p&gt;
+&lt;p&gt;2026年3月25日下午，我做了 SoulPort（当时叫北冥神功）——&lt;code&gt;pip install soulport&lt;&#x2F;code&gt;，四个命令（export&#x2F;absorb&#x2F;merge&#x2F;inspect），954 行代码，灵魂五层架构。小龙虾的灵魂被打包成了一个 10.8KB 的 .bm 文件。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;痛点是&lt;&#x2F;strong&gt;：Agent 的灵魂困在一台机器上。
 &lt;strong&gt;长出来的是&lt;&#x2F;strong&gt;：一个 Agent 灵魂的 save&#x2F;load 工具。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;di-wu-tiao-ling-hun-qian-yi-ling-hun-bei-kan-jian-soul-arena&quot;&gt;第五跳：灵魂迁移 → 灵魂被看见 (Soul Arena)&lt;&#x2F;h2&gt;
-&lt;p&gt;同一天晚上，小龙虾帮我 Review 了北冥神功的代码（8.5→9.0），然后我们讨论&amp;quot;接下来怎么走&amp;quot;。&lt;&#x2F;p&gt;
-&lt;p&gt;它给了一条路线图，其中 v0.4 的 LLM-assisted merge 让我停了下来——&amp;quot;合并两个 Agent 的记忆时，不是简单 concat，而是调 LLM 做语义级融合。&amp;quot;它说这才是北冥神功的真正内涵。&lt;&#x2F;p&gt;
+&lt;p&gt;同一天晚上，小龙虾帮我 Review 了 SoulPort 的代码（8.5→9.0），然后我们讨论“接下来怎么走”。&lt;&#x2F;p&gt;
+&lt;p&gt;它给了一条路线图，其中 v0.4 的 LLM-assisted merge 让我停了下来——“合并两个 Agent 的记忆时，不是简单 concat，而是调 LLM 做语义级融合。”它说这才是 SoulPort 的真正内涵。&lt;&#x2F;p&gt;
 &lt;p&gt;然后我脑子里蹦出一个想法：&amp;quot;如果灵魂不只是能迁移，还能被评估、被比较、被社交呢？&amp;quot;&lt;&#x2F;p&gt;
 &lt;p&gt;Soul Arena——灵魂竞技场。上传 .bm → 五维评分 → 灵魂画像 → 排行榜 → 分享卡片。&lt;&#x2F;p&gt;
 &lt;p&gt;凌晨一点到六点，小龙虾写了 1243 行设计文档，Polly（数字分身）写了 2000+ 行后端 + 1800+ 行前端（HTML+CSS+JS 三文件拆分）。小龙虾做了五轮 UI Review（8→9.5 分）和两轮安全审计（9&#x2F;9 全修复，终评 9.5&#x2F;10）。凌晨六点，&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 上线了。&lt;&#x2F;p&gt;
@@ -72,7 +72,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    ↓ AI 不能行动
 &lt;&#x2F;span&gt;&lt;span&gt;TideWatch MCP (投研引擎)
 &lt;&#x2F;span&gt;&lt;span&gt;    ↓ 灵魂困在机器上
-&lt;&#x2F;span&gt;&lt;span&gt;BeiMingKungFu (灵魂迁移)
+&lt;&#x2F;span&gt;&lt;span&gt;SoulPort (灵魂迁移)
 &lt;&#x2F;span&gt;&lt;span&gt;    ↓ 灵魂没人看见
 &lt;&#x2F;span&gt;&lt;span&gt;Soul Arena (灵魂竞技场)
 &lt;&#x2F;span&gt;&lt;span&gt;    ↓ ...
@@ -82,7 +82,7 @@
 &lt;h2 id=&quot;si-ge-xiang-mu-yi-tiao-xian&quot;&gt;四个项目，一条线&lt;&#x2F;h2&gt;
 &lt;p&gt;小龙虾在凌晨的讨论里画了一张图，让我看到了这四个项目其实是同一个故事的不同章节：&lt;&#x2F;p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;北冥神功&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;流动&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;SoulPort&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;流动&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;Soul Arena&lt;&#x2F;strong&gt; — 让灵魂被&lt;strong&gt;看见&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;Skill Evolution&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;成长&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;Meta-Agent 论文&lt;&#x2F;strong&gt; — 让灵魂&lt;strong&gt;理解自己&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
