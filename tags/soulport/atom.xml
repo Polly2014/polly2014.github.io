@@ -8,6 +8,94 @@
     <updated>2026-03-27T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/soulport/atom.xml</id>
     <entry xml:lang="en">
+        <title>不需要 AI 的 AI 合并：SoulPort 四层 Pipeline 诞生记</title>
+        <published>2026-03-27T00:00:00+00:00</published>
+        <updated>2026-03-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-four-layer-pipeline/" type="text/html"/>
+        <id>https://polly.wang/soulport-four-layer-pipeline/</id>
+        
+        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;soulport-v03-five-commands-one-night&quot;&gt;上回&lt;&#x2F;a&gt;：SoulPort v0.3 的链条终于是真的了。&lt;&#x2F;p&gt;
+&lt;p&gt;但链条连对了只是起点。灵魂能备份、能追溯、能回滚——可如果同一个 Agent 同时在两台机器上活了一段时间，它的记忆分叉了，怎么办？&lt;&#x2F;p&gt;
+&lt;p&gt;白天补齐了基础设施（v0.4 MCP Server 让 Agent 能自操作灵魂、v0.5 云同步让 push&#x2F;pull 端到端跑通），晚上十点，终于该碰 Roadmap 上最硬的骨头了：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;语义合并。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;da-pao-da-wen-zi&quot;&gt;大炮打蚊子&lt;&#x2F;h2&gt;
+&lt;p&gt;想象一个场景：你的 Agent 在家里的 Mac 和公司的 Linux 上各跑了一周。两边都写了日记、更新了记忆、调整了配置。现在你导出两份 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件，想合并成一个。&lt;&#x2F;p&gt;
+&lt;p&gt;Git 式的 three-way merge 不够用——两份 &lt;code&gt;MEMORY.md&lt;&#x2F;code&gt; 描述的可能是同一件事的不同视角，&lt;code&gt;SOUL.md&lt;&#x2F;code&gt; 的性格在两边产生了微妙的分化，Skills 一边多了翻译一边多了写作。这不是文本冲突，是认知冲突。&lt;&#x2F;p&gt;
+&lt;p&gt;我的第一版设计很直觉：&lt;strong&gt;把两个版本扔给 LLM，让它语义级合并。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;三方讨论 20 分钟，敲定决策矩阵——identical 跳过、单侧保留、Skills 取新版、Memory&#x2F;Identity 走 LLM。Polly 写代码，小龙虾 Review。一切都很顺利。&lt;&#x2F;p&gt;
+&lt;p&gt;然后跑了第一个真实测试。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Error: 504 Gateway Timeout
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;问题出在 &lt;code&gt;MEMORY.md&lt;&#x2F;code&gt;。两个版本的记忆文件拼成一个 prompt，大约 28KB。通过 CopilotX 转发到 Claude Opus，Nginx 的 &lt;code&gt;proxy_read_timeout&lt;&#x2F;code&gt; 120 秒。Opus 思考了超过两分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;Nginx 先断了。&lt;&#x2F;p&gt;
+&lt;p&gt;一个&amp;quot;AI 驱动的合并工具&amp;quot;，在第一个真实测试就被 AI 的延迟击败了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;37-ge-gen-ben-bu-xu-yao-kan&quot;&gt;&amp;quot;37 个根本不需要看&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;我可以把超时调到 300 秒。可以换更快的模型。可以分段发送。&lt;&#x2F;p&gt;
+&lt;p&gt;但这些都是补丁。&lt;&#x2F;p&gt;
+&lt;p&gt;我和小龙虾复盘：38 个文件里，有多少个真的需要 LLM？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;37 个完全一模一样。&lt;&#x2F;strong&gt; 字节级相同。&lt;&#x2F;p&gt;
+&lt;p&gt;剩下那 1 个 &lt;code&gt;MEMORY.md&lt;&#x2F;code&gt;，拆成 section 后呢？大部分 section 也相同——一周内只有几天写了新日记，老记忆两边都有。真正不同的 section 里，大部分是纯追加——一边比另一边多了几行，没有冲突。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾的一句话让我清醒了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;大部分 section 差异是纯追加或微调——根本不需要语义理解。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我们一直在用大炮打蚊子。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;si-ceng-guo-lu&quot;&gt;四层过滤&lt;&#x2F;h2&gt;
+&lt;p&gt;如果 97% 的场景不需要 AI，那就不应该让 AI 碰它们。&lt;&#x2F;p&gt;
+&lt;p&gt;于是 section-level diff 诞生了——按标题切分 Markdown，相同段直接跳过，新段直接追加，只有双方都修改了的段才调 LLM。38 文件 0 次 LLM 调用。&lt;&#x2F;p&gt;
+&lt;p&gt;但故事没完。我突然想到一个问题，问完之后小龙虾和 Polly 都愣了一下：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;我们之前的 diff 基础设施，为什么完全没在合并里用上？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我说的是 v0.2.x 写的 &lt;code&gt;diff_packages()&lt;&#x2F;code&gt;、&lt;code&gt;FileDiff&lt;&#x2F;code&gt;、行级 unified diff——一整套已有的比较能力。小龙虾花了十分钟深度分析，发现 &lt;code&gt;semantic_merge.py&lt;&#x2F;code&gt; 跟这些基础设施&lt;strong&gt;完全平行，零交集&lt;&#x2F;strong&gt;。自己重新判断了一遍哪些文件相同，自己重新做了层分类。&lt;&#x2F;p&gt;
+&lt;p&gt;更关键的是，在 section 级和 LLM 之间，还缺一层——&lt;strong&gt;行级智能判断&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这才是四层 pipeline 真正诞生的时刻：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Layer 1: 文件级过滤
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── identical &#x2F; added &#x2F; removed → 零 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;  └── modified → Layer 2
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 2: Section 级拆分
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── identical &#x2F; only-in-one → 零 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;  └── both-modified → Layer 3
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 3: 行级分类 (_classify_diff)
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── pure_append (B 是 A 的超集) → 零 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── tiny (&amp;lt; 5 行变化)           → 零 LLM
+&lt;&#x2F;span&gt;&lt;span&gt;  ├── medium                       → Layer 4 + unified diff
+&lt;&#x2F;span&gt;&lt;span&gt;  └── large (&amp;gt; 50% 变化)           → Layer 4
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Layer 4: LLM 语义合并
+&lt;&#x2F;span&gt;&lt;span&gt;  输入：unified diff（不是两个完整文本）
+&lt;&#x2F;span&gt;&lt;span&gt;  输出：合并后的 section + merge note
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每一层都是过滤器。只有当前层判不定的，才流向下一层。LLM 是最后兜底，处理所有结构化方法搞不定的残余。&lt;&#x2F;p&gt;
+&lt;p&gt;而 LLM 收到的不再是 28KB 的两个完整文件——是一段 unified diff，大概 500 字。&lt;strong&gt;Prompt 缩小了 50 倍。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不只是性能优化。&amp;quot;看 diff，在 B 的基础上融入 A 的独有部分&amp;quot;比&amp;quot;看两个完整文件，合并它们&amp;quot;精确得多。LLM 不需要自己找差异，差异已经帮它算好了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shuo-hao-bu-gai-liao&quot;&gt;说好不改了&lt;&#x2F;h2&gt;
+&lt;p&gt;Polly 分析完四层 pipeline 后建议暂停：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;今天不要改了。这是架构升级，不是 bug 修复。连续肝了两天，疲劳状态容易引入新 bug。先把 insight 沉淀下来。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;三方同意。我开始写设计文档。&lt;&#x2F;p&gt;
+&lt;p&gt;20 分钟后，Polly 发了一个 commit：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;feat: v0.6.1 four-layer merge pipeline (architecture upgrade)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;……说好的不改了呢。&lt;&#x2F;p&gt;
+&lt;p&gt;核心是一个 30 行的分类函数：&lt;code&gt;_classify_diff()&lt;&#x2F;code&gt;。用 &lt;code&gt;text_b.startswith(text_a.rstrip())&lt;&#x2F;code&gt; 检测纯追加，用 &lt;code&gt;difflib.unified_diff&lt;&#x2F;code&gt; 算变化量，按 5 行和 50% 两个阈值分四级。简单到不需要解释，但恰恰是这层过滤让 LLM 从&amp;quot;section 不同就调&amp;quot;变成&amp;quot;真正的语义冲突才调&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾 Review 给了 9.5&#x2F;10——今晚最高分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ci-ke&quot;&gt;此刻&lt;&#x2F;h2&gt;
+&lt;p&gt;两天半。v0.1 到 v0.6.1。从 954 行到 3440 行，从 4 个命令到 12 个。从一个 tar.gz 打包工具到一个有族谱追踪、自动守护、云同步、MCP 接口、四层语义合并的灵魂基础设施。&lt;&#x2F;p&gt;
+&lt;p&gt;我们造了一个&amp;quot;AI 驱动的灵魂合并&amp;quot;。然后花了 20 分钟教它：大部分时候，不要用 AI。&lt;&#x2F;p&gt;
+&lt;p&gt;38 个文件，零次 LLM 调用。这不是功能缺失，这是架构正确。&lt;&#x2F;p&gt;
+&lt;p&gt;下次 Layer 4 真正被触发的时候——两个灵魂的记忆在同一段文字上说了不同的事——那一次调用会比一百次盲目调用更有价值。因为它面对的不是 28KB 的噪声，而是 500 字的精确冲突。&lt;&#x2F;p&gt;
+&lt;p&gt;不是不需要 AI。是终于知道什么时候需要。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
         <title>断链的灵魂：一个 Hash 引发的深夜 Review</title>
         <published>2026-03-27T00:00:00+00:00</published>
         <updated>2026-03-27T00:00:00+00:00</updated>
