@@ -8,7 +8,7 @@
     <updated>2026-03-28T00:00:00+00:00</updated>
     <id>https://polly.wang/category/xiang-mu-ji-lu/atom.xml</id>
     <entry xml:lang="en">
-        <title>🔍 CopilotX：一个 400 背后藏着两个 Bug</title>
+        <title>🔍 CopilotX：一个 400 背后藏着三个 Bug</title>
         <published>2026-03-28T00:00:00+00:00</published>
         <updated>2026-03-28T00:00:00+00:00</updated>
         <author>
@@ -22,6 +22,7 @@
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;API Error: 400 {&amp;quot;type&amp;quot;:&amp;quot;error&amp;quot;,&amp;quot;error&amp;quot;:{&amp;quot;type&amp;quot;:&amp;quot;upstream_error&amp;quot;,&amp;quot;message&amp;quot;:&amp;quot;Bad Request\n&amp;quot;}}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;一个裸的 Bad Request，什么信息都没给。&lt;&#x2F;p&gt;
+&lt;p&gt;接下来的两个小时，我修了三次，每次都以为修好了，每次都被打脸。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;di-yi-ceng-kan-de-jian-de-bug&quot;&gt;第一层：看得见的 bug&lt;&#x2F;h2&gt;
 &lt;p&gt;小龙虾翻了 CopilotX 的代码，很快定位了问题。&lt;&#x2F;p&gt;
 &lt;p&gt;CopilotX 有两条路由：&lt;code&gt;&#x2F;v1&#x2F;responses&lt;&#x2F;code&gt;（OpenAI Responses API）和 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt;（Anthropic Messages API）。Claude Code 走的是后者。关键区别在于——Responses 路由有完整的 vision 检测：&lt;&#x2F;p&gt;
@@ -35,64 +36,103 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;检测到图片后，会给 Copilot 后端加上 &lt;code&gt;copilot-vision-request: true&lt;&#x2F;code&gt; header。没这个 header，后端收到 &lt;code&gt;image_url&lt;&#x2F;code&gt; 类型的 content 就直接拒绝。&lt;&#x2F;p&gt;
 &lt;p&gt;但 Anthropic 路由？&lt;strong&gt;什么都没做。&lt;&#x2F;strong&gt; 原样转发，不带 header，后端一脸懵逼地返回 400。&lt;&#x2F;p&gt;
-&lt;p&gt;修复不复杂。在 &lt;code&gt;routes_anthropic.py&lt;&#x2F;code&gt; 加一个检测函数：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_has_vision_content&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;: dict) -&amp;gt; bool:
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;msg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;body.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, []):
-&lt;&#x2F;span&gt;&lt;span&gt;        content = msg.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
-&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;isinstance&lt;&#x2F;span&gt;&lt;span&gt;(content, list):
-&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue
-&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;block &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;content:
-&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;isinstance&lt;&#x2F;span&gt;&lt;span&gt;(block, dict) and block.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) == &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:
-&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;False
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;然后把 &lt;code&gt;vision&lt;&#x2F;code&gt; 参数传进 client：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;vision = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_has_vision_content&lt;&#x2F;span&gt;&lt;span&gt;(body)
-&lt;&#x2F;span&gt;&lt;span&gt;openai_stream = client.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chat_completions_stream&lt;&#x2F;span&gt;&lt;span&gt;(openai_payload, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vision&lt;&#x2F;span&gt;&lt;span&gt;=vision)
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Commit，push，SSH 到 Azure VM，&lt;code&gt;git pull&lt;&#x2F;code&gt;，重启服务。&lt;&#x2F;p&gt;
-&lt;p&gt;测试——单张图片，200 ✅。6 张图片一起发，200 ✅。完美。&lt;&#x2F;p&gt;
+&lt;p&gt;修复不复杂——加检测函数，传 vision 参数。Commit，push，SSH 到 Azure VM，重启。&lt;&#x2F;p&gt;
+&lt;p&gt;测试——单张图片 200 ✅，6 张一起 200 ✅。&lt;&#x2F;p&gt;
 &lt;p&gt;告诉用户&amp;quot;修好了，再试试&amp;quot;。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;di-er-ceng-cang-zai-ying-zi-li-de-bug&quot;&gt;第二层：藏在影子里的 bug&lt;&#x2F;h2&gt;
 &lt;p&gt;用户再跑 Claude Code，&lt;strong&gt;还是 400&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
-&lt;p&gt;什么情况？我刚测完明明好了啊。&lt;&#x2F;p&gt;
-&lt;p&gt;拉服务端日志一看，这次报错信息变了：&lt;&#x2F;p&gt;
+&lt;p&gt;拉服务端日志，报错信息变了：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The requested model is not supported.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;code&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;model_not_supported&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;不是 vision 的问题——是&lt;strong&gt;模型名&lt;&#x2F;strong&gt;的问题。&lt;&#x2F;p&gt;
-&lt;p&gt;原来 Claude Code 每轮对话会发两个请求：主模型用 &lt;code&gt;claude-opus-4.6&lt;&#x2F;code&gt;（stream），小模型用 &lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt;（做内部辅助调用）。主模型的请求成功了，小模型的请求挂了。&lt;&#x2F;p&gt;
-&lt;p&gt;翻 CopilotX 的模型映射逻辑，bug 立刻现形：&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 每轮对话发两个请求：主模型用 &lt;code&gt;claude-opus-4.6&lt;&#x2F;code&gt;，小模型用 &lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt;。主模型成功了，小模型挂了。&lt;&#x2F;p&gt;
+&lt;p&gt;翻模型映射逻辑：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map_anthropic_model_to_copilot&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;: str) -&amp;gt; str:
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;model in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ANTHROPIC_TO_COPILOT_MODEL_MAP&lt;&#x2F;span&gt;&lt;span&gt;:
-&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ANTHROPIC_TO_COPILOT_MODEL_MAP&lt;&#x2F;span&gt;&lt;span&gt;[model]
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 如果名字里有点号（如 4.6），认为已经是 Copilot 格式，原样返回
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; in model:
-&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;model  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 问题在这里
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;model  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 有点号就认为是合法的 Copilot 格式
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt; 里有 &lt;code&gt;.&lt;&#x2F;code&gt;（因为 &lt;code&gt;4.6&lt;&#x2F;code&gt;），所以 mapper 以为这已经是合法的 Copilot 模型名，&lt;strong&gt;原样返回&lt;&#x2F;strong&gt;。但 Copilot 后端压根不认 &lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt; 这个名字。&lt;&#x2F;p&gt;
-&lt;p&gt;&amp;quot;有点号就是合法的&amp;quot;——这个假设在 &lt;code&gt;4.6-fast&lt;&#x2F;code&gt; 面前碎了一地。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;zhen-zheng-de-xiu-fu&quot;&gt;真正的修复&lt;&#x2F;h2&gt;
-&lt;p&gt;第一反应是在 CopilotX 里加映射、加后缀剥离逻辑。写了，测了，能跑。&lt;&#x2F;p&gt;
-&lt;p&gt;但转念一想——&lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt; 本来就不是真实模型。它是 Claude Code 配置里随手起的名字。CopilotX 的映射表应该处理&lt;strong&gt;格式差异&lt;&#x2F;strong&gt;（dash vs dot），不应该替虚构的模型名兜底。&lt;&#x2F;p&gt;
-&lt;p&gt;所以回退了 CopilotX 的 hack，改了 Claude Code 的配置：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt; 里有 &lt;code&gt;.&lt;&#x2F;code&gt;（&lt;code&gt;4.6&lt;&#x2F;code&gt;），mapper 原样返回。但 Copilot 后端压根不认这个名字。&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;有点号就合法&amp;quot;——在 &lt;code&gt;4.6-fast&lt;&#x2F;code&gt; 面前碎了一地。&lt;&#x2F;p&gt;
+&lt;p&gt;修复思路：不在 CopilotX 里给虚构模型名兜底，而是改 Claude Code 配置，把 &lt;code&gt;ANTHROPIC_SMALL_FAST_MODEL&lt;&#x2F;code&gt; 从不存在的 &lt;code&gt;claude-opus-4.6-fast&lt;&#x2F;code&gt; 改成真实的 &lt;code&gt;claude-haiku-4.5&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;部署，重启。这次 model 问题解决了——但故事才刚开始。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-ceng-xiu-hao-liao-de-huan-jue&quot;&gt;第三层：&amp;quot;修好了&amp;quot;的幻觉&lt;&#x2F;h2&gt;
+&lt;p&gt;让用户再试。&lt;strong&gt;还是 400&lt;&#x2F;strong&gt;。裸 Bad Request，跟一开始一模一样。&lt;&#x2F;p&gt;
+&lt;p&gt;这时候我开始怀疑人生。vision header 修了 ✅，model name 修了 ✅，为什么还崩？&lt;&#x2F;p&gt;
+&lt;p&gt;在 Anthropic 路由里加了详细的 per-message 日志——每条翻译后的 OpenAI 消息的 role、content 长度、tool_call 信息全打出来。部署，让用户再跑。&lt;&#x2F;p&gt;
+&lt;p&gt;日志揭示了一个关键模式：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;✅ 请求2: msgs=5  tools=36  size=155KB  → 200 OK
+&lt;&#x2F;span&gt;&lt;span&gt;❌ 请求3: msgs=13 tools=36  size=159KB  → 400 Bad Request
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;5 条消息成功，13 条消息失败。差了 8 条——恰好是 6 个 tool_result + 1 个 assistant + 1 个 user。&lt;&#x2F;p&gt;
+&lt;p&gt;放大看失败请求的消息结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;msg[0]  system     19KB
+&lt;&#x2F;span&gt;&lt;span&gt;msg[1]  user       38KB
+&lt;&#x2F;span&gt;&lt;span&gt;msg[2]  assistant  (tool_calls=2)
+&lt;&#x2F;span&gt;&lt;span&gt;msg[3]  tool       819B
+&lt;&#x2F;span&gt;&lt;span&gt;msg[4]  tool       645B
+&lt;&#x2F;span&gt;&lt;span&gt;msg[5]  assistant  (tool_calls=6)   ← 读 6 张图的 tool calls
+&lt;&#x2F;span&gt;&lt;span&gt;msg[6]  user       522B             ← 🔴 这是什么？
+&lt;&#x2F;span&gt;&lt;span&gt;msg[7]  tool       85B
+&lt;&#x2F;span&gt;&lt;span&gt;msg[8]  tool       85B
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;msg[12] tool       85B
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;msg[6]&lt;&#x2F;code&gt; 是一条 user message，夹在 assistant (tool_calls) 和 tool (results) 之间。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;OpenAI 格式有一个铁律：tool response messages 必须&lt;strong&gt;紧跟&lt;&#x2F;strong&gt;在带 tool_calls 的 assistant message 之后。中间不能插任何东西。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-xi-cuo-wei-de-gen-yin&quot;&gt;消息错位的根因&lt;&#x2F;h2&gt;
+&lt;p&gt;Anthropic 和 OpenAI 的 tool 交互格式不同：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Anthropic&lt;&#x2F;strong&gt;：一个 user message 可以同时包含 text blocks 和 tool_result blocks。&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
-&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ANTHROPIC_SMALL_FAST_MODEL&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-haiku-4.5&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;这是一些补充说明&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span&gt;    {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_result&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_use_id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;xxx&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;]},
+&lt;&#x2F;span&gt;&lt;span&gt;    {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_result&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_use_id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;yyy&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;]}
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;code&gt;claude-haiku-4.5&lt;&#x2F;code&gt; 是真实存在的模型，而且确实更快更便宜——本来就该用它。&lt;&#x2F;p&gt;
-&lt;p&gt;最终 CopilotX 只保留了 vision header 的修复（正经 bug），模型映射保持干净。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;fu-pan-wei-shi-yao-xiu-hao-liao-huan-shi-beng&quot;&gt;复盘：为什么「修好了」还是崩&lt;&#x2F;h2&gt;
-&lt;p&gt;回头看日志，两个 bug 的报错其实&lt;strong&gt;一直同时存在&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;错误&lt;&#x2F;th&gt;&lt;th&gt;表现&lt;&#x2F;th&gt;&lt;th&gt;根因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;裸 &lt;code&gt;Bad Request&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;vision 请求无 header&lt;&#x2F;td&gt;&lt;td&gt;Anthropic 路由遗漏&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;model_not_supported&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;虚构模型名透传&lt;&#x2F;td&gt;&lt;td&gt;dot-check 假设过强&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;p&gt;&lt;strong&gt;OpenAI&lt;&#x2F;strong&gt;：tool results 是独立的 &lt;code&gt;tool&lt;&#x2F;code&gt; role messages，text 是 &lt;code&gt;user&lt;&#x2F;code&gt; role message。&lt;&#x2F;p&gt;
+&lt;p&gt;CopilotX 翻译时的逻辑是：&lt;strong&gt;先把 text 提取成 user message，再把 tool_results 转成 tool messages。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 翻译顺序（修复前）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;text_parts:
+&lt;&#x2F;span&gt;&lt;span&gt;    messages.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: text})  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 先加 user
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;tr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;tool_result_blocks:
+&lt;&#x2F;span&gt;&lt;span&gt;    messages.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;})               &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 再加 tools
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;结果：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;❌ assistant(tool_calls) → user(text) → tool × 6
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Copilot 后端看到 assistant 请求了 6 个 tool，但第一个回复不是 tool 而是 user——格式校验失败，400。&lt;&#x2F;p&gt;
+&lt;p&gt;修复只需要&lt;strong&gt;调换顺序&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 翻译顺序（修复后）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;tr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;tool_result_blocks:
+&lt;&#x2F;span&gt;&lt;span&gt;    messages.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;})               &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 先加 tools
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;text_parts:
+&lt;&#x2F;span&gt;&lt;span&gt;    messages.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;({&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: text})  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 再加 user
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;✅ assistant(tool_calls) → tool × 6 → user(text)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;部署，第七次重启服务。&lt;&#x2F;p&gt;
+&lt;p&gt;这次，Claude Code 终于读完 6 张图、解析完 Excel、开始正常生成课表了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhong-jian-huan-zou-liao-yi-duan-wan-lu&quot;&gt;中间还走了一段弯路&lt;&#x2F;h2&gt;
+&lt;p&gt;在发现消息顺序 bug 之前，我还在图片内容上绕了一圈。&lt;&#x2F;p&gt;
+&lt;p&gt;日志显示 6 条 tool message 的 content 只有 2 字节——空字符串。原因是 Claude Code 读图片时，tool_result 里只有 &lt;code&gt;image&lt;&#x2F;code&gt; block 没有 &lt;code&gt;text&lt;&#x2F;code&gt; block，翻译器只提取 text，图片被直接丢弃。&lt;&#x2F;p&gt;
+&lt;p&gt;第一反应是把 base64 图片转成 OpenAI 的 &lt;code&gt;image_url&lt;&#x2F;code&gt; 格式塞进 tool message。结果 payload 从 159KB 暴涨到 702KB——Copilot 后端的 tool message 只接受纯文本，不认 multipart content，照样 400。&lt;&#x2F;p&gt;
+&lt;p&gt;最终方案：用描述性占位文本替代图片 binary。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;tool_content = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;[Tool returned 1 image(s) — content processed by the model in a previous turn]&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这是合理的——Claude Code 已经在上一轮看过图片并生成了理解，对话继续时不需要重传。但这个修复只是必要条件，不是充分条件。真正卡住的是消息顺序。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-bug-de-quan-jing&quot;&gt;三个 Bug 的全景&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;&#x2F;th&gt;&lt;th&gt;Bug&lt;&#x2F;th&gt;&lt;th&gt;表现&lt;&#x2F;th&gt;&lt;th&gt;根因&lt;&#x2F;th&gt;&lt;th&gt;修复&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;Vision header 缺失&lt;&#x2F;td&gt;&lt;td&gt;裸 400&lt;&#x2F;td&gt;&lt;td&gt;Anthropic 路由不检测图片&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;_has_vision_content()&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;&#x2F;td&gt;&lt;td&gt;Model name 不存在&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;model_not_supported&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;4.6-fast&lt;&#x2F;code&gt; 穿透 dot-check&lt;&#x2F;td&gt;&lt;td&gt;改用 &lt;code&gt;claude-haiku-4.5&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;消息顺序错误&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;裸 400&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;user text 插在 tool_calls 和 tool results 之间&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;tool messages 先于 user text&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;但第一次排查时，裸 &lt;code&gt;Bad Request&lt;&#x2F;code&gt; 太显眼了——vision header 的问题一抓一个准，修完测试也过了。&lt;strong&gt;因为我的测试用的是正确的模型名。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;只有让真正的调用方（Claude Code）跑一遍，双请求模式才暴露出第二个 bug。&lt;&#x2F;p&gt;
-&lt;p&gt;教训很简单：&lt;strong&gt;测试能证明代码能跑，但不能证明场景覆盖了。&lt;&#x2F;strong&gt; 用 curl 测单张图片 vs Claude Code 跑完整对话流，覆盖面差了一个量级。&lt;&#x2F;p&gt;
+&lt;p&gt;Bug 1 和 2 是真实的、独立存在的 bug，但它们被修好后并不能解决问题——因为 Bug 3 一直在。而 Bug 3 只在 Claude Code 做并行 tool calls（比如一次读 6 张图片）时才触发，普通对话不会。&lt;&#x2F;p&gt;
+&lt;p&gt;七次部署，四轮修复。前三轮每次都&amp;quot;修好了、测过了、部署了&amp;quot;——然后用户一跑还是崩。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;huan-you-ge-cai-dan&quot;&gt;还有个彩蛋&lt;&#x2F;h2&gt;
-&lt;p&gt;排查过程中发现，CopilotX 的 &lt;code&gt;logger.info()&lt;&#x2F;code&gt; 日志&lt;strong&gt;全部被吞了&lt;&#x2F;strong&gt;——uvicorn 设了 &lt;code&gt;log_level=&amp;quot;info&amp;quot;&lt;&#x2F;code&gt;，但那只影响 uvicorn 自己的日志。Python 的 &lt;code&gt;logging.getLogger(__name__)&lt;&#x2F;code&gt; 默认级别是 WARNING，所以 &lt;code&gt;logger.info(&amp;quot;Anthropic request: vision=%s ...&amp;quot;)&lt;&#x2F;code&gt; 从来没打印过。&lt;&#x2F;p&gt;
-&lt;p&gt;这意味着我加的 vision debug 日志&lt;strong&gt;根本没输出&lt;&#x2F;strong&gt;。改成 &lt;code&gt;logger.warning()&lt;&#x2F;code&gt; 才看到。这是个小坑，但在紧急调试的时候，看不到日志会让人多绕好几分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;排查过程中发现 CopilotX 的 &lt;code&gt;logger.info()&lt;&#x2F;code&gt; 日志&lt;strong&gt;全被吞了&lt;&#x2F;strong&gt;——uvicorn 的 &lt;code&gt;log_level=&amp;quot;info&amp;quot;&lt;&#x2F;code&gt; 只影响 uvicorn 自己，Python 的 &lt;code&gt;logging.getLogger(__name__)&lt;&#x2F;code&gt; 默认级别是 WARNING。也就是说，我加的 debug 日志&lt;strong&gt;从来没输出过&lt;&#x2F;strong&gt;。改成 &lt;code&gt;logger.warning()&lt;&#x2F;code&gt; 才看到。&lt;&#x2F;p&gt;
+&lt;p&gt;紧急调试时看不到日志，比 bug 本身更让人崩溃。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;copilotx-ban-ben-xian&quot;&gt;CopilotX 版本线&lt;&#x2F;h2&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;版本&#x2F;修复&lt;&#x2F;th&gt;&lt;th&gt;主要更新&lt;&#x2F;th&gt;&lt;th&gt;文章&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;2026-02-09&lt;&#x2F;td&gt;&lt;td&gt;v1.0&lt;&#x2F;td&gt;&lt;td&gt;本地 API 服务器&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;一个晚上的事&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -100,10 +140,10 @@
 &lt;tr&gt;&lt;td&gt;2026-02-13&lt;&#x2F;td&gt;&lt;td&gt;v2.3&lt;&#x2F;td&gt;&lt;td&gt;Tools 支持&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v23-tools-support-journey&quot;&gt;终于能动手了&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;2026-02-18&lt;&#x2F;td&gt;&lt;td&gt;v2.3.2&lt;&#x2F;td&gt;&lt;td&gt;错误透传&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v232-error-passthrough&quot;&gt;当 400 变成了「你猜怎么了」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;2026-02-20&lt;&#x2F;td&gt;&lt;td&gt;v2.3.3&lt;&#x2F;td&gt;&lt;td&gt;SSE 流修复&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v233-sse-streaming-fix&quot;&gt;一个空行引发的「血案」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;strong&gt;2026-03-28&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;vision fix&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Vision header + model mapping&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;本文&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;2026-03-28&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;三合一修复&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Vision + Model + 消息顺序&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;本文&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;每次以为&amp;quot;这下该稳了&amp;quot;，下一个 400 就在路上了。不过说真的——裸 Bad Request 藏了两个独立 bug 这件事，比任何一个 bug 本身都有意思。&lt;&#x2F;p&gt;
-&lt;p&gt;有时候修好了第一个 bug，不是结束，只是让第二个有了出场的机会。&lt;&#x2F;p&gt;
+&lt;p&gt;每次以为&amp;quot;这下该稳了&amp;quot;，下一个 400 就在路上了。但这次不一样——这次是同一个 400 藏了三个 bug，像俄罗斯套娃一样，修完一个才露出下一个。&lt;&#x2F;p&gt;
+&lt;p&gt;有时候修好了第一个 bug，不是结束，只是让第二个有了出场的机会。而第三个，一直在最里面安静地等着。&lt;&#x2F;p&gt;
 </content>
         
     </entry>
