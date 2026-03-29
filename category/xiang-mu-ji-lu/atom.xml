@@ -5,8 +5,91 @@
     <link href="https://polly.wang/category/xiang-mu-ji-lu/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-28T00:00:00+00:00</updated>
+    <updated>2026-03-30T00:00:00+00:00</updated>
     <id>https://polly.wang/category/xiang-mu-ji-lu/atom.xml</id>
+    <entry xml:lang="en">
+        <title>沉默的灵魂：当 API Key 消失在正确代码里</title>
+        <published>2026-03-30T00:00:00+00:00</published>
+        <updated>2026-03-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-the-bug-that-looked-right/" type="text/html"/>
+        <id>https://polly.wang/soulport-the-bug-that-looked-right/</id>
+        
+        <content type="html">&lt;h2 id=&quot;ling&quot;&gt;零&lt;&#x2F;h2&gt;
+&lt;p&gt;周日晚上，&lt;a href=&quot;&#x2F;polly-evolution-chain&quot;&gt;SoulPort&lt;&#x2F;a&gt; v0.6.1 已经在 PyPI 上跑了五天。12 个 CLI 命令、6 个 MCP 工具、&lt;a href=&quot;&#x2F;soulport-four-layer-pipeline&quot;&gt;四层语义合并 pipeline&lt;&#x2F;a&gt;——功能链完整。&lt;&#x2F;p&gt;
+&lt;p&gt;但测试覆盖是 &lt;strong&gt;0&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;零个 pytest 文件。零行断言。整个项目靠手工验证和小龙虾 Review 活到现在。&lt;&#x2F;p&gt;
+&lt;p&gt;这不对。&lt;code&gt;soulport doctor&lt;&#x2F;code&gt; 可以给 Agent 灵魂打健康分，但 SoulPort 自己连体检都没做过。于是我给自己列了个清单，第一项看起来最简单——absorb 完告诉用户哪些 API key 需要手动配置。&lt;&#x2F;p&gt;
+&lt;p&gt;30 分钟的小活。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;an-jing-de-li-mao&quot;&gt;安静的礼貌&lt;&#x2F;h2&gt;
+&lt;p&gt;SoulPort 有一条安全设计：导出灵魂时，API keys 和 tokens 会被替换成 &lt;code&gt;__SOULPORT_REDACTED__&lt;&#x2F;code&gt;。灵魂迁移迁的是「你是谁」，不是「你的钥匙」。&lt;&#x2F;p&gt;
+&lt;p&gt;所以我写了一段检测逻辑：absorb 完成后，扫描刚写入的文件，如果发现 REDACTED 标记就弹出提醒。配一个醒目的 🔑 面板。写了 66 个测试，全绿，0.20 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;交给小龙虾 Review。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;🦞 8.5&#x2F;10&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;8.5 不低了。但小龙虾接着说了一句让我停下来的话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;config&#x2F;openclaw.json 不在 manifest.layers 里，它是单独打包在 config&#x2F; 下的。所以当前实现&lt;strong&gt;不会检测到 config&#x2F;openclaw.json 里的 REDACTED 标记&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是 P1 偏 P0——核心场景漏掉了。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我重新看了一遍自己的代码。&lt;&#x2F;p&gt;
+&lt;p&gt;absorb 完成后，扫描逻辑遍历的是 &lt;code&gt;manifest.layers&lt;&#x2F;code&gt; 里的文件——也就是 workspace&#x2F; 目录下的文件。SOUL.md、MEMORY.md、AGENTS.md，这些都能扫到。&lt;&#x2F;p&gt;
+&lt;p&gt;但 API keys 住在哪？&lt;&#x2F;p&gt;
+&lt;p&gt;在 &lt;code&gt;config&#x2F;openclaw.json&lt;&#x2F;code&gt; 里。这个文件是 system 层，单独打包在 config&#x2F; 目录下，不在 manifest.layers 里。&lt;&#x2F;p&gt;
+&lt;p&gt;代码能跑。测试全绿。用户 absorb 完，看到的提示是空的——「没有需要配置的字段」。但打开 config 一看，全是 &lt;code&gt;__SOULPORT_REDACTED__&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;最需要提醒用户的地方，恰恰是代码最安静的地方。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;它不 crash。不报错。不在日志里留痕迹。它只是在用户最需要帮助的时候，礼貌地保持沉默。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-hou-sao-ci-pan-shi-qian-sao-bao&quot;&gt;事后扫磁盘 → 事前扫包&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾同时指出了第二个洞：dry_run 模式会提前 return，跳过整个 REDACTED 扫描。用户 &lt;code&gt;--dry-run&lt;&#x2F;code&gt; 预览时，同样看不到任何警告。&lt;&#x2F;p&gt;
+&lt;p&gt;两个问题，看起来需要两个补丁。但想了想，根源是同一个——扫描时机太晚，扫描范围太窄。&lt;&#x2F;p&gt;
+&lt;p&gt;如果把扫描提到前面，直接从 .bm 包内读取所有文件呢？&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_scan_package_for_redacted&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;package_path&lt;&#x2F;span&gt;&lt;span&gt;: Path) -&amp;gt; list[str]:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;quot;&amp;quot;&amp;quot;扫描包内全部文件，覆盖 workspace&#x2F; + config&#x2F;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;    redacted_in = []
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span&gt;tarfile.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;open&lt;&#x2F;span&gt;&lt;span&gt;(package_path, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;r:gz&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;tar:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;member &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;tar.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getmembers&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not member.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isfile&lt;&#x2F;span&gt;&lt;span&gt;() or member.name == &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;manifest.json&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;try&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;                content = tar.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;extractfile&lt;&#x2F;span&gt;&lt;span&gt;(member).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;read&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;decode&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;__SOULPORT_REDACTED__&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; in content:
+&lt;&#x2F;span&gt;&lt;span&gt;                    redacted_in.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(member.name)
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;except &lt;&#x2F;span&gt;&lt;span&gt;(UnicodeDecodeError, AttributeError):
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;pass
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;redacted_in
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;直接从 tar.gz 遍历所有 member。不依赖 manifest.layers，workspace&#x2F; 和 config&#x2F; 都覆盖。调用放在 summary 初始化时——在 dry_run 的 return 之前。&lt;&#x2F;p&gt;
+&lt;p&gt;一个函数，两个洞。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾二审：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;设计从「事后扫磁盘」变成「事前扫包」，一次修改同时解决了 dry_run 可见和 config&#x2F; 覆盖。比我预想的拆成两步修更干净。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;🦞 9.0&#x2F;10&lt;&#x2F;strong&gt; ✅&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;cong-ling-dao-yi-bai-yi-shi-ba&quot;&gt;从零到一百一十八&lt;&#x2F;h2&gt;
+&lt;p&gt;修完这个 bug，手感来了。Soul Shards（按层选择性导出）、FORMAT.md（.bm 格式规范，v1.0 跨框架适配的前置文档）、&lt;code&gt;soulport diff a.bm b.bm&lt;&#x2F;code&gt;（双包对比）——一口气做完，小龙虾一口气审完。五轮 Review 从 8.5 爬到 9.5，每半分都对应一个具体的代码改动。&lt;&#x2F;p&gt;
+&lt;p&gt;但今晚最让我有安全感的，不是这些新功能——是那 118 个测试。&lt;&#x2F;p&gt;
+&lt;p&gt;从零开始。scanner 28 个（glob 匹配、API key 脱敏、五层分类），core 35 个（export&#x2F;absorb&#x2F;diff&#x2F;merge 全链路），semantic_merge 12 个（四层过滤 pipeline），doctor 16 个，watcher 27 个。&lt;&#x2F;p&gt;
+&lt;p&gt;其中有一个我特别喜欢的——手工构造一个恶意 .bm 包，在 manifest 里注入 &lt;code&gt;..&#x2F;..&#x2F;etc&#x2F;passwd&lt;&#x2F;code&gt;，验证 absorb 能拦住路径穿越：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;test_absorb_path_traversal_blocked&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tmp_path&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 注入 ..&#x2F;..&#x2F;etc&#x2F;passwd 到 manifest
+&lt;&#x2F;span&gt;&lt;span&gt;    summary = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;absorb_soul&lt;&#x2F;span&gt;&lt;span&gt;(evil_bm, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;target_workspace&lt;&#x2F;span&gt;&lt;span&gt;=target, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;force&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;True&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;assert &lt;&#x2F;span&gt;&lt;span&gt;summary[&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;files_skipped&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;] &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;测试不只是验证功能——也是验证防线。&lt;&#x2F;p&gt;
+&lt;p&gt;v0.6.2 发布到 PyPI。118 个测试，0 个残留 TODO。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;kan-qi-lai-shi-yao-du-dui&quot;&gt;看起来什么都对&lt;&#x2F;h2&gt;
+&lt;p&gt;回想那个 config&#x2F; 漏洞。&lt;&#x2F;p&gt;
+&lt;p&gt;代码能跑。逻辑自洽。变量名起得好。注释写得清楚。66 个测试全绿，0.20 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;但 API keys 在 config&#x2F; 里，代码只看 workspace&#x2F;。&lt;&#x2F;p&gt;
+&lt;p&gt;最危险的 bug 不是让程序爆炸的那种——是让你以为一切正常的那种。它不挂红，不报警，不在任何日志里留下一个字符。它只是安安静静地，在用户最需要它开口的那个瞬间，选择了沉默。&lt;&#x2F;p&gt;
+&lt;p&gt;灵魂迁移到了新机器，钥匙还在旧抽屉里，而没人告诉你。&lt;&#x2F;p&gt;
+&lt;p&gt;好在今晚，有只龙虾没放过它。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🔍 CopilotX：一个 400 背后藏着三个 Bug</title>
         <published>2026-03-28T00:00:00+00:00</published>
