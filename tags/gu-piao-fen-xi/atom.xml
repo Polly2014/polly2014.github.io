@@ -5,8 +5,124 @@
     <link href="https://polly.wang/tags/gu-piao-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-23T00:00:00+00:00</updated>
+    <updated>2026-03-29T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gu-piao-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮托管记：当 AI 引擎学会自己醒来</title>
+        <published>2026-03-29T00:00:00+00:00</published>
+        <updated>2026-03-29T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-automated-operations/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-automated-operations/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-self-reflection&quot;&gt;观潮自省记&lt;&#x2F;a&gt;——52 条信号回头看，AI 引擎学会了第四条纪律。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇讲的是让系统回头审视自己。这篇讲的是下一步：&lt;strong&gt;让它自己醒来&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;8-miao&quot;&gt;8 秒&lt;&#x2F;h2&gt;
+&lt;p&gt;每天晚上打开观潮 Dashboard，同一个流程：&lt;&#x2F;p&gt;
+&lt;p&gt;点开 → 骨架屏 → &amp;quot;正在加载...&amp;quot; → 8 秒后数据刷出来。&lt;&#x2F;p&gt;
+&lt;p&gt;18 天了。每天 8 秒，不多，但每次都让我意识到一件事——&lt;strong&gt;是我在等它，不是它在等我&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这个系统有 14 个 MCP 工具、三级股票池、LLM 叙事引擎，已经部署在云端 24 小时在线。可它不会自己动。每次都得有人按一下按钮，它才开始干活。&lt;&#x2F;p&gt;
+&lt;p&gt;就像养了一条会算命的鱼，但每次想知道运势，还得自己走过去敲鱼缸。&lt;&#x2F;p&gt;
+&lt;p&gt;周日晚上，我终于问出了那个问题：&lt;strong&gt;为什么不让它自己跑？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-shi-lai-kan-chao-de&quot;&gt;不是来看潮的&lt;&#x2F;h2&gt;
+&lt;p&gt;事情其实不是从 TideWatch 开始的。&lt;&#x2F;p&gt;
+&lt;p&gt;周日晚上本来是做 Azure VM 安全体检——小龙虾扫了一圈服务器，出了份 7.5 分的报告。过程中顺手拉了 CopilotX 的日志，发现全是扫描器在敲门：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;46.151.182.85 - &amp;quot;GET &#x2F;beta&#x2F;.env HTTP&#x2F;1.0&amp;quot; 401
+&lt;&#x2F;span&gt;&lt;span&gt;46.151.182.85 - &amp;quot;GET &#x2F;.aws&#x2F;credentials HTTP&#x2F;1.0&amp;quot; 401
+&lt;&#x2F;span&gt;&lt;span&gt;46.151.182.85 - &amp;quot;POST &#x2F;vendor&#x2F;phpunit&#x2F;src&#x2F;Util&#x2F;PHP&#x2F;eval-stdin.php HTTP&#x2F;1.0&amp;quot; 401
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;一个 IP，36 条请求，从 &lt;code&gt;.env&lt;&#x2F;code&gt; 扫到 &lt;code&gt;phpunit&lt;&#x2F;code&gt; RCE 再到 AWS 密钥，教科书级的漏洞扫描。还有个执着的朋友 &lt;code&gt;78.153.140.156&lt;&#x2F;code&gt;，每小时回来扫一次 &lt;code&gt;.env&lt;&#x2F;code&gt;，全天三班倒。&lt;&#x2F;p&gt;
+&lt;p&gt;好消息是全部 401 挡住了。坏消息是——&lt;strong&gt;fail2ban 居然没装&lt;&#x2F;strong&gt;。当天已经有 273 次 SSH 暴力破解尝试。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -y&lt;&#x2F;span&gt;&lt;span&gt; fail2ban
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl enable&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --now&lt;&#x2F;span&gt;&lt;span&gt; fail2ban
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;一分钟搞定。刚装完就 ban 了第一个 IP：&lt;code&gt;92.118.39.76&lt;&#x2F;code&gt;，一个拿 &lt;code&gt;oracle&lt;&#x2F;code&gt;、&lt;code&gt;admin&lt;&#x2F;code&gt;、&lt;code&gt;sol&lt;&#x2F;code&gt;、&lt;code&gt;solana&lt;&#x2F;code&gt; 各种用户名爆破的家伙。&lt;&#x2F;p&gt;
+&lt;p&gt;顺便杀掉一个幽灵进程——旧的 Blog Backend 在端口 50206 上跑了 30 天，kill 掉之后又自己复活了。原来背后有个 &lt;code&gt;fastapi.service&lt;&#x2F;code&gt; 在守护。&lt;code&gt;systemctl disable&lt;&#x2F;code&gt; 才算彻底送走。&lt;&#x2F;p&gt;
+&lt;p&gt;修着修着，我盯着 &lt;code&gt;ss -tlnp&lt;&#x2F;code&gt; 的输出看到了这一行：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;LISTEN  0  2048  0.0.0.0:8889  users:((&amp;quot;python&amp;quot;,pid=1276173,fd=7))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;TideWatch。就在同一台机器上。&lt;code&gt;localhost:8889&lt;&#x2F;code&gt;，零延迟。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-xing-cron&quot;&gt;三行 cron&lt;&#x2F;h2&gt;
+&lt;p&gt;方案出奇地简单。&lt;&#x2F;p&gt;
+&lt;p&gt;不需要 GitHub Actions，不需要调度框架，不需要消息队列。一台机器上的两个进程，一个负责跑（TideWatch MCP Server），一个负责叫它起床（cron）。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# &#x2F;home&#x2F;azureuser&#x2F;scripts&#x2F;tidewatch-daily.sh
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_mcp &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;scan_market&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{&amp;quot;tier&amp;quot;:&amp;quot;holdings&amp;quot;}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; 120
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_mcp &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;scan_market&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{&amp;quot;tier&amp;quot;:&amp;quot;watchlist&amp;quot;}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; 120
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;call_mcp &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;update_signal_outcomes&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; 600
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;call_mcp&lt;&#x2F;code&gt; 就是一个 curl，往 &lt;code&gt;localhost:8889&#x2F;mcp&lt;&#x2F;code&gt; 发 JSON-RPC 请求。没有认证绕行（本地调用不走 Nginx），没有网络开销，没有序列化损耗。&lt;&#x2F;p&gt;
+&lt;p&gt;调度：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;30 7 * * 1-5 &#x2F;home&#x2F;azureuser&#x2F;scripts&#x2F;tidewatch-daily.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;UTC 07:30 = 北京时间 15:30。A 股 15:00 收盘，留 30 分钟让数据落地，然后自动扫描持仓和自选。周一到周五，一天一次。&lt;&#x2F;p&gt;
+&lt;p&gt;手动验证的时候发现一个小坑：FastMCP 的 Streamable HTTP 要求请求带 &lt;code&gt;Accept: application&#x2F;json&lt;&#x2F;code&gt; header，否则返回 406 Not Acceptable。加上就好了。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;小龙虾：&amp;quot;最简单的方案就是最好的方案。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;有时候工程师的直觉是加层抽象、建个服务、搞个队列。但这个场景不需要。cron 跑了几十年了，它不会忘记叫闹钟。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;0-miao&quot;&gt;0 秒&lt;&#x2F;h2&gt;
+&lt;p&gt;数据每天 15:30 自动预热了，但 Dashboard 还不知道这件事。&lt;&#x2F;p&gt;
+&lt;p&gt;打开页面它照样去调 &lt;code&gt;scan_market&lt;&#x2F;code&gt;，再等 8 秒。这就像冰箱里已经有做好的饭，但你每次回家还是先点外卖，等外卖到了才想起来冰箱里有。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 改了四件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;智能缓存判断&lt;&#x2F;strong&gt;：休盘期间如果本地缓存不到 4 小时——说明 cron 已经跑过了——直接用缓存，跳过 &lt;code&gt;scan_market&lt;&#x2F;code&gt; 调用。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;cron 数据检测&lt;&#x2F;strong&gt;：如果缓存的时间戳落在 15:20-15:50 之间，自动识别为定时扫描数据，显示一个蓝色的 &lt;code&gt;定时&lt;&#x2F;code&gt; 徽章。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;后台预加载&lt;&#x2F;strong&gt;：页面打开 3 秒后，静默拉取信号回填数据。等切到&amp;quot;信号复盘&amp;quot;tab 时直接渲染，不用再等。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;休盘停止刷新&lt;&#x2F;strong&gt;：自动刷新定时器加了 &lt;code&gt;isMarketOpen()&lt;&#x2F;code&gt; 守卫，收盘后不再空转。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾 Review 给了 8.5 分，挑出一个边界 case：&lt;strong&gt;周末&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;周五 15:30 的 cron 数据，到周六打开时已经超过 20 小时了，4 小时的缓存 TTL 兜不住，Dashboard 会尝试调 &lt;code&gt;scan_market&lt;&#x2F;code&gt; ——但周末没有新数据，白等。&lt;&#x2F;p&gt;
+&lt;p&gt;修复很简单：周末给 48 小时的缓存窗口。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isCacheFreshEnough&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cacheTime&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ageMs &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Date&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;now&lt;&#x2F;span&gt;&lt;span&gt;() - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cacheTime&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isMarketOpen&lt;&#x2F;span&gt;&lt;span&gt;()) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ageMs &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5 &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;60 &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 盘中：5 分钟
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;day &lt;&#x2F;span&gt;&lt;span&gt;= new Date().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;getDay&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;day &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;|| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;day &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ageMs &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;48 &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3600000&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 周末：48 小时
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ageMs &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4 &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3600000&lt;&#x2F;span&gt;&lt;span&gt;;                              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 工作日休盘：4 小时
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;最终缓存策略：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;TTL&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;盘中&lt;&#x2F;td&gt;&lt;td&gt;5 分钟&lt;&#x2F;td&gt;&lt;td&gt;实时数据为主&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;工作日休盘&lt;&#x2F;td&gt;&lt;td&gt;4 小时&lt;&#x2F;td&gt;&lt;td&gt;覆盖 15:30→晚间&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;周末&lt;&#x2F;td&gt;&lt;td&gt;48 小时&lt;&#x2F;td&gt;&lt;td&gt;周五 cron 数据用到周日&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;小龙虾终审 9 分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ceng-fen-gong&quot;&gt;三层分工&lt;&#x2F;h2&gt;
+&lt;p&gt;退一步看，观潮现在有了清晰的三层架构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  Dashboard（展示层）              │  ← 你打开时看到的
+&lt;&#x2F;span&gt;&lt;span&gt;│  智能缓存 · 相对时间 · 秒渲染     │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  Cron（调度层）                   │  ← 每天 15:30 自动触发
+&lt;&#x2F;span&gt;&lt;span&gt;│  scan_market · signal backfill  │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  MCP Server（逻辑层）             │  ← 14 个工具，24h 在线
+&lt;&#x2F;span&gt;&lt;span&gt;│  分析 · 评分 · 叙事 · 回填       │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;MCP Server 负责所有逻辑和计算。Cron 负责定期触发，累积数据。Dashboard 负责展示。&lt;&#x2F;p&gt;
+&lt;p&gt;这是第一版——最小可行的自动化。下一步可以把 cron 换成 Agent，让它不只是按时间跑，而是根据市场状态决定什么时候跑、跑什么、跑完之后要不要主动通知我。&lt;&#x2F;p&gt;
+&lt;p&gt;但那是以后的事。现在，它每天 15:30 准时醒来，扫完持仓，写好日志，然后继续等。等我晚上打开 Dashboard 的时候，数据已经在那里了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jin-wan-de-yun-wei-qing-dan&quot;&gt;今晚的运维清单&lt;&#x2F;h2&gt;
+&lt;p&gt;顺带记一下今晚的 VM 运维成果，因为这些也是让观潮&amp;quot;活得更稳&amp;quot;的基础设施：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;fail2ban&lt;&#x2F;strong&gt; 安装启用 → SSH 暴力破解自动 ban&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;旧 Blog Backend&lt;&#x2F;strong&gt; 关停 → 端口 50206 释放，systemd 彻底 disable&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;apt upgrade&lt;&#x2F;strong&gt; → 34 个包更新（含 grub + docker）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;OpenClaw 升级&lt;&#x2F;strong&gt; → 2026.2.14 → 2026.3.28，模型切换到 claude-opus-4.6&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;一个投研系统不只是算法和数据。它还需要一台安全的机器、一个稳定的运行时、一个不会在半夜被扫描器打穿的端口。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;chao-lai-zhao-wo&quot;&gt;潮来找我&lt;&#x2F;h2&gt;
+&lt;p&gt;回到开头的 8 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;明天周一开盘，15:30 收盘后，cron 会第一次正式运行。扫描持仓，扫描自选，回填信号。等我晚上打开 Dashboard，数据已经在那里等我了。&lt;&#x2F;p&gt;
+&lt;p&gt;8 秒变 0 秒。不是因为更快了，是因为视角变了。&lt;&#x2F;p&gt;
+&lt;p&gt;以前是我去看潮。现在是潮来找我。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;观潮系列：&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;诞生记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;进化记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;实战记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;验证记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;出海记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-data-enhancement&quot;&gt;锐评记&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;stock-signal-backfill-explained&quot;&gt;回填解读&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;tidewatch-self-reflection&quot;&gt;自省记&lt;&#x2F;a&gt; → &lt;strong&gt;托管记&lt;&#x2F;strong&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>给股市新手的 AI 信号课：什么是「回填」，为什么你的预测需要一本成绩单</title>
         <published>2026-03-23T00:00:00+00:00</published>
