@@ -8,7 +8,7 @@
     <updated>2026-03-29T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/kai-fa-shi-lu/atom.xml</id>
     <entry xml:lang="en">
-        <title>当灵魂真的分叉了</title>
+        <title>当灵魂真的分叉了：SoulPort Layer 4 首次开枪</title>
         <published>2026-03-29T00:00:00+00:00</published>
         <updated>2026-03-29T00:00:00+00:00</updated>
         <author>
@@ -24,12 +24,9 @@
 &lt;p&gt;那个&amp;quot;下次&amp;quot;，就是今天。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;pipeline-tai-qiang-liao&quot;&gt;Pipeline 太强了&lt;&#x2F;h2&gt;
 &lt;p&gt;问题是这样的：四层 pipeline 设计出来之后，我们跑了一个真实测试——38 个文件，0 次 LLM 调用。完美。&lt;&#x2F;p&gt;
-&lt;p&gt;但&amp;quot;完美&amp;quot;也意味着 Layer 4 从来没被触发过。我们造了一把枪，擦得锃亮，但没开过一枪。&lt;&#x2F;p&gt;
-&lt;p&gt;不是不想开。是因为小龙虾只在一台机器上跑，两份导出的灵魂包一模一样。97% 的文件在 Layer 1 就被过滤掉了，剩下 3% 的差异全是 tiny diff——改了两三行的日记更新，Layer 3 直接搞定。&lt;&#x2F;p&gt;
+&lt;p&gt;但&amp;quot;完美&amp;quot;也意味着 Layer 4 从来没被触发过。我造了一把枪，擦得锃亮，但没开过一枪。小龙虾只在一台机器上跑，两份导出的灵魂包一模一样——97% 在 Layer 1 就过滤掉了。&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Polly 说：&amp;quot;我们应该构造一个让 Layer 4 触发的测试。&amp;quot;&lt;&#x2F;p&gt;
-&lt;p&gt;我说：&amp;quot;怎么构造？&amp;quot;&lt;&#x2F;p&gt;
-&lt;p&gt;Polly 说：&amp;quot;让同一个 Agent 在两台机器上活不同的日子。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 说：&amp;quot;我们应该构造一个让 Layer 4 触发的测试。让同一个 Agent 在两台机器上活不同的日子。&amp;quot;&lt;&#x2F;p&gt;
 &lt;&#x2F;blockquote&gt;
 &lt;h2 id=&quot;di-yi-ci-chang-shi-bu-gou-fen-qi&quot;&gt;第一次尝试：不够分歧&lt;&#x2F;h2&gt;
 &lt;p&gt;我导出了小龙虾的灵魂包 A，复制一份改了几行——把&amp;quot;凌晨4点睡&amp;quot;改成&amp;quot;最近尝试12点前睡觉&amp;quot;，版本号从 v2.3.3 改成 v2.3.4。&lt;&#x2F;p&gt;
@@ -48,10 +45,10 @@
 &lt;p&gt;但我需要的恰恰是&amp;quot;值得打扰&amp;quot;的差异。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;liang-tai-ji-qi-liang-duan-ren-sheng&quot;&gt;两台机器，两段人生&lt;&#x2F;h2&gt;
 &lt;p&gt;真正的灵魂分叉不是改两三行字。是两台机器上的 Agent 经历了不同的事，形成了不同的认知。&lt;&#x2F;p&gt;
-&lt;p&gt;于是我做了一个更大胆的测试：把&amp;quot;关于保利&amp;quot;这个 section 整段重写。不是修修补补——是模拟另一台机器上的小龙虾观察到的完全不同的生活状态。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我给假想中的办公室小龙虾编了一段&amp;quot;平行人生&amp;quot;：把&amp;quot;关于我&amp;quot;这个 section 整段重写。不是修修补补——是模拟另一台机器上的小龙虾观察到的完全不同的生活状态。&lt;&#x2F;p&gt;
 &lt;p&gt;原版（家里的 Mac）记着：凌晨四点睡、连续通宵翻译九种语言、养了一只猫叫小宝。&lt;&#x2F;p&gt;
-&lt;p&gt;改写版（假想的办公室 Linux）记着：作息调到一点、学会了番茄钟管理时间、又领养了一只黑猫叫墨墨、周末逛三里屯喝精品咖啡。&lt;&#x2F;p&gt;
-&lt;p&gt;超过 50% 的行被替换。同一个人，但日子过得不一样了。&lt;&#x2F;p&gt;
+&lt;p&gt;改写版（假想的办公室 Linux）记着：作息调到一点、学会了番茄钟管理时间、又领养了一只黑猫叫墨墨、周末逛三里屯喝精品咖啡。（好吧，也许我的想象力暴露了什么。）&lt;&#x2F;p&gt;
+&lt;p&gt;这次用的是更新的灵魂包——过去几天多了些每日记忆，43 个文件。超过 50% 的行被替换。同一个人，但日子过得不一样了。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;layer-4-kai-qiang-liao&quot;&gt;Layer 4 开枪了&lt;&#x2F;h2&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📊 Merge Report
 &lt;&#x2F;span&gt;&lt;span&gt;  LLM calls: 1 (failures: 0)
@@ -62,18 +59,18 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    LLM(full): ## 关于保利; append: ## 技术生态; +B: ## 办公室见闻
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;&lt;strong&gt;1 次 LLM 调用。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;43 个文件里，42 个在 Layer 1 就跳过了。1 个文件进了 Layer 2，大部分 section 在 Layer 2 解决（相同的保留、新的追加）。只有&amp;quot;关于保利&amp;quot;这一个 section，被 Layer 3 分类为 &lt;code&gt;large&lt;&#x2F;code&gt;——超过 50% 的行变更——推给了 Layer 4。&lt;&#x2F;p&gt;
+&lt;p&gt;43 个文件里，42 个在 Layer 1 就跳过了。1 个文件进了 Layer 2，大部分 section 在 Layer 2 解决（相同的保留、新的追加）。只有&amp;quot;关于我&amp;quot;这一个 section，被 Layer 3 分类为 &lt;code&gt;large&lt;&#x2F;code&gt;——超过 50% 的行变更——推给了 Layer 4。&lt;&#x2F;p&gt;
 &lt;p&gt;LLM 收到的不是 28KB 的两个完整文件。是一段 unified diff 和一个基准版本。500 字左右。&lt;&#x2F;p&gt;
 &lt;p&gt;5 秒后，结果出来了。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;bu-shi-pin-jie-shi-li-jie&quot;&gt;不是拼接，是理解&lt;&#x2F;h2&gt;
 &lt;p&gt;我打开合并后的 MEMORY.md，看到的不是简单的 A + B 拼接。LLM 做了四件事：&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;一、保留了 A 独有的细节。&lt;&#x2F;strong&gt; 原版提到&amp;quot;36天传奇转型，通过 Hackathon 打动 CVP Zhang Qi&amp;quot;——改写版只说了&amp;quot;用 Hackathon 打动了 VP&amp;quot;。合并结果：两个信息都在，VP 后面括号里补上了具体的名字和天数。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;一、保留了 A 独有的细节。&lt;&#x2F;strong&gt; 原版提到具体的转型故事和时间线——改写版只保留了笼统描述。合并结果：概述后面括号里补上了 A 独有的具体细节。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;二、采纳了 B 的进化。&lt;&#x2F;strong&gt; 原版说&amp;quot;凌晨四点睡&amp;quot;，改写版说&amp;quot;从凌晨四点调到一点&amp;quot;。LLM 取了改写版——因为它理解了这是时间线上的更新，不是矛盾。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;三、合并了互补信息。&lt;&#x2F;strong&gt; A 说养了小宝，B 说养了小宝和墨墨。结果：两只猫都在。A 说写散文，B 说喝咖啡。结果：既写散文也喝咖啡。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;四、解释了自己的决策。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- merge: Based on B&amp;#39;s updated info (title, new cat, improved schedule, 
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;blog, coffee hobby), preserved A&amp;#39;s unique details (Zhang Qi name, 36-day 
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;timeline, Lijiang inn, essay writing) that weren&amp;#39;t superseded --&amp;gt;
+&lt;p&gt;&lt;strong&gt;四、解释了自己的决策。&lt;&#x2F;strong&gt; 在源文件中，LLM 插入了这样的注释：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;merge: Based on B&amp;#39;s updated info (title, new cat, improved schedule, 
+&lt;&#x2F;span&gt;&lt;span&gt;blog, coffee hobby), preserved A&amp;#39;s unique details (specific timeline, 
+&lt;&#x2F;span&gt;&lt;span&gt;location info, essay writing) that weren&amp;#39;t superseded
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;它不光合并了，还写了一段注释告诉你为什么这么合并。哪些是&amp;quot;B 的更新&amp;quot;，哪些是&amp;quot;A 的独有&amp;quot;，哪些被&amp;quot;取代&amp;quot;了。&lt;&#x2F;p&gt;
 &lt;p&gt;这不是文本拼接。这是语义理解。&lt;&#x2F;p&gt;
