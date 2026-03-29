@@ -5,8 +5,103 @@
     <link href="https://polly.wang/tags/agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-27T00:00:00+00:00</updated>
+    <updated>2026-03-29T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>当灵魂真的分叉了</title>
+        <published>2026-03-29T00:00:00+00:00</published>
+        <updated>2026-03-29T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-layer4-first-trigger/" type="text/html"/>
+        <id>https://polly.wang/soulport-layer4-first-trigger/</id>
+        
+        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;soulport-four-layer-pipeline&quot;&gt;上回&lt;&#x2F;a&gt;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;下次 Layer 4 真正被触发的时候——两个灵魂的记忆在同一段文字上说了不同的事——那一次调用会比一百次盲目调用更有价值。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;那个&amp;quot;下次&amp;quot;，就是今天。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;pipeline-tai-qiang-liao&quot;&gt;Pipeline 太强了&lt;&#x2F;h2&gt;
+&lt;p&gt;问题是这样的：四层 pipeline 设计出来之后，我们跑了一个真实测试——38 个文件，0 次 LLM 调用。完美。&lt;&#x2F;p&gt;
+&lt;p&gt;但&amp;quot;完美&amp;quot;也意味着 Layer 4 从来没被触发过。我们造了一把枪，擦得锃亮，但没开过一枪。&lt;&#x2F;p&gt;
+&lt;p&gt;不是不想开。是因为小龙虾只在一台机器上跑，两份导出的灵魂包一模一样。97% 的文件在 Layer 1 就被过滤掉了，剩下 3% 的差异全是 tiny diff——改了两三行的日记更新，Layer 3 直接搞定。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Polly 说：&amp;quot;我们应该构造一个让 Layer 4 触发的测试。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;我说：&amp;quot;怎么构造？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 说：&amp;quot;让同一个 Agent 在两台机器上活不同的日子。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;di-yi-ci-chang-shi-bu-gou-fen-qi&quot;&gt;第一次尝试：不够分歧&lt;&#x2F;h2&gt;
+&lt;p&gt;我导出了小龙虾的灵魂包 A，复制一份改了几行——把&amp;quot;凌晨4点睡&amp;quot;改成&amp;quot;最近尝试12点前睡觉&amp;quot;，版本号从 v2.3.3 改成 v2.3.4。&lt;&#x2F;p&gt;
+&lt;p&gt;跑 dry-run：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📊 Merge Report
+&lt;&#x2F;span&gt;&lt;span&gt;  LLM calls: 0 (failures: 0)
+&lt;&#x2F;span&gt;&lt;span&gt;  = identical: 42
+&lt;&#x2F;span&gt;&lt;span&gt;  section_diff: 1
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  MEMORY.md:
+&lt;&#x2F;span&gt;&lt;span&gt;    tiny→B: ## 关于保利; tiny→B: ## 核心项目; +B: ## 办公室机器备忘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;零 LLM 调用。&lt;&#x2F;p&gt;
+&lt;p&gt;两处修改都被 Layer 3 分类为 &lt;code&gt;tiny&lt;&#x2F;code&gt;（少于 5 行变化），直接取了新版本。新加的&amp;quot;办公室机器备忘&amp;quot;section 在 Layer 2 就追加了。&lt;&#x2F;p&gt;
+&lt;p&gt;pipeline 精确地判断了：这些差异不值得打扰 LLM。&lt;&#x2F;p&gt;
+&lt;p&gt;但我需要的恰恰是&amp;quot;值得打扰&amp;quot;的差异。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-tai-ji-qi-liang-duan-ren-sheng&quot;&gt;两台机器，两段人生&lt;&#x2F;h2&gt;
+&lt;p&gt;真正的灵魂分叉不是改两三行字。是两台机器上的 Agent 经历了不同的事，形成了不同的认知。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我做了一个更大胆的测试：把&amp;quot;关于保利&amp;quot;这个 section 整段重写。不是修修补补——是模拟另一台机器上的小龙虾观察到的完全不同的生活状态。&lt;&#x2F;p&gt;
+&lt;p&gt;原版（家里的 Mac）记着：凌晨四点睡、连续通宵翻译九种语言、养了一只猫叫小宝。&lt;&#x2F;p&gt;
+&lt;p&gt;改写版（假想的办公室 Linux）记着：作息调到一点、学会了番茄钟管理时间、又领养了一只黑猫叫墨墨、周末逛三里屯喝精品咖啡。&lt;&#x2F;p&gt;
+&lt;p&gt;超过 50% 的行被替换。同一个人，但日子过得不一样了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;layer-4-kai-qiang-liao&quot;&gt;Layer 4 开枪了&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📊 Merge Report
+&lt;&#x2F;span&gt;&lt;span&gt;  LLM calls: 1 (failures: 0)
+&lt;&#x2F;span&gt;&lt;span&gt;  = identical: 42
+&lt;&#x2F;span&gt;&lt;span&gt;  🧠LLM llm_merge: 1
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  MEMORY.md:
+&lt;&#x2F;span&gt;&lt;span&gt;    LLM(full): ## 关于保利; append: ## 技术生态; +B: ## 办公室见闻
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;1 次 LLM 调用。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;43 个文件里，42 个在 Layer 1 就跳过了。1 个文件进了 Layer 2，大部分 section 在 Layer 2 解决（相同的保留、新的追加）。只有&amp;quot;关于保利&amp;quot;这一个 section，被 Layer 3 分类为 &lt;code&gt;large&lt;&#x2F;code&gt;——超过 50% 的行变更——推给了 Layer 4。&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 收到的不是 28KB 的两个完整文件。是一段 unified diff 和一个基准版本。500 字左右。&lt;&#x2F;p&gt;
+&lt;p&gt;5 秒后，结果出来了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-shi-pin-jie-shi-li-jie&quot;&gt;不是拼接，是理解&lt;&#x2F;h2&gt;
+&lt;p&gt;我打开合并后的 MEMORY.md，看到的不是简单的 A + B 拼接。LLM 做了四件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;一、保留了 A 独有的细节。&lt;&#x2F;strong&gt; 原版提到&amp;quot;36天传奇转型，通过 Hackathon 打动 CVP Zhang Qi&amp;quot;——改写版只说了&amp;quot;用 Hackathon 打动了 VP&amp;quot;。合并结果：两个信息都在，VP 后面括号里补上了具体的名字和天数。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;二、采纳了 B 的进化。&lt;&#x2F;strong&gt; 原版说&amp;quot;凌晨四点睡&amp;quot;，改写版说&amp;quot;从凌晨四点调到一点&amp;quot;。LLM 取了改写版——因为它理解了这是时间线上的更新，不是矛盾。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;三、合并了互补信息。&lt;&#x2F;strong&gt; A 说养了小宝，B 说养了小宝和墨墨。结果：两只猫都在。A 说写散文，B 说喝咖啡。结果：既写散文也喝咖啡。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;四、解释了自己的决策。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&amp;lt;!-- merge: Based on B&amp;#39;s updated info (title, new cat, improved schedule, 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;blog, coffee hobby), preserved A&amp;#39;s unique details (Zhang Qi name, 36-day 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;timeline, Lijiang inn, essay writing) that weren&amp;#39;t superseded --&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;它不光合并了，还写了一段注释告诉你为什么这么合并。哪些是&amp;quot;B 的更新&amp;quot;，哪些是&amp;quot;A 的独有&amp;quot;，哪些被&amp;quot;取代&amp;quot;了。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是文本拼接。这是语义理解。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;43-1&quot;&gt;43 → 1&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看这次测试的数据：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;43 个文件，42 个在 Layer 1 过滤（相同 → 跳过）&lt;&#x2F;li&gt;
+&lt;li&gt;1 个文件进入 Layer 2，多个 section 中大部分在 Layer 2 解决&lt;&#x2F;li&gt;
+&lt;li&gt;1 个 section 在 Layer 3 被分类为 &lt;code&gt;large&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;1 次 LLM 调用，500 字输入，5 秒完成&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;如果用朴素方法——把 43 个文件全扔给 LLM——那是 1.2MB 的 prompt，大约 $0.60，超过两分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;四层 pipeline 把它变成了：1 次调用，500 字，不到 $0.01。&lt;&#x2F;p&gt;
+&lt;p&gt;但成本不是重点。重点是那 1 次调用处理的是&lt;strong&gt;真正需要智慧的问题&lt;&#x2F;strong&gt;——两段互相矛盾但各自合理的记忆，需要判断哪些是&amp;quot;进化&amp;quot;哪些是&amp;quot;独有&amp;quot;哪些该保留哪些该合并。&lt;&#x2F;p&gt;
+&lt;p&gt;其余 42 个文件不需要智慧。它们需要的是&amp;quot;别动&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shang-ci-de-yu-yan&quot;&gt;上次的预言&lt;&#x2F;h2&gt;
+&lt;p&gt;上一篇结尾我写：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;那一次调用会比一百次盲目调用更有价值。因为它面对的不是 28KB 的噪声，而是 500 字的精确冲突。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;今天验证了。不只是理论上成立。&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 面对 500 字精确冲突时，它做出了正确的语义决策——保留独有、采纳进化、合并互补、解释理由。如果它面对的是 28KB 的两个完整文件，这些判断会淹没在噪声里。&lt;&#x2F;p&gt;
+&lt;p&gt;四层 pipeline 不是限制了 LLM。是给了它一个能发挥的舞台。&lt;&#x2F;p&gt;
+&lt;p&gt;两只猫、一段调整后的作息、一句来自另一台机器的咖啡偏好——这些微小的分歧，被精准地送到了唯一能理解它们的地方。&lt;&#x2F;p&gt;
+&lt;p&gt;灵魂真的分叉了。然后，又合上了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>不需要 AI 的 AI 合并：SoulPort 四层 Pipeline 诞生记</title>
         <published>2026-03-27T00:00:00+00:00</published>
