@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 源码分析</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/yuan-ma-fen-xi/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-03-31T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/yuan-ma-fen-xi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 一个 .map 文件的蝴蝶效应</title>
+        <published>2026-03-31T00:00:00+00:00</published>
+        <updated>2026-03-31T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-leaked-butterfly-effect/" type="text/html"/>
+        <id>https://polly.wang/claude-code-leaked-butterfly-effect/</id>
+        
+        <content type="html">&lt;p&gt;2026 年 3 月 31 日，一个普通的周二。&lt;&#x2F;p&gt;
+&lt;p&gt;朝圣之旅要开始了。世人皆停足注目——&amp;quot;耶路撒冷&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;Twitter 上一条推文炸开了锅。安全研究员 &lt;a href=&quot;https:&#x2F;&#x2F;x.com&#x2F;Fried_rice&quot;&gt;Chaofan Shou (@Fried_rice)&lt;&#x2F;a&gt; 发了一条简短的消息：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;Claude Code source code has been leaked via a map file in their npm registry!&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;一个 &lt;code&gt;.map&lt;&#x2F;code&gt; 文件。就是那种大家发 NPM 包时经常忘记删掉的东西——source map，用来把混淆后的代码映射回原始源码。这次，它指向了 Anthropic 的 R2 存储桶，里面躺着完整的、未混淆的 TypeScript 源码。&lt;&#x2F;p&gt;
+&lt;p&gt;几小时后，这条消息登上了 Hacker News 首页。538 points，297 条评论。&lt;&#x2F;p&gt;
+&lt;p&gt;我当晚 clone 了一份。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-shi-yao-zhi-de-xie-yi-ge-xi-lie&quot;&gt;为什么值得写一个系列&lt;&#x2F;h2&gt;
+&lt;p&gt;让我先说几个数字：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;数据&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;总代码量&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;~380,000 行 TypeScript&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文件数&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1,332 个 .ts 文件&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;运行时&lt;&#x2F;td&gt;&lt;td&gt;Bun（不是 Node.js）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;终端 UI&lt;&#x2F;td&gt;&lt;td&gt;React + Ink&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;最大单文件&lt;&#x2F;td&gt;&lt;td&gt;QueryEngine.ts — &lt;strong&gt;46,000 行&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;380K 行。这不是一个 side project。这是一个经过深思熟虑的、面向大规模部署的产品。它的架构决策、安全设计、性能优化，代表了 2026 年 AI 工程的最高水平之一。&lt;&#x2F;p&gt;
+&lt;p&gt;而现在，源码就在那里。&lt;&#x2F;p&gt;
+&lt;p&gt;我决定做一件事：&lt;strong&gt;通过写博文来逐层拆解它，最终理解到能自己造一个的程度。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;不是为了真的造一个 Claude Code 竞品——而是因为我相信，解构一个好产品是最快的学习方式。就像学画画的人临摹大师作品，学写作的人拆解经典小说。读源码，提炼设计，写成文字，这个过程本身就是最好的教育。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;di-yi-yin-xiang-zhe-bu-shi-ni-xiang-xiang-de-cli-gong-ju&quot;&gt;第一印象：这不是你想象的 CLI 工具&lt;&#x2F;h2&gt;
+&lt;p&gt;打开 &lt;code&gt;src&#x2F;&lt;&#x2F;code&gt; 的第一秒，我的认知就被刷新了。&lt;&#x2F;p&gt;
+&lt;p&gt;先看入口文件 &lt;code&gt;main.tsx&lt;&#x2F;code&gt;——是的，&lt;code&gt;.tsx&lt;&#x2F;code&gt;。一个命令行工具，用的是 &lt;strong&gt;React&lt;&#x2F;strong&gt;。4,683 行的入口文件，在第一行代码执行之前，就已经开始了三个并行任务：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; main.tsx — 在其他 import 之前就触发的副作用
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;profileCheckpoint&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;main_tsx_entry&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;);
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startMdmRawRead&lt;&#x2F;span&gt;&lt;span&gt;();      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; MDM 配置读取
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startKeychainPrefetch&lt;&#x2F;span&gt;&lt;span&gt;(); &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; macOS 钥匙串预读
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;还没开始解析命令行参数，后台已经在读钥匙串、拉配置了。启动时间，是这个团队在意的事。&lt;&#x2F;p&gt;
+&lt;p&gt;然后看目录结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;src&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── tools&#x2F;          # ~40 个 Agent 工具（Bash&#x2F;文件&#x2F;搜索&#x2F;MCP&#x2F;...）
+&lt;&#x2F;span&gt;&lt;span&gt;├── commands&#x2F;       # ~50 个 slash 命令
+&lt;&#x2F;span&gt;&lt;span&gt;├── components&#x2F;     # ~140 个 Ink UI 组件
+&lt;&#x2F;span&gt;&lt;span&gt;├── hooks&#x2F;          # React hooks（权限&#x2F;状态&#x2F;UI）
+&lt;&#x2F;span&gt;&lt;span&gt;├── services&#x2F;       # API&#x2F;MCP&#x2F;OAuth&#x2F;LSP&#x2F;压缩&#x2F;分析...
+&lt;&#x2F;span&gt;&lt;span&gt;├── bridge&#x2F;         # IDE 双向通信
+&lt;&#x2F;span&gt;&lt;span&gt;├── coordinator&#x2F;    # 多 Agent 编排器
+&lt;&#x2F;span&gt;&lt;span&gt;├── memdir&#x2F;         # 持久记忆系统
+&lt;&#x2F;span&gt;&lt;span&gt;├── skills&#x2F;         # 内置技能系统
+&lt;&#x2F;span&gt;&lt;span&gt;├── buddy&#x2F;          # ……电子宠物？
+&lt;&#x2F;span&gt;&lt;span&gt;├── voice&#x2F;          # 语音输入
+&lt;&#x2F;span&gt;&lt;span&gt;├── vim&#x2F;            # Vim 模式
+&lt;&#x2F;span&gt;&lt;span&gt;└── QueryEngine.ts  # 46K 行的 LLM 核心引擎
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这不是一个&amp;quot;调 API 然后打印结果&amp;quot;的 CLI。这是一个完整的 &lt;strong&gt;Agent 操作系统&lt;&#x2F;strong&gt;——有自己的权限系统、记忆系统、多进程编排、IDE 集成、甚至还有电子宠物。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xi-lie-lu-xian-tu&quot;&gt;系列路线图&lt;&#x2F;h2&gt;
+&lt;p&gt;我计划用十余篇博文，从外到内、从架构到细节，完整拆解 Claude Code 的设计：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一阶段：全局视野&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;第 1 篇：架构全景&lt;&#x2F;strong&gt; — 从 main.tsx 到 QueryEngine，理清 380K 行代码的骨架&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 2 篇：灵魂工程&lt;&#x2F;strong&gt; — System Prompt 的七层设计，这是整个产品的行为定义&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;第二阶段：核心引擎&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;第 3 篇：工具系统&lt;&#x2F;strong&gt; — 40 个 Tool 如何统一在一个抽象下&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 4 篇：权限与安全&lt;&#x2F;strong&gt; — yoloClassifier 的两阶段分类器&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 5 篇：Agent 编排&lt;&#x2F;strong&gt; — Fork、Coordinator、Swarm 三种并行模式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 6 篇：QueryEngine&lt;&#x2F;strong&gt; — 核心引擎的流式响应和 tool-call 循环&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;第三阶段：智能层&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;第 7 篇：记忆与遗忘&lt;&#x2F;strong&gt; — Memory 四类分类法 + Compact 结构化压缩&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 8 篇：Skill 与 MCP&lt;&#x2F;strong&gt; — 可扩展的能力系统 + 外部工具标准协议&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;第四阶段：工程细节与隐藏层&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;第 9 篇：Terminal UI + IDE Bridge&lt;&#x2F;strong&gt; — React 渲染到终端 + 双向通信协议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;第 10 篇：隐藏彩蛋&lt;&#x2F;strong&gt; — Buddy 电子宠物、Undercover 卧底、Feature Flags&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;终章：设计蓝图&lt;&#x2F;strong&gt; — 如果要自己造一个，怎么造&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每篇的结构都是：&lt;strong&gt;它是什么 → 为什么这样设计 → 关键代码 → 我们能学到什么&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-xie-yu-gao&quot;&gt;一些预告&lt;&#x2F;h2&gt;
+&lt;p&gt;在通读源码的过程中，有几个发现让我特别兴奋，先剧透一些：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;系统提示词的深度超出想象。&lt;&#x2F;strong&gt; 不是一段&amp;quot;你是 helpful assistant&amp;quot;的文本——而是一本完整的行为手册。包含代码风格哲学（&amp;quot;三行重复好过一个过早的抽象&amp;quot;）、行动安全原则（&amp;quot;measure twice, cut once&amp;quot;）、甚至有专门的&amp;quot;不要做什么&amp;quot;章节。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Auto Mode 的权限分类器叫 yoloClassifier。&lt;&#x2F;strong&gt; 名字很 meme，但实现极其认真——两阶段 XML 分类器，Stage 1 快速判断 allow&#x2F;block，Stage 2 chain-of-thought 复核减少误报。这是一个用 LLM 来审查 LLM 的安全架构。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Anthropic 员工给开源项目贡献代码时，Claude Code 会自动进入&amp;quot;卧底模式&amp;quot;。&lt;&#x2F;strong&gt; 隐藏模型名称、禁止在 commit message 中提及内部代号、去掉所有 AI 归属标记。代码里甚至专门列了&amp;quot;禁止出现的词&amp;quot;：Capybara、Tengu、claude-cli-internal……&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;有一个完整的电子宠物系统。&lt;&#x2F;strong&gt; 18 种物种（duck, goose, blob, cat, dragon, octopus, capybara...），5 级稀有度（common 60% → legendary 1%），5 种属性（DEBUGGING, PATIENCE, CHAOS, WISDOM, SNARK），基于用户 ID 的确定性哈希。这个团队是认真在做有趣的事。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;模型代号泄露：&lt;&#x2F;strong&gt; Claude Opus 4.6（knowledge cutoff: May 2025）、Claude Sonnet 4.6（cutoff: August 2025）。内部代号 Capybara、Tengu、Numbat 出现在注释中。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xie-zai-kai-shi-zhi-qian&quot;&gt;写在开始之前&lt;&#x2F;h2&gt;
+&lt;p&gt;这个系列不是&amp;quot;看看别人的代码然后点评两句&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;我想做的是：&lt;strong&gt;理解每一个设计决策背后的 why&lt;&#x2F;strong&gt;。为什么用 Bun 不用 Node？为什么系统提示要分静态和动态两部分？为什么权限分类器要两阶段而不是一步到位？为什么电子宠物的物种名要用 &lt;code&gt;String.fromCharCode&lt;&#x2F;code&gt; 编码？&lt;&#x2F;p&gt;
+&lt;p&gt;每一个 why 背后都是一个工程决策，一个 trade-off，一个对&amp;quot;什么是好的 AI 产品&amp;quot;的回答。&lt;&#x2F;p&gt;
+&lt;p&gt;把这些 why 想明白、写明白，就是这个系列的意义。&lt;&#x2F;p&gt;
+&lt;p&gt;明天，从架构全景开始。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;序&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 1 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;架构全景：380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 2 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 流式处理</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/liu-shi-chu-li/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-06T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/liu-shi-chu-li/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] QueryEngine：驱动一切的主循环</title>
+        <published>2026-04-06T00:00:00+00:00</published>
+        <updated>2026-04-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-query-engine/" type="text/html"/>
+        <id>https://polly.wang/claude-code-query-engine/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-agent-orchestration&quot;&gt;三种并行模式：Fork、Coordinator、Swarm&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;如果说架构是骨架，系统提示词是灵魂，工具是手脚——那 QueryEngine 就是心脏。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;query.ts&lt;&#x2F;code&gt; 是一个 1,729 行的 AsyncGenerator 函数。它实现了 Claude Code 的核心循环：接收用户输入 → 调 API → 解析响应 → 执行工具 → 把工具结果送回 API → 再解析 → 再执行……直到模型不再返回 tool_use。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是一个简单的 while 循环——它处理了自动压缩、流式工具执行、模型降级、token 预算、停止 hook、上下文溢出恢复……每一个边界条件都是真实生产事故的结晶。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;quan-jing-wu-jie-duan-liu-shui-xian&quot;&gt;全景：五阶段流水线&lt;&#x2F;h2&gt;
+&lt;p&gt;每一轮 query 循环分五个阶段：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ Stage 1: 上下文管理                                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│   Tool Result Budget → Snip → Microcompact →            │
+&lt;&#x2F;span&gt;&lt;span&gt;│   Context Collapse → Auto Compact                       │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│ Stage 2: API 调用                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│   组装消息 → 调用 Anthropic API → 流式接收               │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│ Stage 3: 流式解析                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│   逐 token 累积 → 检测 tool_use block → 触发执行         │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│ Stage 4: 工具执行                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│   并发安全分区 → 并行&#x2F;串行执行 → 收集结果                 │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│ Stage 5: 循环决策                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│   有 tool_use → 继续循环 │ 无 tool_use → 返回            │
+&lt;&#x2F;span&gt;&lt;span&gt;│   max_output_tokens → 恢复 │ stop_hook → 重试            │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-1-shang-xia-wen-guan-li-zai-diao-api-zhi-qian&quot;&gt;Stage 1：上下文管理——在调 API 之前&lt;&#x2F;h2&gt;
+&lt;p&gt;每次调 API 之前，query 循环要做大量的上下文管理工作。这是整个函数中最复杂的部分——因为上下文窗口是有限资源，管不好就溢出。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tool-result-budget&quot;&gt;Tool Result Budget&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;applyToolResultBudget&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contentReplacementState&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;工具结果可能很大（一个 &lt;code&gt;cat&lt;&#x2F;code&gt; 命令输出 10 万行）。Tool Result Budget 把超大的工具结果替换成磁盘引用——模型看到的是&amp;quot;结果已存储，路径在这里&amp;quot;，而不是完整内容。&lt;&#x2F;p&gt;
+&lt;p&gt;某些工具被豁免——比如 FileRead 的 &lt;code&gt;maxResultSizeChars&lt;&#x2F;code&gt; 设为 &lt;code&gt;Infinity&lt;&#x2F;code&gt;（持久化读取结果会创建循环引用）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;snip-compact&quot;&gt;Snip Compact&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;HISTORY_SNIP&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipResult &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipModule&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;snipCompactIfNeeded&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipResult&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipTokensFreed &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipResult&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tokensFreed
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Snip 是一种轻量级的上下文裁剪——不调 LLM，只做规则性的裁剪（比如删除过老的消息、截断超长的工具输出）。比 Auto Compact 快得多，但压缩率低。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;microcompact&quot;&gt;Microcompact&lt;&#x2F;h3&gt;
+&lt;p&gt;Microcompact 是 Anthropic 的一个实验性功能（&lt;code&gt;CACHED_MICROCOMPACT&lt;&#x2F;code&gt; feature flag）。它利用 API 的 cache editing 能力——标记旧的工具结果为可删除，让 API 服务端在 cache 中直接删除它们，无需客户端重传整个消息历史。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;context-collapse&quot;&gt;Context Collapse&lt;&#x2F;h3&gt;
+&lt;p&gt;另一个实验性功能（&lt;code&gt;CONTEXT_COLLAPSE&lt;&#x2F;code&gt; flag）。跟 Compact 不同，Context Collapse 是一种&lt;strong&gt;读时投影&lt;&#x2F;strong&gt;——原始消息不变，但渲染给 API 时用折叠后的摘要替换。折叠记录持久化，跨 turn 复用。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;auto-compact&quot;&gt;Auto Compact&lt;&#x2F;h3&gt;
+&lt;p&gt;最后的保障网。当上下文接近窗口极限时，调一次 LLM 把整个对话压缩成结构化摘要：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compactionResult&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;consecutiveFailures &lt;&#x2F;span&gt;&lt;span&gt;} = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;deps&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;autocompact&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;systemPrompt&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;userContext&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;systemContext&lt;&#x2F;span&gt;&lt;span&gt;, ... },
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;querySource&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tracking&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;snipTokensFreed&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;压缩结果带有详细的遥测：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;logEvent&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tengu_auto_compact_succeeded&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, {
+&lt;&#x2F;span&gt;&lt;span&gt;  originalMessageCount: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;.length,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;preCompactTokenCount&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;postCompactTokenCount&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compactionInputTokens&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compactionOutputTokens&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compactionCacheReadTokens&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;compactionCacheCreationTokens&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意顺序：&lt;strong&gt;Tool Result Budget → Snip → Microcompact → Context Collapse → Auto Compact&lt;&#x2F;strong&gt;。每一层过滤掉一些内容，减少后续层的工作量。如果前面的层已经把上下文压到安全线以下，Auto Compact 就不会触发。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-2-api-diao-yong&quot;&gt;Stage 2：API 调用&lt;&#x2F;h2&gt;
+&lt;p&gt;上下文准备好后，调 Anthropic API：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for await &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;deps&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;callModel&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;  messages: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;prependUserContext&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messagesForQuery&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;userContext&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;  systemPrompt: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fullSystemPrompt&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  thinkingConfig: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;.options.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;thinkingConfig&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  tools: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;.options.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tools&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  signal: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;abortController&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;signal&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  options: {
+&lt;&#x2F;span&gt;&lt;span&gt;    model: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;currentModel&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fallbackModel&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;querySource&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;maxOutputTokensOverride&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    taskBudget: { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;total&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;remaining &lt;&#x2F;span&gt;&lt;span&gt;},
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;  },
+&lt;&#x2F;span&gt;&lt;span&gt;})) {
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;几个关键参数：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;signal&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;：AbortController 的信号。用户按 Ctrl+C 时，这个信号会触发，中断 API 请求。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;fallbackModel&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;：备用模型。如果主模型 API 返回 5xx 或限流，自动降级到备用模型。降级发生时会清空已累积的部分结果（tombstone 机制）。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;taskBudget&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;：API 层面的 token 预算控制。&lt;code&gt;total&lt;&#x2F;code&gt; 是整个任务的预算，&lt;code&gt;remaining&lt;&#x2F;code&gt; 是扣除已消耗后的剩余。压缩后需要重新计算——因为服务端看不到压缩前的消息了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;liu-shi-jiang-ji&quot;&gt;流式降级&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;streamingFallbackOccured&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Yield tombstones for orphaned messages
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;msg &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;assistantMessages&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;yield &lt;&#x2F;span&gt;&lt;span&gt;{ type: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tombstone&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, message: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;msg &lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;assistantMessages&lt;&#x2F;span&gt;&lt;span&gt;.length = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolResults&lt;&#x2F;span&gt;&lt;span&gt;.length = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseBlocks&lt;&#x2F;span&gt;&lt;span&gt;.length = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Discard pending tool execution results
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;streamingToolExecutor&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;streamingToolExecutor&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;discard&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;streamingToolExecutor &lt;&#x2F;span&gt;&lt;span&gt;= new StreamingToolExecutor(...)
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;当主模型流式响应中途失败并降级到备用模型时——已经累积的部分响应要&lt;strong&gt;完全丢弃&lt;&#x2F;strong&gt;（发送 tombstone 通知 UI 移除）。已经开始执行的工具也要废弃。然后用备用模型重新开始。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-3-liu-shi-jie-xi&quot;&gt;Stage 3：流式解析&lt;&#x2F;h2&gt;
+&lt;p&gt;API 返回的是 Server-Sent Events 流——逐 token 到达。query 循环逐条处理这些事件：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for await &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;deps&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;callModel&lt;&#x2F;span&gt;&lt;span&gt;(...)) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 每个 message 可能是：
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; - assistant text block (流式文本)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; - assistant tool_use block (工具调用)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; - thinking block (思考过程)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; - stream events (进度信号)
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;.type === &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;assistant&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;assistantMessages&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 检测是否包含 tool_use
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;.content) {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.type === &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_use&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseBlocks&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;needsFollowUp &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;      }
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;yield &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;yieldMessage  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 实时推送给 UI
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键设计：&lt;strong&gt;流式解析和 UI 渲染是同步的&lt;&#x2F;strong&gt;。模型输出的每个 token 立即推送给 Surface 层渲染——用户能实时看到 AI 在&amp;quot;思考&amp;quot;和&amp;quot;打字&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bei-tian-backfill&quot;&gt;背填（Backfill）&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;?.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;backfillObservableInput&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inputCopy &lt;&#x2F;span&gt;&lt;span&gt;= { ...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;originalInput &lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;backfillObservableInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inputCopy&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 只在 backfill 添加了新字段时才 clone
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 避免修改原始 input（会破坏 prompt cache）
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;某些工具需要在 tool_use block 被 yield 给 SDK&#x2F;UI 之前补充额外字段——但不能修改原始 input（会破坏 prompt cache 的字节一致性）。所以做一个 clone，只在真正添加了新字段时才替换。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-4-gong-ju-zhi-xing-streamingtoolexecutor&quot;&gt;Stage 4：工具执行——StreamingToolExecutor&lt;&#x2F;h2&gt;
+&lt;p&gt;这是 query 循环中最精妙的工程之一：&lt;strong&gt;工具在模型还在输出时就开始执行&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chuan-tong-fang-shi-vs-liu-shi-zhi-xing&quot;&gt;传统方式 vs 流式执行&lt;&#x2F;h3&gt;
+&lt;p&gt;传统方式：等模型输出完所有 tool_use → 收集所有工具调用 → 按顺序执行 → 返回结果。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 的方式：模型输出第一个 tool_use → &lt;strong&gt;立即开始执行&lt;&#x2F;strong&gt; → 模型继续输出第二个 tool_use → 立即开始执行 → 模型输出完毕时，前面的工具可能已经完成了。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;StreamingToolExecutor &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 并发安全的工具可以并行执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 非并发安全的工具必须独占执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;addTool&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;ToolUseBlock, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;assistantMessage&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;AssistantMessage&lt;&#x2F;span&gt;&lt;span&gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;void {
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isConcurrencySafe &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolDefinition&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isConcurrencySafe&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;.input)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 如果并发安全，立即启动
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 如果不安全，排队等前面的工具完成
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;  }
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;bing-fa-fen-qu&quot;&gt;并发分区&lt;&#x2F;h3&gt;
+&lt;p&gt;工具执行有严格的并发控制：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;partitionToolCalls&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseMessages&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 把工具调用分成多个批次：
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 批次 1: [FileRead, FileRead, Grep] — 全部并发安全，并行执行
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 批次 2: [FileWrite]               — 非并发安全，独占执行
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 批次 3: [FileRead, Grep]          — 并发安全，并行执行
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;最大并发数默认 10（&lt;code&gt;CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY&lt;&#x2F;code&gt;），可配置。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cuo-wu-chuan-bo&quot;&gt;错误传播&lt;&#x2F;h3&gt;
+&lt;p&gt;如果一个 Bash 工具出错了，它的兄弟进程需要立即停止。StreamingToolExecutor 用一个 child AbortController 来实现：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Child of toolUseContext.abortController. Fires when a Bash tool errors
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; so sibling subprocesses die immediately instead of running to completion.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Aborting this does NOT abort the parent — query.ts won&amp;#39;t end the turn.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;private &lt;&#x2F;span&gt;&lt;span&gt;siblingAbortController: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;AbortController
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意最后一句：中止兄弟不会中止父循环——query 循环还会继续，把错误结果返回给模型让它做下一步决定。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-5-xun-huan-jue-ce&quot;&gt;Stage 5：循环决策&lt;&#x2F;h2&gt;
+&lt;p&gt;工具执行完后，query 循环要决定下一步：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zheng-chang-lu-jing&quot;&gt;正常路径&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;有 tool_use block → 继续循环（把 tool_result 送回 API）
+&lt;&#x2F;span&gt;&lt;span&gt;无 tool_use block → 返回（模型结束了这一轮对话）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yi-chang-hui-fu&quot;&gt;异常恢复&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;max_output_tokens 恢复&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_OUTPUT_TOKENS_RECOVERY_LIMIT &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果模型输出被截断（达到 max_output_tokens 限制），循环不会立即退出——它会自动继续，最多重试 3 次。第一次重试前会把 max_output_tokens 提升到 &lt;code&gt;ESCALATED_MAX_TOKENS&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Reactive Compact&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;如果 API 返回&amp;quot;prompt too long&amp;quot;错误——不是直接报错，而是触发 Reactive Compact：紧急压缩上下文，然后重试。这比预防性的 Auto Compact 更激进，但只在真正溢出时才触发。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Stop Hook&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;用户可以配置 stop hook——在模型结束回答前执行一个 shell 命令。如果 hook 返回 &amp;quot;retry&amp;quot;，query 循环会&lt;strong&gt;重新调用 API&lt;&#x2F;strong&gt;——模型不知道自己被重试了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;turn-ji-shu-he-zui-da-xian-zhi&quot;&gt;Turn 计数和最大限制&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;: State = {
+&lt;&#x2F;span&gt;&lt;span&gt;  turnCount: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; maxTurns 限制了单次 query 的最大循环次数
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 防止模型陷入无限 tool-call 循环
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;asyncgenerator-wei-shi-yao-bu-shi-promise&quot;&gt;AsyncGenerator：为什么不是 Promise&lt;&#x2F;h2&gt;
+&lt;p&gt;query 函数的返回类型是 &lt;code&gt;AsyncGenerator&lt;&#x2F;code&gt;，不是 &lt;code&gt;Promise&lt;&#x2F;code&gt;。这个选择至关重要：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export async function* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;query&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;params&lt;&#x2F;span&gt;&lt;span&gt;: QueryParams): AsyncGenerator&amp;lt;
+&lt;&#x2F;span&gt;&lt;span&gt;  StreamEvent | Message | TombstoneMessage | ToolUseSummaryMessage,
+&lt;&#x2F;span&gt;&lt;span&gt;  Terminal
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;流式输出&lt;&#x2F;strong&gt;。每个 token、每个工具结果、每个进度事件都通过 &lt;code&gt;yield&lt;&#x2F;code&gt; 实时推送。如果用 Promise，调用方只能在整个循环结束后拿到结果。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;可取消&lt;&#x2F;strong&gt;。调用方可以通过 &lt;code&gt;generator.return()&lt;&#x2F;code&gt; 提前终止循环——比 AbortController 更优雅，因为 &lt;code&gt;using&lt;&#x2F;code&gt; 语句保证了清理逻辑执行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;背压控制&lt;&#x2F;strong&gt;。如果 UI 渲染速度跟不上模型输出速度，&lt;code&gt;yield&lt;&#x2F;code&gt; 会自然暂停——这是 AsyncGenerator 的内置背压机制。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-kao-gui-ze-wu-shi-de-zhou-yu&quot;&gt;思考规则：巫师的咒语&lt;&#x2F;h2&gt;
+&lt;p&gt;代码中有一段充满幽默感的注释：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;**
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * The rules of thinking are lengthy and fortuitous. They require plenty 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * of thinking of most long duration and deep meditation for a wizard to 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * wrap one&amp;#39;s noggin around.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * The rules follow:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * 1. A message that contains a thinking block must be part of a query 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *    whose max_thinking_length &amp;gt; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * 2. A thinking block may not be the last message in a block
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * 3. Thinking blocks must be preserved for the duration of an assistant 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *    trajectory (a single turn, or if that turn includes a tool_use 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *    then also its subsequent tool_result and the following assistant)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * Heed these rules well, young wizard. For they are the rules of thinking, 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * and the rules of thinking are the rules of the universe. If ye does not 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * heed these rules, ye will be punished with an entire day of debugging 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; * and hair pulling.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt; *&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;翻译：thinking block 的生命周期管理很复杂，搞错了要调一天 bug。这段注释用幽默包装了一个严肃的工程约束——thinking block 必须跟随特定的消息序列，否则 API 会报错。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;memory-prefetch-yin-cang-de-yan-chi-you-hua&quot;&gt;Memory Prefetch：隐藏的延迟优化&lt;&#x2F;h2&gt;
+&lt;p&gt;query 循环一开始就启动了一个内存预取：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;using pendingMemoryPrefetch &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startRelevantMemoryPrefetch&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolUseContext&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个预取跟主循环并行运行——在模型思考和输出的同时，后台在搜索相关的 memory 文件。当工具执行结束、需要准备下一轮 attachment 时，memory 搜索可能已经完成了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;using&lt;&#x2F;code&gt; 关键字保证了资源清理——无论 generator 是正常结束、抛异常、还是被 &lt;code&gt;.return()&lt;&#x2F;code&gt; 取消，cleanup 都会执行。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 五层上下文管理是防御纵深&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;不是一种压缩方案——是五种，从轻量到重量，层层过滤。Budget → Snip → Microcompact → Collapse → Auto Compact。大部分情况下前几层就够了，Auto Compact（最贵）很少触发。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 流式一切&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;从 API 响应到工具执行到 UI 渲染——全链路流式。用户看到的延迟是&amp;quot;第一个 token 到达的时间&amp;quot;，不是&amp;quot;整个响应完成的时间&amp;quot;。AsyncGenerator 是实现这一点的核心语言特性。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 错误恢复不是可选的&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;max_output_tokens 恢复、流式降级、Reactive Compact、Stop Hook 重试——query 循环为每种可能的失败场景都有恢复路径。LLM 交互的不确定性意味着：如果你不处理异常，异常就会成为常态。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 巫师的智慧：把约束写成文档&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;thinking block 的规则用幽默的文风写成了注释。好的工程团队知道——最危险的不是代码复杂，而是约束没有被记录。一段幽默的注释比一个安静的 bug 好一万倍。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;核心引擎讲完了。下一篇进入 Claude Code 的&amp;quot;持久化大脑&amp;quot;——&lt;strong&gt;记忆系统：从 MEMORY.md 到 Team Memory 的四类记忆分类法&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;MEMORY.md 不是一个自由文本文件——它是一个 200 行上限的结构化索引。记忆分为 user&#x2F;feedback&#x2F;project&#x2F;reference 四类。长期 session 有日志模式和 &lt;code&gt;&#x2F;dream&lt;&#x2F;code&gt; 蒸馏。还有团队共享记忆。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;第 2 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-tool-system&quot;&gt;第 3 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-security-yolo-classifier&quot;&gt;第 4 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-04&lt;&#x2F;td&gt;&lt;td&gt;用 LLM 审查 LLM：yoloClassifier 两阶段安全架构&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-agent-orchestration&quot;&gt;第 5 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-05&lt;&#x2F;td&gt;&lt;td&gt;三种并行模式：Fork、Coordinator、Swarm&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 6 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-06&lt;&#x2F;td&gt;&lt;td&gt;QueryEngine：驱动一切的主循环&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 7 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-07&lt;&#x2F;td&gt;&lt;td&gt;记忆系统：四类记忆分类法&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+</feed>

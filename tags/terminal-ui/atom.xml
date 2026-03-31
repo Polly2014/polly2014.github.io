@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Terminal UI</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/terminal-ui/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-09T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/terminal-ui/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] React 渲染到终端：Ink UI 与 IDE Bridge</title>
+        <published>2026-04-09T00:00:00+00:00</published>
+        <updated>2026-04-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-terminal-ui-bridge/" type="text/html"/>
+        <id>https://polly.wang/claude-code-terminal-ui-bridge/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-skills-mcp&quot;&gt;Skill 系统与 MCP 集成&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;当我第一次看到 &lt;code&gt;main.tsx&lt;&#x2F;code&gt; 时，我以为文件名写错了。一个 &lt;strong&gt;CLI 工具&lt;&#x2F;strong&gt;，入口是 &lt;code&gt;.tsx&lt;&#x2F;code&gt;？&lt;&#x2F;p&gt;
+&lt;p&gt;没写错。Claude Code 的终端 UI 是用 &lt;strong&gt;React&lt;&#x2F;strong&gt; 写的。389 个组件，104 个 hooks——这是一个正经的 React 应用，只不过渲染目标不是浏览器 DOM，而是终端 ANSI 字符。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-shi-yao-yong-react-zuo-zhong-duan-ui&quot;&gt;为什么用 React 做终端 UI&lt;&#x2F;h2&gt;
+&lt;p&gt;传统的终端 UI 库（blessed、inquirer、prompts）是命令式的：&lt;code&gt;stdout.write(&#x27;Loading...&#x27;)&lt;&#x2F;code&gt;，手动管理光标位置，手动清屏重绘。&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 交互的特点是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;异步&lt;&#x2F;strong&gt;——API 响应是流式的，token 逐个到达&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多状态并发&lt;&#x2F;strong&gt;——工具在执行、模型在输出、权限在等确认，同时发生&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;频繁更新&lt;&#x2F;strong&gt;——进度条、流式文本、工具结果，每秒更新数十次&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;React 的声明式模型天然匹配这些需求：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;tsx&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-tsx &quot;&gt;&lt;code class=&quot;language-tsx&quot; data-lang=&quot;tsx&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;StreamingResponse&lt;&#x2F;span&gt;&lt;span&gt;({ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tokens&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolCalls&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;permissions &lt;&#x2F;span&gt;&lt;span&gt;}) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Box &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;flexDirection&lt;&#x2F;span&gt;&lt;span&gt;=&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;column&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Markdown&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tokens&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&amp;#39;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Markdown&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolCalls&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;ToolCallUI &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc&lt;&#x2F;span&gt;&lt;span&gt;.id&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;call&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;} &lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&amp;gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;permissions&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pending &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&amp;amp; &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;PermissionPrompt &lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ab7967;&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Box&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  )
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;状态变了，UI 自动更新。不用手动管理&amp;quot;清除上一行→重写→恢复光标位置&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ink-react-de-zhong-duan-xuan-ran-qi&quot;&gt;Ink：React 的终端渲染器&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vadimdemedes&#x2F;ink&quot;&gt;Ink&lt;&#x2F;a&gt; 把 React 组件树渲染成终端输出。Claude Code 不只是使用 Ink——它深度定制了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;自定义 Yoga Layout&lt;&#x2F;strong&gt;：&lt;code&gt;native-ts&#x2F;yoga-layout&#x2F;&lt;&#x2F;code&gt;（2,578 行），TypeScript 重新实现的 Flexbox 布局引擎&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自定义 DOM 层&lt;&#x2F;strong&gt;：&lt;code&gt;ink&#x2F;dom.ts&lt;&#x2F;code&gt;，终端&amp;quot;DOM&amp;quot;的操作接口&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自定义事件系统&lt;&#x2F;strong&gt;：&lt;code&gt;ink&#x2F;events&#x2F;&lt;&#x2F;code&gt;，键盘&#x2F;鼠标事件处理&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Focus 管理&lt;&#x2F;strong&gt;：&lt;code&gt;ink&#x2F;focus.ts&lt;&#x2F;code&gt;，Tab 键焦点切换&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Hit Test&lt;&#x2F;strong&gt;：&lt;code&gt;ink&#x2F;hit-test.ts&lt;&#x2F;code&gt;，鼠标点击区域检测&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;为什么要重新实现 Yoga？原版 Yoga 是 C++ 写的，需要 native binding。用 TypeScript 重写后：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;不需要编译 native 模块——Bun 直接运行&lt;&#x2F;li&gt;
+&lt;li&gt;包体积更小&lt;&#x2F;li&gt;
+&lt;li&gt;更容易调试和定制&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;389-ge-zu-jian&quot;&gt;389 个组件&lt;&#x2F;h3&gt;
+&lt;p&gt;部分组件清单：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;MarkdownRenderer    — 终端 Markdown 渲染
+&lt;&#x2F;span&gt;&lt;span&gt;ToolCallDisplay     — 工具调用展示（可折叠）
+&lt;&#x2F;span&gt;&lt;span&gt;PermissionPrompt    — 权限确认弹窗
+&lt;&#x2F;span&gt;&lt;span&gt;StreamingText       — 流式文本渲染
+&lt;&#x2F;span&gt;&lt;span&gt;DiffView            — 文件 diff 预览
+&lt;&#x2F;span&gt;&lt;span&gt;ProgressBar         — 操作进度
+&lt;&#x2F;span&gt;&lt;span&gt;ErrorBoundary       — 错误恢复
+&lt;&#x2F;span&gt;&lt;span&gt;CompanionSprite     — 电子宠物动画 :)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;104-ge-hooks&quot;&gt;104 个 Hooks&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;useCanUseTool       — 工具权限检查
+&lt;&#x2F;span&gt;&lt;span&gt;useStreamingResponse — 流式响应管理
+&lt;&#x2F;span&gt;&lt;span&gt;useAutoCompact      — 自动压缩状态
+&lt;&#x2F;span&gt;&lt;span&gt;usePermissionMode   — 权限模式切换
+&lt;&#x2F;span&gt;&lt;span&gt;useMCPConnections   — MCP 连接管理
+&lt;&#x2F;span&gt;&lt;span&gt;useBuddyNotification — 电子宠物通知
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ide-bridge-he-xin-yu-surface-de-jie-ou&quot;&gt;IDE Bridge：核心与 Surface 的解耦&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 的核心不跟任何 UI 绑定——终端、VS Code、JetBrains 都只是不同的 Surface。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shuang-xiang-tong-xin-xie-yi&quot;&gt;双向通信协议&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;IDE Extension ←→ Bridge Protocol ←→ Claude Code 核心
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;bridgeMain.ts&lt;&#x2F;code&gt;（2,999 行）实现了这个协议。核心思想：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;IDE → Claude Code&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;发送用户输入&lt;&#x2F;li&gt;
+&lt;li&gt;同步文件变更通知&lt;&#x2F;li&gt;
+&lt;li&gt;传递 IDE 上下文（当前打开的文件、选中的代码）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Claude Code → IDE&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;流式 AI 响应&lt;&#x2F;li&gt;
+&lt;li&gt;工具执行进度&lt;&#x2F;li&gt;
+&lt;li&gt;权限确认请求&lt;&#x2F;li&gt;
+&lt;li&gt;Diff 预览请求&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;bridge-zu-jian&quot;&gt;Bridge 组件&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文件&lt;&#x2F;th&gt;&lt;th&gt;职责&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;bridgeMain.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;核心协议实现 (2,999 行)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;bridgeMessaging.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;消息编码&#x2F;解码&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;bridgePermissionCallbacks.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;权限确认的 IDE 端 UI&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;bridgeUI.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Bridge 模式的 UI 适配&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;inboundMessages.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;处理 IDE 发来的消息&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;inboundAttachments.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;处理 IDE 发来的附件&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;codeSessionApi.ts&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Session 管理 API&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;wei-shi-yao-bu-zhi-jie-qian-ru-zhong-duan&quot;&gt;为什么不直接嵌入终端&lt;&#x2F;h3&gt;
+&lt;p&gt;VS Code 可以嵌入一个终端窗口运行 CLI——为什么还需要 Bridge？&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;原生 UI&lt;&#x2F;strong&gt;：权限确认弹窗、diff 预览、进度条——在 IDE 内用原生控件比终端 ANSI 体验好&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;IDE 上下文&lt;&#x2F;strong&gt;：Bridge 可以获取 IDE 知道但终端不知道的信息（当前打开的文件、光标位置、diagnostics）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;双向同步&lt;&#x2F;strong&gt;：Claude Code 改了文件后，IDE 需要立即刷新。通过 Bridge 推送比轮询文件系统快&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多 Surface 共存&lt;&#x2F;strong&gt;：理论上可以同时从终端和 IDE 跟同一个 Claude Code 实例交互&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 选择渲染框架要看交互模式&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;LLM 交互是异步流式的——React 的声明式模型天然匹配。如果 Claude Code 是一个&amp;quot;输入命令→输出结果&amp;quot;的传统 CLI，blessed&#x2F;inquirer 就够了。技术选型要看&lt;strong&gt;交互模式&lt;&#x2F;strong&gt;，不是看&amp;quot;CLI 该用什么库&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 核心逻辑与 Surface 解耦&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Bridge 协议的存在意味着：换一个 IDE（从 VS Code 到 JetBrains），只需要写一个新的 Bridge 适配器，不用改 Claude Code 的核心逻辑。这是&lt;strong&gt;关注点分离&lt;&#x2F;strong&gt;在 AI 产品中的应用。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 值得重新造轮子的时候&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;TypeScript 重新实现 Yoga Layout——这是一个&amp;quot;造轮子&amp;quot;的正确案例。原因清晰：消除 native binding 依赖、简化构建、减少包体积。不是&amp;quot;我能做得更好&amp;quot;，是&amp;quot;我需要不同的约束&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1-8 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;04-01~08&lt;&#x2F;td&gt;&lt;td&gt;架构·提示词·工具·安全·编排·引擎·记忆·扩展&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 9 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-09&lt;&#x2F;td&gt;&lt;td&gt;React 渲染到终端与 IDE Bridge&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 10 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;td&gt;隐藏彩蛋：Buddy 系统、Undercover Mode、Feature Flags&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+</feed>

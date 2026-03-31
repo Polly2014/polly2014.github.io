@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Feature Flags</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/feature-flags/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-10T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/feature-flags/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 隐藏彩蛋：Buddy、Undercover、Feature Flags</title>
+        <published>2026-04-10T00:00:00+00:00</published>
+        <updated>2026-04-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-hidden-gems/" type="text/html"/>
+        <id>https://polly.wang/claude-code-hidden-gems/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-terminal-ui-bridge&quot;&gt;React 渲染到终端与 IDE Bridge&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;每个好产品都有藏在角落里的东西——不是核心功能，但让你看到团队的性格。Claude Code 的源码里藏了不少这样的宝贝。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;buddy-xi-tong-dian-zi-chong-wu-hatching-chick&quot;&gt;Buddy 系统——电子宠物 🐣&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 有一个完整的&lt;strong&gt;电子宠物系统&lt;&#x2F;strong&gt;。不是玩笑——有物种、稀有度、属性、装饰，还有基于用户 ID 的确定性生成。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;18-chong-wu-chong&quot;&gt;18 种物种&lt;&#x2F;h3&gt;
+&lt;p&gt;duck · goose · blob · cat · dragon · octopus · owl · penguin · turtle · snail · ghost · axolotl · &lt;strong&gt;capybara&lt;&#x2F;strong&gt; · cactus · robot · rabbit · mushroom · chonk&lt;&#x2F;p&gt;
+&lt;p&gt;注意 capybara——这正是 Claude 的模型代号之一。代码里用 &lt;code&gt;String.fromCharCode&lt;&#x2F;code&gt; 编码它的名字，避免被内部检测脚本（扫描泄露模型名称的脚本）误报。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-ji-xi-you-du&quot;&gt;5 级稀有度&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;稀有度&lt;&#x2F;th&gt;&lt;th&gt;概率&lt;&#x2F;th&gt;&lt;th&gt;特权&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Common&lt;&#x2F;td&gt;&lt;td&gt;60%&lt;&#x2F;td&gt;&lt;td&gt;基础外观&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Uncommon&lt;&#x2F;td&gt;&lt;td&gt;25%&lt;&#x2F;td&gt;&lt;td&gt;可能有帽子&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Rare&lt;&#x2F;td&gt;&lt;td&gt;10%&lt;&#x2F;td&gt;&lt;td&gt;肯定有帽子&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Epic&lt;&#x2F;td&gt;&lt;td&gt;4%&lt;&#x2F;td&gt;&lt;td&gt;稀有帽子 + 特殊眼睛&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Legendary&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1%&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全套定制&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;5-chong-shu-xing&quot;&gt;5 种属性&lt;&#x2F;h3&gt;
+&lt;p&gt;DEBUGGING · PATIENCE · CHAOS · WISDOM · SNARK&lt;&#x2F;p&gt;
+&lt;p&gt;每个属性值从 1-10 随机分配（基于用户 ID 的确定性 hash）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhuang-shi-xi-tong&quot;&gt;装饰系统&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;眼睛&lt;&#x2F;strong&gt;：&lt;code&gt;·&lt;&#x2F;code&gt; &lt;code&gt;✦&lt;&#x2F;code&gt; &lt;code&gt;×&lt;&#x2F;code&gt; &lt;code&gt;◉&lt;&#x2F;code&gt; &lt;code&gt;@&lt;&#x2F;code&gt; &lt;code&gt;°&lt;&#x2F;code&gt;
+&lt;strong&gt;帽子&lt;&#x2F;strong&gt;：crown 👑 · tophat 🎩 · propeller · halo · wizard 🧙 · beanie · &lt;strong&gt;tinyduck&lt;&#x2F;strong&gt; 🐤&lt;&#x2F;p&gt;
+&lt;p&gt;1% 概率获得 &lt;strong&gt;shiny&lt;&#x2F;strong&gt;（闪光）版本。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;que-ding-xing-sheng-cheng&quot;&gt;确定性生成&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 基于 userId 的 hash → 确定性生成
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 同一个用户永远得到同一个伙伴
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这不是随机宠物——是你的&lt;strong&gt;专属伙伴&lt;&#x2F;strong&gt;。换设备登录同一个账号，还是同一只。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;undercover-mode-wo-di-mo-shi&quot;&gt;Undercover Mode——卧底模式 🕵️&lt;&#x2F;h2&gt;
+&lt;p&gt;当 Anthropic 员工用 Claude Code 给&lt;strong&gt;公开仓库&lt;&#x2F;strong&gt;贡献代码时，自动进入卧底模式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(process.env.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USER_TYPE &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ant&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isUndercover&lt;&#x2F;span&gt;&lt;span&gt;()) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 隐藏模型名称
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 去掉产品信息
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 添加卧底指令
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;yin-cang-shi-yao&quot;&gt;隐藏什么&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;❌ 模型名称和 ID（系统提示不告诉模型自己是什么）&lt;&#x2F;li&gt;
+&lt;li&gt;❌ &amp;quot;Claude Code&amp;quot; 或任何 AI 字样&lt;&#x2F;li&gt;
+&lt;li&gt;❌ 内部代号：Capybara、Tengu、Numbat、claude-cli-internal&lt;&#x2F;li&gt;
+&lt;li&gt;❌ 未发布版本号&lt;&#x2F;li&gt;
+&lt;li&gt;❌ Slack channel、内部工具名&lt;&#x2F;li&gt;
+&lt;li&gt;❌ &lt;code&gt;Co-Authored-By&lt;&#x2F;code&gt; 归属行&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;commit-message-gui-ze&quot;&gt;commit message 规则&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;好的&lt;&#x2F;strong&gt;：&lt;code&gt;&amp;quot;Fix race condition in file watcher initialization&amp;quot;&lt;&#x2F;code&gt;
+&lt;strong&gt;坏的&lt;&#x2F;strong&gt;：&lt;code&gt;&amp;quot;Fix bug found while testing with Claude Capybara&amp;quot;&lt;&#x2F;code&gt; 😂&lt;&#x2F;p&gt;
+&lt;p&gt;卧底指令被标注为 &amp;quot;defense-in-depth&amp;quot;——即使 attribution stripping（自动删除 AI 归属标记）已经在机械层面处理了，文字指令仍然是最后一道防线，防止模型在 commit message 里主动提及内部信息。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wei-shi-yao-xu-yao-wo-di-mo-shi&quot;&gt;为什么需要卧底模式&lt;&#x2F;h3&gt;
+&lt;p&gt;Anthropic 有数百名工程师，很多人日常给开源项目贡献代码。如果这些 commit 里出现 Claude 的内部代号或未发布模型名称——那就是一次公开的信息泄露。&lt;&#x2F;p&gt;
+&lt;p&gt;卧底模式把这个风险从&amp;quot;依赖每个工程师的自觉&amp;quot;变成&amp;quot;系统级自动处理&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;feature-flags-bian-yi-shi-si-dai-ma-xiao-chu&quot;&gt;Feature Flags——编译时死代码消除&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 最聪明的工程决策之一：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;feature &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bun:bundle&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;voiceModule &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;VOICE_MODE&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;voice&#x2F;index.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这不是运行时条件分支——Bun 的 bundler 在&lt;strong&gt;编译时&lt;&#x2F;strong&gt;把 &lt;code&gt;feature(&#x27;VOICE_MODE&#x27;)&lt;&#x2F;code&gt; 解析为 &lt;code&gt;true&lt;&#x2F;code&gt; 或 &lt;code&gt;false&lt;&#x2F;code&gt;，然后 tree-shaking 掉死分支。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yi-zhi-feature-flags&quot;&gt;已知 Feature Flags&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Flag&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;外部可见&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;PROACTIVE&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;自主工作模式&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;KAIROS&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;长期 assistant&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;FORK_SUBAGENT&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Fork 子 Agent&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;COORDINATOR_MODE&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;编排器模式&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;TEAMMEM&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;团队记忆&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;VOICE_MODE&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;语音输入&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;BRIDGE_MODE&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;IDE 桥接&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;DAEMON&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;守护进程&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;AGENT_TRIGGERS&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Cron 触发器&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;CACHED_MICROCOMPACT&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;缓存微压缩&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;TRANSCRIPT_CLASSIFIER&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Auto Mode 分类器&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;VERIFICATION_AGENT&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;验证 Agent&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;CONTEXT_COLLAPSE&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;上下文折叠&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;HISTORY_SNIP&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;历史裁剪&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;TOKEN_BUDGET&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Token 预算&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;BG_SESSIONS&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;后台 session&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;外部构建里，这些全是 &lt;code&gt;false&lt;&#x2F;code&gt;——对应的代码在编译产物中&lt;strong&gt;完全不存在&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wei-shi-yao-bu-yong-yun-xing-shi-flag&quot;&gt;为什么不用运行时 flag&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;安全&lt;&#x2F;strong&gt;：内部功能的代码不会出现在外部 npm 包里——就算反编译也看不到&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;包体积&lt;&#x2F;strong&gt;：移除未使用功能的代码，减少 npm 包大小&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;单代码库&lt;&#x2F;strong&gt;：不需要维护 internal&#x2F;external 两个分支——同一个代码库，不同的编译配置&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;growthbook-yun-xing-shi-de-bu-chong&quot;&gt;GrowthBook——运行时的补充&lt;&#x2F;h3&gt;
+&lt;p&gt;编译时 flag 处理&amp;quot;有没有&amp;quot;这个功能。运行时还需要 GrowthBook（Feature Flag 服务）处理&amp;quot;开不开&amp;quot;这个功能：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getFeatureValue_CACHED_MAY_BE_STALE&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tengu_auto_mode_config&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, {})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意函数名：&lt;code&gt;CACHED_MAY_BE_STALE&lt;&#x2F;code&gt;。命名告诉你这个值可能不是最新的——GrowthBook 的配置定期拉取，不是实时的。在大多数场景下，stale 值没问题。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;mo-xing-dai-hao-xie-lu&quot;&gt;模型代号泄露&lt;&#x2F;h2&gt;
+&lt;p&gt;源码中暴露了几个 Anthropic 的内部代号：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Capybara&lt;&#x2F;strong&gt; — Claude 模型代号（多处出现）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Tengu&lt;&#x2F;strong&gt; — 项目代号（遥测事件前缀都是 &lt;code&gt;tengu_&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Numbat&lt;&#x2F;strong&gt; — 另一个模型代号（注释：&amp;quot;Remove this section when we launch numbat&amp;quot;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Stoat, Herring, Fern, Moth, Copse&lt;&#x2F;strong&gt; — GrowthBook 实验名（&lt;code&gt;tengu_amber_stoat&lt;&#x2F;code&gt;、&lt;code&gt;tengu_coral_fern&lt;&#x2F;code&gt; 等）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;有趣的是这些代号都是动物&#x2F;自然物——看起来 Anthropic 有一套基于自然界的命名体系。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-shi-zhu-shi-he-you-mo-zhu-shi&quot;&gt;巫师注释和幽默注释&lt;&#x2F;h2&gt;
+&lt;p&gt;代码库里散落着一些有趣的注释：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Thinking 规则的巫师注释&lt;&#x2F;strong&gt;（query.ts）：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;The rules of thinking are lengthy and fortuitous. They require 
+&lt;&#x2F;span&gt;&lt;span&gt;plenty of thinking of most long duration and deep meditation 
+&lt;&#x2F;span&gt;&lt;span&gt;for a wizard to wrap one&amp;#39;s noggin around.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Analytics 类型的长名字&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span&gt;AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = string
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个类型名本身就是文档——&amp;quot;我确认这不是代码或文件路径&amp;quot;。它强制每个往 analytics 发数据的开发者思考：&amp;quot;我发的这个值是不是会泄露用户隐私？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;yoloClassifier 的名字&lt;&#x2F;strong&gt;：
+一个安全分类器叫 &amp;quot;yolo&amp;quot;——&amp;quot;You Only Live Once&amp;quot;。但实现极其认真，两阶段 XML 协议。名字是幽默的，态度是严肃的。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 有趣的东西让产品有灵魂&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Buddy 系统对功能没有任何贡献——但它让 Claude Code 从&amp;quot;工具&amp;quot;变成了&amp;quot;伙伴&amp;quot;。1% 的 legendary 概率让用户有了开箱的期待感。好的产品不只是有用，还要有趣。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 系统性地解决人的问题&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Undercover Mode 不是在教育工程师&amp;quot;别泄露内部信息&amp;quot;——而是在系统层面让泄露不可能发生。好的安全设计不依赖人的自觉。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 编译时 &amp;gt; 运行时&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果一个决策在编译时就能做出，就不要推迟到运行时。Feature flags 的编译时消除既保证了安全，又优化了性能。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 命名即文档&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;DANGEROUS_uncachedSystemPromptSection&lt;&#x2F;code&gt;、&lt;code&gt;AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS&lt;&#x2F;code&gt;、&lt;code&gt;CACHED_MAY_BE_STALE&lt;&#x2F;code&gt;——好的命名让错误的用法看起来就是错的，让安全意识嵌入到 API 设计中。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;隐藏彩蛋讲完了。最后一篇——&lt;strong&gt;设计蓝图：如果我们自己造一个&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;十篇拆解下来，我们已经理解了 Claude Code 的每一层设计。最后一篇把所有洞察合在一起，回答最初的问题：如果从零开始造一个 coding agent，架构该怎么画？&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1-9 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;04-01~09&lt;&#x2F;td&gt;&lt;td&gt;全部核心模块拆解&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 10 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;td&gt;隐藏彩蛋：Buddy、Undercover、Feature Flags&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 11 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-11&lt;&#x2F;td&gt;&lt;td&gt;设计蓝图：如果我们自己造一个&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+</feed>

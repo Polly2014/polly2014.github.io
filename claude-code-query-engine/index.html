@@ -1,0 +1,201 @@
+<!doctype html><html><head><title>[CC解构] QueryEngine：驱动一切的主循环</title><meta content="query.ts 是 Claude Code 的心脏——一个 1,729 行的 AsyncGenerator 主循环，驱动着整个 AI 交互。这篇拆解它的五阶段流水线：上下文压缩 → API 调用 → 流式解析 → 工具执行 → 循环决策。以及流式工具执行器如何让 tool call 在模型还在输出时就开始并行运行。" name=description><meta content="Polly, Blog, AI Blog, AI Assistant, Tutorials, Technology Blog, Baoli Wang" name=keywords><meta content="width=device-width,initial-scale=1" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><meta content=#333 name=theme-color><meta content=article property=og:type><meta content=https://polly.wang/claude-code-query-engine/ property=og:url><meta content="[CC解构] QueryEngine：驱动一切的主循环" property=og:title><meta content="query.ts 是 Claude Code 的心脏——一个 1,729 行的 AsyncGenerator 主循环，驱动着整个 AI 交互。这篇拆解它的五阶段流水线：上下文压缩 → API 调用 → 流式解析 → 工具执行 → 循环决策。以及流式工具执行器如何让 tool call 在模型还在输出时就开始并行运行。" property=og:description><meta content=https://polly.wang/claude-code-query-engine/cover.jpg property=og:image><meta content="Polly Blog" property=og:site_name><meta content=zh_CN property=og:locale><meta content=summary_large_image name=twitter:card><meta content=https://polly.wang/claude-code-query-engine/ name=twitter:url><meta content="[CC解构] QueryEngine：驱动一切的主循环" name=twitter:title><meta content="query.ts 是 Claude Code 的心脏——一个 1,729 行的 AsyncGenerator 主循环，驱动着整个 AI 交互。这篇拆解它的五阶段流水线：上下文压缩 → API 调用 → 流式解析 → 工具执行 → 循环决策。以及流式工具执行器如何让 tool call 在模型还在输出时就开始并行运行。" name=twitter:description><meta content=https://polly.wang/claude-code-query-engine/cover.jpg name=twitter:image><meta content=2026-04-06T00:00:00 property=article:published_time><meta content=Polly property=article:author><meta content="Claude Code" property=article:tag><meta content=Anthropic property=article:tag><meta content=QueryEngine property=article:tag><meta content=LLM property=article:tag><meta content=流式处理 property=article:tag><meta content=Agent property=article:tag><meta content=系列文章 property=article:tag><link rel="shortcut icon" href=https://polly.wang/images/polly.ico type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=icon type=image/x-icon><link href=https://polly.wang/images/polly.ico rel=apple-touch-icon><link href=https://polly.wang/vendor/purecss/pure-min.css rel=stylesheet><link href=https://polly.wang/vendor/purecss/grids-responsive-min.css rel=stylesheet><link href=https://polly.wang/vendor/font-awesome/css/all.min.css rel=stylesheet><link href=https://polly.wang/css/style_new.css rel=stylesheet><script src="https://www.googletagmanager.com/gtag/js?id=G-1N289C8N8W" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-1N289C8N8W')</script><body><div class=menu-toggle><img alt=Menu src=https://polly.wang/images/polly.png></div><div class=overlay></div><div class="pure-g container"><div class="sidebar pure-u-1 pure-u-md-1-5"><div class=title><a class=pure-menu-heading href=https://polly.wang> <img class="avatar pure-img-responsive" src=https://polly.wang/images/polly.png> </a><div class=introduction><p>Polly's Blog</div><div class=nav><ul class=nav-links><li><a href=https://polly.wang><i class="fas fa-home"></i>Home</a><li><a href=https://polly.wang/archive><i class="fas fa-archive"></i>Archive</a><li><a href=https://polly.wang/category><i class="fas fa-folder"></i>Category</a><li><a href=https://polly.wang/blog><i class="fas fa-file-alt"></i>Posts</a><li><a href=https://polly.wang/cfp><i class="fas fa-calendar-alt"></i>CFP</a><li><a href=https://polly.wang/publication><i class="fas fa-file-pdf"></i>Research</a><li><a href=https://polly.wang/changelog><i class="fas fa-history"></i>Change Log</a><li><a href=https://polly.wang/about><i class="fas fa-info-circle"></i>About Me</a></ul></div><div class=social><ul class=social-links><li><a onclick="gtag('event','social_click',{platform:'email'});" href=mailto:26716201@qq.com><i class="fas fa-envelope"></i></a><li><a onclick="gtag('event','social_click',{platform:'twitter'});" href=https://twitter.com/Polly__007><i class="fab fa-twitter"></i></a><li><a onclick="gtag('event','social_click',{platform:'linkedin'});" href=https://www.linkedin.com/in/baoliwang><i class="fab fa-linkedin-in"></i></a><li><a onclick="gtag('event','social_click',{platform:'github'});" href=https://github.com/Polly2014><i class="fab fa-github"></i></a></ul></div></div></div><div class="content pure-u-1 pure-u-md-4-5"><div class=blog-post><h1>[CC解构] QueryEngine：驱动一切的主循环</h1><div style="font-size:13px;color:#999;margin:-4px 0 16px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap" class=post-meta><span>📅 2026-04-06</span><span>⏱ 15 min read</span><span>📝 2968 words</span><span id=view-count></span></div><div class=cover-image><img alt="[CC解构] QueryEngine：驱动一切的主循环" loading=lazy src=/claude-code-query-engine/cover.jpg></div><div class=content><p>接上回：<a href=/claude-code-agent-orchestration>三种并行模式：Fork、Coordinator、Swarm</a>。<p>如果说架构是骨架，系统提示词是灵魂，工具是手脚——那 QueryEngine 就是心脏。<p><code>query.ts</code> 是一个 1,729 行的 AsyncGenerator 函数。它实现了 Claude Code 的核心循环：接收用户输入 → 调 API → 解析响应 → 执行工具 → 把工具结果送回 API → 再解析 → 再执行……直到模型不再返回 tool_use。<p>这不是一个简单的 while 循环——它处理了自动压缩、流式工具执行、模型降级、token 预算、停止 hook、上下文溢出恢复……每一个边界条件都是真实生产事故的结晶。<hr><h2 id=quan-jing-wu-jie-duan-liu-shui-xian>全景：五阶段流水线</h2><p>每一轮 query 循环分五个阶段：<pre style=background:#2b303b;color:#c0c5ce><code><span>┌─────────────────────────────────────────────────────────┐
+</span><span>│ Stage 1: 上下文管理                                      │
+</span><span>│   Tool Result Budget → Snip → Microcompact →            │
+</span><span>│   Context Collapse → Auto Compact                       │
+</span><span>├─────────────────────────────────────────────────────────┤
+</span><span>│ Stage 2: API 调用                                        │
+</span><span>│   组装消息 → 调用 Anthropic API → 流式接收               │
+</span><span>├─────────────────────────────────────────────────────────┤
+</span><span>│ Stage 3: 流式解析                                        │
+</span><span>│   逐 token 累积 → 检测 tool_use block → 触发执行         │
+</span><span>├─────────────────────────────────────────────────────────┤
+</span><span>│ Stage 4: 工具执行                                        │
+</span><span>│   并发安全分区 → 并行/串行执行 → 收集结果                 │
+</span><span>├─────────────────────────────────────────────────────────┤
+</span><span>│ Stage 5: 循环决策                                        │
+</span><span>│   有 tool_use → 继续循环 │ 无 tool_use → 返回            │
+</span><span>│   max_output_tokens → 恢复 │ stop_hook → 重试            │
+</span><span>└─────────────────────────────────────────────────────────┘
+</span></code></pre><hr><h2 id=stage-1-shang-xia-wen-guan-li-zai-diao-api-zhi-qian>Stage 1：上下文管理——在调 API 之前</h2><p>每次调 API 之前，query 循环要做大量的上下文管理工作。这是整个函数中最复杂的部分——因为上下文窗口是有限资源，管不好就溢出。<h3 id=tool-result-budget>Tool Result Budget</h3><pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#bf616a>messagesForQuery </span><span>= </span><span style=color:#b48ead>await </span><span style=color:#8fa1b3>applyToolResultBudget</span><span>(
+</span><span>  </span><span style=color:#bf616a>messagesForQuery</span><span>,
+</span><span>  </span><span style=color:#bf616a>toolUseContext</span><span>.</span><span style=color:#bf616a>contentReplacementState</span><span>,
+</span><span>  </span><span style=color:#65737e>// ...
+</span><span>)
+</span></code></pre><p>工具结果可能很大（一个 <code>cat</code> 命令输出 10 万行）。Tool Result Budget 把超大的工具结果替换成磁盘引用——模型看到的是"结果已存储，路径在这里"，而不是完整内容。<p>某些工具被豁免——比如 FileRead 的 <code>maxResultSizeChars</code> 设为 <code>Infinity</code>（持久化读取结果会创建循环引用）。<h3 id=snip-compact>Snip Compact</h3><pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>if </span><span>(</span><span style=color:#8fa1b3>feature</span><span>('</span><span style=color:#a3be8c>HISTORY_SNIP</span><span>')) {
+</span><span>  </span><span style=color:#b48ead>const </span><span style=color:#bf616a>snipResult </span><span>= </span><span style=color:#bf616a>snipModule</span><span>.</span><span style=color:#8fa1b3>snipCompactIfNeeded</span><span>(</span><span style=color:#bf616a>messagesForQuery</span><span>)
+</span><span>  </span><span style=color:#bf616a>messagesForQuery </span><span>= </span><span style=color:#bf616a>snipResult</span><span>.</span><span style=color:#bf616a>messages
+</span><span>  </span><span style=color:#bf616a>snipTokensFreed </span><span>= </span><span style=color:#bf616a>snipResult</span><span>.</span><span style=color:#bf616a>tokensFreed
+</span><span>}
+</span></code></pre><p>Snip 是一种轻量级的上下文裁剪——不调 LLM，只做规则性的裁剪（比如删除过老的消息、截断超长的工具输出）。比 Auto Compact 快得多，但压缩率低。<h3 id=microcompact>Microcompact</h3><p>Microcompact 是 Anthropic 的一个实验性功能（<code>CACHED_MICROCOMPACT</code> feature flag）。它利用 API 的 cache editing 能力——标记旧的工具结果为可删除，让 API 服务端在 cache 中直接删除它们，无需客户端重传整个消息历史。<h3 id=context-collapse>Context Collapse</h3><p>另一个实验性功能（<code>CONTEXT_COLLAPSE</code> flag）。跟 Compact 不同，Context Collapse 是一种<strong>读时投影</strong>——原始消息不变，但渲染给 API 时用折叠后的摘要替换。折叠记录持久化，跨 turn 复用。<h3 id=auto-compact>Auto Compact</h3><p>最后的保障网。当上下文接近窗口极限时，调一次 LLM 把整个对话压缩成结构化摘要：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>const </span><span>{ </span><span style=color:#bf616a>compactionResult</span><span>, </span><span style=color:#bf616a>consecutiveFailures </span><span>} = </span><span style=color:#b48ead>await </span><span style=color:#bf616a>deps</span><span>.</span><span style=color:#8fa1b3>autocompact</span><span>(
+</span><span>  </span><span style=color:#bf616a>messagesForQuery</span><span>,
+</span><span>  </span><span style=color:#bf616a>toolUseContext</span><span>,
+</span><span>  { </span><span style=color:#bf616a>systemPrompt</span><span>, </span><span style=color:#bf616a>userContext</span><span>, </span><span style=color:#bf616a>systemContext</span><span>, ... },
+</span><span>  </span><span style=color:#bf616a>querySource</span><span>,
+</span><span>  </span><span style=color:#bf616a>tracking</span><span>,
+</span><span>  </span><span style=color:#bf616a>snipTokensFreed</span><span>,
+</span><span>)
+</span></code></pre><p>压缩结果带有详细的遥测：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#8fa1b3>logEvent</span><span>('</span><span style=color:#a3be8c>tengu_auto_compact_succeeded</span><span>', {
+</span><span>  originalMessageCount: </span><span style=color:#bf616a>messages</span><span>.length,
+</span><span>  </span><span style=color:#bf616a>preCompactTokenCount</span><span>,
+</span><span>  </span><span style=color:#bf616a>postCompactTokenCount</span><span>,
+</span><span>  </span><span style=color:#bf616a>compactionInputTokens</span><span>,
+</span><span>  </span><span style=color:#bf616a>compactionOutputTokens</span><span>,
+</span><span>  </span><span style=color:#bf616a>compactionCacheReadTokens</span><span>,
+</span><span>  </span><span style=color:#bf616a>compactionCacheCreationTokens</span><span>,
+</span><span>})
+</span></code></pre><p>注意顺序：<strong>Tool Result Budget → Snip → Microcompact → Context Collapse → Auto Compact</strong>。每一层过滤掉一些内容，减少后续层的工作量。如果前面的层已经把上下文压到安全线以下，Auto Compact 就不会触发。<hr><h2 id=stage-2-api-diao-yong>Stage 2：API 调用</h2><p>上下文准备好后，调 Anthropic API：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>for await </span><span>(</span><span style=color:#b48ead>const </span><span style=color:#bf616a>message </span><span>of </span><span style=color:#bf616a>deps</span><span>.</span><span style=color:#8fa1b3>callModel</span><span>({
+</span><span>  messages: </span><span style=color:#8fa1b3>prependUserContext</span><span>(</span><span style=color:#bf616a>messagesForQuery</span><span>, </span><span style=color:#bf616a>userContext</span><span>),
+</span><span>  systemPrompt: </span><span style=color:#bf616a>fullSystemPrompt</span><span>,
+</span><span>  thinkingConfig: </span><span style=color:#bf616a>toolUseContext</span><span>.options.</span><span style=color:#bf616a>thinkingConfig</span><span>,
+</span><span>  tools: </span><span style=color:#bf616a>toolUseContext</span><span>.options.</span><span style=color:#bf616a>tools</span><span>,
+</span><span>  signal: </span><span style=color:#bf616a>toolUseContext</span><span>.</span><span style=color:#bf616a>abortController</span><span>.</span><span style=color:#bf616a>signal</span><span>,
+</span><span>  options: {
+</span><span>    model: </span><span style=color:#bf616a>currentModel</span><span>,
+</span><span>    </span><span style=color:#bf616a>fallbackModel</span><span>,
+</span><span>    </span><span style=color:#bf616a>querySource</span><span>,
+</span><span>    </span><span style=color:#bf616a>maxOutputTokensOverride</span><span>,
+</span><span>    taskBudget: { </span><span style=color:#bf616a>total</span><span>, </span><span style=color:#bf616a>remaining </span><span>},
+</span><span>    </span><span style=color:#65737e>// ...
+</span><span>  },
+</span><span>})) {
+</span></code></pre><p>几个关键参数：<p><strong><code>signal</code></strong>：AbortController 的信号。用户按 Ctrl+C 时，这个信号会触发，中断 API 请求。<p><strong><code>fallbackModel</code></strong>：备用模型。如果主模型 API 返回 5xx 或限流，自动降级到备用模型。降级发生时会清空已累积的部分结果（tombstone 机制）。<p><strong><code>taskBudget</code></strong>：API 层面的 token 预算控制。<code>total</code> 是整个任务的预算，<code>remaining</code> 是扣除已消耗后的剩余。压缩后需要重新计算——因为服务端看不到压缩前的消息了。<h3 id=liu-shi-jiang-ji>流式降级</h3><pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>streamingFallbackOccured</span><span>) {
+</span><span>  </span><span style=color:#65737e>// Yield tombstones for orphaned messages
+</span><span>  </span><span style=color:#b48ead>for </span><span>(</span><span style=color:#b48ead>const </span><span style=color:#bf616a>msg </span><span>of </span><span style=color:#bf616a>assistantMessages</span><span>) {
+</span><span>    </span><span style=color:#b48ead>yield </span><span>{ type: '</span><span style=color:#a3be8c>tombstone</span><span>', message: </span><span style=color:#bf616a>msg </span><span>}
+</span><span>  }
+</span><span>  </span><span style=color:#bf616a>assistantMessages</span><span>.length = </span><span style=color:#d08770>0
+</span><span>  </span><span style=color:#bf616a>toolResults</span><span>.length = </span><span style=color:#d08770>0
+</span><span>  </span><span style=color:#bf616a>toolUseBlocks</span><span>.length = </span><span style=color:#d08770>0
+</span><span>  
+</span><span>  </span><span style=color:#65737e>// Discard pending tool execution results
+</span><span>  </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>streamingToolExecutor</span><span>) {
+</span><span>    </span><span style=color:#bf616a>streamingToolExecutor</span><span>.</span><span style=color:#8fa1b3>discard</span><span>()
+</span><span>    </span><span style=color:#bf616a>streamingToolExecutor </span><span>= new StreamingToolExecutor(...)
+</span><span>  }
+</span><span>}
+</span></code></pre><p>当主模型流式响应中途失败并降级到备用模型时——已经累积的部分响应要<strong>完全丢弃</strong>（发送 tombstone 通知 UI 移除）。已经开始执行的工具也要废弃。然后用备用模型重新开始。<hr><h2 id=stage-3-liu-shi-jie-xi>Stage 3：流式解析</h2><p>API 返回的是 Server-Sent Events 流——逐 token 到达。query 循环逐条处理这些事件：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>for await </span><span>(</span><span style=color:#b48ead>const </span><span style=color:#bf616a>message </span><span>of </span><span style=color:#bf616a>deps</span><span>.</span><span style=color:#8fa1b3>callModel</span><span>(...)) {
+</span><span>  </span><span style=color:#65737e>// 每个 message 可能是：
+</span><span>  </span><span style=color:#65737e>// - assistant text block (流式文本)
+</span><span>  </span><span style=color:#65737e>// - assistant tool_use block (工具调用)
+</span><span>  </span><span style=color:#65737e>// - thinking block (思考过程)
+</span><span>  </span><span style=color:#65737e>// - stream events (进度信号)
+</span><span>  
+</span><span>  </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>message</span><span>.type === '</span><span style=color:#a3be8c>assistant</span><span>') {
+</span><span>    </span><span style=color:#bf616a>assistantMessages</span><span>.</span><span style=color:#96b5b4>push</span><span>(</span><span style=color:#bf616a>message</span><span>)
+</span><span>    </span><span style=color:#65737e>// 检测是否包含 tool_use
+</span><span>    </span><span style=color:#b48ead>for </span><span>(</span><span style=color:#b48ead>const </span><span style=color:#bf616a>block </span><span>of </span><span style=color:#bf616a>message</span><span>.</span><span style=color:#bf616a>message</span><span>.content) {
+</span><span>      </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>block</span><span>.type === '</span><span style=color:#a3be8c>tool_use</span><span>') {
+</span><span>        </span><span style=color:#bf616a>toolUseBlocks</span><span>.</span><span style=color:#96b5b4>push</span><span>(</span><span style=color:#bf616a>block</span><span>)
+</span><span>        </span><span style=color:#bf616a>needsFollowUp </span><span>= </span><span style=color:#d08770>true
+</span><span>      }
+</span><span>    }
+</span><span>  }
+</span><span>  
+</span><span>  </span><span style=color:#b48ead>yield </span><span style=color:#bf616a>yieldMessage  </span><span style=color:#65737e>// 实时推送给 UI
+</span><span>}
+</span></code></pre><p>关键设计：<strong>流式解析和 UI 渲染是同步的</strong>。模型输出的每个 token 立即推送给 Surface 层渲染——用户能实时看到 AI 在"思考"和"打字"。<h3 id=bei-tian-backfill>背填（Backfill）</h3><pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>tool</span><span>?.</span><span style=color:#bf616a>backfillObservableInput</span><span>) {
+</span><span>  </span><span style=color:#b48ead>const </span><span style=color:#bf616a>inputCopy </span><span>= { ...</span><span style=color:#bf616a>originalInput </span><span>}
+</span><span>  </span><span style=color:#bf616a>tool</span><span>.</span><span style=color:#8fa1b3>backfillObservableInput</span><span>(</span><span style=color:#bf616a>inputCopy</span><span>)
+</span><span>  </span><span style=color:#65737e>// 只在 backfill 添加了新字段时才 clone
+</span><span>  </span><span style=color:#65737e>// 避免修改原始 input（会破坏 prompt cache）
+</span><span>}
+</span></code></pre><p>某些工具需要在 tool_use block 被 yield 给 SDK/UI 之前补充额外字段——但不能修改原始 input（会破坏 prompt cache 的字节一致性）。所以做一个 clone，只在真正添加了新字段时才替换。<hr><h2 id=stage-4-gong-ju-zhi-xing-streamingtoolexecutor>Stage 4：工具执行——StreamingToolExecutor</h2><p>这是 query 循环中最精妙的工程之一：<strong>工具在模型还在输出时就开始执行</strong>。<h3 id=chuan-tong-fang-shi-vs-liu-shi-zhi-xing>传统方式 vs 流式执行</h3><p>传统方式：等模型输出完所有 tool_use → 收集所有工具调用 → 按顺序执行 → 返回结果。<p>Claude Code 的方式：模型输出第一个 tool_use → <strong>立即开始执行</strong> → 模型继续输出第二个 tool_use → 立即开始执行 → 模型输出完毕时，前面的工具可能已经完成了。<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>class </span><span style=color:#ebcb8b>StreamingToolExecutor </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>  </span><span style=color:#65737e>// 并发安全的工具可以并行执行
+</span><span style=color:#eff1f5>  </span><span style=color:#65737e>// 非并发安全的工具必须独占执行
+</span><span style=color:#eff1f5>  </span><span style=color:#8fa1b3>addTool</span><span>(</span><span style=color:#bf616a>block</span><span>: </span><span style=color:#eff1f5>ToolUseBlock, </span><span style=color:#bf616a>assistantMessage</span><span>: </span><span style=color:#eff1f5>AssistantMessage</span><span>): </span><span style=color:#eff1f5>void {
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>const </span><span style=color:#bf616a>isConcurrencySafe </span><span>= </span><span style=color:#bf616a>toolDefinition</span><span style=color:#eff1f5>.</span><span style=color:#8fa1b3>isConcurrencySafe</span><span style=color:#eff1f5>(</span><span style=color:#bf616a>block</span><span style=color:#eff1f5>.input)
+</span><span style=color:#eff1f5>    </span><span style=color:#65737e>// 如果并发安全，立即启动
+</span><span style=color:#eff1f5>    </span><span style=color:#65737e>// 如果不安全，排队等前面的工具完成
+</span><span style=color:#eff1f5>  }
+</span><span style=color:#eff1f5>}
+</span></code></pre><h3 id=bing-fa-fen-qu>并发分区</h3><p>工具执行有严格的并发控制：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>function </span><span style=color:#8fa1b3>partitionToolCalls</span><span>(</span><span style=color:#bf616a>toolUseMessages</span><span>, </span><span style=color:#bf616a>context</span><span>) {
+</span><span>  </span><span style=color:#65737e>// 把工具调用分成多个批次：
+</span><span>  </span><span style=color:#65737e>// 批次 1: [FileRead, FileRead, Grep] — 全部并发安全，并行执行
+</span><span>  </span><span style=color:#65737e>// 批次 2: [FileWrite]               — 非并发安全，独占执行
+</span><span>  </span><span style=color:#65737e>// 批次 3: [FileRead, Grep]          — 并发安全，并行执行
+</span><span>}
+</span></code></pre><p>最大并发数默认 10（<code>CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY</code>），可配置。<h3 id=cuo-wu-chuan-bo>错误传播</h3><p>如果一个 Bash 工具出错了，它的兄弟进程需要立即停止。StreamingToolExecutor 用一个 child AbortController 来实现：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#65737e>// Child of toolUseContext.abortController. Fires when a Bash tool errors
+</span><span style=color:#65737e>// so sibling subprocesses die immediately instead of running to completion.
+</span><span style=color:#65737e>// Aborting this does NOT abort the parent — query.ts won't end the turn.
+</span><span style=color:#bf616a>private </span><span>siblingAbortController: </span><span style=color:#bf616a>AbortController
+</span></code></pre><p>注意最后一句：中止兄弟不会中止父循环——query 循环还会继续，把错误结果返回给模型让它做下一步决定。<hr><h2 id=stage-5-xun-huan-jue-ce>Stage 5：循环决策</h2><p>工具执行完后，query 循环要决定下一步：<h3 id=zheng-chang-lu-jing>正常路径</h3><pre style=background:#2b303b;color:#c0c5ce><code><span>有 tool_use block → 继续循环（把 tool_result 送回 API）
+</span><span>无 tool_use block → 返回（模型结束了这一轮对话）
+</span></code></pre><h3 id=yi-chang-hui-fu>异常恢复</h3><p><strong>max_output_tokens 恢复</strong>：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>const </span><span style=color:#bf616a>MAX_OUTPUT_TOKENS_RECOVERY_LIMIT </span><span>= </span><span style=color:#d08770>3
+</span></code></pre><p>如果模型输出被截断（达到 max_output_tokens 限制），循环不会立即退出——它会自动继续，最多重试 3 次。第一次重试前会把 max_output_tokens 提升到 <code>ESCALATED_MAX_TOKENS</code>。<p><strong>Reactive Compact</strong>：<p>如果 API 返回"prompt too long"错误——不是直接报错，而是触发 Reactive Compact：紧急压缩上下文，然后重试。这比预防性的 Auto Compact 更激进，但只在真正溢出时才触发。<p><strong>Stop Hook</strong>：<p>用户可以配置 stop hook——在模型结束回答前执行一个 shell 命令。如果 hook 返回 "retry"，query 循环会<strong>重新调用 API</strong>——模型不知道自己被重试了。<h3 id=turn-ji-shu-he-zui-da-xian-zhi>Turn 计数和最大限制</h3><pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>let </span><span style=color:#bf616a>state</span><span>: State = {
+</span><span>  turnCount: </span><span style=color:#d08770>1</span><span>,
+</span><span>  </span><span style=color:#65737e>// ...
+</span><span>}
+</span><span>
+</span><span style=color:#65737e>// maxTurns 限制了单次 query 的最大循环次数
+</span><span style=color:#65737e>// 防止模型陷入无限 tool-call 循环
+</span></code></pre><hr><h2 id=asyncgenerator-wei-shi-yao-bu-shi-promise>AsyncGenerator：为什么不是 Promise</h2><p>query 函数的返回类型是 <code>AsyncGenerator</code>，不是 <code>Promise</code>。这个选择至关重要：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#b48ead>export async function* </span><span style=color:#8fa1b3>query</span><span>(</span><span style=color:#bf616a>params</span><span>: QueryParams): AsyncGenerator<
+</span><span>  StreamEvent | Message | TombstoneMessage | ToolUseSummaryMessage,
+</span><span>  Terminal
+</span><span>> {
+</span></code></pre><p><strong>流式输出</strong>。每个 token、每个工具结果、每个进度事件都通过 <code>yield</code> 实时推送。如果用 Promise，调用方只能在整个循环结束后拿到结果。<p><strong>可取消</strong>。调用方可以通过 <code>generator.return()</code> 提前终止循环——比 AbortController 更优雅，因为 <code>using</code> 语句保证了清理逻辑执行。<p><strong>背压控制</strong>。如果 UI 渲染速度跟不上模型输出速度，<code>yield</code> 会自然暂停——这是 AsyncGenerator 的内置背压机制。<hr><h2 id=si-kao-gui-ze-wu-shi-de-zhou-yu>思考规则：巫师的咒语</h2><p>代码中有一段充满幽默感的注释：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#65737e>/**
+</span><span style=color:#65737e> * The rules of thinking are lengthy and fortuitous. They require plenty 
+</span><span style=color:#65737e> * of thinking of most long duration and deep meditation for a wizard to 
+</span><span style=color:#65737e> * wrap one's noggin around.
+</span><span style=color:#65737e> *
+</span><span style=color:#65737e> * The rules follow:
+</span><span style=color:#65737e> * 1. A message that contains a thinking block must be part of a query 
+</span><span style=color:#65737e> *    whose max_thinking_length > 0
+</span><span style=color:#65737e> * 2. A thinking block may not be the last message in a block
+</span><span style=color:#65737e> * 3. Thinking blocks must be preserved for the duration of an assistant 
+</span><span style=color:#65737e> *    trajectory (a single turn, or if that turn includes a tool_use 
+</span><span style=color:#65737e> *    then also its subsequent tool_result and the following assistant)
+</span><span style=color:#65737e> *
+</span><span style=color:#65737e> * Heed these rules well, young wizard. For they are the rules of thinking, 
+</span><span style=color:#65737e> * and the rules of thinking are the rules of the universe. If ye does not 
+</span><span style=color:#65737e> * heed these rules, ye will be punished with an entire day of debugging 
+</span><span style=color:#65737e> * and hair pulling.
+</span><span style=color:#65737e> */
+</span></code></pre><p>翻译：thinking block 的生命周期管理很复杂，搞错了要调一天 bug。这段注释用幽默包装了一个严肃的工程约束——thinking block 必须跟随特定的消息序列，否则 API 会报错。<hr><h2 id=memory-prefetch-yin-cang-de-yan-chi-you-hua>Memory Prefetch：隐藏的延迟优化</h2><p>query 循环一开始就启动了一个内存预取：<pre class=language-typescript data-lang=typescript style=background:#2b303b;color:#c0c5ce><code class=language-typescript data-lang=typescript><span style=color:#bf616a>using pendingMemoryPrefetch </span><span>= </span><span style=color:#8fa1b3>startRelevantMemoryPrefetch</span><span>(
+</span><span>  </span><span style=color:#bf616a>state</span><span>.</span><span style=color:#bf616a>messages</span><span>,
+</span><span>  </span><span style=color:#bf616a>state</span><span>.</span><span style=color:#bf616a>toolUseContext</span><span>,
+</span><span>)
+</span></code></pre><p>这个预取跟主循环并行运行——在模型思考和输出的同时，后台在搜索相关的 memory 文件。当工具执行结束、需要准备下一轮 attachment 时，memory 搜索可能已经完成了。<p><code>using</code> 关键字保证了资源清理——无论 generator 是正常结束、抛异常、还是被 <code>.return()</code> 取消，cleanup 都会执行。<hr><h2 id=she-ji-yuan-ze-ti-lian>设计原则提炼</h2><p><strong>1. 五层上下文管理是防御纵深</strong><p>不是一种压缩方案——是五种，从轻量到重量，层层过滤。Budget → Snip → Microcompact → Collapse → Auto Compact。大部分情况下前几层就够了，Auto Compact（最贵）很少触发。<p><strong>2. 流式一切</strong><p>从 API 响应到工具执行到 UI 渲染——全链路流式。用户看到的延迟是"第一个 token 到达的时间"，不是"整个响应完成的时间"。AsyncGenerator 是实现这一点的核心语言特性。<p><strong>3. 错误恢复不是可选的</strong><p>max_output_tokens 恢复、流式降级、Reactive Compact、Stop Hook 重试——query 循环为每种可能的失败场景都有恢复路径。LLM 交互的不确定性意味着：如果你不处理异常，异常就会成为常态。<p><strong>4. 巫师的智慧：把约束写成文档</strong><p>thinking block 的规则用幽默的文风写成了注释。好的工程团队知道——最危险的不是代码复杂，而是约束没有被记录。一段幽默的注释比一个安静的 bug 好一万倍。<hr><h2 id=xia-yi-pian>下一篇</h2><p>核心引擎讲完了。下一篇进入 Claude Code 的"持久化大脑"——<strong>记忆系统：从 MEMORY.md 到 Team Memory 的四类记忆分类法</strong>。<p>MEMORY.md 不是一个自由文本文件——它是一个 200 行上限的结构化索引。记忆分为 user/feedback/project/reference 四类。长期 session 有日志模式和 <code>/dream</code> 蒸馏。还有团队共享记忆。<hr><p>📚 <strong>CC解构系列</strong><table><thead><tr><th>篇目<th>日期<th>主题<tbody><tr><td><a href=/claude-code-leaked-butterfly-effect>序</a><td>2026-03-31<td>一个 .map 文件的蝴蝶效应<tr><td><a href=/claude-code-architecture-overview>第 1 篇</a><td>2026-04-01<td>380K 行代码的骨架<tr><td><a href=/claude-code-system-prompt-design>第 2 篇</a><td>2026-04-02<td>灵魂工程：System Prompt 的七层设计<tr><td><a href=/claude-code-tool-system>第 3 篇</a><td>2026-04-03<td>40 个工具的统一抽象<tr><td><a href=/claude-code-security-yolo-classifier>第 4 篇</a><td>2026-04-04<td>用 LLM 审查 LLM：yoloClassifier 两阶段安全架构<tr><td><a href=/claude-code-agent-orchestration>第 5 篇</a><td>2026-04-05<td>三种并行模式：Fork、Coordinator、Swarm<tr><td><strong>第 6 篇</strong><td>2026-04-06<td>QueryEngine：驱动一切的主循环<tr><td>第 7 篇<td>2026-04-07<td>记忆系统：四类记忆分类法<tr><td>...<td>...<td><em>持续更新</em></table></div><div class=navigation></div></div><div id=giscus-container><h2>Comments</h2><div class=giscus></div></div><script data-category="Blog Comments" async crossorigin data-category-id=DIC_kwDOL45duM4CnjlZ data-emit-metadata=0 data-input-position=bottom data-lang=en data-mapping=pathname data-reactions-enabled=1 data-repo=Polly2014/polly2014.github.io data-repo-id=R_kgDOL45duA data-strict=0 data-theme=noborder_light src=https://giscus.app/client.js></script><script type=module>
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // 灰白黑色调 + 蓝色点缀
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#999',
+                lineColor: 'rgb(61, 146, 201)',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fafafa',
+                background: '#f2f2f2',
+                mainBkg: '#f5f5f5',
+                nodeBorder: '#999',
+                clusterBkg: '#eee',
+                clusterBorder: '#ccc',
+                titleColor: '#333',
+                edgeLabelBackground: '#f2f2f2',
+                // 文本颜色
+                textColor: '#333',
+                nodeTextColor: '#333',
+                // 其他
+                fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // 查找所有 mermaid 代码块并渲染
+        document.querySelectorAll('pre code.language-mermaid').forEach((block, index) => {
+            const container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = block.textContent;
+            block.parentNode.replaceWith(container);
+        });
+
+        // 渲染所有 mermaid 图表
+        await mermaid.run();
+    </script><script>(function(){if(typeof gtag!=='function')return;var a=document.querySelector('.blog-post .content');if(a&&'IntersectionObserver' in window){var b=false;var c=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!b){b=true;gtag('event','blog_read_complete',{article_title:document.title,article_path:location.pathname});c.disconnect()}},{threshold:0.1});var d=a.lastElementChild||a;c.observe(d)};var e=document.getElementById('giscus-container');if(e&&'IntersectionObserver' in window){var f=false;var g=new IntersectionObserver(function(h){if(h[0].isIntersecting&&!f){f=true;gtag('event','comment_view',{article_title:document.title,article_path:location.pathname});g.disconnect()}},{threshold:0.1});g.observe(e)}})()</script><script>(function(){var a='https://chat.polly.wang';var b=location.pathname.replace(/\/$/,'')||'/';var c=document.getElementById('view-count');fetch(a+ '/v1/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path:b,ref:document.referrer.slice(0,200)})}).catch(function(){});fetch(a+ '/v1/pageview?path='+ encodeURIComponent(b)).then(function(d){return d.json()}).then(function(d){if(d.views>0&&c){c.textContent='\uD83D\uDC41 '+ d.views+ ' views'}}).catch(function(){})})()</script><style>.cover-image{text-align:center;margin:1.5em 0 2em 0}.cover-image img{width:60%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.mermaid{background:#fafafa;border:1px solid #ddd;padding:20px;margin:20px 0;overflow-x:auto}.mermaid svg{max-width:100%;height:auto}@media (max-width:768px){.cover-image img{width:100%}}</style></div></div><script>document.addEventListener('DOMContentLoaded',function(){const c=document.querySelector('.menu-toggle');const d=document.querySelector('.sidebar');const e=document.querySelector('.overlay');function a(){d.classList.toggle('active');e.classList.toggle('active')}c.addEventListener('click',a);e.addEventListener('click',a);let f=0;let g=0;document.addEventListener('touchstart',h=>{f=h.changedTouches[0].screenX},false);document.addEventListener('touchend',h=>{g=h.changedTouches[0].screenX;b()},false);function b(){const h=g- f;if(h>50&&f<30){d.classList.add('active');e.classList.add('active')}else if(h<-50&&d.classList.contains('active')){d.classList.remove('active');e.classList.remove('active')}}})</script>

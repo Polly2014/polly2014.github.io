@@ -5,8 +5,206 @@
     <link href="https://polly.wang/tags/ji-yi-xi-tong/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-26T00:00:00+00:00</updated>
+    <updated>2026-04-07T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ji-yi-xi-tong/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 记忆与遗忘：Memory 系统和 Compact 压缩</title>
+        <published>2026-04-07T00:00:00+00:00</published>
+        <updated>2026-04-07T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-memory-compact/" type="text/html"/>
+        <id>https://polly.wang/claude-code-memory-compact/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-query-engine&quot;&gt;QueryEngine：驱动一切的主循环&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;AI Agent 的一个根本矛盾：&lt;strong&gt;上下文窗口是有限的，但工作是无限的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;记忆系统解决跨 session 的持续性——&amp;quot;我上次学到了什么&amp;quot;。Compact 压缩解决单 session 的存活性——&amp;quot;对话太长了，怎么不丢东西地缩短&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;它们是一枚硬币的两面。这篇一起讲。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h1 id=&quot;part-1-memory-wen-jian-ji-ji-yi&quot;&gt;Part 1: Memory——文件即记忆&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;si-lei-fen-lei-fa&quot;&gt;四类分类法&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 的记忆不是自由文本——它有严格的分类：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;类型&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;th&gt;示例&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;user&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;用户偏好和身份&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;用 bun 不用 npm&amp;quot;、&amp;quot;我是后端工程师&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;feedback&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;行为反馈&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;不要自动 commit&amp;quot;、&amp;quot;解释时用中文&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;project&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;项目上下文&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;这个 repo 是 monorepo&amp;quot;、&amp;quot;deploy 用 Vercel&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;reference&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;参考资料&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;API 文档在 &#x2F;docs&amp;quot;、&amp;quot;设计规范 link&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;每个记忆文件有 frontmatter：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;background-color:#4f5b66;color:#c0c5ce;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;name: preferred_package_manager
+&lt;&#x2F;span&gt;&lt;span&gt;description: User prefers bun over npm for all JS projects
+&lt;&#x2F;span&gt;&lt;span&gt;type: user
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;User explicitly stated on 2026-03-15 that they want bun used 
+&lt;&#x2F;span&gt;&lt;span&gt;exclusively. npm commands should be converted to bun equivalents.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个分类不是装饰——它影响记忆的生命周期和优先级。&lt;code&gt;user&lt;&#x2F;code&gt; 类型的记忆几乎永远有效，&lt;code&gt;project&lt;&#x2F;code&gt; 类型可能随项目变化过期，&lt;code&gt;reference&lt;&#x2F;code&gt; 类型可能需要定期验证。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;memory-md-suo-yin-bu-shi-nei-rong&quot;&gt;MEMORY.md：索引，不是内容&lt;&#x2F;h2&gt;
+&lt;p&gt;MEMORY.md 不是记忆本身——它是&lt;strong&gt;索引&lt;&#x2F;strong&gt;。每行一条指针，&amp;lt;150 字符：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[Package Manager Preference](user_pkg_manager.md)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; — always use bun
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[Testing Strategy](project_testing.md)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; — vitest + playwright e2e
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[Deploy Process](reference_deploy.md)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; — Vercel auto-deploy from main
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;索引有硬性上限：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_ENTRYPOINT_LINES &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;200
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MAX_ENTRYPOINT_BYTES &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;25_000  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ~125 chars&#x2F;line
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;超过 200 行或 25KB，截断并警告：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;&amp;gt; WARNING: MEMORY.md is 247 lines (limit: 200). Only part of it 
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; was loaded. Keep index entries to one line under ~200 chars; 
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; move detail into topic files.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;为什么是索引而不是全文？因为 MEMORY.md 会被注入到&lt;strong&gt;每一次&lt;&#x2F;strong&gt; API 调用的系统提示词中。如果它是 10KB 的全文，每次调用就多消耗 ~2,500 token。索引模式把开销控制在可预测的范围内。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-bu-bao-cun-liu-cheng&quot;&gt;两步保存流程&lt;&#x2F;h2&gt;
+&lt;p&gt;保存一条记忆是两步操作：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;写入记忆文件&lt;&#x2F;strong&gt;——创建 &lt;code&gt;user_role.md&lt;&#x2F;code&gt;，包含 frontmatter 和详细内容&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;更新索引&lt;&#x2F;strong&gt;——在 MEMORY.md 添加一行指针&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;为什么不自动化？因为索引是给&lt;strong&gt;模型&lt;&#x2F;strong&gt;看的——模型需要知道哪些记忆存在，才能在需要时主动读取。手动维护索引让模型对自己的记忆有&amp;quot;意识&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-yao-bu-gai-bao-cun&quot;&gt;什么不该保存&lt;&#x2F;h2&gt;
+&lt;p&gt;系统提示词明确列出了不该保存的内容：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;可从代码推导的信息&lt;&#x2F;strong&gt;——代码结构、架构模式、git 历史&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;临时性信息&lt;&#x2F;strong&gt;——当前调试状态、一次性任务上下文&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;敏感凭证&lt;&#x2F;strong&gt;——API key、密码、token&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;关键思想：&lt;strong&gt;记忆存储代码无法表达的东西&lt;&#x2F;strong&gt;——偏好、决策背景、人际关系、项目历史。代码能说的，让代码说。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;kairos-chang-qi-session-de-ri-zhi-mo-shi&quot;&gt;KAIROS：长期 session 的日志模式&lt;&#x2F;h2&gt;
+&lt;p&gt;当 Claude Code 运行在长期 assistant 模式（KAIROS feature flag）时，记忆策略完全不同：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;memory&#x2F;logs&#x2F;YYYY&#x2F;MM&#x2F;YYYY-MM-DD.md
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不再维护 MEMORY.md 索引——改为每天追加日志：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;markdown&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-markdown &quot;&gt;&lt;code class=&quot;language-markdown&quot; data-lang=&quot;markdown&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;## 2026-04-07
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 15:32 User prefers dark mode in all demos
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 16:45 Discovered auth module uses custom JWT impl, not jsonwebtoken
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;- 17:20 User explicitly asked to remember: staging URL is api-staging.example.com
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;日志是&lt;strong&gt;只追加&lt;&#x2F;strong&gt;的——不重写、不重组。每晚有一个 &lt;code&gt;&#x2F;dream&lt;&#x2F;code&gt; skill 蒸馏日志到 MEMORY.md 和主题文件。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么用日志而不是索引？长期 session 的记忆产生速率远高于交互式使用。索引模式需要每次保存都更新两个文件，日志模式只需追加一行。&lt;&#x2F;p&gt;
+&lt;p&gt;一个精妙的缓存细节：系统提示词中的日期用&lt;strong&gt;模式&lt;&#x2F;strong&gt;（&lt;code&gt;YYYY-MM-DD&lt;&#x2F;code&gt;）而不是今天的日期。因为系统提示词被 &lt;code&gt;systemPromptSection(&#x27;memory&#x27;)&lt;&#x2F;code&gt; 缓存——如果嵌入具体日期，午夜跨越时缓存会失效。模型从 &lt;code&gt;currentDate&lt;&#x2F;code&gt; 上下文变量获取实际日期。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;team-memory&quot;&gt;Team Memory&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;teamMemPaths &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;TEAMMEM&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;teamMemPaths.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Team Memory 在 &lt;code&gt;TEAMMEM&lt;&#x2F;code&gt; feature flag 后面——外部构建不可见。&lt;&#x2F;p&gt;
+&lt;p&gt;团队记忆存储在 &lt;code&gt;memory&#x2F;team&#x2F;&lt;&#x2F;code&gt; 子目录下，跟个人记忆分开。个人记忆是私有的（&amp;quot;我喜欢 bun&amp;quot;），团队记忆是共享的（&amp;quot;这个项目用 monorepo&amp;quot;）。&lt;&#x2F;p&gt;
+&lt;p&gt;团队记忆要求 auto memory 同时启用——逻辑上合理，因为没有个人记忆系统就没有存储基础设施。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sou-suo-guo-qu-de-shang-xia-wen&quot;&gt;搜索过去的上下文&lt;&#x2F;h2&gt;
+&lt;p&gt;当记忆文件搜索不够时，Claude Code 还可以搜索 session transcript——&lt;code&gt;.jsonl&lt;&#x2F;code&gt; 格式的完整对话日志：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;grep -rn &amp;quot;&amp;lt;search term&amp;gt;&amp;quot; ~&#x2F;.claude&#x2F;projects&#x2F;&amp;lt;slug&amp;gt;&#x2F; --include=&amp;quot;*.jsonl&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;提示词建议用窄搜索词（错误信息、文件路径、函数名），不要用宽泛关键词——因为 transcript 文件很大，搜索很慢。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h1 id=&quot;part-2-compact-jie-gou-hua-yi-wang&quot;&gt;Part 2: Compact——结构化遗忘&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;ya-suo-prompt-9-duan-zhai-yao-mo-ban&quot;&gt;压缩 Prompt：9 段摘要模板&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 的压缩不是简单的&amp;quot;请总结这段对话&amp;quot;——而是一个精心设计的 9 段结构化模板：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;段落&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;th&gt;为什么重要&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;1. Primary Request&lt;&#x2F;td&gt;&lt;td&gt;用户的显式请求和意图&lt;&#x2F;td&gt;&lt;td&gt;不能丢失目标&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2. Key Concepts&lt;&#x2F;td&gt;&lt;td&gt;技术概念和框架&lt;&#x2F;td&gt;&lt;td&gt;上下文基础&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;3. Files &amp;amp; Code&lt;&#x2F;td&gt;&lt;td&gt;文件路径 + &lt;strong&gt;完整代码片段&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;不能只存摘要&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4. Errors &amp;amp; Fixes&lt;&#x2F;td&gt;&lt;td&gt;错误和修复过程&lt;&#x2F;td&gt;&lt;td&gt;防止重复犯错&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;5. Problem Solving&lt;&#x2F;td&gt;&lt;td&gt;解决问题的思路&lt;&#x2F;td&gt;&lt;td&gt;方法论传承&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;6. All User Messages&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;所有&lt;&#x2F;strong&gt;用户消息（非工具结果）&lt;&#x2F;td&gt;&lt;td&gt;保留用户意图&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;7. Pending Tasks&lt;&#x2F;td&gt;&lt;td&gt;待完成的任务&lt;&#x2F;td&gt;&lt;td&gt;不能忘事&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;8. Current Work&lt;&#x2F;td&gt;&lt;td&gt;当前正在做的事&lt;&#x2F;td&gt;&lt;td&gt;连续性&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;9. Optional Next Step&lt;&#x2F;td&gt;&lt;td&gt;下一步计划&lt;&#x2F;td&gt;&lt;td&gt;方向感&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;第 6 段是最关键的设计决策——&lt;strong&gt;所有用户消息都要保留&lt;&#x2F;strong&gt;。因为用户的措辞、语气、反馈是理解意图的最直接证据。工具结果可以丢（可以重新读文件），用户的话不能丢。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;analysis-cao-gao-qu&quot;&gt;Analysis 草稿区&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;&amp;lt;analysis&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[模型先整理思路]
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;analysis&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;summary&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[最终摘要]
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;summary&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;压缩 prompt 要求模型先写 &lt;code&gt;&amp;lt;analysis&amp;gt;&lt;&#x2F;code&gt;（分析草稿），再写 &lt;code&gt;&amp;lt;summary&amp;gt;&lt;&#x2F;code&gt;（正式摘要）。&lt;code&gt;formatCompactSummary()&lt;&#x2F;code&gt; 在处理结果时会&lt;strong&gt;剥离 &lt;code&gt;&amp;lt;analysis&amp;gt;&lt;&#x2F;code&gt; 部分&lt;&#x2F;strong&gt;——它只是让模型&amp;quot;想清楚再写&amp;quot;的脚手架。&lt;&#x2F;p&gt;
+&lt;p&gt;Chain-of-thought 的又一次应用：先分析再总结，摘要质量更高。但草稿不需要进入上下文——那会浪费 token。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-chong-fang-xiang&quot;&gt;三种方向&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方向&lt;&#x2F;th&gt;&lt;th&gt;压缩范围&lt;&#x2F;th&gt;&lt;th&gt;保留范围&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Full&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;整个对话&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;上下文快溢出了&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Partial (from)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;最近消息&lt;&#x2F;td&gt;&lt;td&gt;早期上下文&lt;&#x2F;td&gt;&lt;td&gt;最近的工作已不需要细节&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Partial (up_to)&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;早期消息&lt;&#x2F;td&gt;&lt;td&gt;最近上下文&lt;&#x2F;td&gt;&lt;td&gt;保留最近的工作细节&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Partial Compact (up_to) 的摘要有一个特殊的第 9 段：&amp;quot;Context for Continuing Work&amp;quot;——因为摘要后面还有保留的最近消息，读摘要的人需要知道&amp;quot;看完摘要后继续读后面的消息就能跟上&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;no-tools-preamble-bu-xu-diao-gong-ju&quot;&gt;NO_TOOLS_PREAMBLE：不许调工具&lt;&#x2F;h2&gt;
+&lt;p&gt;压缩调用有一段激进的前缀：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NO_TOOLS_PREAMBLE &lt;&#x2F;span&gt;&lt;span&gt;= `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- Do NOT use Read, Bash, Grep, Glob, Edit, Write, or ANY other tool.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- Tool calls will be REJECTED and will waste your only turn — you will fail.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;- Your entire response must be plain text.&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;为什么这么强硬？因为压缩 fork 继承了父进程的工具集（为了 cache 共享），但它&lt;strong&gt;不应该&lt;&#x2F;strong&gt;使用工具。如果模型在压缩过程中调了 &lt;code&gt;cat&lt;&#x2F;code&gt; 去读文件，这个副作用会很难处理。&lt;&#x2F;p&gt;
+&lt;p&gt;注释里的数据：Sonnet 4.6 上 adaptive thinking 模型有 2.79% 的概率尝试调工具（vs 4.5 的 0.01%）。把 NO_TOOLS 放在最前面而不是最后面，把出错率压了下去。&lt;&#x2F;p&gt;
+&lt;p&gt;尾部还有一段提醒：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NO_TOOLS_TRAILER &lt;&#x2F;span&gt;&lt;span&gt;=
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;REMINDER: Do NOT call any tools. Tool calls will be rejected.&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;头尾夹击。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ya-suo-hou-de-hui-fu-xiao-xi&quot;&gt;压缩后的恢复消息&lt;&#x2F;h2&gt;
+&lt;p&gt;压缩完成后，模型看到的是一段精心措辞的恢复消息：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;This session is being continued from a previous conversation 
+&lt;&#x2F;span&gt;&lt;span&gt;that ran out of context. The summary below covers the earlier 
+&lt;&#x2F;span&gt;&lt;span&gt;portion of the conversation.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果 &lt;code&gt;suppressFollowUpQuestions&lt;&#x2F;code&gt; 为 true（自动压缩场景）：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Continue the conversation from where it left off without asking 
+&lt;&#x2F;span&gt;&lt;span&gt;the user any further questions. Resume directly — do not acknowledge 
+&lt;&#x2F;span&gt;&lt;span&gt;the summary, do not recap what was happening, do not preface with 
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;I&amp;#39;ll continue&amp;quot; or similar. Pick up the last task as if the break 
+&lt;&#x2F;span&gt;&lt;span&gt;never happened.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;&amp;quot;像中断从未发生过一样继续&amp;quot;&lt;&#x2F;strong&gt;——这是用户体验的关键。好的压缩对用户应该是无感的。&lt;&#x2F;p&gt;
+&lt;p&gt;如果是 KAIROS 自主模式：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;You are running in autonomous&#x2F;proactive mode. This is NOT a first 
+&lt;&#x2F;span&gt;&lt;span&gt;wake-up — you were already working autonomously before compaction. 
+&lt;&#x2F;span&gt;&lt;span&gt;Continue your work loop.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;transcript-hui-su&quot;&gt;Transcript 回溯&lt;&#x2F;h2&gt;
+&lt;p&gt;压缩后，如果模型需要压缩前的具体细节（精确的代码片段、错误信息），可以读取完整的 transcript 文件：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;If you need specific details from before compaction, read the 
+&lt;&#x2F;span&gt;&lt;span&gt;full transcript at: [path]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这是一个优雅的设计：摘要提供概览，transcript 提供细节。模型大多数时候只需要概览，偶尔需要回溯细节时再读 transcript。&lt;strong&gt;两级存储：热数据在上下文，冷数据在磁盘。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 索引和内容分离&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;MEMORY.md 是索引，记忆文件是内容。索引永远在上下文中（200 行上限），内容按需读取。这跟数据库的索引&#x2F;数据分离是同一个思想。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 分类胜过自由文本&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;四类分类法（user&#x2F;feedback&#x2F;project&#x2F;reference）不是限制——是帮助。没有分类的记忆会变成一锅粥；有分类的记忆可以按类型决定优先级、过期策略、共享范围。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 压缩是有结构的遗忘&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;9 段模板不是在&amp;quot;缩短对话&amp;quot;——是在决定&amp;quot;忘掉什么、记住什么&amp;quot;。所有用户消息必须保留（第 6 段）是一个价值判断：用户的话比 AI 的话重要。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 两级存储&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;热数据（摘要）在上下文窗口，冷数据（transcript）在磁盘。需要时再回溯。这跟 CPU 缓存的 L1&#x2F;L2 是同一个设计模式。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;记忆和压缩讲完了。下一篇进入 Claude Code 的可扩展能力——&lt;strong&gt;Skill 系统和 MCP 集成&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Skill 是项目级别的可复用能力定义（commit、review、verify），MCP 是外部工具的标准协议。两者一起构成了 Claude Code 的&amp;quot;插件系统&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;第 2 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-tool-system&quot;&gt;第 3 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-security-yolo-classifier&quot;&gt;第 4 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-04&lt;&#x2F;td&gt;&lt;td&gt;用 LLM 审查 LLM：yoloClassifier 两阶段安全架构&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-agent-orchestration&quot;&gt;第 5 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-05&lt;&#x2F;td&gt;&lt;td&gt;三种并行模式：Fork、Coordinator、Swarm&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-query-engine&quot;&gt;第 6 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-06&lt;&#x2F;td&gt;&lt;td&gt;QueryEngine：驱动一切的主循环&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 7 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-07&lt;&#x2F;td&gt;&lt;td&gt;记忆与遗忘：Memory 系统和 Compact 压缩&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 8 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-08&lt;&#x2F;td&gt;&lt;td&gt;Skill 系统与 MCP 集成&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从博客到灵魂竞技场：一条意料之外的进化链</title>
         <published>2026-03-26T00:00:00+00:00</published>
