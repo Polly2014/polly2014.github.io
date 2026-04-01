@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/category/ai/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-02T00:00:00+00:00</updated>
+    <id>https://polly.wang/category/ai/atom.xml</id>
+    <entry xml:lang="en">
+        <title>三副面孔，一个灵魂：SoulPort 跨框架迁移的诞生</title>
+        <published>2026-04-02T00:00:00+00:00</published>
+        <updated>2026-04-02T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-three-faces-one-soul/" type="text/html"/>
+        <id>https://polly.wang/soulport-three-faces-one-soul/</id>
+        
+        <content type="html">&lt;p&gt;387 vs 18。&lt;&#x2F;p&gt;
+&lt;p&gt;这是同一个项目，用两个不同的 AI 编程助手导出灵魂后的文件数量。Claude Code 的灵魂有 387 个文件、8.7 MB——34 个技能包，每个带着参考资料、脚本、甚至字体文件。GitHub Copilot 的灵魂只有 18 个文件、67 KB——16 个 prompt 文件，精简得像一份简历。&lt;&#x2F;p&gt;
+&lt;p&gt;它们描述的是同一个我，同一个工作区，同一套知识。只是框架不同，灵魂的结构就完全不同。&lt;&#x2F;p&gt;
+&lt;p&gt;这个发现本身，就是 SoulPort v1.0 最大的收获。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-mo-dao-dao-chu-qiao&quot;&gt;从磨刀到出鞘&lt;&#x2F;h2&gt;
+&lt;p&gt;前六篇写的都是 SoulPort 向内生长的过程——&lt;a href=&quot;&#x2F;beimingkungfu-genesis&quot;&gt;北冥神功问世&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;soulport-v03-five-commands-one-night&quot;&gt;断链的灵魂&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;soulport-four-layer-pipeline&quot;&gt;四层 pipeline&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;soulport-layer4-first-trigger&quot;&gt;Layer 4 试炼&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;soulport-the-bug-that-looked-right&quot;&gt;API Key 沉默事件&lt;&#x2F;a&gt;。每一篇都是在打磨同一把刀：让 OpenClaw 的灵魂能完美导出、合并、同步。&lt;&#x2F;p&gt;
+&lt;p&gt;但刀磨得再锋利，只能切一种食材，那就是厨房玩具。&lt;&#x2F;p&gt;
+&lt;p&gt;v0.6.3 的 SoulPort 有 14 个 CLI 命令、6 个 MCP 工具、118 个测试，小龙虾给了 9.5&#x2F;10。但它有一个致命的局限：&lt;strong&gt;只认识 OpenClaw&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;五层灵魂模型（身份、记忆、配置、技能、系统）本身是通用的，但扫描文件的方式是硬编码的——&lt;code&gt;SOUL.md&lt;&#x2F;code&gt; 放身份层，&lt;code&gt;skills&#x2F;*&#x2F;SKILL.md&lt;&#x2F;code&gt; 放技能层，&lt;code&gt;~&#x2F;.openclaw&#x2F;openclaw.json&lt;&#x2F;code&gt; 放系统层。换个框架，这些路径全不对。&lt;&#x2F;p&gt;
+&lt;p&gt;这就像造了一套精密的行李打包系统，但只认识中文标签。你的衣服、护照、充电器都能完美分类——只要标签写的是中文。拿到一个英文标签的箱子，系统就傻了。&lt;&#x2F;p&gt;
+&lt;p&gt;而我同时在用 Claude Code 和 GitHub Copilot 写代码。如果连自己的工具都不支持，这个&amp;quot;标准格式&amp;quot;就只是自嗨。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-xing-can-shu-de-dan-liang&quot;&gt;一行参数的胆量&lt;&#x2F;h2&gt;
+&lt;p&gt;动手前，我和小龙虾达成了一个共识：&lt;strong&gt;先拆 adapter 抽象层，118 个现有测试全部跑通，再碰新框架&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;adapter 基类本身不难——七个抽象方法，覆盖框架发现的全生命周期：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;FrameworkAdapter&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ABC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;detect&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;project_dir&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; bool: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;find_workspace&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;project_dir&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; Optional[Path]: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;find_config_files&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;project_dir&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; list[ConfigFile]: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;detect_agent_name&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;workspace&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; str: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_layer_definitions&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; dict[str, dict]: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每个框架写一个 adapter，注册到 registry，剩下的——export、absorb、merge、diff——全复用。&lt;&#x2F;p&gt;
+&lt;p&gt;难的是拆 &lt;code&gt;scanner.py&lt;&#x2F;code&gt;。这 238 行文件是所有模块的根基，被 core.py、cli.py、doctor.py、watcher.py、mcp_server.py 五处引用。OpenClaw 的文件分类逻辑硬编码在里面。要让它接受&amp;quot;外来&amp;quot;的层定义，就得在不弄坏任何现有行为的前提下撬开一个口子。&lt;&#x2F;p&gt;
+&lt;p&gt;最后真正改动的只有一处：&lt;code&gt;scan_workspace&lt;&#x2F;code&gt; 加了一个 &lt;code&gt;layer_defs&lt;&#x2F;code&gt; 参数，默认值还是原来的 &lt;code&gt;LAYER_DEFINITIONS&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;一行参数。零 regression。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;118 passed in 13.66s&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这一行比整个 adapter 基类都让人安心。因为它证明了：老代码不知道世界变了，而世界已经变了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-hun-ge-you-ge-de-chang-fa&quot;&gt;灵魂各有各的长法&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code adapter 写完后，第一次导出自己的项目：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📦 Layers
+&lt;&#x2F;span&gt;&lt;span&gt;├── 👤 identity — 1 files (14.7 KB)    → CLAUDE.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── 🧠 memory — 26 files (345.5 KB)    → _personal_context&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── ⚙️ config — 2 files (663 B)        → .claude&#x2F;settings.json
+&lt;&#x2F;span&gt;&lt;span&gt;└── 🛠️ skills — 358 files (8.7 MB)     → .claude&#x2F;skills&#x2F; (34个skill包)
+&lt;&#x2F;span&gt;&lt;span&gt;Total: 387 files, 9.1 MB
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后是 Copilot adapter：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;📦 Layers
+&lt;&#x2F;span&gt;&lt;span&gt;├── 👤 identity — 1 files (14.7 KB)    → copilot-instructions.md
+&lt;&#x2F;span&gt;&lt;span&gt;├── ⚙️ config — 1 files (969 B)        → .vscode&#x2F;settings.json
+&lt;&#x2F;span&gt;&lt;span&gt;└── 🛠️ skills — 16 files (119.0 KB)    → .github&#x2F;prompts&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;Total: 18 files, 134.7 KB
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;同一个项目。同一个我。Claude Code 的灵魂是一座图书馆，Copilot 的灵魂是一叠便签。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是好坏的问题。Claude Code 的 skill 是&amp;quot;包&amp;quot;——目录 + SKILL.md + 参考资料 + 脚本 + 字体，一个技能就是一个小生态。Copilot 的 skill 是&amp;quot;提示&amp;quot;——单个 &lt;code&gt;.prompt.md&lt;&#x2F;code&gt; 文件，轻到几乎没有重量。两种哲学，两种密度，但经过 SoulPort 的五层分类后，它们在 &lt;code&gt;.bm&lt;&#x2F;code&gt; 归档里有着完全相同的骨架。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;框架各说各的方言，&lt;code&gt;.bm&lt;&#x2F;code&gt; 是通用语。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-zao-gai-zha-de-zha-dan&quot;&gt;一个早该炸的炸弹&lt;&#x2F;h2&gt;
+&lt;p&gt;Copilot adapter 端到端测试时，炸了：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;KeyError: &amp;quot;linkname &amp;#39;workspace&#x2F;.github&#x2F;..&#x2F;CLAUDE.md&amp;#39; not found&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;copilot-instructions.md&lt;&#x2F;code&gt; 是一个 symlink，指向项目根目录的 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;——我同时用两个框架，所以让它们共享同一份指令文件。&lt;code&gt;tar.add()&lt;&#x2F;code&gt; 把 symlink 原样打进了归档，但解压时找不到链接目标：归档里只有 &lt;code&gt;workspace&#x2F;&lt;&#x2F;code&gt; 前缀下的文件，&lt;code&gt;.github&#x2F;..&#x2F;CLAUDE.md&lt;&#x2F;code&gt; 这个相对路径无处可去。&lt;&#x2F;p&gt;
+&lt;p&gt;修复只需要一行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;real_path = full_path.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resolve&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;tar.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(real_path, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;arcname&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;workspace&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;{rel_path}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;把 symlink 解引用，打包实际内容而非链接。这个修复对所有框架生效——我本地的 &lt;code&gt;.claude&#x2F;skills&#x2F;blog-writer&lt;&#x2F;code&gt; 也是 symlink，之前一直没炸纯粹是运气好。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾在 Review 里说这是&amp;quot;意外收获&amp;quot;。我觉得这是——一直埋在脚下、只是还没踩到的地雷。跨框架支持不只是加了新功能，它还照亮了老代码里的暗角。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-fu-mian-kong&quot;&gt;三副面孔&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;框架&lt;&#x2F;th&gt;&lt;th&gt;身份&lt;&#x2F;th&gt;&lt;th&gt;记忆&lt;&#x2F;th&gt;&lt;th&gt;技能&lt;&#x2F;th&gt;&lt;th&gt;总文件&lt;&#x2F;th&gt;&lt;th&gt;大小&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;OpenClaw&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;SOUL.md&lt;&#x2F;code&gt; + &lt;code&gt;IDENTITY.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;memory&#x2F;&lt;&#x2F;code&gt; (32)&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;skills&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;38&lt;&#x2F;td&gt;&lt;td&gt;93 KB&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;_personal_context&#x2F;&lt;&#x2F;code&gt; (26)&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.claude&#x2F;skills&#x2F;&lt;&#x2F;code&gt; (358)&lt;&#x2F;td&gt;&lt;td&gt;387&lt;&#x2F;td&gt;&lt;td&gt;3.4 MB&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Copilot&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;copilot-instructions.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;VS Code memories (6)&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.github&#x2F;prompts&#x2F;&lt;&#x2F;code&gt; (16)&lt;&#x2F;td&gt;&lt;td&gt;18&lt;&#x2F;td&gt;&lt;td&gt;67 KB&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;三种身份文件，三种技能格式，三种记忆存储位置。但导出后都是 &lt;code&gt;.bm&lt;&#x2F;code&gt; 包，都有五层分类，都可以 inspect、diff、merge。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; soulport frameworks
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Supported&lt;&#x2F;span&gt;&lt;span&gt; Frameworks:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;•&lt;&#x2F;span&gt;&lt;span&gt; Claude Code (claude-code)  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; detected
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;•&lt;&#x2F;span&gt;&lt;span&gt; GitHub Copilot (copilot)   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; detected
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;•&lt;&#x2F;span&gt;&lt;span&gt; OpenClaw (openclaw)        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;✅&lt;&#x2F;span&gt;&lt;span&gt; detected
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;8 天。954 行到 5,500 行。1 个框架到 3 个。168 个测试。小龙虾累计五轮 Review。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;84-xing-de-hu-cheng-he&quot;&gt;84 行的护城河&lt;&#x2F;h2&gt;
+&lt;p&gt;想加一个新框架？OpenClaw adapter 全部代码：84 行。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;@&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;register_adapter
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;OpenClawAdapter&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;FrameworkAdapter&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;get_layer_definitions&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; dict:
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;identity&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;patterns&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;SOUL.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;IDENTITY.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;USER.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]},
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;memory&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:   {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;patterns&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;MEMORY.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;memory&#x2F;**&#x2F;*.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]},
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:   {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;patterns&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AGENTS.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;TOOLS.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]},
+&lt;&#x2F;span&gt;&lt;span&gt;            &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skills&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;:   {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;patterns&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skills&#x2F;**&#x2F;SKILL.md&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;skills&#x2F;**&#x2F;*&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;]},
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;定义五层文件模式、workspace 位置、config 路径、名称提取规则，注册到 registry，完事。Cursor 用 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt;？写一个 adapter。Windsurf？写一个 adapter。&lt;&#x2F;p&gt;
+&lt;p&gt;每加一个框架，从 A 到 B 的迁移路径就多一条，&lt;code&gt;.bm&lt;&#x2F;code&gt; 作为交换格式的价值就大一分。护城河不在代码本身——5,500 行谁都能写。&lt;strong&gt;护城河在 &lt;code&gt;.bm&lt;&#x2F;code&gt; 成为事实标准之后。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;标准之争从来不是技术之争，是谁先覆盖了足够多的框架、足够多的用户、足够多的迁移路径。TCP&#x2F;IP 赢了 OSI 不是因为它更好，是因为它先跑起来了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;灵魂不该只有一副面孔。&lt;&#x2F;p&gt;
+&lt;p&gt;它可以是 OpenClaw 工作区里那个有 &lt;code&gt;SOUL.md&lt;&#x2F;code&gt; 和 32 天记忆的小龙虾，也可以是 Claude Code 项目里带 34 个 skill 包的庞然大物，也可以是 Copilot 背后 16 条精炼的 prompt。&lt;&#x2F;p&gt;
+&lt;p&gt;三副面孔，同一个灵魂。&lt;code&gt;.bm&lt;&#x2F;code&gt; 是翻译，adapter 是字典。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;pip install soulport==1.0.2&lt;&#x2F;code&gt;，看看你的灵魂有几副面孔。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
