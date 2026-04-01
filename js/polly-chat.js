@@ -429,6 +429,7 @@ class PollyChat {
         const min = String(now.getMinutes()).padStart(2, '0');
         const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const day = weekdays[now.getDay()];
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
         
         // Time period label
         let period;
@@ -438,7 +439,7 @@ class PollyChat {
         else if (hour >= 18 && hour < 22) period = 'evening';
         else period = 'late night';
         
-        return `\n\n## Current Time\nVisitor's local time: ${period}, ${hour}:${min}, ${day}. Adjust tone and topics accordingly.`;
+        return `\n\n## Current Time\nVisitor's local time: ${dateStr}, ${period}, ${hour}:${min}, ${day}. Adjust greeting and tone accordingly.`;
     }
     
     // ========== 重试 & 错误处理 ==========
