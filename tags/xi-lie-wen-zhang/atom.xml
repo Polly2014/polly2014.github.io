@@ -5,8 +5,373 @@
     <link href="https://polly.wang/tags/xi-lie-wen-zhang/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-31T00:00:00+00:00</updated>
+    <updated>2026-04-01T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/xi-lie-wen-zhang/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 380K 行代码的骨架</title>
+        <published>2026-04-01T00:00:00+00:00</published>
+        <updated>2026-04-01T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-architecture-overview/" type="text/html"/>
+        <id>https://polly.wang/claude-code-architecture-overview/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;打开一个 380K 行的代码库，第一个问题不是&amp;quot;它有什么&amp;quot;，而是&amp;quot;它是怎么组织的&amp;quot;。一个好的架构，你看目录就能猜到数据流向；一个差的架构，你读完所有文件也不知道谁调谁。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 属于前者。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;cong-ru-kou-kai-shi-main-tsx-de-qian-san-xing&quot;&gt;从入口开始：main.tsx 的前三行&lt;&#x2F;h2&gt;
+&lt;p&gt;一个命令行工具，入口是 &lt;code&gt;.tsx&lt;&#x2F;code&gt; 文件。但更反直觉的是——在执行任何业务逻辑之前，前三行做了三件副作用：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;profileCheckpoint&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;main_tsx_entry&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;);   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 打点：启动计时
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startMdmRawRead&lt;&#x2F;span&gt;&lt;span&gt;();                     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 开始读 MDM 设备管理配置
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startKeychainPrefetch&lt;&#x2F;span&gt;&lt;span&gt;();               &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 开始读 macOS 钥匙串
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这三行代码，说明了三件事关 Claude Code 性质的事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;它在意启动速度。&lt;&#x2F;strong&gt; &lt;code&gt;profileCheckpoint&lt;&#x2F;code&gt; 不是 debug 工具——它是一个生产级的 startup profiler，追踪从进程启动到 UI 渲染每个阶段的耗时。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;它在企业环境中运行。&lt;&#x2F;strong&gt; MDM（Mobile Device Management）配置读取——意味着它要兼容企业 IT 管理策略。这不是一个 hacker 的玩具。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;它深度集成 macOS。&lt;&#x2F;strong&gt; Keychain prefetch 预读 OAuth token 和 API key，避免后续同步阻塞。注释里写得明白：&lt;code&gt;isRemoteManagedSettingsEligible()&lt;&#x2F;code&gt; 本来会同步读两次钥匙串，共 ~65ms。并行化后，启动快了一截。&lt;&#x2F;p&gt;
+&lt;p&gt;接下来的 100 行 import，拉进来的模块涵盖了整个应用：Commander.js（CLI 解析）、React（UI 渲染）、GrowthBook（Feature Flags）、MCP SDK（工具协议）、OAuth（认证）、各种 Tool 和 Command。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;main.tsx 是一个调度中心，不是实现中心。&lt;&#x2F;strong&gt; 它的 4,683 行主要在做：解析命令行参数 → 初始化配置 → 认证 → 构建工具集 → 启动 REPL 或执行单次命令。真正的业务逻辑，分散在六个层里。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-ceng-jia-gou&quot;&gt;六层架构&lt;&#x2F;h2&gt;
+&lt;p&gt;读完整个 &lt;code&gt;src&#x2F;&lt;&#x2F;code&gt;，我把 Claude Code 的架构抽象为六层：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│           Layer 6: 表面层 (Surface)          │
+&lt;&#x2F;span&gt;&lt;span&gt;│    Terminal UI (Ink) · IDE Bridge · Voice    │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│           Layer 5: 命令层 (Command)          │
+&lt;&#x2F;span&gt;&lt;span&gt;│         50 个 slash commands + CLI           │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│         Layer 4: 编排层 (Orchestration)      │
+&lt;&#x2F;span&gt;&lt;span&gt;│    Agent · Fork · Coordinator · Swarm       │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│          Layer 3: 工具层 (Tool)              │
+&lt;&#x2F;span&gt;&lt;span&gt;│        40+ 个 Tools · Permission · MCP      │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│         Layer 2: 引擎层 (Engine)             │
+&lt;&#x2F;span&gt;&lt;span&gt;│   QueryEngine · Compact · Memory · Context  │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│          Layer 1: 基础层 (Foundation)        │
+&lt;&#x2F;span&gt;&lt;span&gt;│   API Client · Auth · Config · Sandbox      │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;数据从上往下流：用户在 Surface 层输入 → Command 层解析意图 → Orchestration 层决定是否拆分 → Tool 层执行具体操作 → Engine 层调用 LLM → Foundation 层处理网络&#x2F;认证&#x2F;沙箱。&lt;&#x2F;p&gt;
+&lt;p&gt;结果从下往上回：API 返回流式 token → Engine 解析 tool_use → Tool 层执行并返回 tool_result → Orchestration 层汇总 → Surface 层渲染给用户。&lt;&#x2F;p&gt;
+&lt;p&gt;每一层有自己明确的职责边界。让我逐层展开。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-1-ji-chu-ceng-di-ji-zhong-de-di-ji&quot;&gt;Layer 1: 基础层——地基中的地基&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;api-client-services-api-claude-ts-3-419-xing&quot;&gt;API Client (&lt;code&gt;services&#x2F;api&#x2F;claude.ts&lt;&#x2F;code&gt;, 3,419 行)&lt;&#x2F;h3&gt;
+&lt;p&gt;这是跟 Anthropic API 通信的核心。不是一个简单的 &lt;code&gt;fetch&lt;&#x2F;code&gt; 封装——它处理：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;流式响应解析&lt;&#x2F;strong&gt;：SSE (Server-Sent Events) 逐 token 解析&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;重试策略&lt;&#x2F;strong&gt;：429&#x2F;5xx 自动重试，指数退避&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Prompt Cache 管理&lt;&#x2F;strong&gt;：&lt;code&gt;getCacheControl()&lt;&#x2F;code&gt; 根据查询来源（main loop &#x2F; auto mode &#x2F; compact）决定缓存策略&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Beta Header 管理&lt;&#x2F;strong&gt;：不同功能需要不同的 beta flag&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Max Output Tokens&lt;&#x2F;strong&gt;：根据模型动态决定&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;一个关键设计：&lt;strong&gt;所有对 Claude API 的调用都经过这一层&lt;&#x2F;strong&gt;，没有人直接 &lt;code&gt;new Anthropic()&lt;&#x2F;code&gt; 然后 &lt;code&gt;messages.create()&lt;&#x2F;code&gt;。这保证了认证、缓存、重试的一致性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;auth-utils-auth-ts&quot;&gt;Auth (&lt;code&gt;utils&#x2F;auth.ts&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;支持四种认证方式：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;API Key（个人用户）&lt;&#x2F;li&gt;
+&lt;li&gt;OAuth（Claude.ai 订阅用户）&lt;&#x2F;li&gt;
+&lt;li&gt;AWS Bedrock&lt;&#x2F;li&gt;
+&lt;li&gt;GCP Vertex AI&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;订阅等级（&lt;code&gt;getSubscriptionType()&lt;&#x2F;code&gt;）影响功能可用性——比如 Pro 用户可以并行启动更多 Agent。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;config-utils-config-ts&quot;&gt;Config (&lt;code&gt;utils&#x2F;config.ts&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;配置分三层：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Global Config&lt;&#x2F;strong&gt;：&lt;code&gt;~&#x2F;.claude&#x2F;config.json&lt;&#x2F;code&gt;，跨项目&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Project Config&lt;&#x2F;strong&gt;：&lt;code&gt;.claude&#x2F;settings.json&lt;&#x2F;code&gt;，per-repo&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;MDM&#x2F;Remote Settings&lt;&#x2F;strong&gt;：企业管理下推&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;三层配置的合并策略不是简单覆盖——某些字段（如 &lt;code&gt;alwaysDeny&lt;&#x2F;code&gt; 权限规则）会向下累积，保证企业策略不会被项目配置绕过。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;sandbox-utils-sandbox&quot;&gt;Sandbox (&lt;code&gt;utils&#x2F;sandbox&#x2F;&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;沙箱系统控制命令执行的边界：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;文件系统&lt;&#x2F;strong&gt;：读白名单 + 读黑名单中的白名单、写白名单 + 写白名单中的黑名单&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;网络&lt;&#x2F;strong&gt;：允许的 host 列表 &#x2F; 拒绝的 host 列表&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Unix Sockets&lt;&#x2F;strong&gt;：单独控制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;注意它不是一个简单的 allow&#x2F;deny——而是&lt;strong&gt;四层嵌套规则&lt;&#x2F;strong&gt;。比如，你可以禁止读 &lt;code&gt;&#x2F;etc&lt;&#x2F;code&gt;，但允许读 &lt;code&gt;&#x2F;etc&#x2F;hosts&lt;&#x2F;code&gt;。这种精细度是企业部署必需的。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-2-yin-qing-ceng-da-nao&quot;&gt;Layer 2: 引擎层——大脑&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;queryengine-ts-1-295-xing-ru-kou-query-ts-1-729-xing&quot;&gt;QueryEngine.ts (1,295 行入口 + query.ts 1,729 行)&lt;&#x2F;h3&gt;
+&lt;p&gt;这是 Claude Code 的心脏。一个完整的 LLM 交互循环：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;用户输入 → 构建消息 → 调用 API → 解析响应
+&lt;&#x2F;span&gt;&lt;span&gt;    ↑                                    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;    └── tool_result ←── 执行工具 ←── tool_use
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;QueryEngine 管理的是这个循环的&lt;strong&gt;全部复杂性&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;消息标准化&lt;&#x2F;strong&gt;：&lt;code&gt;normalizeMessagesForAPI()&lt;&#x2F;code&gt; 把内部消息格式转成 Anthropic API 格式（5,512 行的 &lt;code&gt;messages.ts&lt;&#x2F;code&gt;，整个代码库第二大文件）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;流式处理&lt;&#x2F;strong&gt;：逐 token 接收、累积、渲染、中断&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Tool Call 调度&lt;&#x2F;strong&gt;：解析 &lt;code&gt;tool_use&lt;&#x2F;code&gt; block → 权限检查 → 执行 → 构造 &lt;code&gt;tool_result&lt;&#x2F;code&gt; → 送回下一轮&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Auto Compact&lt;&#x2F;strong&gt;：上下文接近窗口极限时自动压缩（后续专门讲）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Token 追踪&lt;&#x2F;strong&gt;：实时估算 token 消耗，驱动 UI 上的进度条和压缩决策&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;一个关键架构选择：&lt;strong&gt;QueryEngine 不知道任何具体 Tool 的实现。&lt;&#x2F;strong&gt; 它只关心 Tool 接口——给我 name + input，还我 result。这是整个 Tool 系统可扩展的基础。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;context-context-ts-context&quot;&gt;Context (&lt;code&gt;context.ts&lt;&#x2F;code&gt; + &lt;code&gt;context&#x2F;&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;每一轮对话开始前，Context 层负责组装两大块信息：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;System Context&lt;&#x2F;strong&gt;（&lt;code&gt;getSystemContext&lt;&#x2F;code&gt;）：系统提示词 + 环境信息 + 能力声明。这些信息放在 system message 里，对模型全局生效。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;User Context&lt;&#x2F;strong&gt;（&lt;code&gt;getUserContext&lt;&#x2F;code&gt;）：当前工作目录、CLAUDE.md 内容、Memory 内容、git 状态、项目结构。这些作为 user message 的 attachment 注入。&lt;&#x2F;p&gt;
+&lt;p&gt;分离 system&#x2F;user context 是为了&lt;strong&gt;缓存优化&lt;&#x2F;strong&gt;——system context 跨会话基本不变（可以缓存），user context 每次不同（需要重新计算）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;compact-services-compact&quot;&gt;Compact (&lt;code&gt;services&#x2F;compact&#x2F;&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;上下文压缩是 Claude Code 能进行长时间工作的关键。三种策略：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Full Compact&lt;&#x2F;strong&gt;：压缩整个对话为一段摘要&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Partial Compact (from)&lt;&#x2F;strong&gt;：只压缩最近的消息，保留早期上下文&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Partial Compact (up_to)&lt;&#x2F;strong&gt;：只压缩早期消息，保留最近上下文&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;压缩 prompt 是一个 9 段结构化模板（主要请求、技术概念、文件&#x2F;代码、错误修复、问题解决、所有用户消息、待办、当前工作、下一步），加上 &lt;code&gt;&amp;lt;analysis&amp;gt;&lt;&#x2F;code&gt; 草稿区让模型先整理思路再输出摘要。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;自动压缩的触发条件&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;effective_window = context_window - 20K (预留输出)
+&lt;&#x2F;span&gt;&lt;span&gt;threshold = effective_window - 13K (缓冲区)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;超过阈值就自动触发。连续失败 3 次则放弃（这个数字来自生产数据：BQ 里发现 1,279 个 session 有 50+ 次连续失败，浪费了约 250K API calls&#x2F;day）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;memory-memdir&quot;&gt;Memory (&lt;code&gt;memdir&#x2F;&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;记忆系统基于文件，有严格的四类分类法：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;类型&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;th&gt;示例&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;user&lt;&#x2F;td&gt;&lt;td&gt;用户偏好&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;用 bun 不用 npm&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;feedback&lt;&#x2F;td&gt;&lt;td&gt;行为反馈&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;不要自动 commit&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;project&lt;&#x2F;td&gt;&lt;td&gt;项目上下文&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;这个 repo 用 monorepo&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;reference&lt;&#x2F;td&gt;&lt;td&gt;参考资料&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;API 文档在 &#x2F;docs&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;MEMORY.md 是索引（每行 &amp;lt;150 字符），指向具体的记忆文件。索引上限 200 行 &#x2F; 25KB——超过就截断，并提示用户精简。&lt;&#x2F;p&gt;
+&lt;p&gt;长期 session（KAIROS 模式）有不同的记忆策略：追加日志（&lt;code&gt;logs&#x2F;YYYY&#x2F;MM&#x2F;YYYY-MM-DD.md&lt;&#x2F;code&gt;），每晚用 &lt;code&gt;&#x2F;dream&lt;&#x2F;code&gt; skill 蒸馏到 MEMORY.md。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-3-gong-ju-ceng-shou-he-jiao&quot;&gt;Layer 3: 工具层——手和脚&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;tool-chou-xiang-tool-ts-792-xing&quot;&gt;Tool 抽象 (&lt;code&gt;Tool.ts&lt;&#x2F;code&gt;, 792 行)&lt;&#x2F;h3&gt;
+&lt;p&gt;所有工具共享一个接口。核心定义：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export type &lt;&#x2F;span&gt;&lt;span&gt;Tool = {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: string
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;description&lt;&#x2F;span&gt;&lt;span&gt;: string | (() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;string)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inputSchema&lt;&#x2F;span&gt;&lt;span&gt;: ToolInputJSONSchema
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 执行
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;call&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: unknown, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;: ToolUseContext): Promise&amp;lt;ToolResult&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 权限
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isReadOnly&lt;&#x2F;span&gt;&lt;span&gt;: () &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;boolean
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;needsPermissions&lt;&#x2F;span&gt;&lt;span&gt;: (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: unknown) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;boolean
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Auto Mode 分类器输入
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;toAutoClassifierInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: unknown): unknown
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 验证
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;validateInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: unknown): ValidationResult
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键方法：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;call&lt;&#x2F;code&gt;：执行工具，返回结果&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;isReadOnly&lt;&#x2F;code&gt;：只读工具跳过权限检查&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;needsPermissions&lt;&#x2F;code&gt;：细粒度判断特定输入是否需要确认&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt;：&lt;strong&gt;给安全分类器看的精简输入&lt;&#x2F;strong&gt;——不是把整个 input 丢给分类器，而是每个 Tool 自己决定暴露什么&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这个 &lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt; 特别值得注意。它解决了一个现实问题：分类器不需要看到完整的文件内容来判断一个 Write 操作是否安全——它只需要看路径和摘要。每个 Tool 自己做投影，比一个通用的裁剪逻辑更精确。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;toolusecontext&quot;&gt;ToolUseContext&lt;&#x2F;h3&gt;
+&lt;p&gt;这是贯穿整个系统的&amp;quot;环境对象&amp;quot;——每次 Tool 调用都携带：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;messages&lt;&#x2F;code&gt;: 完整对话历史&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;abortController&lt;&#x2F;code&gt;: 中断信号&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;options.tools&lt;&#x2F;code&gt;: 当前可用工具集&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;options.mcpClients&lt;&#x2F;code&gt;: MCP 服务器连接&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;options.agentDefinitions&lt;&#x2F;code&gt;: 可用 Agent 定义&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;readFileState&lt;&#x2F;code&gt;: 文件状态缓存&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;getAppState&#x2F;setAppState&lt;&#x2F;code&gt;: React 状态访问&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;整个应用通过这一个 Context 把状态传递到每个角落——而不是全局变量或 singleton。这是&lt;strong&gt;可测试性&lt;&#x2F;strong&gt;的基础。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;40-ge-ju-ti-gong-ju&quot;&gt;40+ 个具体工具&lt;&#x2F;h3&gt;
+&lt;p&gt;粗略分类：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;类别&lt;&#x2F;th&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;行数亮点&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;文件操作&lt;&#x2F;td&gt;&lt;td&gt;FileRead, FileWrite, FileEdit, Glob, Grep, NotebookEdit&lt;&#x2F;td&gt;&lt;td&gt;FileEdit 有完整的 diff 语义&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;命令执行&lt;&#x2F;td&gt;&lt;td&gt;Bash, REPL&lt;&#x2F;td&gt;&lt;td&gt;bashParser.ts 4,436 行，bashSecurity.ts 2,592 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;搜索&lt;&#x2F;td&gt;&lt;td&gt;WebSearch, WebFetch, ToolSearch&lt;&#x2F;td&gt;&lt;td&gt;ToolSearch 搜索可用工具本身&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Agent&lt;&#x2F;td&gt;&lt;td&gt;Agent, SendMessage, TaskStop, TaskCreate&#x2F;Get&#x2F;List&#x2F;Update&lt;&#x2F;td&gt;&lt;td&gt;Agent 系统核心&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;特殊&lt;&#x2F;td&gt;&lt;td&gt;Skill, SyntheticOutput, Brief, Sleep, Monitor&lt;&#x2F;td&gt;&lt;td&gt;Skill 调用项目级别的 skill 定义&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MCP&lt;&#x2F;td&gt;&lt;td&gt;MCP (动态注册)&lt;&#x2F;td&gt;&lt;td&gt;每个 MCP server 的工具动态加入&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;Bash 工具是最复杂的单个工具。&lt;&#x2F;strong&gt; 它有自己的 AST 解析器（2,679 行），安全检查器（2,592 行），权限系统（2,621 行），加起来超过 7,800 行——比很多独立项目还大。因为 Bash 能做任何事，所以安全检查要覆盖任何事。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;permission-xi-tong&quot;&gt;Permission 系统&lt;&#x2F;h3&gt;
+&lt;p&gt;四种权限模式：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模式&lt;&#x2F;th&gt;&lt;th&gt;行为&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;default&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;危险操作需要确认&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;plan&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;只能读和分析，不能修改&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;bypassPermissions&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;全部自动允许（需要用户启用）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;auto&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;用 LLM 分类器自动判断&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;code&gt;auto&lt;&#x2F;code&gt; 模式是最有意思的——它调用另一个 LLM（yoloClassifier）来判断当前操作是否安全。后面会有一整篇专门拆解这个分类器。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-4-bian-pai-ceng-zhi-hui-zhong-xin&quot;&gt;Layer 4: 编排层——指挥中心&lt;&#x2F;h2&gt;
+&lt;p&gt;这是 Claude Code 从&amp;quot;单 Agent&amp;quot;进化到&amp;quot;多 Agent 系统&amp;quot;的关键层。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;san-chong-bian-pai-mo-shi&quot;&gt;三种编排模式&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;1. 标准 Agent（subagent_type 指定）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;主线程 ──→ Agent(&amp;quot;code-reviewer&amp;quot;, prompt) ──→ 独立子进程
+&lt;&#x2F;span&gt;&lt;span&gt;                                                    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;主线程 ←── &amp;lt;task-notification&amp;gt; ──────────────── 完成通知
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;子 Agent 从零开始，没有父对话的上下文。需要在 prompt 里给完整信息。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. Fork（不指定 subagent_type）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;主线程 ──→ Fork(directive) ──→ 子进程（继承全部对话上下文）
+&lt;&#x2F;span&gt;&lt;span&gt;                                    ↓
+&lt;&#x2F;span&gt;&lt;span&gt;主线程 ←── 完成通知 ──────────── 共享 prompt cache
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Fork 是 Claude Code 最优雅的设计之一。子进程继承父的系统提示和全部对话历史，prompt cache 直接命中——这意味着&lt;strong&gt;启动一个 Fork 几乎没有额外的 API 成本&lt;&#x2F;strong&gt;（cache 命中后只需为新的 directive 付费）。&lt;&#x2F;p&gt;
+&lt;p&gt;Fork child 收到的第一条消息是一段硬编码的&amp;quot;你是 fork 进程&amp;quot;指令，包含 10 条不可违反的规则。其中最重要的两条：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;Do NOT spawn sub-agents; execute directly.&amp;quot;
+&amp;quot;Your response MUST begin with &#x27;Scope:&#x27;.&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;防递归、保证输出格式。简单有效。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. Coordinator 模式&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Coordinator 模式下，Claude Code 变成一个纯调度器——&lt;strong&gt;自己不写代码&lt;&#x2F;strong&gt;，只分析问题、分配 Worker、综合结果、跟用户沟通。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一套完整的多 Agent 编排协议：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Worker 通过 &lt;code&gt;&amp;lt;task-notification&amp;gt;&lt;&#x2F;code&gt; XML 报告完成&#x2F;失败&lt;&#x2F;li&gt;
+&lt;li&gt;Coordinator 用 &lt;code&gt;SendMessage&lt;&#x2F;code&gt; 继续已有 Worker（复用上下文）&lt;&#x2F;li&gt;
+&lt;li&gt;Coordinator 用 &lt;code&gt;TaskStop&lt;&#x2F;code&gt; 停止走偏的 Worker&lt;&#x2F;li&gt;
+&lt;li&gt;并行是核心原则——&amp;quot;Parallelism is your superpower&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Coordinator 的系统提示词里有详细的&amp;quot;何时 spawn fresh vs. continue&amp;quot;决策表，以及&amp;quot;永远不要说 based on your findings&amp;quot;的硬性规则（必须自己综合理解后写具体指令）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;swarm-hou-duan&quot;&gt;Swarm 后端&lt;&#x2F;h3&gt;
+&lt;p&gt;多 Agent 的物理执行有三种后端：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;tmux&lt;&#x2F;strong&gt;：每个 teammate 一个 pane，可以看到实时输出&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;iTerm&lt;&#x2F;strong&gt;：macOS 专属，用 iTerm tab&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;in-process&lt;&#x2F;strong&gt;：进程内运行，最轻量&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-5-ming-ling-ceng-yong-hu-yi-tu-de-fan-yi-qi&quot;&gt;Layer 5: 命令层——用户意图的翻译器&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;commands.ts&lt;&#x2F;code&gt;（754 行）注册了约 50 个 slash 命令。不是所有命令都同等重要——按使用频率粗分：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;高频核心&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;compact&lt;&#x2F;code&gt; — 手动触发上下文压缩&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;clear&lt;&#x2F;code&gt; — 清空对话&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;model&lt;&#x2F;code&gt; — 切换模型&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;config&lt;&#x2F;code&gt; — 修改配置&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;工作流&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;commit&lt;&#x2F;code&gt; — 智能 git commit&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;commit-push-pr&lt;&#x2F;code&gt; — commit + push + 创建 PR&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;review&lt;&#x2F;code&gt; — 代码 Review&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;simplify&lt;&#x2F;code&gt; — 审视自己的改动&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;verify&lt;&#x2F;code&gt; — 验证改动是否正确&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Agent 相关&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;fork&lt;&#x2F;code&gt; — 手动 fork 子 Agent&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;agents&lt;&#x2F;code&gt; — 管理 Agent 定义&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;系统&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;status&lt;&#x2F;code&gt; — 查看 token 使用量&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;sandbox&lt;&#x2F;code&gt; — 管理沙箱规则&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;share&lt;&#x2F;code&gt; — 分享会话&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;命令层的设计哲学：&lt;strong&gt;每个命令都是一个 &amp;quot;macro&amp;quot;&lt;&#x2F;strong&gt;——把多步操作封装成一键触发。比如 &lt;code&gt;&#x2F;commit&lt;&#x2F;code&gt; 不是简单地执行 &lt;code&gt;git commit&lt;&#x2F;code&gt;，而是：检查 diff → 分析变更 → 生成 commit message → 处理 hook 失败 → 验证结果。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;layer-6-biao-mian-ceng-ren-lei-jie-kou&quot;&gt;Layer 6: 表面层——人类接口&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;terminal-ui-react-ink&quot;&gt;Terminal UI (React + Ink)&lt;&#x2F;h3&gt;
+&lt;p&gt;这是我觉得 Claude Code 最有 engineering taste 的决策之一：&lt;strong&gt;用 React 来渲染终端 UI。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Ink 是一个把 React 组件树渲染到终端的库。Claude Code 有 389 个组件文件，104 个 hooks——这是一个正经的 React 应用，只不过输出是 ANSI 字符而不是 HTML。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么选 React 而不是 blessed&#x2F;inquirer 之类的传统终端 UI 库？&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;状态管理&lt;&#x2F;strong&gt;：LLM 交互天然是异步、流式的，React 的声明式状态管理比命令式 &lt;code&gt;stdout.write&lt;&#x2F;code&gt; 好用太多&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;组件复用&lt;&#x2F;strong&gt;：权限确认弹窗、进度条、markdown 渲染……组件化后可以在不同场景复用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;测试性&lt;&#x2F;strong&gt;：React 组件可以脱离终端独立测试&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;团队技能&lt;&#x2F;strong&gt;：前端工程师可以直接上手&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Claude Code 甚至自己实现了一个 Yoga Layout 引擎的 TypeScript 版本（&lt;code&gt;native-ts&#x2F;yoga-layout&#x2F;&lt;&#x2F;code&gt;, 2,578 行）——Flexbox 布局，在终端里。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ide-bridge-bridge-31-ge-wen-jian&quot;&gt;IDE Bridge (&lt;code&gt;bridge&#x2F;&lt;&#x2F;code&gt;, 31 个文件)&lt;&#x2F;h3&gt;
+&lt;p&gt;VS Code 和 JetBrains 的集成不是通过嵌入终端实现的——而是一个&lt;strong&gt;双向通信协议&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;IDE Extension ←→ Bridge Protocol ←→ Claude Code 核心
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;bridgeMain.ts&lt;&#x2F;code&gt;（2,999 行）实现了这个协议。IDE 可以：发送用户输入、接收 AI 响应、同步文件变更、展示权限确认 UI、显示 diff 预览。&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着 Claude Code 的核心是&lt;strong&gt;与 UI 解耦的&lt;&#x2F;strong&gt;——终端、VS Code、JetBrains 都只是不同的 Surface。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;voice-voice&quot;&gt;Voice (&lt;code&gt;voice&#x2F;&lt;&#x2F;code&gt;)&lt;&#x2F;h3&gt;
+&lt;p&gt;语音输入支持。隐藏在 &lt;code&gt;VOICE_MODE&lt;&#x2F;code&gt; feature flag 后面，外部构建看不到实现。但从导入关系看，它跟 Whisper API 集成。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-ci-wan-zheng-de-qing-qiu-liu-zhuan&quot;&gt;一次完整的请求流转&lt;&#x2F;h2&gt;
+&lt;p&gt;让我用一个具体例子串起整个架构：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;用户输入&lt;&#x2F;strong&gt;: &lt;code&gt;&amp;quot;帮我修复 src&#x2F;auth.ts 里的 null pointer bug&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;1. [Surface] Ink REPL 捕获输入
+&lt;&#x2F;span&gt;&lt;span&gt;2. [Command] 不是 slash 命令，进入 QueryEngine
+&lt;&#x2F;span&gt;&lt;span&gt;3. [Engine] 组装 system prompt + user context + 历史消息
+&lt;&#x2F;span&gt;&lt;span&gt;4. [Foundation] 调用 Anthropic API，流式接收响应
+&lt;&#x2F;span&gt;&lt;span&gt;5. [Engine] 解析到 tool_use: FileRead { path: &amp;quot;src&#x2F;auth.ts&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;6. [Tool] FileRead.call() → 读取文件内容
+&lt;&#x2F;span&gt;&lt;span&gt;7. [Tool] isReadOnly() = true → 跳过权限检查
+&lt;&#x2F;span&gt;&lt;span&gt;8. [Engine] 把 tool_result 送回 API，继续流式响应
+&lt;&#x2F;span&gt;&lt;span&gt;9. [Engine] 解析到 tool_use: FileEdit { path: &amp;quot;src&#x2F;auth.ts&amp;quot;, ... }
+&lt;&#x2F;span&gt;&lt;span&gt;10. [Tool] FileEdit.isReadOnly() = false → 需要权限
+&lt;&#x2F;span&gt;&lt;span&gt;11. [Tool] 根据 permission mode:
+&lt;&#x2F;span&gt;&lt;span&gt;    - default → 弹出确认框
+&lt;&#x2F;span&gt;&lt;span&gt;    - auto → yoloClassifier 判断 → allow
+&lt;&#x2F;span&gt;&lt;span&gt;    - bypass → 直接执行
+&lt;&#x2F;span&gt;&lt;span&gt;12. [Surface] 用户确认（或自动通过）
+&lt;&#x2F;span&gt;&lt;span&gt;13. [Tool] FileEdit.call() → 写入修改
+&lt;&#x2F;span&gt;&lt;span&gt;14. [Engine] 把 tool_result 送回 API
+&lt;&#x2F;span&gt;&lt;span&gt;15. [Engine] 模型返回文本总结
+&lt;&#x2F;span&gt;&lt;span&gt;16. [Surface] 渲染 markdown 格式的回复
+&lt;&#x2F;span&gt;&lt;span&gt;17. [Engine] 检查 token 使用量 → 未达压缩阈值 → 不压缩
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果模型决定这个任务太复杂，需要先做 research：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;5&amp;#39;. [Engine] 解析到 tool_use: Agent { prompt: &amp;quot;Research auth.ts...&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;6&amp;#39;. [Orchestration] 判断：Fork 还是新 Agent？
+&lt;&#x2F;span&gt;&lt;span&gt;    - Fork → 继承上下文，省 API 成本
+&lt;&#x2F;span&gt;&lt;span&gt;    - 新 Agent → 独立执行，更干净
+&lt;&#x2F;span&gt;&lt;span&gt;7&amp;#39;. [Orchestration] 启动子进程&#x2F;tmux pane
+&lt;&#x2F;span&gt;&lt;span&gt;8&amp;#39;. [Tool] 子 Agent 独立工作……
+&lt;&#x2F;span&gt;&lt;span&gt;9&amp;#39;. [Orchestration] &amp;lt;task-notification&amp;gt; 回传结果
+&lt;&#x2F;span&gt;&lt;span&gt;10&amp;#39;. [Engine] 主线程收到结果，继续推理
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;guan-jian-she-ji-jue-ce-zong-jie&quot;&gt;关键设计决策总结&lt;&#x2F;h2&gt;
+&lt;p&gt;通读架构后，几个设计决策特别值得记住：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 编译时死代码消除&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;feature &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bun:bundle&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;voiceModule &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;VOICE_MODE&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;voice&#x2F;index.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这不是运行时条件分支——Bun 的 bundler 在&lt;strong&gt;编译时&lt;&#x2F;strong&gt;就把 &lt;code&gt;feature(&#x27;VOICE_MODE&#x27;)&lt;&#x2F;code&gt; 解析为 &lt;code&gt;true&lt;&#x2F;code&gt;&#x2F;&lt;code&gt;false&lt;&#x2F;code&gt;，然后 tree-shaking 掉死分支。外部构建里，&lt;code&gt;VOICE_MODE&lt;&#x2F;code&gt; 是 &lt;code&gt;false&lt;&#x2F;code&gt;，整个 voice 模块连代码都不会出现在产物中。&lt;&#x2F;p&gt;
+&lt;p&gt;这让 Anthropic 可以在同一个代码库里维护内部版和外部版，而不用分支管理。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. Prompt Cache 是一等公民&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;几乎每个架构决策都在考虑&amp;quot;会不会破坏 prompt cache&amp;quot;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;系统提示分静态&#x2F;动态两部分（静态部分跨用户缓存）&lt;&#x2F;li&gt;
+&lt;li&gt;Agent 列表从 tool description 移到 attachment message（避免 MCP 连接变化破坏缓存）&lt;&#x2F;li&gt;
+&lt;li&gt;Fork 子进程共享父的 prompt cache（因为继承了完整上下文）&lt;&#x2F;li&gt;
+&lt;li&gt;沙箱配置去重后再注入 prompt（避免重复路径导致不同用户的 prompt 不一致）&lt;&#x2F;li&gt;
+&lt;li&gt;Auto Mode 分类器的两个阶段共享 cache（Stage 2 命中 Stage 1 的缓存前缀）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;在 LLM 产品中，prompt cache 直接决定了成本和延迟。Claude Code 团队显然把这一点内化到了每一个设计选择里。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 安全不是事后补丁&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Sandbox、Permission、yoloClassifier、Undercover Mode——这些不是&amp;quot;产品做完了加个安全层&amp;quot;，而是从 Layer 1 就开始设计的。Tool 接口里 &lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt; 的存在说明了这一点：每个 Tool 从诞生之初就要考虑&amp;quot;我该怎么向安全系统暴露自己&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 最大单文件启示&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;代码库里最大的文件不是 QueryEngine——是 &lt;code&gt;cli&#x2F;print.ts&lt;&#x2F;code&gt;（5,594 行），非交互模式的输出渲染。第二大是 &lt;code&gt;messages.ts&lt;&#x2F;code&gt;（5,512 行），消息格式转换。&lt;&#x2F;p&gt;
+&lt;p&gt;这说明什么？&lt;strong&gt;LLM 产品最复杂的部分不是调 API，而是两端的 I&#x2F;O&lt;&#x2F;strong&gt;——把人类输入变成模型能理解的格式，把模型输出变成人类能看的格式。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;架构骨架摊开了。下一篇，我们钻进 Claude Code 最核心的软件工程：&lt;strong&gt;系统提示词的七层设计&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;不是&amp;quot;你是 helpful assistant&amp;quot;那种——而是一本完整的行为手册，包含代码哲学、安全原则、甚至连&amp;quot;什么时候该用 heredoc 写 commit message&amp;quot;都规定了。这是我见过的、对&amp;quot;如何用自然语言编程一个 AI Agent&amp;quot;最深入的回答。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 1 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 2 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 3 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>[CC解构] 一个 .map 文件的蝴蝶效应</title>
         <published>2026-03-31T00:00:00+00:00</published>
