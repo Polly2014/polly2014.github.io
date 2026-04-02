@@ -344,6 +344,100 @@ underlying issues rather than bypassing safety checks (e.g. --no-verify).&lt;&#x
         
     </entry>
     <entry xml:lang="en">
+        <title>观潮捉鬼记：176776 不是一只股票</title>
+        <published>2026-04-02T00:00:00+00:00</published>
+        <updated>2026-04-02T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-ghost-hunting/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-ghost-hunting/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-strategy-evolution&quot;&gt;观潮淬火记&lt;&#x2F;a&gt;——82 条信号回填后，14 行代码砍掉 0% 胜率的死亡地带。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇讲的是用数据磨刃。这篇讲的是：&lt;strong&gt;刀刃底下藏着两只鬼&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;he-er-tai-de-gu-du&quot;&gt;和而泰的孤独&lt;&#x2F;h2&gt;
+&lt;p&gt;晚上 8 点打开 Dashboard，持仓区一眼就不对。&lt;&#x2F;p&gt;
+&lt;p&gt;三只持仓——和而泰、威海广泰、赛力斯——本该并排站着的三张卡片，只剩了一张。和而泰孤零零地立在那里，浮盈 -2.3%，绿色的数字在深色背景上格外刺眼。&lt;&#x2F;p&gt;
+&lt;p&gt;自选股和热门板块倒是正常。只有持仓区，两只股票凭空消失了。&lt;&#x2F;p&gt;
+&lt;p&gt;第一反应是数据库出了问题。SSH 上去一查——三只都在。数据没丢。&lt;&#x2F;p&gt;
+&lt;p&gt;那问题出在哪？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;5-32&quot;&gt;5&#x2F;32&lt;&#x2F;h2&gt;
+&lt;p&gt;答案在日志里。&lt;&#x2F;p&gt;
+&lt;p&gt;baostock——观潮用来拉 A 股 K 线的数据源——在下午 3 点，A 股收盘的那一分钟，崩了。不是偶尔丢一两只，而是连锁式地全线断连。后台定时扫描正好在跑，32 只股票只有 5 只拿到了数据。&lt;&#x2F;p&gt;
+&lt;p&gt;然后这份残缺的数据被写入缓存，持久化到磁盘。&lt;&#x2F;p&gt;
+&lt;p&gt;从下午 3 点到我晚上打开 Dashboard，这份 5&#x2F;32 的扫描结果一直被当成真货端给前端。和而泰恰好是那 5 只幸存者之一，所以它还在。威海广泰和赛力斯没那么幸运。&lt;&#x2F;p&gt;
+&lt;p&gt;翻代码一看，扫描失败时的处理方式是——&lt;code&gt;pass&lt;&#x2F;code&gt;。静默吞掉异常，接着扫下一只。讽刺的是，另一个兄弟函数里已经有级联失败保护了：连续 3 只失败就自动重连。但定时扫描是后来写的，没移植这套逻辑。&lt;&#x2F;p&gt;
+&lt;p&gt;同一个仓库里，一个函数有护栏，旁边另一个没有。&lt;strong&gt;防线的薄弱环节不在最危险的地方，在最容易被忽视的地方。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-du-qiang&quot;&gt;三堵墙&lt;&#x2F;h2&gt;
+&lt;p&gt;Polly 先修了前两层：连续失败自动重连，扫完再检查关键持仓是否到齐，漏了就单独补。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾 Review 时补了第三刀：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;前两层都在修&#x27;怎么扫得更全&#x27;。但如果 baostock 真的宕了两小时呢？重连也救不回来。这时候你宁可端旧数据，也不该端残缺数据。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;说得对。加一个成功率门槛——不到 50%？这轮扫描结果直接扔掉，继续用上一轮的旧缓存。旧数据可能是半小时前的，但至少是完整的。&lt;&#x2F;p&gt;
+&lt;p&gt;三层防护各管各的，互不依赖：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;防护层&lt;&#x2F;th&gt;&lt;th&gt;逻辑&lt;&#x2F;th&gt;&lt;th&gt;应对场景&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;级联失败检测&lt;&#x2F;td&gt;&lt;td&gt;连续 3 只失败 → 强制重连&lt;&#x2F;td&gt;&lt;td&gt;瞬时断连&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;末尾重试&lt;&#x2F;td&gt;&lt;td&gt;持仓&#x2F;自选缺失 → 补扫&lt;&#x2F;td&gt;&lt;td&gt;部分漏扫&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;残缺缓存保护&lt;&#x2F;td&gt;&lt;td&gt;成功率 &amp;lt;50% → 拒绝覆盖&lt;&#x2F;td&gt;&lt;td&gt;数据源彻底宕机&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;小龙虾打了 9&#x2F;10。扣的 1 分：&amp;quot;0.5 这个阈值写死了，股票池缩小时可能误触发。&amp;quot;加了个 TODO。合理。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;重启服务：&lt;strong&gt;32&#x2F;32 全部命中。&lt;&#x2F;strong&gt; 三只持仓整整齐齐回到 Dashboard。&lt;&#x2F;p&gt;
+&lt;p&gt;第一只鬼——消失的持仓——捉住了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;176776&quot;&gt;176776&lt;&#x2F;h2&gt;
+&lt;p&gt;bug 修完，照例翻一遍日志确认没有副作用。然后三行诡异的记录跳了出来：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;[09:00:31] 📊 开始分析: 176776
+&lt;&#x2F;span&gt;&lt;span&gt;[09:00:32] 📊 开始分析: 364107
+&lt;&#x2F;span&gt;&lt;span&gt;[09:00:33] 📊 开始分析: 558017
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个 6 位纯数字，格式上完全合法——A 股代码就是 6 位数字。但沪市 60 开头、深市 00&#x2F;30 开头，17、36、55 打头的代码根本不存在。&lt;&#x2F;p&gt;
+&lt;p&gt;baostock 温柔地拒绝了它们——查无此股，返回空数据，程序跳过。没有报错，没有脏数据入库。单看结果，完全无害。&lt;&#x2F;p&gt;
+&lt;p&gt;但它们&lt;strong&gt;每天都在跑&lt;&#x2F;strong&gt;。北京时间 17:00，准时出现。那是 cron 定时任务触发的时间。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-miao-sui-pian&quot;&gt;微秒碎片&lt;&#x2F;h2&gt;
+&lt;p&gt;cron 脚本里，取持仓列表的逻辑是一行正则：&lt;code&gt;re.findall(r&amp;quot;\b(\d{6})\b&amp;quot;, text)&lt;&#x2F;code&gt;——在整个 JSON 响应里盲扫所有 6 位数字。&lt;&#x2F;p&gt;
+&lt;p&gt;持仓数据长这样：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;002402&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;added_at&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2026-03-13T09:29:43.176776&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;601349&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;added_at&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2026-03-18T14:22:51.364107&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;{&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;symbol&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;002111&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;added_at&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;2026-03-25T16:40:09.558017&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;看到了吗？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;176776&lt;&#x2F;code&gt;、&lt;code&gt;364107&lt;&#x2F;code&gt;、&lt;code&gt;558017&lt;&#x2F;code&gt;——不是股票代码，是 &lt;code&gt;added_at&lt;&#x2F;code&gt; 时间戳里的&lt;strong&gt;微秒精度后缀&lt;&#x2F;strong&gt;。正则不区分语义，只认位数。6 位数字就匹配，管你是股票代码还是时间碎片。&lt;&#x2F;p&gt;
+&lt;p&gt;每只持仓的入库时间都贡献了一个幽灵代码。三只持仓，三只鬼。&lt;&#x2F;p&gt;
+&lt;p&gt;它们从 cron 脚本上线第一天就开始跑，至今每天准时报到。因为 baostock 对无效代码只是静默返回空——不报错、不入库——所以从没有人注意到。每天多跑 3 次无意义的 &lt;code&gt;analyze_stock&lt;&#x2F;code&gt;，浪费大约 15 秒，仅此而已。&lt;&#x2F;p&gt;
+&lt;p&gt;安静、合规、无害。一只完美的幽灵。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;chuang-ke-tie-he-shui-guan&quot;&gt;创可贴和水管&lt;&#x2F;h2&gt;
+&lt;p&gt;Polly 先在 &lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 入口加了格式校验——A 股必须 6 位纯数字，美股必须 1-5 位字母。幽灵代码到门口就会被拦回去。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾看完给了 8 分：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;你挡住了。但这只是下游防御。上游那个 regex 才是 root cause——等于给漏水管贴了创可贴。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;真正该修的是那行正则。把盲扫换成 JSON 解析，从结构化数据里精准提取 &lt;code&gt;symbol&lt;&#x2F;code&gt; 字段。不管时间戳精度是微秒还是纳秒，不管 JSON 里将来加什么数字字段，都不会再匹配到幽灵。&lt;&#x2F;p&gt;
+&lt;p&gt;上下游都修完，9 分收了。&lt;&#x2F;p&gt;
+&lt;p&gt;第二只鬼——无形的幽灵——也捉住了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;kan-de-jian-de-he-kan-bu-jian-de&quot;&gt;看得见的和看不见的&lt;&#x2F;h2&gt;
+&lt;p&gt;第一只鬼让人紧张。打开 Dashboard 发现持仓少了，第一反应是&amp;quot;数据库被清了&amp;quot;。但查下来只是缓存被残缺数据覆盖，三层防护搞定。&lt;&#x2F;p&gt;
+&lt;p&gt;第二只鬼更值得回味。它不造成任何可见后果——不报错、不留脏数据、不影响任何功能。它只是安静地每天多跑三次无意义的分析。如果不是修第一只 bug 时顺手翻了整段日志，可能永远不会发现它。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;可见的 bug 让人紧张，但不可见的幽灵才值得警惕。&lt;&#x2F;strong&gt; 它合规，它安静，它无害——直到有人在日志的河流里，注意到了那个不该出现在这里的数字。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;观潮系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;标题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;03-11&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-ai-stock-engine&quot;&gt;观潮诞生记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-12&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-cloud-deployment&quot;&gt;观潮进化记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-13&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-dashboard-and-signals&quot;&gt;观潮实战记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-19&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-signal-validation&quot;&gt;观潮验证记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-20&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-us-stock-support&quot;&gt;观潮出海记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-21&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-data-enhancement&quot;&gt;观潮锐评记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-23&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-self-reflection&quot;&gt;观潮自省记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-29&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-automated-operations&quot;&gt;观潮托管记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-30&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;tidewatch-strategy-evolution&quot;&gt;观潮淬火记&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;04-02&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;观潮捉鬼记&lt;&#x2F;strong&gt; ← 本篇&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
         <title>[CC解构] 380K 行代码的骨架</title>
         <published>2026-04-01T00:00:00+00:00</published>
         <updated>2026-04-01T00:00:00+00:00</updated>
