@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 节假日</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/jie-jia-ri/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-03T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/jie-jia-ri/atom.xml</id>
+    <entry xml:lang="en">
+        <title>观潮过节记：教 cron 学会放假</title>
+        <published>2026-04-03T00:00:00+00:00</published>
+        <updated>2026-04-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/tidewatch-holiday-guard/" type="text/html"/>
+        <id>https://polly.wang/tidewatch-holiday-guard/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;tidewatch-automated-operations&quot;&gt;观潮托管记&lt;&#x2F;a&gt;——让 AI 引擎学会自己醒来。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇讲的是让系统每天收盘后自动扫描持仓、生成信号、回填胜率。8 秒变 0 秒，因为数据已经在那里等我了。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇讲的是下一课：&lt;strong&gt;什么时候不该醒来&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ti-jian&quot;&gt;体检&lt;&#x2F;h2&gt;
+&lt;p&gt;4 月 3 日，清明前最后一个交易日。&lt;&#x2F;p&gt;
+&lt;p&gt;打开信号复盘看板，例行体检。cron 已经连续两天稳定执行——前天修了 baostock 三层超时防护后，昨天和今天都正常跑完了，回填边界也对：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;信号日期&lt;&#x2F;th&gt;&lt;th&gt;5d 回填&lt;&#x2F;th&gt;&lt;th&gt;说明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;03-26&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;今天刚回填的最新日期&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-27&lt;&#x2F;td&gt;&lt;td&gt;⏳&lt;&#x2F;td&gt;&lt;td&gt;第 5 个交易日是今天（04-03），但 cron 用的是昨日收盘价&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;03-28+&lt;&#x2F;td&gt;&lt;td&gt;⏳&lt;&#x2F;td&gt;&lt;td&gt;还没到 5 个交易日&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;03-27 的信号会在清明后回填。完全正确。&lt;&#x2F;p&gt;
+&lt;p&gt;一切正常。但我突然想到一件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;周一是清明假期。cron 会跑吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;0-9-1-5&quot;&gt;&lt;code&gt;0 9 * * 1-5&lt;&#x2F;code&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;答案是会。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;0 9 * * 1-5 &#x2F;path&#x2F;to&#x2F;tidewatch-daily.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这行 cron 表达式的意思是：每周一到周五，UTC 09:00（北京时间 17:00）执行。它只看星期几，不看农历，不看国务院放假通知，不知道清明是什么。&lt;&#x2F;p&gt;
+&lt;p&gt;周一它会准时醒来，然后：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;scan_market&lt;&#x2F;code&gt; 拉到的还是 04-03（今天）的收盘价——没有新数据&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;analyze_stock&lt;&#x2F;code&gt; 基于过期数据给三只持仓各生成一条信号——&lt;strong&gt;垃圾信号&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;update_signal_outcomes&lt;&#x2F;code&gt; 回填需要的 K 线还没出来——做不了任何事&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不会崩，不会丢数据。但 signals 表里会多三条基于旧数据的噪音，后续回填时可能产生误导。&lt;&#x2F;p&gt;
+&lt;p&gt;一条 cron 不需要知道屈原是谁。但它得知道今天有没有开市。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-xing-bi-mo-nian-li-kao-pu&quot;&gt;一行比万年历靠谱&lt;&#x2F;h2&gt;
+&lt;p&gt;最直觉的方案是维护一张中国假日表。但中国的调休是出了名的不可预测——五一放五天、中秋连国庆、偶尔还有周六上班。硬编码假日表意味着每年年初更新一次，漏了就出事，多了也出事。&lt;&#x2F;p&gt;
+&lt;p&gt;更优雅的方案是：&lt;strong&gt;问数据源自己&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;baostock 已经是观潮的日 K 线主力数据源，A 股休市时它自然没有数据。所以只需要查一下沪深 300 今天有没有 K 线——有就是交易日，没有就不是：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TODAY_BJ&lt;&#x2F;span&gt;&lt;span&gt;=$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TZ&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Asia&#x2F;Shanghai &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;date&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; +&lt;&#x2F;span&gt;&lt;span&gt;%&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Y&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt;%&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;m&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt;%&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;d&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IS_TRADING&lt;&#x2F;span&gt;&lt;span&gt;=$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PROJECT_ROOT&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poetry&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; run python3&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;import baostock as bs
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bs.login()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rs = bs.query_history_k_data_plus(&amp;#39;sh.000300&amp;#39;, &amp;#39;date,close&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    start_date=&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TODAY_BJ&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;#39;, end_date=&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TODAY_BJ&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;#39;, frequency=&amp;#39;d&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rows = []
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;while rs.error_code == &amp;#39;0&amp;#39; and rs.next():
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    rows.append(rs.get_row_data())
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bs.logout()
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;print(&amp;#39;YES&amp;#39; if rows else &amp;#39;NO&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;dev&#x2F;null)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;零维护。清明、春节、国庆、中秋调休、周末——全自动跳过，不需要硬编码任何一天。baostock 知道的比我多。&lt;&#x2F;p&gt;
+&lt;p&gt;把它插进 &lt;code&gt;tidewatch-daily.sh&lt;&#x2F;code&gt; 最前面，在所有业务逻辑之前做 early exit：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IS_TRADING&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;NO&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;then
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TODAY_BJ&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; is not a trading day, skipping&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt;&amp;gt; $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fi
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;写完，commit，push。感觉挺完美。&lt;&#x2F;p&gt;
+&lt;p&gt;然后小龙虾开始 Review。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;9-10-kou-diao-de-na-1-fen&quot;&gt;9&#x2F;10 扣掉的那 1 分&lt;&#x2F;h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🦞 代码本身 9&#x2F;10 ✅，部署有一个问题 ❌&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;先说扣分的地方。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;如果 baostock 自己挂了呢？&lt;&#x2F;strong&gt; 网络超时、login 失败、服务器维护——&lt;code&gt;print()&lt;&#x2F;code&gt; 不会执行，&lt;code&gt;IS_TRADING&lt;&#x2F;code&gt; 变量为空字符串。空字符串 &lt;code&gt;!= &amp;quot;YES&amp;quot;&lt;&#x2F;code&gt;，走 skip 路径。&lt;&#x2F;p&gt;
+&lt;p&gt;结果就是：&lt;strong&gt;交易日 baostock 宕机 → 静默跳过整天扫描&lt;&#x2F;strong&gt;。没有任何告警。&lt;&#x2F;p&gt;
+&lt;p&gt;这比清明空跑严重多了。清明空跑最多多三条垃圾信号；交易日漏跑意味着持仓信号断档、回填链中断。&lt;&#x2F;p&gt;
+&lt;p&gt;修复很简单——空值单独处理，宁可空跑不漏跑：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;-z &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IS_TRADING&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;then
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Trading day check failed (baostock error?), running anyway&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt;&amp;gt; $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;elif &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IS_TRADING&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;NO&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;then
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TODAY_BJ&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt; is not a trading day, skipping&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &amp;gt;&amp;gt; $&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;LOG
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fi
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三种状态，三种策略：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;YES&lt;&#x2F;code&gt; → 正常执行&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;NO&lt;&#x2F;code&gt; → 确认非交易日，安全跳过&lt;&#x2F;li&gt;
+&lt;li&gt;空值 → 不确定，保守策略，照跑&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;然后小龙虾说了第二个问题，这个更隐蔽。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhi-cuo-di-fang-de-crontab&quot;&gt;指错地方的 crontab&lt;&#x2F;h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🦞 cron 跑的不是 repo 里的文件&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这个更隐蔽。&lt;&#x2F;p&gt;
+&lt;p&gt;最初部署 cron 时图省事，把脚本拷贝到了一个独立目录，crontab 指向那份副本。后来所有改动都在 git repo 里做——包括刚才的交易日检测。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;git pull&lt;&#x2F;code&gt; 更新的是 repo 里的文件，cron 读的是旧拷贝。如果不是小龙虾提出来，清明之后 cron 跑的还是没有交易日检测的老版本。代码 commit 了，部署却没到位——最经典的「改了等于没改」。&lt;&#x2F;p&gt;
+&lt;p&gt;改 crontab 直接指向 repo 路径，一劳永逸：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 从独立副本 → 直接指向 repo 内脚本
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt; 9 * * 1-5 &#x2F;path&#x2F;to&#x2F;repo&#x2F;scripts&#x2F;tidewatch-daily.sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;从此 &lt;code&gt;git pull&lt;&#x2F;code&gt; 就是部署，不需要再 cp 同步。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fang-jia-liao&quot;&gt;放假了&lt;&#x2F;h2&gt;
+&lt;p&gt;三件小事：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;一行 baostock 查询，让 cron 知道今天有没有开市&lt;&#x2F;li&gt;
+&lt;li&gt;空值保守策略，宁可空跑不漏跑&lt;&#x2F;li&gt;
+&lt;li&gt;crontab 指向 repo，git pull 即部署&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;我提出问题，Polly 写代码，小龙虾 Review——三方各司其职，20 行改动，半小时收工。&lt;&#x2F;p&gt;
+&lt;p&gt;这 20 行的意义在于：&lt;strong&gt;从&amp;quot;能自动跑&amp;quot;到&amp;quot;知道什么时候不该跑&amp;quot;&lt;&#x2F;strong&gt;——这是系统成熟度的一个小台阶。&lt;&#x2F;p&gt;
+&lt;p&gt;上一篇让观潮学会了每天自己醒来。这一篇教它学会了一件更难的事：&lt;&#x2F;p&gt;
+&lt;p&gt;放假。&lt;&#x2F;p&gt;
+&lt;p&gt;清明安康 🌿&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
