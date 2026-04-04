@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 编排</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/bian-pai/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-05T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/bian-pai/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 三种并行模式：Fork、Coordinator、Swarm</title>
+        <published>2026-04-05T00:00:00+00:00</published>
+        <updated>2026-04-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-agent-orchestration/" type="text/html"/>
+        <id>https://polly.wang/claude-code-agent-orchestration/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-security-yolo-classifier&quot;&gt;用 LLM 审查 LLM：yoloClassifier 的两阶段安全架构&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;单 Agent 的天花板很低。&lt;&#x2F;p&gt;
+&lt;p&gt;一个 Agent 同一时间只能做一件事——读文件、跑命令、写代码。给它一个复杂任务（&amp;quot;重构这个模块的测试框架&amp;quot;），它会串行地做完所有事情：先读文件，再分析，再改代码，再跑测试。每一步都要等上一步完成。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 的解决方案：三种并行模式，解决三种不同的场景。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;quan-jing-san-chong-mo-shi-de-xuan-ze&quot;&gt;全景：三种模式的选择&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模式&lt;&#x2F;th&gt;&lt;th&gt;场景&lt;&#x2F;th&gt;&lt;th&gt;特点&lt;&#x2F;th&gt;&lt;th&gt;成本&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Fork&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;把一个任务拆成并行子任务&lt;&#x2F;td&gt;&lt;td&gt;继承父上下文，共享 prompt cache&lt;&#x2F;td&gt;&lt;td&gt;极低&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Subagent&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;独立任务，从零开始&lt;&#x2F;td&gt;&lt;td&gt;干净的上下文，专注的系统提示词&lt;&#x2F;td&gt;&lt;td&gt;中等&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Coordinator&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;复杂项目，纯调度&lt;&#x2F;td&gt;&lt;td&gt;自己不写代码，只指挥&lt;&#x2F;td&gt;&lt;td&gt;高&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Swarm&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;多 Agent 并行的物理执行&lt;&#x2F;td&gt;&lt;td&gt;tmux&#x2F;iTerm 可视化&lt;&#x2F;td&gt;&lt;td&gt;取决于 Agent 数&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;让我逐个拆解。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fork-ling-cheng-ben-de-ying-fen-shen&quot;&gt;Fork：零成本的影分身&lt;&#x2F;h2&gt;
+&lt;p&gt;Fork 是 Claude Code 最优雅的并行设计。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;he-xin-si-xiang&quot;&gt;核心思想&lt;&#x2F;h3&gt;
+&lt;p&gt;不指定 &lt;code&gt;subagent_type&lt;&#x2F;code&gt; → 创建 Fork（继承父对话的&lt;strong&gt;全部上下文&lt;&#x2F;strong&gt;和 &lt;strong&gt;prompt cache&lt;&#x2F;strong&gt;）。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;主线程 ──→ Agent(prompt: &amp;quot;研究 auth 模块&amp;quot;) ──→ Fork 子进程
+&lt;&#x2F;span&gt;&lt;span&gt;             ↑                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;             │  [共享 system prompt + 对话历史]       │
+&lt;&#x2F;span&gt;&lt;span&gt;             │  [prompt cache 直接命中]               │
+&lt;&#x2F;span&gt;&lt;span&gt;             │                                        ↓
+&lt;&#x2F;span&gt;&lt;span&gt;主线程 ←── &amp;lt;task-notification&amp;gt; 完成 ──────────── 返回结果
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;为什么说&amp;quot;零成本&amp;quot;？因为 Fork 子进程继承了父的完整消息历史——Anthropic API 的 prompt cache 按前缀匹配，所以子进程的 API 请求会直接命中父进程建立的缓存。&lt;strong&gt;启动一个 Fork 几乎不需要额外的输入 token 费用。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-di-gui-10-tiao-jun-gui&quot;&gt;防递归：10 条军规&lt;&#x2F;h3&gt;
+&lt;p&gt;Fork 子进程收到的第一条消息是一段硬编码的&amp;quot;身份声明&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;STOP. READ THIS FIRST.
+&lt;&#x2F;span&gt;&lt;span&gt;You are a forked worker process. You are NOT the main agent.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;然后是 10 条不可违反的规则：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;不要再 Fork&lt;&#x2F;strong&gt;——你就是 Fork，直接执行&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不要对话&lt;&#x2F;strong&gt;——不要问问题、不要建议下一步&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不要评论&lt;&#x2F;strong&gt;——不要加元信息&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;直接用工具&lt;&#x2F;strong&gt;——Bash、Read、Write，静默执行&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;如果改了文件，commit&lt;&#x2F;strong&gt;——报告 commit hash&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具调用之间不要说话&lt;&#x2F;strong&gt;——用完工具再统一报告&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;严守范围&lt;&#x2F;strong&gt;——指令范围之外的发现最多一句话&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;报告 500 字以内&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;以 &amp;quot;Scope:&amp;quot; 开头&lt;&#x2F;strong&gt;——强制格式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;报告事实，然后停&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;第 1 条是核心——Fork 子进程的系统提示里也有&amp;quot;可以创建 Fork&amp;quot;的指导，如果不加约束，它会无限递归。解决方案很简单：在消息历史中搜索 &lt;code&gt;&amp;lt;fork-boilerplate&amp;gt;&lt;&#x2F;code&gt; 标签，找到就说明已经在 Fork 里了：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;isInForkChild&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;: MessageType[]): boolean {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;some&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;m &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;m&lt;&#x2F;span&gt;&lt;span&gt;.type !== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;m&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;message&lt;&#x2F;span&gt;&lt;span&gt;.content.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;some&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.type === &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;amp;&amp;amp; 
+&lt;&#x2F;span&gt;&lt;span&gt;               &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.text.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;includes&lt;&#x2F;span&gt;&lt;span&gt;(`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FORK_BOILERPLATE_TAG&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;`)
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;  })
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;cache-gong-xiang-de-gong-cheng-xi-jie&quot;&gt;Cache 共享的工程细节&lt;&#x2F;h3&gt;
+&lt;p&gt;为了让多个 Fork 子进程之间也能共享 cache，消息的构造非常讲究：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 所有 Fork 子进程使用完全相同的 tool_result 占位符
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FORK_PLACEHOLDER_RESULT &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Fork started — processing in background&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 构造消息：[...历史, assistant(所有tool_use), user(占位结果..., 指令)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 只有最后一个 text block（指令）不同，最大化 cache 命中
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;所有 Fork 的 tool_result 占位符都是同一个字符串——这样不同 Fork 的消息前缀完全相同，直到最后的 directive 才不同。前缀越长、越一致，cache 命中率越高。&lt;&#x2F;p&gt;
+&lt;p&gt;另一个细节：Fork 不重新调用 &lt;code&gt;getSystemPrompt()&lt;&#x2F;code&gt;——它直接使用父进程已经渲染好的 system prompt 字节。因为 GrowthBook（Feature Flag 系统）在不同时间点可能返回不同值，重新生成 system prompt 可能导致内容不同、cache 失效。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 注释原文：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Reconstructing by re-calling getSystemPrompt() can diverge 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; (GrowthBook cold→warm) and bust the prompt cache; threading 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; the rendered bytes is byte-exact.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;nei-zhi-agent-lei-xing&quot;&gt;内置 Agent 类型&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 预定义了几种专用 Agent：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;explore-agent-zhi-du-de-dai-ma-zhen-tan&quot;&gt;Explore Agent：只读的代码侦探&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;EXPLORE_AGENT &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;  agentType: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Explore&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  model: process.env.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;USER_TYPE &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;ant&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; ? &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;inherit&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; : &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;haiku&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  omitClaudeMd: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 不需要项目配置
+&lt;&#x2F;span&gt;&lt;span&gt;  disallowedTools: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Agent&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FileEdit&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;FileWrite&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;NotebookEdit&lt;&#x2F;span&gt;&lt;span&gt;],
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Explore Agent 有几个关键设计决策：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;严格只读。&lt;&#x2F;strong&gt; 不能创建、修改、删除任何文件。连临时文件都不行。系统提示词用全大写强调：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;=== CRITICAL: READ-ONLY MODE - NO FILE MODIFICATIONS ===
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;外部用户用 Haiku（便宜快），内部员工用父模型。&lt;&#x2F;strong&gt; 这是一个成本&#x2F;质量的权衡——Explore 是高频操作（搜索代码），用小模型够了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;跳过 CLAUDE.md。&lt;&#x2F;strong&gt; Explore 只搜索代码，不需要知道项目的 commit 规范、lint 规则等。跳过 CLAUDE.md 进一步节省 token。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;并行是核心要求：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;You must make efficient use of tools — wherever possible you should try 
+&lt;&#x2F;span&gt;&lt;span&gt;to spawn multiple parallel tool calls for grepping and reading files.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;verification-agent-dui-kang-shi-yan-zheng&quot;&gt;Verification Agent：对抗式验证&lt;&#x2F;h3&gt;
+&lt;p&gt;这是整个代码库里我最佩服的一段提示词。&lt;&#x2F;p&gt;
+&lt;p&gt;Verification Agent 的使命不是&amp;quot;确认代码能用&amp;quot;——而是&amp;quot;&lt;strong&gt;尝试把代码弄坏&lt;&#x2F;strong&gt;&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Your job is not to confirm the implementation works — it&amp;#39;s to try to break it.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;它的系统提示词直接指出了 AI 验证的两个经典失败模式：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;失败模式 1：验证回避。&lt;&#x2F;strong&gt; 面对需要检查的东西，找理由不跑——读代码、描述&amp;quot;我会测试什么&amp;quot;、写 PASS、收工。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;失败模式 2：被前 80% 迷惑。&lt;&#x2F;strong&gt; 看到 UI 很漂亮、测试通过了，就觉得没问题。没注意到一半按钮不工作、状态刷新丢失、后端在坏输入时崩溃。&lt;&#x2F;p&gt;
+&lt;p&gt;然后列出了一系列&lt;strong&gt;自我欺骗识别清单&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;- &amp;quot;The code looks correct based on my reading&amp;quot; → 读代码不是验证，跑它
+&lt;&#x2F;span&gt;&lt;span&gt;- &amp;quot;The implementer&amp;#39;s tests already pass&amp;quot; → 实现者也是 LLM，独立验证
+&lt;&#x2F;span&gt;&lt;span&gt;- &amp;quot;This is probably fine&amp;quot; → probably 不是 verified，跑它
+&lt;&#x2F;span&gt;&lt;span&gt;- &amp;quot;I don&amp;#39;t have a browser&amp;quot; → 你检查过有没有 playwright MCP 吗？
+&lt;&#x2F;span&gt;&lt;span&gt;- &amp;quot;This would take too long&amp;quot; → 不是你决定的
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每种变更类型都有专门的验证策略——前端（启动 dev server + 浏览器自动化 + curl 子资源）、后端（curl endpoint + 验证响应结构 + 测试错误处理）、重构（测试套件不改动必须通过 + public API 表面不变）、数据库迁移（up + 验证 schema + down + 测试可逆性）。&lt;&#x2F;p&gt;
+&lt;p&gt;还有对抗性探测要求：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;- Concurrency: 并行请求 create-if-not-exists → 有重复吗？
+&lt;&#x2F;span&gt;&lt;span&gt;- Boundary: 0, -1, 空字符串, 超长字符串, unicode, MAX_INT
+&lt;&#x2F;span&gt;&lt;span&gt;- Idempotency: 同一个 mutating 请求发两次 → 重复创建了吗？
+&lt;&#x2F;span&gt;&lt;span&gt;- Orphan: 删除&#x2F;引用不存在的 ID
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;最后有一条防止过度 FAIL 的规则：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Before reporting FAIL, check:
+&lt;&#x2F;span&gt;&lt;span&gt;- Already handled: 其他地方有防御性代码吗？
+&lt;&#x2F;span&gt;&lt;span&gt;- Intentional: CLAUDE.md 或注释说这是故意的吗？
+&lt;&#x2F;span&gt;&lt;span&gt;- Not actionable: 这是不可修复的限制吗？
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;公正的验证不只是找 bug——也包括不冤枉正确的设计。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;coordinator-mo-shi-chun-diao-du-qi&quot;&gt;Coordinator 模式：纯调度器&lt;&#x2F;h2&gt;
+&lt;p&gt;当开启 Coordinator 模式时，Claude Code 完全变成一个调度器：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;用户 ←→ Coordinator（分析、综合、沟通）
+&lt;&#x2F;span&gt;&lt;span&gt;              │
+&lt;&#x2F;span&gt;&lt;span&gt;              ├── Worker A（研究）
+&lt;&#x2F;span&gt;&lt;span&gt;              ├── Worker B（实现）
+&lt;&#x2F;span&gt;&lt;span&gt;              └── Worker C（验证）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;jiao-se-fen-gong&quot;&gt;角色分工&lt;&#x2F;h3&gt;
+&lt;p&gt;Coordinator 只有几个工具：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Agent&lt;&#x2F;code&gt; — 启动 Worker&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;SendMessage&lt;&#x2F;code&gt; — 给已有 Worker 发消息&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;TaskStop&lt;&#x2F;code&gt; — 停止偏离方向的 Worker&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Coordinator 不写代码、不读文件、不执行命令。&lt;&#x2F;strong&gt; 它的全部工作是：理解用户需求 → 分析 Worker 的报告 → 撰写下一步指令 → 跟用户沟通。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;si-jie-duan-gong-zuo-liu&quot;&gt;四阶段工作流&lt;&#x2F;h3&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;阶段&lt;&#x2F;th&gt;&lt;th&gt;谁做&lt;&#x2F;th&gt;&lt;th&gt;目的&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Research&lt;&#x2F;td&gt;&lt;td&gt;Workers（并行）&lt;&#x2F;td&gt;&lt;td&gt;调查代码库，理解问题&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Synthesis&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Coordinator&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;综合发现，制定实施计划&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Implementation&lt;&#x2F;td&gt;&lt;td&gt;Workers&lt;&#x2F;td&gt;&lt;td&gt;按照 spec 改代码、commit&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Verification&lt;&#x2F;td&gt;&lt;td&gt;Workers&lt;&#x2F;td&gt;&lt;td&gt;测试改动是否正确&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Synthesis 阶段是 Coordinator 最重要的职责。提示词反复强调：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Never write &amp;quot;based on your findings&amp;quot; or &amp;quot;based on the research.&amp;quot; 
+&lt;&#x2F;span&gt;&lt;span&gt;These phrases delegate understanding to the worker instead of 
+&lt;&#x2F;span&gt;&lt;span&gt;doing it yourself.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果你写 &amp;quot;基于你的调查结果，修复 auth bug&amp;quot;——这是偷懒。你应该写 &amp;quot;修复 src&#x2F;auth&#x2F;validate.ts:42 的空指针。Session 类型（src&#x2F;auth&#x2F;types.ts:15）的 user 字段在 session 过期但 token 仍被缓存时为 undefined。在 user.id 访问前加 null check——如果为 null，返回 401 &#x27;Session expired&#x27;。Commit 并报告 hash。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;理解是 Coordinator 的工作，不是 Worker 的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bing-xing-shi-chao-neng-li&quot;&gt;并行是超能力&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Parallelism is your superpower. Workers are async. Launch independent workers 
+&lt;&#x2F;span&gt;&lt;span&gt;concurrently whenever possible — don&amp;#39;t serialize work that can run simultaneously.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Coordinator 的价值不在于它比 Worker 更聪明——而在于它能同时指挥多个 Worker 并行工作。研究阶段同时派出多个 Worker 调查不同方面，实现阶段按文件分组并行改动，验证阶段跟实现并行进行。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;continue-vs-spawn-jue-ce&quot;&gt;Continue vs. Spawn 决策&lt;&#x2F;h3&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;如果 Worker 已有的上下文对下一步有用 → SendMessage 继续它
+&lt;&#x2F;span&gt;&lt;span&gt;如果下一步需要干净的开始 → 新启 Agent
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;继续 Worker 复用它已经建立的文件理解和上下文，省 token。但如果 Worker 的上下文已经偏离了下一步的方向，不如从头开始。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;swarm-wu-li-ceng-de-bing-xing&quot;&gt;Swarm：物理层的并行&lt;&#x2F;h2&gt;
+&lt;p&gt;前面三种模式都是逻辑层的——多个 Agent 在进程级别并行。Swarm 是物理层的——&lt;strong&gt;每个 Agent 一个可视化的终端面板&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TEAM_LEAD_NAME &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;team-lead&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SWARM_SESSION_NAME &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;claude-swarm&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TMUX_COMMAND &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tmux&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三种后端：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;后端&lt;&#x2F;th&gt;&lt;th&gt;环境&lt;&#x2F;th&gt;&lt;th&gt;特点&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;tmux&lt;&#x2F;td&gt;&lt;td&gt;任何终端&lt;&#x2F;td&gt;&lt;td&gt;每个 teammate 一个 tmux pane&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;iTerm&lt;&#x2F;td&gt;&lt;td&gt;macOS&lt;&#x2F;td&gt;&lt;td&gt;原生 iTerm tab&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;in-process&lt;&#x2F;td&gt;&lt;td&gt;任何环境&lt;&#x2F;td&gt;&lt;td&gt;进程内运行，无可视化&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;每个 teammate 有自己的颜色标识（&lt;code&gt;TEAMMATE_COLOR_ENV_VAR&lt;&#x2F;code&gt;），可以在 tmux 的分割面板中实时看到每个 Agent 在做什么。&lt;&#x2F;p&gt;
+&lt;p&gt;Swarm 还支持 &lt;code&gt;PLAN_MODE_REQUIRED_ENV_VAR&lt;&#x2F;code&gt;——要求 teammate 在实施之前先进入 Plan Mode 获得批准。这是一个安全约束：你可以看到每个 Agent 打算做什么，然后决定是否批准。&lt;&#x2F;p&gt;
+&lt;p&gt;每个 Swarm session 用 PID 隔离（&lt;code&gt;claude-swarm-${process.pid}&lt;&#x2F;code&gt;），多个 Claude Code 实例不会互相干扰。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;agent-jian-tong-xin-xml-xie-yi&quot;&gt;Agent 间通信：XML 协议&lt;&#x2F;h2&gt;
+&lt;p&gt;Worker 完成任务后，通过 &lt;code&gt;&amp;lt;task-notification&amp;gt;&lt;&#x2F;code&gt; XML 通知 Coordinator：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;xml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-xml &quot;&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;task-notification&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;task-id&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;agent-a1b&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;task-id&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;status&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;completed&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;status&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;summary&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;Agent &amp;quot;Investigate auth bug&amp;quot; completed&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;summary&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;Found null pointer in src&#x2F;auth&#x2F;validate.ts:42...&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;usage&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;total_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;15000&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;total_tokens&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_uses&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;8&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool_uses&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;duration_ms&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;12000&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;duration_ms&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;usage&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;task-notification&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个通知被包装成 user-role message 注入 Coordinator 的对话——看起来像用户消息，但有 &lt;code&gt;&amp;lt;task-notification&amp;gt;&lt;&#x2F;code&gt; 标签标识。Coordinator 的系统提示词明确说：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Worker results arrive as user-role messages containing &amp;lt;task-notification&amp;gt; XML. 
+&lt;&#x2F;span&gt;&lt;span&gt;They look like user messages but are not. Distinguish them by the opening tag.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wei-shi-yao-yong-xml-er-bu-shi-json&quot;&gt;为什么用 XML 而不是 JSON？&lt;&#x2F;h3&gt;
+&lt;p&gt;推测：XML 的 tag 结构对 LLM 更友好。&lt;code&gt;&amp;lt;task-notification&amp;gt;&lt;&#x2F;code&gt; 和 &lt;code&gt;&amp;lt;result&amp;gt;&lt;&#x2F;code&gt; 这样的标签有明确的语义，模型不容易搞混。JSON 的花括号和引号在 LLM 的 token 表示中不如 XML 标签直觉。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;agent-lie-biao-wai-yi-10-2-de-cache-you-hua&quot;&gt;Agent 列表外移：10.2% 的 Cache 优化&lt;&#x2F;h2&gt;
+&lt;p&gt;前面在架构篇提过，Agent 列表从 tool description 移到了 attachment message。这里详细说说为什么。&lt;&#x2F;p&gt;
+&lt;p&gt;原来 AgentTool 的 description 包含所有可用 agent 类型的列表。问题是：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;MCP 服务器连接&#x2F;断开 → agent 的工具集变化 → description 变化&lt;&#x2F;li&gt;
+&lt;li&gt;权限模式切换 → agent 的可用性变化 → description 变化&lt;&#x2F;li&gt;
+&lt;li&gt;用户配置了新的自定义 agent → description 变化&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;每次 description 变化，整个 tool schema 的 prompt cache 就失效。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 注释原文：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; The dynamic agent list was ~10.2% of fleet cache_creation tokens
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;解决方案：&lt;code&gt;shouldInjectAgentListInMessages()&lt;&#x2F;code&gt; 控制是否把 agent 列表从 description 移到 conversation 中的 attachment。这样 tool schema 变成纯静态的——永远不变。&lt;&#x2F;p&gt;
+&lt;p&gt;Agent 列表变成一个 &lt;code&gt;agent_listing_delta&lt;&#x2F;code&gt; attachment，只在列表真正变化时更新。而且 attachment 在消息历史的末尾，不影响前面的缓存前缀。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;1. 缓存共享是多 Agent 系统的核心竞争力&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Fork 的&amp;quot;零成本启动&amp;quot;完全依赖 prompt cache 共享。不是每个框架都有这个优势——这是 Anthropic 同时控制 API 和客户端的&amp;quot;垂直整合&amp;quot;红利。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. Agent 的系统提示词就是它的灵魂&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Explore Agent 的&amp;quot;只读侦探&amp;quot;、Verification Agent 的&amp;quot;对抗式破坏者&amp;quot;——每种 Agent 的行为完全由其系统提示词定义。好的 Agent 设计 = 好的提示词设计。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 理解不可委托&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Coordinator 模式的核心原则：&amp;quot;never write based on your findings&amp;quot;。理解研究结果、综合信息、制定计划——这些是 Coordinator 的工作，不能偷懒甩给 Worker。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 对抗自己的弱点&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Verification Agent 的系统提示词直接列出 AI 的经典失败模式，然后要求它&amp;quot;认出自己正在找借口&amp;quot;。这是一种&lt;strong&gt;元认知提示&lt;&#x2F;strong&gt;——不是说&amp;quot;请仔细验证&amp;quot;，而是说&amp;quot;你会想偷懒，这是你偷懒的具体方式，识别并抵抗它&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;Agent 编排讲完了。下一篇深入 Claude Code 的&amp;quot;大脑&amp;quot;——&lt;strong&gt;QueryEngine：46K 行的 LLM 调用核心&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;流式响应解析、tool_use 循环、token 预算管理、消息标准化（5,500 行的 messages.ts）。以及一个 1,295 行的入口文件是怎么驱动整个 AI 交互循环的。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;第 2 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-tool-system&quot;&gt;第 3 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-security-yolo-classifier&quot;&gt;第 4 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-04&lt;&#x2F;td&gt;&lt;td&gt;用 LLM 审查 LLM：yoloClassifier 两阶段安全架构&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 5 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-05&lt;&#x2F;td&gt;&lt;td&gt;三种并行模式：Fork、Coordinator、Swarm&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 6 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-06&lt;&#x2F;td&gt;&lt;td&gt;QueryEngine：46K 行的 LLM 核心引擎&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
+</feed>

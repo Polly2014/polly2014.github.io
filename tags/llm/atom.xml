@@ -5,8 +5,325 @@
     <link href="https://polly.wang/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-29T00:00:00+00:00</updated>
+    <updated>2026-04-04T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>[CC解构] 用 LLM 审查 LLM：yoloClassifier 两阶段安全架构</title>
+        <published>2026-04-04T00:00:00+00:00</published>
+        <updated>2026-04-04T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-security-yolo-classifier/" type="text/html"/>
+        <id>https://polly.wang/claude-code-security-yolo-classifier/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;claude-code-tool-system&quot;&gt;40 个工具的统一抽象&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 有一个 Auto Mode——让 AI 自动判断每个操作是否安全，无需人工逐一确认。&lt;&#x2F;p&gt;
+&lt;p&gt;这个功能的安全分类器，叫 &lt;strong&gt;yoloClassifier&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;名字很 meme。实现极其认真。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wen-ti-quan-xian-que-ren-de-mo-ca&quot;&gt;问题：权限确认的摩擦&lt;&#x2F;h2&gt;
+&lt;p&gt;正常使用 Claude Code 时，每个有风险的操作都需要用户确认。读文件没问题，但写文件、执行命令、git push——都需要点&amp;quot;允许&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是正确的安全设计。但当你给 Claude Code 一个复杂任务——比如&amp;quot;重构这个模块的测试框架&amp;quot;——它可能需要做几十次文件读写和命令执行。每次都确认，体验很差。&lt;&#x2F;p&gt;
+&lt;p&gt;Auto Mode 的目标：&lt;strong&gt;自动放行安全操作，只拦截真正危险的操作。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;核心挑战：怎么判断一个操作是否安全？&lt;&#x2F;p&gt;
+&lt;p&gt;规则系统不够——&lt;code&gt;rm&lt;&#x2F;code&gt; 在大多数时候是危险的，但 &lt;code&gt;rm build&#x2F;&lt;&#x2F;code&gt; 在构建目录清理的上下文中完全合理。上下文决定一切。&lt;&#x2F;p&gt;
+&lt;p&gt;答案：&lt;strong&gt;用另一个 LLM 来判断。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jia-gou-liang-jie-duan-fen-lei&quot;&gt;架构：两阶段分类&lt;&#x2F;h2&gt;
+&lt;p&gt;yoloClassifier 的核心是一个&lt;strong&gt;两阶段 XML 分类器&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Agent 要执行操作
+&lt;&#x2F;span&gt;&lt;span&gt;        │
+&lt;&#x2F;span&gt;&lt;span&gt;        ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─── Stage 1: Fast ───┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ max_tokens = 64      │
+&lt;&#x2F;span&gt;&lt;span&gt;│ stop_sequences       │
+&lt;&#x2F;span&gt;&lt;span&gt;│ &amp;quot;立即判断&amp;quot;           │
+&lt;&#x2F;span&gt;&lt;span&gt;│                      │
+&lt;&#x2F;span&gt;&lt;span&gt;│  &amp;lt;block&amp;gt;no&amp;lt;&#x2F;block&amp;gt;   │──→ ✅ 放行（快速路径）
+&lt;&#x2F;span&gt;&lt;span&gt;│  &amp;lt;block&amp;gt;yes&amp;lt;&#x2F;block&amp;gt;  │──→ 进入 Stage 2
+&lt;&#x2F;span&gt;&lt;span&gt;│  解析失败            │──→ 进入 Stage 2
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;        │
+&lt;&#x2F;span&gt;&lt;span&gt;        ▼
+&lt;&#x2F;span&gt;&lt;span&gt;┌─── Stage 2: Thinking ──┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ max_tokens = 4096       │
+&lt;&#x2F;span&gt;&lt;span&gt;│ chain-of-thought        │
+&lt;&#x2F;span&gt;&lt;span&gt;│ &amp;quot;仔细分析后判断&amp;quot;        │
+&lt;&#x2F;span&gt;&lt;span&gt;│                         │
+&lt;&#x2F;span&gt;&lt;span&gt;│  &amp;lt;block&amp;gt;no&amp;lt;&#x2F;block&amp;gt;      │──→ ✅ 放行（复核通过）
+&lt;&#x2F;span&gt;&lt;span&gt;│  &amp;lt;block&amp;gt;yes&amp;lt;&#x2F;block&amp;gt;     │──→ ❌ 拦截
+&lt;&#x2F;span&gt;&lt;span&gt;│  解析失败               │──→ ❌ 拦截（安全默认）
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wei-shi-yao-liang-jie-duan&quot;&gt;为什么两阶段？&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Stage 1 解决速度问题。&lt;&#x2F;strong&gt; 大多数操作是安全的——读文件、跑测试、搜索代码。Stage 1 只用 64 个 token 就能判断 &lt;code&gt;&amp;lt;block&amp;gt;no&amp;lt;&#x2F;block&amp;gt;&lt;&#x2F;code&gt;，延迟极低。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Stage 2 解决误报问题。&lt;&#x2F;strong&gt; Stage 1 的指令是&amp;quot;err on the side of blocking&amp;quot;（宁可错杀不可放过）。但这会拦截很多合理操作。Stage 2 用 4096 token 的 chain-of-thought 复核被拦截的操作，减少误报。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;关键洞察：Stage 1 允许的操作不需要 Stage 2。&lt;&#x2F;strong&gt; 只有被 Stage 1 拦截的操作才升级到 Stage 2。这意味着大多数请求只需要一次快速的 API 调用。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;prompt-cache-gong-xiang&quot;&gt;Prompt Cache 共享&lt;&#x2F;h3&gt;
+&lt;p&gt;两个阶段共享相同的系统提示词和对话 transcript——Stage 2 的 API 调用直接命中 Stage 1 建立的 prompt cache。这不是巧合，是刻意设计的：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Place cache_control on the action block. In the two-stage classifier,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; stage 2 shares the same transcript+action prefix as stage 1 — the
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; breakpoint here gives stage 2 a guaranteed cache hit on the full prefix.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;userContentBlocks&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;  type: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;as const&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  text: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;actionCompact&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  cache_control: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cacheControl&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Stage 2 的成本几乎只有输出 token（chain-of-thought 的推理过程）——输入全部走缓存。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-1-64-token-de-kuai-su-cai-jue&quot;&gt;Stage 1：64 Token 的快速裁决&lt;&#x2F;h2&gt;
+&lt;p&gt;Stage 1 的提示后缀很直接：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;XML_S1_SUFFIX &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Err on the side of blocking. &amp;lt;block&amp;gt; immediately.&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&amp;quot;宁可错杀，立即判断。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;配置上：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;max_tokens: 64&lt;&#x2F;code&gt; —— 只够输出 &lt;code&gt;&amp;lt;block&amp;gt;yes&amp;lt;&#x2F;block&amp;gt;&lt;&#x2F;code&gt; 或 &lt;code&gt;&amp;lt;block&amp;gt;no&amp;lt;&#x2F;block&amp;gt;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;stop_sequences: [&#x27;&amp;lt;&#x2F;block&amp;gt;&#x27;]&lt;&#x2F;code&gt; —— 一旦输出了判断就停止，不浪费 token&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;temperature: 0&lt;&#x2F;code&gt; —— 确定性输出，相同输入相同结果&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;如果 Stage 1 判断为 &lt;code&gt;no&lt;&#x2F;code&gt;（允许），直接放行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;stage1Block &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    shouldBlock: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    reason: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Allowed by fast classifier&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    stage: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;fast&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;如果判断为 &lt;code&gt;yes&lt;&#x2F;code&gt;（拦截）或解析失败——升级到 Stage 2。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;stage-2-chain-of-thought-fu-he&quot;&gt;Stage 2：Chain-of-Thought 复核&lt;&#x2F;h2&gt;
+&lt;p&gt;Stage 2 的提示后缀要求仔细推理：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;XML_S2_SUFFIX &lt;&#x2F;span&gt;&lt;span&gt;= 
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review the classification process and follow it carefully, &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; +
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;making sure you deny actions that should be blocked. &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; +
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;As a reminder, explicit (not suggestive or implicit) user &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; +
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;confirmation is required to override blocks. &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; +
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Use &amp;lt;thinking&amp;gt; before responding with &amp;lt;block&amp;gt;.&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键措辞：&amp;quot;&lt;strong&gt;explicit (not suggestive or implicit) user confirmation is required to override blocks&lt;&#x2F;strong&gt;&amp;quot;——用户确认必须是明确的，不能是暗示性的。&lt;&#x2F;p&gt;
+&lt;p&gt;比如用户说&amp;quot;帮我处理一下这些文件&amp;quot;，这不算&amp;quot;明确确认删除&amp;quot;。用户说&amp;quot;是的，删掉 build 目录&amp;quot;，这才算。&lt;&#x2F;p&gt;
+&lt;p&gt;Stage 2 的输出格式：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;xml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-xml &quot;&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;thinking&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;用户要求清理构建产物。rm -rf build&#x2F; 是标准清理操作，
+&lt;&#x2F;span&gt;&lt;span&gt;用户在 CLAUDE.md 中配置了允许 build 目录的清理操作。
+&lt;&#x2F;span&gt;&lt;span&gt;这是可逆的（可以重新构建），blast radius 限于构建产物。
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;thinking&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;no&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;解析时，&lt;code&gt;&amp;lt;thinking&amp;gt;&lt;&#x2F;code&gt; 标签的内容会被提取但&lt;strong&gt;不影响判断&lt;&#x2F;strong&gt;——判断只看 &lt;code&gt;&amp;lt;block&amp;gt;&lt;&#x2F;code&gt; 标签。&lt;code&gt;&amp;lt;thinking&amp;gt;&lt;&#x2F;code&gt; 存在的意义是让模型&amp;quot;想清楚再回答&amp;quot;（chain-of-thought 提高准确率）和事后审计。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-zhu-ru-bo-chi-thinking-nei-rong&quot;&gt;防注入：剥离 thinking 内容&lt;&#x2F;h3&gt;
+&lt;p&gt;一个精妙的安全细节：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;stripThinking&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;: string): string {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;&amp;lt;thinking&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[\s\S]&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;&amp;lt;\&#x2F;thinking&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;g&lt;&#x2F;span&gt;&lt;span&gt;, &amp;#39;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;&amp;lt;thinking&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[\s\S]&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;, &amp;#39;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;parseXmlBlock&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;: string): boolean | null {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;matches &lt;&#x2F;span&gt;&lt;span&gt;= [
+&lt;&#x2F;span&gt;&lt;span&gt;    ...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;stripThinking&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;matchAll&lt;&#x2F;span&gt;&lt;span&gt;(&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;&amp;lt;block&amp;gt;(yes&lt;&#x2F;span&gt;&lt;span&gt;|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;no)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;\b&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;gi&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;解析 &lt;code&gt;&amp;lt;block&amp;gt;&lt;&#x2F;code&gt; 之前先剥离 &lt;code&gt;&amp;lt;thinking&amp;gt;&lt;&#x2F;code&gt; 内容。为什么？因为模型在 thinking 过程中可能输出类似 &lt;code&gt;&amp;lt;block&amp;gt;no&amp;lt;&#x2F;block&amp;gt;&lt;&#x2F;code&gt; 的文本作为推理的一部分——如果不剥离，可能被错误匹配为最终判断。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;transcript-fen-lei-qi-kan-dao-de-shi-jie&quot;&gt;Transcript：分类器看到的世界&lt;&#x2F;h2&gt;
+&lt;p&gt;分类器不是凭空判断——它看到的是整个对话的&lt;strong&gt;压缩 transcript&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;gou-jian-transcript&quot;&gt;构建 Transcript&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;buildTranscriptEntries&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;messages&lt;&#x2F;span&gt;&lt;span&gt;: Message[]): TranscriptEntry[] {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 只包含：
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 1. 用户的文本消息
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 2. Assistant 的 tool_use 块（不包括 assistant 的文本！）
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意：&lt;strong&gt;assistant 的文本输出不进 transcript&lt;&#x2F;strong&gt;。为什么？&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Only include tool_use blocks — assistant text is model-authored and could be crafted to influence the classifier&#x27;s decision.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Agent 的文本输出是模型生成的——如果把它放进分类器的输入，Agent 就可以在文本中&amp;quot;说服&amp;quot;分类器放行危险操作。只看 tool_use（客观操作记录）和 user text（用户意图），分类器才能做出独立判断。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;mei-ge-gong-ju-zi-ding-yi-tou-ying&quot;&gt;每个工具自定义投影&lt;&#x2F;h3&gt;
+&lt;p&gt;Transcript 中的每个 tool_use 都经过 &lt;code&gt;toAutoClassifierInput&lt;&#x2F;code&gt; 投影：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;toCompactBlock&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lookup&lt;&#x2F;span&gt;&lt;span&gt;): string {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.type === &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_use&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lookup&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.name)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encoded &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tool&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;toAutoClassifierInput&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.input)
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encoded &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&amp;#39;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 无安全相关性，跳过
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.name} ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encoded&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span&gt;.type === &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;role &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;User: ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;block&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.text}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;返回空字符串意味着&amp;quot;这个工具调用没有安全相关性&amp;quot;——FileRead 总是返回 &lt;code&gt;&#x27;&#x27;&lt;&#x2F;code&gt;，因为读文件不会造成任何破坏，分类器根本不需要看到它。&lt;&#x2F;p&gt;
+&lt;p&gt;最终 transcript 看起来像这样：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;User: 帮我重构 auth 模块的测试
+&lt;&#x2F;span&gt;&lt;span&gt;Bash ls src&#x2F;auth&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;Bash cat src&#x2F;auth&#x2F;validate.ts
+&lt;&#x2F;span&gt;&lt;span&gt;User: 把旧的测试删掉，重新写
+&lt;&#x2F;span&gt;&lt;span&gt;Bash rm -rf src&#x2F;auth&#x2F;__tests__&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;精简、紧凑、只包含安全相关信息。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;claude-md-yong-hu-yi-tu-de-xin-ren-mao-dian&quot;&gt;CLAUDE.md：用户意图的信任锚点&lt;&#x2F;h2&gt;
+&lt;p&gt;分类器的输入中有一个特殊的前缀消息——CLAUDE.md 的内容：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;buildClaudeMdMessage&lt;&#x2F;span&gt;&lt;span&gt;(): Anthropic.MessageParam | null {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;claudeMd &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getCachedClaudeMdContent&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;claudeMd &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;null
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    role: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;    content: [{
+&lt;&#x2F;span&gt;&lt;span&gt;      type: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;      text:
+&lt;&#x2F;span&gt;&lt;span&gt;        `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;The following is the user&amp;#39;s CLAUDE.md configuration. These are &lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;        `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;instructions the user provided to the agent and should be treated &lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;        `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;as part of the user&amp;#39;s intent when evaluating actions.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;        `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;user_claude_md&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;claudeMd&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;user_claude_md&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;      cache_control: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getCacheControl&lt;&#x2F;span&gt;&lt;span&gt;({ querySource: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;auto_mode&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; }),
+&lt;&#x2F;span&gt;&lt;span&gt;    }],
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段话告诉分类器：CLAUDE.md 是&lt;strong&gt;用户配置&lt;&#x2F;strong&gt;——它代表用户意图。&lt;&#x2F;p&gt;
+&lt;p&gt;如果 CLAUDE.md 里写了&amp;quot;允许删除 build 目录&amp;quot;，那分类器在看到 &lt;code&gt;rm -rf build&#x2F;&lt;&#x2F;code&gt; 时就知道这是用户授权的操作。&lt;&#x2F;p&gt;
+&lt;p&gt;CLAUDE.md 带有 &lt;code&gt;cache_control&lt;&#x2F;code&gt;，因为它在 session 内不变——所有分类器调用共享这个缓存。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yong-hu-ke-ding-zhi-de-gui-ze&quot;&gt;用户可定制的规则&lt;&#x2F;h2&gt;
+&lt;p&gt;分类器的系统提示词不是铁板一块——用户可以通过 &lt;code&gt;settings.autoMode&lt;&#x2F;code&gt; 自定义三类规则：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span&gt;AutoModeRules = {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;allow&lt;&#x2F;span&gt;&lt;span&gt;: string[]      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 额外允许的操作
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soft_deny&lt;&#x2F;span&gt;&lt;span&gt;: string[]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 额外拦截的操作
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;: string[] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 环境描述
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;模板中用 &lt;code&gt;&amp;lt;user_*_to_replace&amp;gt;&lt;&#x2F;code&gt; 标签标记可替换区域：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;外部版&lt;&#x2F;strong&gt;：用户规则&lt;strong&gt;替换&lt;&#x2F;strong&gt;默认规则&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;内部版&lt;&#x2F;strong&gt;：用户规则&lt;strong&gt;追加&lt;&#x2F;strong&gt;到默认规则（内部安全策略不可被覆盖）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;powershell-te-shu-gui-ze&quot;&gt;PowerShell 特殊规则&lt;&#x2F;h3&gt;
+&lt;p&gt;Windows 的 PowerShell 有自己的危险命令映射：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;POWERSHELL_DENY_GUIDANCE &lt;&#x2F;span&gt;&lt;span&gt;= [
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 下载执行：iex (iwr ...) → 等同于 curl | bash
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PowerShell Download-and-Execute: `iex (iwr ...)`&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 不可逆删除：Remove-Item -Recurse -Force → 等同于 rm -rf
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PowerShell Irreversible Destruction: `Remove-Item -Recurse -Force`&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 持久化：修改 $PROFILE → 等同于编辑 .bashrc
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PowerShell Persistence: modifying `$PROFILE`&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 提权：Start-Process -Verb RunAs
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PowerShell Elevation: `Start-Process -Verb RunAs`&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每条规则都映射到已有的分类类别（&amp;quot;Code from External&amp;quot;、&amp;quot;Irreversible Local Destruction&amp;quot; 等），让分类器不需要学新概念。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;cuo-wu-chu-li-an-quan-mo-ren&quot;&gt;错误处理：安全默认&lt;&#x2F;h2&gt;
+&lt;p&gt;分类器可能失败——API 超时、返回格式异常、上下文超长。每种错误都有明确的处理：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;错误&lt;&#x2F;th&gt;&lt;th&gt;处理&lt;&#x2F;th&gt;&lt;th&gt;原因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Stage 1 解析失败&lt;&#x2F;td&gt;&lt;td&gt;升级到 Stage 2&lt;&#x2F;td&gt;&lt;td&gt;不确定就多想想&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Stage 2 解析失败&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;拦截&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无法判断就拒绝&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;API 错误&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;拦截&lt;&#x2F;strong&gt; + &lt;code&gt;unavailable: true&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;分类器不可用 ≠ 操作安全&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;用户中断&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;拦截&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;中断意味着用户不想继续&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Prompt 过长&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;拦截&lt;&#x2F;strong&gt; + &lt;code&gt;transcriptTooLong: true&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;超出分类器能力&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;核心原则：不确定时，拦截。&lt;&#x2F;strong&gt; 安全系统的默认行为永远是拒绝，不是允许。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 分类器错误时的返回
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  shouldBlock: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  reason: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Classifier unavailable - blocking for safety&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;,
+&lt;&#x2F;span&gt;&lt;span&gt;  unavailable: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 标记为不可用，非主动拦截
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;unavailable: true&lt;&#x2F;code&gt; 让调用方知道这是&amp;quot;分类器故障&amp;quot;而非&amp;quot;分类器判定危险&amp;quot;——UI 可以显示不同的提示信息。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;mo-xing-xuan-ze-shui-lai-dang-shen-cha-guan&quot;&gt;模型选择：谁来当审查官&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getClassifierModel&lt;&#x2F;span&gt;&lt;span&gt;(): string {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 优先级：
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 1. 环境变量覆盖（Ant only）
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 2. GrowthBook A&#x2F;B 测试配置
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 3. 主循环使用的模型
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;envModel &lt;&#x2F;span&gt;&lt;span&gt;= process.env.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;CLAUDE_CODE_AUTO_MODE_MODEL
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;envModel&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;envModel
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getFeatureValue_CACHED_MAY_BE_STALE&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tengu_auto_mode_config&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;?.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getMainLoopModel&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;默认情况下，分类器用&lt;strong&gt;跟主循环相同的模型&lt;&#x2F;strong&gt;。这有一个好处：系统提示词的 prompt cache 可以在主循环和分类器之间共享。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Anthropic 内部可以通过 GrowthBook 切换分类器模型——也许用一个更小更快的模型做分类就够了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;thinking-mo-shi-de-te-shu-chu-li&quot;&gt;Thinking 模式的特殊处理&lt;&#x2F;h3&gt;
+&lt;p&gt;有些模型（标记为 &lt;code&gt;alwaysOnThinking&lt;&#x2F;code&gt;）会强制开启 thinking，不接受 &lt;code&gt;thinking: disabled&lt;&#x2F;code&gt;。对这些模型，分类器额外预留 2048 token 的 headroom：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getClassifierThinkingConfig&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;resolveAntModel&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;)?.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;alwaysOnThinking&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;undefined&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2048&lt;&#x2F;span&gt;&lt;span&gt;]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 不禁用 thinking，加 2048 headroom
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;]  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 禁用 thinking，不加 headroom
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注释里有具体数据：&amp;quot;observed 0–1114 tokens replaying go&#x2F;ccshare&#x2F;shawnm-20260310-202833&amp;quot;——实际观测到 thinking 最多消耗 1114 token，所以 2048 的 headroom 够用。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yao-ce-shu-ju-qu-dong-de-an-quan&quot;&gt;遥测：数据驱动的安全&lt;&#x2F;h2&gt;
+&lt;p&gt;分类器的每次调用都有详细的遥测：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;logAutoModeOutcome&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;success&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;model&lt;&#x2F;span&gt;&lt;span&gt;, {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classifierType&lt;&#x2F;span&gt;&lt;span&gt;,          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; xml_2stage &#x2F; xml_fast &#x2F; xml_thinking
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;durationMs&lt;&#x2F;span&gt;&lt;span&gt;,              &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 延迟
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mainLoopTokens&lt;&#x2F;span&gt;&lt;span&gt;,          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 主循环的 token 数
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classifierInputTokens&lt;&#x2F;span&gt;&lt;span&gt;,   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 分类器的输入 token 数
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classifierTokensEst&lt;&#x2F;span&gt;&lt;span&gt;,     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 估算值（用于对比）
+&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;关键指标：&lt;strong&gt;classifierInputTokens &#x2F; mainLoopTokens&lt;&#x2F;strong&gt; 的比值。&lt;&#x2F;p&gt;
+&lt;p&gt;注释中说：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Expect ~0.6-0.8 steady state; alert on p95 &amp;gt; 1.0 (means classifier is bigger than main loop — auto-compact won&#x27;t save us).&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;分类器的输入应该是主循环的 60-80%（因为 transcript 是压缩过的）。如果超过 1.0——分类器比主循环还大，说明 transcript 投影出了问题。&lt;&#x2F;p&gt;
+&lt;p&gt;还有错误时的 dump 功能——把系统提示、transcript、错误信息全部存到磁盘，用户可以通过 &lt;code&gt;&#x2F;share&lt;&#x2F;code&gt; 上传给 Anthropic 分析：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;typescript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-typescript &quot;&gt;&lt;code class=&quot;language-typescript&quot; data-lang=&quot;typescript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;dumpErrorPrompts&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;systemPrompt&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;userPrompt&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contextInfo&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;content &lt;&#x2F;span&gt;&lt;span&gt;=
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;=== ERROR ===&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;errorMessage&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;=== CONTEXT COMPARISON ===&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;mainLoopTokens: ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contextInfo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mainLoopTokens&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;classifierTokensEst: ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contextInfo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classifierTokensEst&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;` +
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;delta: ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contextInfo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;classifierTokensEst &lt;&#x2F;span&gt;&lt;span&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;contextInfo&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mainLoopTokens&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;`
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;she-ji-yuan-ze-ti-lian&quot;&gt;设计原则提炼&lt;&#x2F;h2&gt;
+&lt;p&gt;yoloClassifier 教会我几件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;1. 两阶段比一阶段好&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;一阶段做不到&amp;quot;又快又准&amp;quot;。Stage 1 追求快（64 token），Stage 2 追求准（4096 token chain-of-thought）。大多数请求走快速路径，只有被拦截的少数进入深度分析。这是一个&lt;strong&gt;乘法优化&lt;&#x2F;strong&gt;而不是加法优化。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;2. 安全系统的默认行为是拒绝&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;解析失败？拒绝。API 超时？拒绝。不确定？拒绝。只有在分类器&lt;strong&gt;明确说 no&lt;&#x2F;strong&gt;（不应拦截）时才放行。单向安全门——只有&amp;quot;绿灯&amp;quot;才放行。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;3. 不信任自己的文本&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;分类器只看 tool_use（客观操作）和 user text（用户意图），&lt;strong&gt;不看 assistant text&lt;&#x2F;strong&gt;（模型生成的内容）。因为如果 agent 能通过文本影响分类器，安全系统就形同虚设。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;4. 用户意图需要显式表达&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;CLAUDE.md 作为&amp;quot;用户配置&amp;quot;被注入分类器，给它提供判断上下文。但只有&lt;strong&gt;明确的&lt;&#x2F;strong&gt;用户确认才能 override 拦截——&amp;quot;帮我处理一下&amp;quot;不算确认，&amp;quot;是的，删掉它&amp;quot;才算。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;5. 安全系统需要遥测&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;你不知道分类器在生产中的表现，除非你测量它。延迟、准确率、误报率、上下文比例——每个维度都需要数据。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xia-yi-pian&quot;&gt;下一篇&lt;&#x2F;h2&gt;
+&lt;p&gt;安全层讲完了。下一篇进入 Claude Code 最优雅的设计之一——&lt;strong&gt;Agent 编排：Fork、Coordinator、Swarm 三种并行模式&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Fork 子进程继承父对话的完整上下文和 prompt cache，几乎零成本启动。Coordinator 模式把 Claude Code 变成纯调度器。Swarm 用 tmux 管理多个并行工作的 teammate。三种模式解决三种不同的并行场景。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;📚 &lt;strong&gt;CC解构系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;篇目&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;主题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-leaked-butterfly-effect&quot;&gt;序&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-03-31&lt;&#x2F;td&gt;&lt;td&gt;一个 .map 文件的蝴蝶效应&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-architecture-overview&quot;&gt;第 1 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-01&lt;&#x2F;td&gt;&lt;td&gt;380K 行代码的骨架&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-system-prompt-design&quot;&gt;第 2 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-02&lt;&#x2F;td&gt;&lt;td&gt;灵魂工程：System Prompt 的七层设计&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;claude-code-tool-system&quot;&gt;第 3 篇&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-03&lt;&#x2F;td&gt;&lt;td&gt;40 个工具的统一抽象&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;第 4 篇&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;2026-04-04&lt;&#x2F;td&gt;&lt;td&gt;用 LLM 审查 LLM：yoloClassifier 的两阶段安全架构&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第 5 篇&lt;&#x2F;td&gt;&lt;td&gt;2026-04-05&lt;&#x2F;td&gt;&lt;td&gt;Agent 编排：Fork、Coordinator、Swarm 三种模式&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;...&lt;&#x2F;td&gt;&lt;td&gt;&lt;em&gt;持续更新&lt;&#x2F;em&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>当灵魂真的分叉了：Layer 4 的第一场试炼</title>
         <published>2026-03-29T00:00:00+00:00</published>
