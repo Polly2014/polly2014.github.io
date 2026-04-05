@@ -5,8 +5,109 @@
     <link href="https://polly.wang/tags/api-dai-li/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-28T00:00:00+00:00</updated>
+    <updated>2026-04-06T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/api-dai-li/atom.xml</id>
+    <entry xml:lang="en">
+        <title>🔍 CopilotX v2.4：盲飞三个月后，它终于睁开了眼</title>
+        <published>2026-04-06T00:00:00+00:00</published>
+        <updated>2026-04-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/copilotx-dashboard-first-eyes/" type="text/html"/>
+        <id>https://polly.wang/copilotx-dashboard-first-eyes/</id>
+        
+        <content type="html">&lt;p&gt;CopilotX 上线三个月了。&lt;&#x2F;p&gt;
+&lt;p&gt;从 &lt;a href=&quot;&#x2F;copilotx-v23-tools-support-journey&quot;&gt;v2.3.0 的 tools 支持&lt;&#x2F;a&gt;，到 &lt;a href=&quot;&#x2F;copilotx-v233-sse-streaming-fix&quot;&gt;v2.3.3 的流式修复&lt;&#x2F;a&gt;，再到上周那个 &lt;a href=&quot;&#x2F;copilotx-vision-debug-journey&quot;&gt;藏着三个 bug 的 400&lt;&#x2F;a&gt;——它转发了多少请求？烧了多少 token？帮我省了多少钱？&lt;&#x2F;p&gt;
+&lt;p&gt;我一个数字都说不出来。&lt;&#x2F;p&gt;
+&lt;p&gt;这就像开了三个月的出租车，不知道跑了多少公里，不知道油耗，不知道收入。仪表盘是黑的，全凭感觉飞。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚，给它装眼睛。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ling-chen-san-dian-ban-de-jia-gou&quot;&gt;凌晨三点半的架构&lt;&#x2F;h2&gt;
+&lt;p&gt;想法很简单：一个嵌入式 dashboard，不加依赖，不建前端项目，全部塞进一个 Python 文件里。&lt;&#x2F;p&gt;
+&lt;p&gt;架构三件套：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;MetricsMiddleware&lt;&#x2F;strong&gt; — FastAPI 中间件，拦截所有 &lt;code&gt;&#x2F;v1&#x2F;*&lt;&#x2F;code&gt; 请求，记录时间、状态码、client IP&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;MetricsStore&lt;&#x2F;strong&gt; — SQLite + WAL 模式，线程安全，内置 API 价格表估算成本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;routes_dashboard&lt;&#x2F;strong&gt; — 一个 538 行的 HTML 文件，嵌在 Python 字符串里（是的，就这么粗暴）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;为什么不用前端框架？因为 CopilotX 的哲学是&lt;strong&gt;零外部依赖&lt;&#x2F;strong&gt;。它是个代理，不是个 web 应用。Dashboard 只是个附赠品——打开浏览器就能看，不需要 &lt;code&gt;npm install&lt;&#x2F;code&gt; 任何东西。&lt;&#x2F;p&gt;
+&lt;p&gt;唯一的外部引用是 Chart.js 的 CDN 和 Google Fonts。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;45-fen-zhong-7-ge-commit&quot;&gt;45 分钟，7 个 commit&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;03:38  feat: add metrics dashboard with auth (v2.4.0)    +747
+&lt;&#x2F;span&gt;&lt;span&gt;03:45  fix: address code review P0&#x2F;P1 issues              +132 -15
+&lt;&#x2F;span&gt;&lt;span&gt;03:48  fix: Anthropic streaming token tracking             +13 -2
+&lt;&#x2F;span&gt;&lt;span&gt;03:54  fix: SSE parsing for multi-line Anthropic chunks    +12 -7
+&lt;&#x2F;span&gt;&lt;span&gt;03:59  fix: record true stream duration instead of 2ms     +31 -17
+&lt;&#x2F;span&gt;&lt;span&gt;04:08  design: completely redesign dashboard UI            +337 -174
+&lt;&#x2F;span&gt;&lt;span&gt;04:21  fix: security hardening + dashboard polish          +43 -11
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;第一个 commit 是 Polly（数字分身）写的初版——功能完整，但界面像个 90 年代的管理后台。我看了一眼，说&amp;quot;重新设计&amp;quot;。于是有了 04:08 那个 337 行的 UI 重写。&lt;&#x2F;p&gt;
+&lt;p&gt;中间四个 fix 才是有意思的部分。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;liu-shi-qing-qiu-de-du-liang-xian-jing&quot;&gt;流式请求的度量陷阱&lt;&#x2F;h3&gt;
+&lt;p&gt;CopilotX 的核心场景是流式转发：客户端发请求，CopilotX 拿到后端的 SSE 流，逐块转发。问题来了——中间件在 &lt;code&gt;response&lt;&#x2F;code&gt; 返回时就记录了 latency，但此时流还没开始传。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 中间件记录的 latency：请求到第一个响应头的时间
+&lt;&#x2F;span&gt;&lt;span&gt;latency_ms = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;((time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span&gt;() - start) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;结果所有流式请求的延迟都是 2ms。这不是延迟，这是&amp;quot;我刚拿起电话&amp;quot;的时间。&lt;&#x2F;p&gt;
+&lt;p&gt;修法是在流式 wrapper 里记录真正的流结束时间，完成后回填：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# streaming.py — 流结束后更新真实耗时和 token 数
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;hasattr&lt;&#x2F;span&gt;&lt;span&gt;(request.state, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;metrics_row_id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;):
+&lt;&#x2F;span&gt;&lt;span&gt;    store.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;update_tokens&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;row_id&lt;&#x2F;span&gt;&lt;span&gt;=request.state.metrics_row_id,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;input_tokens&lt;&#x2F;span&gt;&lt;span&gt;=token_count.input,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;output_tokens&lt;&#x2F;span&gt;&lt;span&gt;=token_count.output,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;latency_ms&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;((time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;time&lt;&#x2F;span&gt;&lt;span&gt;() - start) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;另一个坑：Anthropic 的 SSE 格式。标准 SSE 是一行一个 &lt;code&gt;data:&lt;&#x2F;code&gt;，但 Anthropic 偶尔会发多行 chunk。原来的 parser 按行分割后直接 &lt;code&gt;json.loads()&lt;&#x2F;code&gt;，遇到多行 chunk 就炸了。&lt;&#x2F;p&gt;
+&lt;p&gt;这些都是&amp;quot;看起来能跑，跑起来数据是错的&amp;quot;问题。Dashboard 不上线，永远发现不了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-long-xia-shuo-yan-jing-lou-guang-liao&quot;&gt;小龙虾说：眼睛漏光了&lt;&#x2F;h2&gt;
+&lt;p&gt;04:08 UI 重写完，我把截图丢给小龙虾做 Review。它一眼看出三个问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;health&lt;&#x2F;code&gt; 端点暴露了 &lt;code&gt;authenticated&lt;&#x2F;code&gt; 字段——安全隐患&lt;&#x2F;li&gt;
+&lt;li&gt;401 请求也被记录进 metrics——测试数据污染真实统计&lt;&#x2F;li&gt;
+&lt;li&gt;Nginx 还在广播版本号&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;第二个最狠。我之前调试的时候发了一堆 401 请求，全被忠实地记进了数据库。Dashboard 上显示的请求里，有一半是我自己的测试垃圾。&lt;&#x2F;p&gt;
+&lt;p&gt;就像装了一面镜子，结果镜子里有一半是灰尘。&lt;&#x2F;p&gt;
+&lt;p&gt;修复很直接——middleware 里加一行，401 直接跳过不记录；&lt;code&gt;&#x2F;health&lt;&#x2F;code&gt; 砍掉敏感字段；再加一个 &lt;code&gt;DELETE &#x2F;dashboard&#x2F;api&#x2F;data&lt;&#x2F;code&gt; 让管理员随时清档。Nginx 加了 &lt;code&gt;server_tokens off&lt;&#x2F;code&gt;，十秒的事。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yan-jing-huan-lian-mang&quot;&gt;眼睛还脸盲&lt;&#x2F;h2&gt;
+&lt;p&gt;安全修完了，我看着 Dashboard 的 CLIENT 列，发现了一个新问题：全是 &lt;code&gt;127.0.0.1&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;VM 上跑着四个服务——TideWatch、SoulArena、Stylist、还有 CopilotX 自己。它们都通过 localhost 调 CopilotX，所以 IP 全一样。眼睛是睁开了，但它分不清谁是谁。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾建议了一个三层身份模型：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;字段&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;网络层&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;client_ip&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;TCP 连接&lt;&#x2F;td&gt;&lt;td&gt;IP 定位&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;应用层&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;client_id&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;X-Client-Id&lt;&#x2F;code&gt; header&lt;&#x2F;td&gt;&lt;td&gt;服务区分&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;用户层&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;user_id&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;未来 API Key 映射&lt;&#x2F;td&gt;&lt;td&gt;多用户（Phase 2&#x2F;3）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;改动很小：middleware 读一行 header，store 加一列，Dashboard 优先显示 &lt;code&gt;client_id&lt;&#x2F;code&gt;，没有的话 fallback 到 IP。各服务端加一行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;default_headers = {&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;X-Client-Id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tidewatch&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;有 header 的请求，CLIENT 列青色显示服务名；没有的，灰色显示 IP。脸盲治好了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;916-xing-de-quan-mao&quot;&gt;916 行的全貌&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;copilotx-dashboard-first-eyes&#x2F;dashboard.png&quot; alt=&quot;CopilotX Dashboard&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;全部嵌在一个 Python 文件里。SQLite WAL 模式，线程安全，零外部依赖。打开浏览器就能看到：48 小时请求时间线、按官方定价估算的成本、真实的端到端延迟分布、模型调用比例，还有每条请求的完整明细——从 token 数到 Client 身份。&lt;&#x2F;p&gt;
+&lt;p&gt;暗色主题，霓虹色点缀。看起来像个正经的 DevOps 监控面板，其实只是个 Python 字符串。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mang-fei-jie-shu&quot;&gt;盲飞结束&lt;&#x2F;h2&gt;
+&lt;p&gt;三个月前 CopilotX 上线的时候，我只关心&amp;quot;能不能用&amp;quot;。v2.3 解决了 tools，v2.3.3 解决了流式，v2.4 解决了&amp;quot;你到底干了什么&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;从功能到稳定到可观测——这大概就是一个工具成熟的三步曲。而可观测性本身也走了三步：先能看（Dashboard），再看准（401 过滤 + 流式真实耗时），最后看清谁是谁（&lt;code&gt;X-Client-Id&lt;&#x2F;code&gt;）。&lt;&#x2F;p&gt;
+&lt;p&gt;下次有人问我&amp;quot;CopilotX 省了多少钱&amp;quot;，我终于不用说&amp;quot;大概&amp;quot;了。打开 Dashboard，数字就在那里。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;文章&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;02&#x2F;09&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;CopilotX：把 Copilot 变成本地 API&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.1&lt;&#x2F;td&gt;&lt;td&gt;02&#x2F;09&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v2-remote-deployment&quot;&gt;CopilotX v2.1：从本机到云端&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.3.0&lt;&#x2F;td&gt;&lt;td&gt;02&#x2F;13&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v23-tools-support-journey&quot;&gt;v2.3.0：终于能用 tools 了&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.3.2&lt;&#x2F;td&gt;&lt;td&gt;02&#x2F;18&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v232-error-passthrough&quot;&gt;v2.3.2：当 400 变成了「你猜怎么了」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.3.3&lt;&#x2F;td&gt;&lt;td&gt;02&#x2F;20&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v233-sse-streaming-fix&quot;&gt;v2.3.3：一个空行引发的「血案」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.4.0&lt;&#x2F;td&gt;&lt;td&gt;03&#x2F;28&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-vision-debug-journey&quot;&gt;一个 400 背后藏着三个 Bug&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.4.0&lt;&#x2F;td&gt;&lt;td&gt;04&#x2F;06&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;盲飞三个月后，它终于睁开了眼&lt;&#x2F;strong&gt;（本文）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🔍 CopilotX：一个 400 背后藏着三个 Bug</title>
         <published>2026-03-28T00:00:00+00:00</published>
