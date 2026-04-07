@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - ContextWeave</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/contextweave/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-07T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/contextweave/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从东京到巴黎：用 Claude Opus 4.6 把 OPE 书翻成了法语和日语</title>
+        <published>2026-04-07T00:00:00+00:00</published>
+        <updated>2026-04-07T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/ope-book-french-japanese-translation/" type="text/html"/>
+        <id>https://polly.wang/ope-book-french-japanese-translation/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;ope-book-translation-48-hours&quot;&gt;48小时翻译 Qi 的 OPE 新书&lt;&#x2F;a&gt;——那次用 DeepSeek V3 完成了中→英翻译，给 Mustafa 的礼物。&lt;&#x2F;p&gt;
+&lt;p&gt;三个月后，Qi 又来了新需求：&lt;strong&gt;法语版和日语版&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这一次，翻译引擎换代了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;huan-yin-qing-cong-deepseek-dao-claude-opus-4-6&quot;&gt;换引擎：从 DeepSeek 到 Claude Opus 4.6&lt;&#x2F;h2&gt;
+&lt;p&gt;上次翻译用的是 DeepSeek V3 直连 API，temperature=1.3（DeepSeek 官方推荐的翻译温度）。效果很好，但有个现实问题——DeepSeek 按 token 计费，30 万字的书翻两个语言不便宜。&lt;&#x2F;p&gt;
+&lt;p&gt;恰好，我的 &lt;a href=&quot;&#x2F;copilotx-v23-metrics-dashboard&quot;&gt;CopilotX&lt;&#x2F;a&gt; 项目最近稳定下来了——它把 GitHub Copilot 的模型包装成 OpenAI-compatible 接口，部署在 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;。这意味着：&lt;strong&gt;Copilot 订阅包含的模型，统统零额外成本&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Opus 4.6 是目前 Copilot 里最强的模型。翻译这种需要精确、忠实的任务，正是它的强项。&lt;&#x2F;p&gt;
+&lt;p&gt;改造 Master Translator 的 &lt;code&gt;llm_provider.py&lt;&#x2F;code&gt; 只需要三处：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;添加模型配置&lt;&#x2F;strong&gt;——&lt;code&gt;claude-opus-4.6&lt;&#x2F;code&gt;，provider 设为 &lt;code&gt;copilotx&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;添加路由逻辑&lt;&#x2F;strong&gt;——在 &lt;code&gt;complete()&lt;&#x2F;code&gt; 方法里加一个 CopilotX 分支&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实现直连方法&lt;&#x2F;strong&gt;——&lt;code&gt;_complete_copilotx()&lt;&#x2F;code&gt;，流式传输，复用连接池&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Temperature 设为 &lt;strong&gt;0.1&lt;&#x2F;strong&gt;。翻译不需要创造性，需要的是确定性输出。这和 DeepSeek 的 1.3 完全不同——那个值是 DeepSeek 针对自家模型的特殊优化，不能套到 Claude 上。&lt;&#x2F;p&gt;
+&lt;p&gt;分块大小从 8000 调到 &lt;strong&gt;12000&lt;&#x2F;strong&gt;。Claude Opus 4.6 的 max_tokens 是 16384，比 DeepSeek 宽一倍。更大的分块意味着更少的边界、更连贯的翻译。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhu-yu-biao-278-ge-zhu-yu-de-shuang-yu-kuo-zhan&quot;&gt;术语表：278 个术语的双语扩展&lt;&#x2F;h2&gt;
+&lt;p&gt;长文档翻译的灵魂是术语表——ContextWeave 的 Context Weaving 机制会把术语注入每个分块的 prompt 里，确保全书一致。&lt;&#x2F;p&gt;
+&lt;p&gt;上次做英文版时已经有了 &lt;code&gt;ope_zh_en_optimized.json&lt;&#x2F;code&gt;（278 个术语）。这次要做的是基于它生成中→日和中→法两个版本。&lt;&#x2F;p&gt;
+&lt;p&gt;策略很简单：把 278 个术语分成 4 批，每批 70 个，发给 Claude Opus 4.6，让它在英文翻译的参考下生成对应的日语&#x2F;法语翻译。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;prompt = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Translate the following Chinese terms to &lt;&#x2F;span&gt;&lt;span&gt;{target_lang}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Each term has its English translation as reference context.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Return ONLY valid JSON.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&amp;quot;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;几个有意思的翻译选择：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;中文&lt;&#x2F;th&gt;&lt;th&gt;日语&lt;&#x2F;th&gt;&lt;th&gt;法语&lt;&#x2F;th&gt;&lt;th&gt;点评&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;个体创业者&lt;&#x2F;td&gt;&lt;td&gt;一人起業家&lt;&#x2F;td&gt;&lt;td&gt;Solopreneur&lt;&#x2F;td&gt;&lt;td&gt;日语造了新词，法语直接用英文借词&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;人机协同&lt;&#x2F;td&gt;&lt;td&gt;人間とAIの協働&lt;&#x2F;td&gt;&lt;td&gt;Collaboration humain-IA&lt;&#x2F;td&gt;&lt;td&gt;日语用了&amp;quot;人間&amp;quot;而非&amp;quot;人&amp;quot;，更正式&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;出海&lt;&#x2F;td&gt;&lt;td&gt;海外展開&lt;&#x2F;td&gt;&lt;td&gt;Expansion internationale&lt;&#x2F;td&gt;&lt;td&gt;三种语言三种视角&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;全球化&lt;&#x2F;td&gt;&lt;td&gt;グローバル化&lt;&#x2F;td&gt;&lt;td&gt;Mondialisation&lt;&#x2F;td&gt;&lt;td&gt;法语坚持用自己的词，不用 Globalisation&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;低代码&lt;&#x2F;td&gt;&lt;td&gt;ローコード&lt;&#x2F;td&gt;&lt;td&gt;Low-code&lt;&#x2F;td&gt;&lt;td&gt;都是直接音译&#x2F;借用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;8 次 API 调用（4 批 × 2 语言），全部成功。术语表生成完毕。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shuang-xian-fan-yi-30mo-zi-x-2&quot;&gt;双线翻译：30万字 × 2&lt;&#x2F;h2&gt;
+&lt;p&gt;万事俱备，启动翻译。&lt;&#x2F;p&gt;
+&lt;p&gt;法语先行：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;translate_document(
+&lt;&#x2F;span&gt;&lt;span&gt;    document_path=&amp;quot;ope_formated.md&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    target_language=&amp;quot;french&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    terminology_file=&amp;quot;ope_zh_fr.json&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;32 个分块，5 路并发，&lt;strong&gt;零失败&lt;&#x2F;strong&gt;。29 分钟完成。&lt;&#x2F;p&gt;
+&lt;p&gt;紧接着日语：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;translate_document(
+&lt;&#x2F;span&gt;&lt;span&gt;    document_path=&amp;quot;ope_formated.md&amp;quot;, 
+&lt;&#x2F;span&gt;&lt;span&gt;    target_language=&amp;quot;japanese&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    terminology_file=&amp;quot;ope_zh_ja.json&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;同样 32 块零失败，31 分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;两个语言的扩展比差异非常有趣：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;语言&lt;&#x2F;th&gt;&lt;th&gt;输入&lt;&#x2F;th&gt;&lt;th&gt;输出&lt;&#x2F;th&gt;&lt;th&gt;扩展比&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;法语&lt;&#x2F;td&gt;&lt;td&gt;291,858 字符&lt;&#x2F;td&gt;&lt;td&gt;1,193,303 字符&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;4.09x&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;日语&lt;&#x2F;td&gt;&lt;td&gt;291,858 字符&lt;&#x2F;td&gt;&lt;td&gt;436,172 字符&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1.49x&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;法语的 4.09x 远超预期的 2.5x——法语的语法结构（冠词、介词、动词变位）确实让文本膨胀得厉害。日语的 1.49x 则很合理，中日共用汉字体系，很多术语可以直接对应。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;pandoc-yu-fa-yu-zhong-yin-fu-de-zhan-zheng&quot;&gt;pandoc 与法语重音符的战争&lt;&#x2F;h2&gt;
+&lt;p&gt;翻译搞定了，接下来是 Word 转换。上次英文版用 pandoc 很顺利，这次我以为也一样。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pandoc&lt;&#x2F;span&gt;&lt;span&gt; ope_formated_french_parallel.md \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    -o&lt;&#x2F;span&gt;&lt;span&gt; ope_formated_french_pandoc.docx \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;    --embed-resources --standalone --mathml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;打开 Word 文件，&lt;strong&gt;表格全没了&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;原文有 10 个 HTML &lt;code&gt;&amp;lt;table&amp;gt;&lt;&#x2F;code&gt; 标签。检查 pandoc 的内部 AST：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pandoc&lt;&#x2F;span&gt;&lt;span&gt; file.md&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; json | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;import json, sys
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;d = json.load(sys.stdin)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tables = [b for b in d[&amp;#39;blocks&amp;#39;] if b[&amp;#39;t&amp;#39;]==&amp;#39;Table&amp;#39;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;print(f&amp;#39;Table blocks: {len(tables)}&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 结果：Table blocks: 0
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;直接就不认。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;pai-cha-guo-cheng&quot;&gt;排查过程&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;假设 1&lt;&#x2F;strong&gt;：HTML 表格没被解析？→ 对，pandoc 的 markdown 格式默认开启 &lt;code&gt;raw_html&lt;&#x2F;code&gt; 扩展，会把 HTML 表格当作 raw block 直通，不做解析。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;尝试 1&lt;&#x2F;strong&gt;：把 HTML 表格预处理成 markdown 表格语法（&lt;code&gt;| --- |&lt;&#x2F;code&gt;）→ 正则替换成功，10 个 HTML 表格变成 16 个 markdown 表格。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# HTML &amp;lt;table&amp;gt; → Markdown |table|
+&lt;&#x2F;span&gt;&lt;span&gt;result = re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sub&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;table&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;table&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, 
+&lt;&#x2F;span&gt;&lt;span&gt;    html_table_to_md, 
+&lt;&#x2F;span&gt;&lt;span&gt;    content, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;flags&lt;&#x2F;span&gt;&lt;span&gt;=re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DOTALL
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;再转 → &lt;strong&gt;还是 0 个表格&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;尝试 2&lt;&#x2F;strong&gt;：单独提取一个表格片段测试 → &lt;strong&gt;成功，1 个表格&lt;&#x2F;strong&gt;。说明表格格式没问题，问题在全文上下文。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;突破口&lt;&#x2F;strong&gt;：检查文件编码时发现法语特殊字符（&lt;code&gt;È&lt;&#x2F;code&gt; → &lt;code&gt;Ère de l&#x27;IA&lt;&#x2F;code&gt;）在 &lt;code&gt;cat -v&lt;&#x2F;code&gt; 下显示异常。长文件中法语重音符触发了 pandoc docx writer 的序列化 bug。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;最终方案&lt;&#x2F;strong&gt;——&lt;strong&gt;两步转换&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Step 1: md → HTML（pandoc 内部正确识别了 10 个表格）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pandoc&lt;&#x2F;span&gt;&lt;span&gt; input.md&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; intermediate.html&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --standalone --mathml
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Step 2: HTML → docx（绕过 md→docx 的编码 bug）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pandoc&lt;&#x2F;span&gt;&lt;span&gt; intermediate.html&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; html&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; output.docx&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --standalone
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Tables: 10 ✅
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;日语版也用同样的流程处理后，从 4 个表格变成 10 个。最后用 python-docx 给所有表格加上实线边框：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;border_xml = &amp;#39;&amp;#39;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;w:tblBorders&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &amp;lt;w:top w:val=&amp;quot;single&amp;quot; w:sz=&amp;quot;4&amp;quot; w:color=&amp;quot;000000&amp;quot;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &amp;lt;w:insideH w:val=&amp;quot;single&amp;quot; w:sz=&amp;quot;4&amp;quot; w:color=&amp;quot;000000&amp;quot;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    &amp;lt;w:insideV w:val=&amp;quot;single&amp;quot; w:sz=&amp;quot;4&amp;quot; w:color=&amp;quot;000000&amp;quot;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;    ...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;w:tblBorders&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;table &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;doc.tables:
+&lt;&#x2F;span&gt;&lt;span&gt;    table._tbl.tblPr.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parse_xml&lt;&#x2F;span&gt;&lt;span&gt;(border_xml))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;zui-zhong-jiao-fu&quot;&gt;最终交付&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;语言&lt;&#x2F;th&gt;&lt;th&gt;术语表&lt;&#x2F;th&gt;&lt;th&gt;正文 (md)&lt;&#x2F;th&gt;&lt;th&gt;正文 (Word)&lt;&#x2F;th&gt;&lt;th&gt;序言&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;法语&lt;&#x2F;td&gt;&lt;td&gt;278 terms&lt;&#x2F;td&gt;&lt;td&gt;✅ 32 块&#x2F;0 失败&lt;&#x2F;td&gt;&lt;td&gt;✅ 10 表格+边框&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;日语&lt;&#x2F;td&gt;&lt;td&gt;278 terms&lt;&#x2F;td&gt;&lt;td&gt;✅ 32 块&#x2F;0 失败&lt;&#x2F;td&gt;&lt;td&gt;✅ 10 表格+边框&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;模型：Claude Opus 4.6 via CopilotX，零额外成本。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-ren-de-chu-ban-she&quot;&gt;一个人的出版社&lt;&#x2F;h2&gt;
+&lt;p&gt;上次翻完英文版时，我写道&amp;quot;用践行 OPE 的方式，翻译阐述 OPE 的书籍&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;今天这个闭环更大了。&lt;&#x2F;p&gt;
+&lt;p&gt;422 页的书，现在有了英、法、日三个语言版本。术语表构建、翻译引擎、质量验证、Word 排版——全部一个人完成，全部用 AI 驱动。如果算上三个月前的英文版，这本书的翻译工作量大概相当于一个小型翻译公司几周的产出。&lt;&#x2F;p&gt;
+&lt;p&gt;Qi 在书里写道：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;一个人，加上 AI，组成一个完整的团队——并解锁无限可能。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;现在这本书自己正在证明这件事——从北京到东京到巴黎，用的就是一个人和一台笔记本电脑。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是 Master Translator 的第 6 和第 7 次翻译任务——同一本书，两个新语言。引擎从 DeepSeek V3 升级到 Claude Opus 4.6，pandoc 的表格 bug 让我学会了 md→HTML→docx 两步法。下一个语言会是什么？也许是阿拉伯语——该测试一下从右到左的排版了。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
