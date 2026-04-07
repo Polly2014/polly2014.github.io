@@ -21,9 +21,9 @@
 &lt;p&gt;三个月后，Qi 又来了新需求：&lt;strong&gt;法语版和日语版&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;这一次，翻译引擎换代了。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;huan-yin-qing-cong-deepseek-dao-claude-opus-4-6&quot;&gt;换引擎：从 DeepSeek 到 Claude Opus 4.6&lt;&#x2F;h2&gt;
-&lt;p&gt;上次翻译用的是 DeepSeek V3 直连 API，temperature=1.3（DeepSeek 官方推荐的翻译温度）。效果很好，但有个现实问题——DeepSeek 按 token 计费，30 万字的书翻两个语言不便宜。&lt;&#x2F;p&gt;
-&lt;p&gt;恰好，我的 &lt;a href=&quot;&#x2F;copilotx-v23-metrics-dashboard&quot;&gt;CopilotX&lt;&#x2F;a&gt; 项目最近稳定下来了——它把 GitHub Copilot 的模型包装成 OpenAI-compatible 接口，部署在 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;。这意味着：&lt;strong&gt;Copilot 订阅包含的模型，统统零额外成本&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
-&lt;p&gt;Claude Opus 4.6 是目前 Copilot 里最强的模型。翻译这种需要精确、忠实的任务，正是它的强项。&lt;&#x2F;p&gt;
+&lt;p&gt;上次翻译用的是 DeepSeek V3 直连 API，temperature=1.3（DeepSeek 官方推荐的翻译温度）。效果很好，但这次我想试试不同的模型。&lt;&#x2F;p&gt;
+&lt;p&gt;恰好，我的 &lt;a href=&quot;&#x2F;copilotx-v23-metrics-dashboard&quot;&gt;CopilotX&lt;&#x2F;a&gt; 项目最近稳定下来了——它把多种模型统一包装成 OpenAI-compatible 接口，部署在 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;，模型切换只需改一个配置项。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Opus 4.6 是目前可用的最强模型之一。翻译这种需要精确、忠实的任务，正是它的强项。&lt;&#x2F;p&gt;
 &lt;p&gt;改造 Master Translator 的 &lt;code&gt;llm_provider.py&lt;&#x2F;code&gt; 只需要三处：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;添加模型配置&lt;&#x2F;strong&gt;——&lt;code&gt;claude-opus-4.6&lt;&#x2F;code&gt;，provider 设为 &lt;code&gt;copilotx&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
@@ -128,7 +128,7 @@
 &lt;tr&gt;&lt;td&gt;法语&lt;&#x2F;td&gt;&lt;td&gt;278 terms&lt;&#x2F;td&gt;&lt;td&gt;✅ 32 块&#x2F;0 失败&lt;&#x2F;td&gt;&lt;td&gt;✅ 10 表格+边框&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;日语&lt;&#x2F;td&gt;&lt;td&gt;278 terms&lt;&#x2F;td&gt;&lt;td&gt;✅ 32 块&#x2F;0 失败&lt;&#x2F;td&gt;&lt;td&gt;✅ 10 表格+边框&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;模型：Claude Opus 4.6 via CopilotX，零额外成本。&lt;&#x2F;p&gt;
+&lt;p&gt;模型：Claude Opus 4.6 via CopilotX。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;yi-ge-ren-de-chu-ban-she&quot;&gt;一个人的出版社&lt;&#x2F;h2&gt;
 &lt;p&gt;上次翻完英文版时，我写道&amp;quot;用践行 OPE 的方式，翻译阐述 OPE 的书籍&amp;quot;。&lt;&#x2F;p&gt;
 &lt;p&gt;今天这个闭环更大了。&lt;&#x2F;p&gt;
