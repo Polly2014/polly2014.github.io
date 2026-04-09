@@ -884,6 +884,8 @@ class PollyChat {
                 ua: navigator.userAgent.slice(0, 200),
                 lang: navigator.language,
                 ref: document.referrer.slice(0, 200),
+                page: location.pathname,
+                screen: screen.width + 'x' + screen.height,
             } : undefined;
             
             fetch(`${this.apiUrl}/v1/conversations/log`, {
