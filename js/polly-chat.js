@@ -488,10 +488,10 @@ class PollyChat {
         let icon, title, detail, showRetry = true;
 
         if (status === 522 || status === 524) {
-            // 服务器不可达 — Azure VM 停机
-            icon = '😴';
-            title = 'Polly is sleeping...';
-            detail = 'My server is taking a nap (Azure subscription limit reached). It usually wakes up at the start of each month. Please try again later!';
+            // 连接超时或服务器不可达
+            icon = '🤔';
+            title = 'Hmm, thinking too hard...';
+            detail = 'Polly got lost in thought and took too long to respond. Give it another shot — it usually works on the second try!';
         } else if (status === 502 || status === 503 || status === 504) {
             icon = '🔧';
             title = 'Server is temporarily unavailable';
@@ -567,9 +567,9 @@ class PollyChat {
             stream: true
         };
         
-        // 快速超时：5 秒内拿不到响应就中断（Cloudflare 522 通常要等 10-15 秒）
+        // 连接超时：15 秒内拿不到响应就中断（大 payload + system prompt TTFB 可达 5s+）
         const controller = new AbortController();
-        const connectTimeout = setTimeout(() => controller.abort(), 5000);
+        const connectTimeout = setTimeout(() => controller.abort(), 15000);
         
         let response;
         try {
