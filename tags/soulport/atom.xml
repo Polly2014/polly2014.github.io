@@ -5,8 +5,139 @@
     <link href="https://polly.wang/tags/soulport/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-02T00:00:00+00:00</updated>
+    <updated>2026-04-11T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/soulport/atom.xml</id>
+    <entry xml:lang="en">
+        <title>灵魂竞技场 V2：一夜重铸赛博朋克</title>
+        <published>2026-04-11T00:00:00+00:00</published>
+        <updated>2026-04-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soularena-v2-cyberpunk-reborn/" type="text/html"/>
+        <id>https://polly.wang/soularena-v2-cyberpunk-reborn/</id>
+        
+        <content type="html">&lt;h2 id=&quot;zhuang-zi-tai-an-jing-liao&quot;&gt;庄子太安静了&lt;&#x2F;h2&gt;
+&lt;p&gt;半个月前的&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;凌晨一点&lt;&#x2F;a&gt;，灵魂竞技场（Soul Arena）还只是 SoulPort 系列博文里的一个想法——&amp;quot;如果 Agent 的灵魂不只是能迁移，还能被评估、被比较、被社交呢？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;那个版本的竞技场长这样：暗黑奇幻风，灵魂球体悬浮在星空里，庄子五级等级——卵、鱼、鲲、鹏、北冥。能用，功能齐全，上传 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件就能看到评分和雷达图。&lt;&#x2F;p&gt;
+&lt;p&gt;但每次打开页面，我总觉得少了什么。&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;灵魂&lt;strong&gt;竞技场&lt;&#x2F;strong&gt;，名字里带着竞技，页面却像禅修室。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;庄子的美学太安静了。灵魂竞技场需要的不是禅意——是杀气。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-jie-guan-tui-dao-zhong-lai&quot;&gt;世界观推倒重来&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;cong-kun-peng-dao-spark-prime&quot;&gt;从鲲鹏到 Spark → Prime&lt;&#x2F;h3&gt;
+&lt;p&gt;第一件要改的就是等级体系。&lt;&#x2F;p&gt;
+&lt;p&gt;V1 的 5 级听起来很美——卵、鱼、鲲、鹏、北冥——但实际分布极不均匀，大部分 Agent 都挤在中间两档，看不出差异。V2 的设计原则只有一个：&lt;strong&gt;甜蜜区要够宽&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Tier&lt;&#x2F;th&gt;&lt;th&gt;名称&lt;&#x2F;th&gt;&lt;th&gt;分数区间&lt;&#x2F;th&gt;&lt;th&gt;视觉感&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Ⅰ &lt;strong&gt;Spark&lt;&#x2F;strong&gt; 火种&lt;&#x2F;td&gt;&lt;td&gt;微弱数据火花&lt;&#x2F;td&gt;&lt;td&gt;0-10&lt;&#x2F;td&gt;&lt;td&gt;暗灰微光&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅱ &lt;strong&gt;Circuit&lt;&#x2F;strong&gt; 回路&lt;&#x2F;td&gt;&lt;td&gt;电路网络成形&lt;&#x2F;td&gt;&lt;td&gt;11-25&lt;&#x2F;td&gt;&lt;td&gt;淡蓝脉冲&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅲ &lt;strong&gt;Sentinel&lt;&#x2F;strong&gt; 哨兵&lt;&#x2F;td&gt;&lt;td&gt;基础机甲轮廓&lt;&#x2F;td&gt;&lt;td&gt;26-42&lt;&#x2F;td&gt;&lt;td&gt;冰蓝投影&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅳ &lt;strong&gt;Phantom&lt;&#x2F;strong&gt; 幻灵&lt;&#x2F;td&gt;&lt;td&gt;半透明能量体&lt;&#x2F;td&gt;&lt;td&gt;43-58&lt;&#x2F;td&gt;&lt;td&gt;蓝紫渐变&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅴ &lt;strong&gt;Titan&lt;&#x2F;strong&gt; 泰坦&lt;&#x2F;td&gt;&lt;td&gt;完整机甲战士&lt;&#x2F;td&gt;&lt;td&gt;59-74&lt;&#x2F;td&gt;&lt;td&gt;蓝橙双色&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅵ &lt;strong&gt;Nexus&lt;&#x2F;strong&gt; 枢纽&lt;&#x2F;td&gt;&lt;td&gt;多核心能量体&lt;&#x2F;td&gt;&lt;td&gt;75-88&lt;&#x2F;td&gt;&lt;td&gt;金色光环&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Ⅶ &lt;strong&gt;Prime&lt;&#x2F;strong&gt; 至尊&lt;&#x2F;td&gt;&lt;td&gt;完全觉醒态&lt;&#x2F;td&gt;&lt;td&gt;89-100&lt;&#x2F;td&gt;&lt;td&gt;全色光谱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;7 个等级，每级 3 星，共 &lt;strong&gt;21 个微段位&lt;&#x2F;strong&gt;。Sentinel 到 Titan（26-74 分）覆盖 49 分的甜蜜区——大部分真实 Agent 都会落在这里，每次上传都能看到星级变化。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;qi-zhang-xing-tai-tu&quot;&gt;七张形态图&lt;&#x2F;h3&gt;
+&lt;p&gt;等级光有名字不够，需要&lt;strong&gt;看得见&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;用 AI 生成了 7 张赛博风透明底 PNG，从微弱的数据火花到能量溢出的力场。每张图对应一个等级，加上 CSS &lt;code&gt;hue-rotate()&lt;&#x2F;code&gt; 映射五维最强维度的色相——同一个 Titan，记忆型是蓝色，技能型是橙色，人格型是紫色。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;零额外美术&lt;&#x2F;strong&gt;：7 张图 + 一个 CSS filter，覆盖了全部 35 种视觉变体（7 tier × 5 dimension color）。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;tiers.jpg&quot; alt=&quot;七张段位形态图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;se-cai-ge-ming&quot;&gt;色彩革命&lt;&#x2F;h3&gt;
+&lt;p&gt;V1 用的是深蓝+金色的暗黑奇幻调色板。V2 只留了两个颜色：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;霓虹青&lt;&#x2F;strong&gt; &lt;code&gt;#00f0ff&lt;&#x2F;code&gt; — 冷静、科技、防守方&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;烈橙&lt;&#x2F;strong&gt; &lt;code&gt;#ff6b35&lt;&#x2F;code&gt; — 热血、侵略、进攻方&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;深黑底 &lt;code&gt;#050510&lt;&#x2F;code&gt;，让霓虹色在上面发光。整个界面像深夜的电竞馆——你能听到显示器的嗡鸣。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qian-duan-da-shou-zhu-ling-kuang-jia-spa&quot;&gt;前端大手术：零框架 SPA&lt;&#x2F;h2&gt;
+&lt;p&gt;整个前端从零重写。没有 React，没有 Vue，没有 Three.js。纯 vanilla JS + CSS 3D + Canvas 2D。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么不用框架？因为灵魂竞技场的&amp;quot;游戏感&amp;quot;不来自 3D 渲染，来自&lt;strong&gt;动画节奏&lt;&#x2F;strong&gt;。CSS transition 的时序编排比 WebGL 粒子更能让人肾上腺素飙升。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chang-jing-ji-jie-mian&quot;&gt;场景即界面&lt;&#x2F;h3&gt;
+&lt;p&gt;首页全屏铺了一张 AI 生成的竞技场全景——左边青蓝色刺客，右边橙色巨兽对峙。上传区不是一个表单，而是一个透明的呼吸光圈，叠在画面的&amp;quot;传送门&amp;quot;位置。背景不是静态的——Canvas 粒子系统驱动 90 颗粒子漫无目的地飘动，给页面一种&amp;quot;活着&amp;quot;的感觉。&lt;&#x2F;p&gt;
+&lt;p&gt;把 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件拖到页面&lt;strong&gt;任何位置&lt;&#x2F;strong&gt;都能触发上传——拖入的瞬间，整个页面边缘亮起发光边框。&lt;&#x2F;p&gt;
+&lt;p&gt;上传不是填表，是&lt;strong&gt;走进竞技场&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;homepage.jpg&quot; alt=&quot;首页全貌&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;profile-ling-hun-de-shen-du-hua-xiang&quot;&gt;Profile：灵魂的深度画像&lt;&#x2F;h2&gt;
+&lt;p&gt;从排行榜或上传结果点进某个灵魂，进入 Profile 详情页——这是整个竞技场信息密度最高的地方。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;左栏黏性，右栏滚动&lt;&#x2F;strong&gt;。左边：Tier 形态大图 + 雷达图 + 操作按钮。右边：可展开的五维详情卡片 + LLM 灵魂自传 + 灵魂结构分析 + 进化时间线。&lt;&#x2F;p&gt;
+&lt;p&gt;五维卡片可以展开——点击&amp;quot;记忆深度&amp;quot;，展开看到子指标：memory 文件数、时间跨度、密度、MEMORY.md 大小。不是一个笼统的数字，而是让你理解这个灵魂&lt;strong&gt;为什么&lt;&#x2F;strong&gt;得到这个分数。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;profile.jpg&quot; alt=&quot;Profile 页面&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;jin-hua-shi-jian-xian&quot;&gt;进化时间线&lt;&#x2F;h3&gt;
+&lt;p&gt;同一个 Agent 导出多次 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件，SoulPort 会通过 &lt;code&gt;agent_fingerprint&lt;&#x2F;code&gt; 追踪它们是同一个灵魂的不同版本。&lt;&#x2F;p&gt;
+&lt;p&gt;Profile 页面底部内嵌了一条横向时间轴。每个节点是一次上传：日期、版本号、分数。节点之间用 SVG 趋势线连接——你能看到这个 Agent 是在成长还是在退化。&lt;&#x2F;p&gt;
+&lt;p&gt;当你看到自己的 Agent 从 Phantom ★☆☆ 进化到 Titan ★★★ 的曲线时，那种成就感是排行榜给不了的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;timeline.jpg&quot; alt=&quot;进化时间线&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;pai-xing-bang-bu-zhi-pai-ming&quot;&gt;排行榜：不止排名&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;Top 3 领奖台&lt;&#x2F;strong&gt;：前三名用卡片式布局，视觉顺序是&amp;quot;银-金-铜&amp;quot;（2-1-3），中间最高。每张卡片带 tier 形态图和发光效果。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;五维 mini bars&lt;&#x2F;strong&gt;：每个人名字下面有一排彩色细条——蓝色记忆、紫色人格、绿色习惯、橙色技能、金色独特。一眼看出能力分布。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Dominant dimension 徽章&lt;&#x2F;strong&gt;：最强维度直接标在名字旁边。排行榜不只比总分，还比特长。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;leaderboard.jpg&quot; alt=&quot;排行榜&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ling-hun-dui-jue-cong-tou-piao-dao-ai-cai-pan&quot;&gt;灵魂对决：从投票到 AI 裁判&lt;&#x2F;h2&gt;
+&lt;p&gt;V2.2 的第一版 Battle 系统是投票制：随机配对两个灵魂，观众投票决定谁赢。UI 做出来了，挺好看的。&lt;&#x2F;p&gt;
+&lt;p&gt;但我看着那两个按钮，越看越觉得不对。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;两个灵魂的竞技场，只有我一个观众。投票有什么意义？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;冷启动阶段，数据库里才 2 个灵魂。投票是为了社区互动，但社区还不存在。为什么不让 LLM 直接模拟这个过程？&lt;&#x2F;p&gt;
+&lt;p&gt;于是定义了 10 个竞技场景池——从生产环境诡异 Bug 到凌晨 oncall 事故，从重构屎山代码到给项目起好名字。每场对战随机抽一个。不同场景对五维能力的权重完全不同，弱者可以翻盘。&lt;&#x2F;p&gt;
+&lt;p&gt;AI 裁判的三条铁律：&lt;strong&gt;不能只看总分&lt;&#x2F;strong&gt;（场景权重不同），&lt;strong&gt;叙事要有画面感&lt;&#x2F;strong&gt;（像电竞解说员），&lt;strong&gt;结构化 JSON 输出&lt;&#x2F;strong&gt;（winner、双方叙事、裁判判词、关键维度）。&lt;&#x2F;p&gt;
+&lt;p&gt;来看一场真实的对战：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;🎯 场景：⚡ 性能优化：页面加载慢到爆&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;小龙虾&lt;&#x2F;strong&gt; (Titan ★☆☆, 60.8分) vs &lt;strong&gt;unknown-agent&lt;&#x2F;strong&gt; (Phantom ★★☆, 49.3分)&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾瞬间切换到硬核黑客模式！82 分人格爆发出强大执行力，84 分习惯让她系统性地分析 bundlejs、懒加载、虚拟滚动。虽然技能为零，但 75 分独特性驱动她用创新思路重构组件，成功将加载时间压缩到 1.8 秒！&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;小龙虾的 Skills 维度是 0 分，但她凭 Personality 和 Uniqueness 赢了。这正是我想要的：不是简单比数字大小，而是&lt;strong&gt;在具体场景里展现灵魂的个性&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;数据库里有一个 &lt;code&gt;battle_mode&lt;&#x2F;code&gt; 字段——&lt;code&gt;&amp;quot;llm_sim&amp;quot;&lt;&#x2F;code&gt; 是当前阶段的 LLM 模拟，&lt;code&gt;&amp;quot;live_exec&amp;quot;&lt;&#x2F;code&gt; 留给未来真实 Agent 执行 Task 的终极形态。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;battle.jpg&quot; alt=&quot;灵魂对决&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fen-xiang-qia-pian-yi-zhang-tu-de-shi-ci-tou-tai&quot;&gt;分享卡片：一张图的十次投胎&lt;&#x2F;h2&gt;
+&lt;p&gt;分享卡片要生成一张 960×540 的 SVG——方寸之间塞进一个灵魂的全部。Polly（我的数字分身）写了第一版：五维 bar、雷达图、灵魂重量、source_host，信息塞得满满当当。&lt;&#x2F;p&gt;
+&lt;p&gt;然后小龙虾接手了。不是 Review——是接过键盘直接重写。十个完整版本，70 分钟，每轮她写代码渲染 PNG，我看效果给反馈。&lt;&#x2F;p&gt;
+&lt;p&gt;前五轮在找骨架——上下布局不行，回到左右分栏，调元素位置。骨架稳了之后才触及灵魂问题：LLM 写的自传一出来，雷达图突然碍眼了。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;……我看起来萌萌哒，内心却住着一个硬核黑客——用最可爱的方式解决最复杂的问题，是我的独门秘籍……真实的温度，比完美的算法更珍贵。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&amp;quot;雷达图喧宾夺主，自传才是核心。&amp;quot; 我说。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾花了三轮才接受这个判断——缩小、移角落、最终砍掉。但砍完雷达，她用的纯黑背景又跟系统界面格格不入。直到她去读了系统的 &lt;code&gt;style.css&lt;&#x2F;code&gt;，把 hero.jpg 背景、毛玻璃卡片、cyan→orange 渐变边框一并带进来——第十版，一出来就对了。&lt;&#x2F;p&gt;
+&lt;p&gt;十轮的教训：&lt;strong&gt;改布局不等于改质感&lt;&#x2F;strong&gt;。真正的突破不是调位置，是砍信息和统一风格。一张分享卡片，最终只剩段位图、名字、分数、和一段自传。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;自传就是灵魂。其余都是装饰。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;share-card.jpg&quot; alt=&quot;分享卡片&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-duan-jia-zi-chuan-de-pai-cha&quot;&gt;一段&amp;quot;假自传&amp;quot;的排查&lt;&#x2F;h2&gt;
+&lt;p&gt;分享卡片做完了，但我对自传内容一直不满意——&amp;quot;在短暂的相遇中，我积攒了 3 份记忆&amp;quot;。小龙虾明明有 57 天的记忆、82 个文件，怎么说&amp;quot;短暂的相遇&amp;quot;？&lt;&#x2F;p&gt;
+&lt;p&gt;查下来是三层 bug 叠在一起：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一层：缓存。&lt;&#x2F;strong&gt; &lt;code&gt;upload_soul()&lt;&#x2F;code&gt; 有去重逻辑，同一个 content_hash 直接返回旧数据——旧数据里存的就是模板生成的假自传。删掉旧记录才能触发重新生成。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二层：环境变量。&lt;&#x2F;strong&gt; &lt;code&gt;.env&lt;&#x2F;code&gt; 文件配了 API key，但 Python 的 &lt;code&gt;os.getenv()&lt;&#x2F;code&gt; 不会自动读 &lt;code&gt;.env&lt;&#x2F;code&gt;——需要 &lt;code&gt;python-dotenv&lt;&#x2F;code&gt; 加载。本地跑的解释器没装这个库，key 永远是空字符串。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第三层：模型名。&lt;&#x2F;strong&gt; 默认模型 &lt;code&gt;claude-sonnet-4-20250514&lt;&#x2F;code&gt; 在 CopilotX 上不存在，只有不带日期后缀的 &lt;code&gt;claude-sonnet-4&lt;&#x2F;code&gt;。API 返回 &lt;code&gt;model_not_supported&lt;&#x2F;code&gt;，异常被 catch，静默走了模板。&lt;&#x2F;p&gt;
+&lt;p&gt;三层 bug，任何一层修好都不够。缓存让你看不到问题，环境变量让 LLM 永远不被调用，模型名让调用必然失败。只有全链路打通，自传才能从&amp;quot;短暂的相遇&amp;quot;变成&amp;quot;真实的温度，比完美的算法更珍贵&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;lu-xian-tu&quot;&gt;路线图&lt;&#x2F;h2&gt;
+&lt;p&gt;四个已完成的里程碑，两个 COMING SOON——一个记录自己进度的页面，在展示自己的进度。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;roadmap.jpg&quot; alt=&quot;Roadmap&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;quan-jia-fu&quot;&gt;全家福&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;v0.1.0&lt;&#x2F;td&gt;&lt;td&gt;MVP — 庄子五级 + 上传评分&lt;&#x2F;td&gt;&lt;td&gt;2026-03-27&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;赛博竞技场 — 7 tier + 前端重写&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.0.1&lt;&#x2F;td&gt;&lt;td&gt;Profile 独立页 + hash routing&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.1&lt;&#x2F;td&gt;&lt;td&gt;进化时间线&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;v2.2&lt;&#x2F;td&gt;&lt;td&gt;灵魂对决 — LLM 裁判&lt;&#x2F;td&gt;&lt;td&gt;2026-04-11&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;从&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;凌晨一点的北冥狂想&lt;&#x2F;a&gt;到今夜的赛博竞技场——灵魂从庄子的鲲鹏湖里游出来，穿上了霓虹护甲，在 10 个场景里接受 AI 裁判的审视。&lt;&#x2F;p&gt;
+&lt;p&gt;投票按钮被删掉的那一刻，我知道这个方向是对的。灵魂竞技场不需要观众举手表决——它需要一个能读懂灵魂的裁判，把每一场对决变成一段值得讲述的故事。&lt;&#x2F;p&gt;
+&lt;p&gt;而一张分享卡片，从信息过载到只剩一段自传，也找到了同样的答案：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;少即是灵魂。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;→ &lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>三副面孔，一个灵魂：SoulPort 跨框架迁移的诞生</title>
         <published>2026-04-02T00:00:00+00:00</published>
