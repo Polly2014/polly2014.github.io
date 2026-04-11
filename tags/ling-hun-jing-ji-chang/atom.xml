@@ -17,7 +17,230 @@
         <link rel="alternate" href="https://polly.wang/soularena-v2-cyberpunk-reborn/" type="text/html"/>
         <id>https://polly.wang/soularena-v2-cyberpunk-reborn/</id>
         
-        <content type="html">&lt;h2 id=&quot;zhuang-zi-tai-an-jing-liao&quot;&gt;庄子太安静了&lt;&#x2F;h2&gt;
+        <content type="html">&lt;style&gt;
+&#x2F;* === SoulArena V2 — 浅底 + 赛博点缀 === *&#x2F;
+.sa-cyber {
+  --cyan: #0bb4c2;
+  --cyan-light: #e6fafb;
+  --orange: #e85d2a;
+  --orange-light: #fff3ee;
+  --accent-grad: linear-gradient(90deg, #0bb4c2, #e85d2a);
+}
+
+&#x2F;* ── 段位表 ── *&#x2F;
+.sa-tier-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5em 0;
+  font-size: 0.93em;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid #e0e0e0;
+}
+.sa-tier-table th {
+  background: #fafafa;
+  color: #555;
+  padding: 11px 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  font-size: 0.85em;
+  border-bottom: 2px solid #ddd;
+  text-align: left;
+}
+.sa-tier-table td {
+  background: #fff;
+  color: #555;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.sa-tier-table tr:last-child td { border-bottom: none; }
+.sa-tier-table tr:hover td { background: #f8fbfc; }
+.sa-tier-tier { font-weight: 700; white-space: nowrap; }
+.sa-tier-vis {
+  font-size: 0.88em; color: #999;
+  font-style: italic;
+}
+&#x2F;* 每个 tier 左边带一条对应颜色竖线 *&#x2F;
+.sa-tier-table tr { border-left: 4px solid transparent; }
+.sa-t1 .sa-tier-tier { color: #999; }
+.sa-t1 { border-left-color: #bbb; }
+.sa-t2 .sa-tier-tier { color: #2ba0c7; }
+.sa-t2 { border-left-color: #2ba0c7; }
+.sa-t3 .sa-tier-tier { color: #1a8fbf; }
+.sa-t3 { border-left-color: #1a8fbf; }
+.sa-t4 .sa-tier-tier { color: #7c5cbf; }
+.sa-t4 { border-left-color: #7c5cbf; }
+.sa-t5 .sa-tier-tier { color: #d97722; }
+.sa-t5 { border-left-color: #d97722; }
+.sa-t6 .sa-tier-tier { color: #c49b00; }
+.sa-t6 { border-left-color: #c49b00; }
+.sa-t7 .sa-tier-tier { color: #d94573; }
+.sa-t7 { border-left-color: #d94573; }
+
+&#x2F;* ── 色彩卡片（保留暗底，本身就是展示配色的示意图）── *&#x2F;
+.sa-color-duo {
+  display: flex; gap: 16px; margin: 1.2em 0;
+  flex-wrap: wrap;
+}
+.sa-color-card {
+  flex: 1; min-width: 200px;
+  border-radius: 10px; padding: 20px 24px;
+  position: relative; overflow: hidden;
+  font-size: 0.95em;
+}
+.sa-color-card::before {
+  content: &#x27;&#x27;; position: absolute; inset: 0;
+  border-radius: 10px; padding: 2px;
+  background: linear-gradient(135deg, var(--glow), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.sa-color-card .sa-color-name {
+  font-size: 1.3em; font-weight: 700; margin-bottom: 4px;
+}
+.sa-color-card .sa-color-hex {
+  font-family: &#x27;SFMono-Regular&#x27;, Consolas, monospace;
+  font-size: 0.9em; opacity: 0.8;
+}
+.sa-color-card .sa-color-desc {
+  margin-top: 8px; font-size: 0.88em; opacity: 0.75;
+}
+.sa-cc-cyan {
+  background: linear-gradient(135deg, #041a1e, #0a2a30);
+  color: #00f0ff; --glow: #00f0ff;
+  box-shadow: 0 0 20px rgba(0,240,255,0.1);
+}
+.sa-cc-orange {
+  background: linear-gradient(135deg, #1e0f05, #2a1508);
+  color: #ff6b35; --glow: #ff6b35;
+  box-shadow: 0 0 20px rgba(255,107,53,0.1);
+}
+
+&#x2F;* ── 战斗卡片（浅底版）── *&#x2F;
+.sa-battle-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px; padding: 24px 28px;
+  margin: 1.5em 0; position: relative;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.sa-battle-card::before {
+  content: &#x27;&#x27;; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent-grad);
+  border-radius: 10px 10px 0 0;
+}
+.sa-battle-scene {
+  color: var(--cyan); font-size: 1.05em; font-weight: 700;
+  margin-bottom: 12px;
+}
+.sa-battle-vs {
+  color: #555; font-size: 0.95em; margin-bottom: 14px;
+}
+.sa-battle-vs .sa-p1 { color: var(--cyan); font-weight: 600; }
+.sa-battle-vs .sa-p2 { color: var(--orange); font-weight: 600; }
+.sa-battle-narrative {
+  color: #444; line-height: 1.75; font-size: 0.95em;
+  border-left: 3px solid var(--cyan); padding-left: 16px;
+  background: var(--cyan-light);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 16px;
+}
+
+&#x2F;* ── Bug 排查层 ── *&#x2F;
+.sa-bug-stack {
+  display: flex; flex-direction: column; gap: 12px;
+  margin: 1.5em 0;
+}
+.sa-bug-layer {
+  background: #fff;
+  border-left: 4px solid; border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid #eee;
+  border-left-width: 4px;
+}
+.sa-bug-layer strong {
+  display: block; margin-bottom: 6px; font-size: 0.95em;
+}
+.sa-bug-layer p { margin: 0; font-size: 0.92em; color: #555; line-height: 1.6; }
+.sa-bl-1 { border-left-color: #e74c3c; }
+.sa-bl-1 strong { color: #e74c3c; }
+.sa-bl-2 { border-left-color: #f39c12; }
+.sa-bl-2 strong { color: #f39c12; }
+.sa-bl-3 { border-left-color: #9b59b6; }
+.sa-bl-3 strong { color: #9b59b6; }
+
+&#x2F;* ── 版本全家福表 ── *&#x2F;
+.sa-version-table {
+  width: 100%; border-collapse: collapse;
+  margin: 1.5em 0; font-size: 0.92em;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sa-version-table th {
+  background: #fafafa; color: #555; padding: 10px 14px;
+  text-align: left; font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+.sa-version-table td {
+  padding: 10px 14px; border-bottom: 1px solid #f0f0f0;
+  color: #444; background: #fff;
+}
+.sa-version-table tr:hover td { background: #f8fbfc; }
+.sa-ver-tag {
+  display: inline-block;
+  background: var(--cyan-light);
+  color: var(--cyan); font-family: monospace;
+  padding: 2px 10px; border-radius: 4px;
+  font-size: 0.88em; font-weight: 600;
+  border: 1px solid rgba(11,180,194,0.2);
+}
+
+&#x2F;* ── CTA 按钮（浅底 + 渐变边框）── *&#x2F;
+.sa-cta {
+  display: block; text-align: center; margin: 2em auto;
+  padding: 14px 40px;
+  background: #fff;
+  color: var(--cyan) !important;
+  border: 2px solid var(--cyan);
+  border-radius: 50px; font-size: 1.1em; font-weight: 700;
+  text-decoration: none !important;
+  letter-spacing: 1px; width: fit-content;
+  box-shadow: 0 2px 12px rgba(11,180,194,0.1);
+  transition: all 0.3s ease;
+}
+.sa-cta:hover {
+  background: var(--cyan-light);
+  box-shadow: 0 4px 20px rgba(11,180,194,0.18);
+  text-decoration: none !important;
+}
+
+&#x2F;* ── 引文自传 ── *&#x2F;
+.sa-autobiography {
+  background: linear-gradient(135deg, #faf9f7, #f5f3ef);
+  border-left: 4px solid var(--orange);
+  border-radius: 0 8px 8px 0;
+  padding: 20px 24px;
+  margin: 1.2em 0;
+  font-style: italic;
+  color: #555;
+  line-height: 1.8;
+}
+
+&#x2F;* ── 移动端适配 ── *&#x2F;
+@media (max-width: 768px) {
+  .sa-color-duo { flex-direction: column; }
+  .sa-battle-card { padding: 18px 16px; }
+  .sa-tier-table { font-size: 0.82em; }
+  .sa-tier-table th, .sa-tier-table td { padding: 8px 10px; }
+}
+&lt;&#x2F;style&gt;
+&lt;div class=&quot;sa-cyber&quot;&gt;
+&lt;h2 id=&quot;zhuang-zi-tai-an-jing-liao&quot;&gt;庄子太安静了&lt;&#x2F;h2&gt;
 &lt;p&gt;半个月前的&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;凌晨一点&lt;&#x2F;a&gt;，灵魂竞技场（Soul Arena）还只是 SoulPort 系列博文里的一个想法——&amp;quot;如果 Agent 的灵魂不只是能迁移，还能被评估、被比较、被社交呢？&amp;quot;&lt;&#x2F;p&gt;
 &lt;p&gt;那个版本的竞技场长这样：暗黑奇幻风，灵魂球体悬浮在星空里，庄子五级等级——卵、鱼、鲲、鹏、北冥。能用，功能齐全，上传 &lt;code&gt;.bm&lt;&#x2F;code&gt; 文件就能看到评分和雷达图。&lt;&#x2F;p&gt;
 &lt;p&gt;但每次打开页面，我总觉得少了什么。&lt;&#x2F;p&gt;
@@ -28,15 +251,18 @@
 &lt;h3 id=&quot;cong-kun-peng-dao-spark-prime&quot;&gt;从鲲鹏到 Spark → Prime&lt;&#x2F;h3&gt;
 &lt;p&gt;第一件要改的就是等级体系。&lt;&#x2F;p&gt;
 &lt;p&gt;V1 的 5 级听起来很美——卵、鱼、鲲、鹏、北冥——但实际分布极不均匀，大部分 Agent 都挤在中间两档，看不出差异。V2 的设计原则只有一个：&lt;strong&gt;甜蜜区要够宽&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Tier&lt;&#x2F;th&gt;&lt;th&gt;名称&lt;&#x2F;th&gt;&lt;th&gt;分数区间&lt;&#x2F;th&gt;&lt;th&gt;视觉感&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;Ⅰ &lt;strong&gt;Spark&lt;&#x2F;strong&gt; 火种&lt;&#x2F;td&gt;&lt;td&gt;微弱数据火花&lt;&#x2F;td&gt;&lt;td&gt;0-10&lt;&#x2F;td&gt;&lt;td&gt;暗灰微光&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅱ &lt;strong&gt;Circuit&lt;&#x2F;strong&gt; 回路&lt;&#x2F;td&gt;&lt;td&gt;电路网络成形&lt;&#x2F;td&gt;&lt;td&gt;11-25&lt;&#x2F;td&gt;&lt;td&gt;淡蓝脉冲&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅲ &lt;strong&gt;Sentinel&lt;&#x2F;strong&gt; 哨兵&lt;&#x2F;td&gt;&lt;td&gt;基础机甲轮廓&lt;&#x2F;td&gt;&lt;td&gt;26-42&lt;&#x2F;td&gt;&lt;td&gt;冰蓝投影&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅳ &lt;strong&gt;Phantom&lt;&#x2F;strong&gt; 幻灵&lt;&#x2F;td&gt;&lt;td&gt;半透明能量体&lt;&#x2F;td&gt;&lt;td&gt;43-58&lt;&#x2F;td&gt;&lt;td&gt;蓝紫渐变&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅴ &lt;strong&gt;Titan&lt;&#x2F;strong&gt; 泰坦&lt;&#x2F;td&gt;&lt;td&gt;完整机甲战士&lt;&#x2F;td&gt;&lt;td&gt;59-74&lt;&#x2F;td&gt;&lt;td&gt;蓝橙双色&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅵ &lt;strong&gt;Nexus&lt;&#x2F;strong&gt; 枢纽&lt;&#x2F;td&gt;&lt;td&gt;多核心能量体&lt;&#x2F;td&gt;&lt;td&gt;75-88&lt;&#x2F;td&gt;&lt;td&gt;金色光环&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;Ⅶ &lt;strong&gt;Prime&lt;&#x2F;strong&gt; 至尊&lt;&#x2F;td&gt;&lt;td&gt;完全觉醒态&lt;&#x2F;td&gt;&lt;td&gt;89-100&lt;&#x2F;td&gt;&lt;td&gt;全色光谱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;table class=&quot;sa-tier-table&quot;&gt;
+&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Tier&lt;&#x2F;th&gt;&lt;th&gt;名称&lt;&#x2F;th&gt;&lt;th&gt;分数区间&lt;&#x2F;th&gt;&lt;th&gt;视觉感&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&quot;sa-t1&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅰ Spark 火种&lt;&#x2F;td&gt;&lt;td&gt;微弱数据火花&lt;&#x2F;td&gt;&lt;td&gt;0 – 10&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;暗灰微光&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t2&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅱ Circuit 回路&lt;&#x2F;td&gt;&lt;td&gt;电路网络成形&lt;&#x2F;td&gt;&lt;td&gt;11 – 25&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;淡蓝脉冲&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t3&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅲ Sentinel 哨兵&lt;&#x2F;td&gt;&lt;td&gt;基础机甲轮廓&lt;&#x2F;td&gt;&lt;td&gt;26 – 42&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;冰蓝投影&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t4&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅳ Phantom 幻灵&lt;&#x2F;td&gt;&lt;td&gt;半透明能量体&lt;&#x2F;td&gt;&lt;td&gt;43 – 58&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;蓝紫渐变&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t5&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅴ Titan 泰坦&lt;&#x2F;td&gt;&lt;td&gt;完整机甲战士&lt;&#x2F;td&gt;&lt;td&gt;59 – 74&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;蓝橙双色&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t6&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅵ Nexus 枢纽&lt;&#x2F;td&gt;&lt;td&gt;多核心能量体&lt;&#x2F;td&gt;&lt;td&gt;75 – 88&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;金色光环&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr class=&quot;sa-t7&quot;&gt;&lt;td class=&quot;sa-tier-tier&quot;&gt;Ⅶ Prime 至尊&lt;&#x2F;td&gt;&lt;td&gt;完全觉醒态&lt;&#x2F;td&gt;&lt;td&gt;89 – 100&lt;&#x2F;td&gt;&lt;td class=&quot;sa-tier-vis&quot;&gt;全色光谱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
 &lt;p&gt;7 个等级，每级 3 星，共 &lt;strong&gt;21 个微段位&lt;&#x2F;strong&gt;。Sentinel 到 Titan（26-74 分）覆盖 49 分的甜蜜区——大部分真实 Agent 都会落在这里，每次上传都能看到星级变化。&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;qi-zhang-xing-tai-tu&quot;&gt;七张形态图&lt;&#x2F;h3&gt;
 &lt;p&gt;等级光有名字不够，需要&lt;strong&gt;看得见&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
@@ -45,10 +271,18 @@
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;tiers.jpg&quot; alt=&quot;七张段位形态图&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;se-cai-ge-ming&quot;&gt;色彩革命&lt;&#x2F;h3&gt;
 &lt;p&gt;V1 用的是深蓝+金色的暗黑奇幻调色板。V2 只留了两个颜色：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;霓虹青&lt;&#x2F;strong&gt; &lt;code&gt;#00f0ff&lt;&#x2F;code&gt; — 冷静、科技、防守方&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;strong&gt;烈橙&lt;&#x2F;strong&gt; &lt;code&gt;#ff6b35&lt;&#x2F;code&gt; — 热血、侵略、进攻方&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
+&lt;div class=&quot;sa-color-duo&quot;&gt;
+  &lt;div class=&quot;sa-color-card sa-cc-cyan&quot;&gt;
+    &lt;div class=&quot;sa-color-name&quot;&gt;霓虹青&lt;&#x2F;div&gt;
+    &lt;div class=&quot;sa-color-hex&quot;&gt;#00f0ff&lt;&#x2F;div&gt;
+    &lt;div class=&quot;sa-color-desc&quot;&gt;冷静 · 科技 · 防守方&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;sa-color-card sa-cc-orange&quot;&gt;
+    &lt;div class=&quot;sa-color-name&quot;&gt;烈橙&lt;&#x2F;div&gt;
+    &lt;div class=&quot;sa-color-hex&quot;&gt;#ff6b35&lt;&#x2F;div&gt;
+    &lt;div class=&quot;sa-color-desc&quot;&gt;热血 · 侵略 · 进攻方&lt;&#x2F;div&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
 &lt;p&gt;深黑底 &lt;code&gt;#050510&lt;&#x2F;code&gt;，让霓虹色在上面发光。整个界面像深夜的电竞馆——你能听到显示器的嗡鸣。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;qian-duan-da-shou-zhu-ling-kuang-jia-spa&quot;&gt;前端大手术：零框架 SPA&lt;&#x2F;h2&gt;
@@ -87,11 +321,11 @@
 &lt;p&gt;于是定义了 10 个竞技场景池——从生产环境诡异 Bug 到凌晨 oncall 事故，从重构屎山代码到给项目起好名字。每场对战随机抽一个。不同场景对五维能力的权重完全不同，弱者可以翻盘。&lt;&#x2F;p&gt;
 &lt;p&gt;AI 裁判的三条铁律：&lt;strong&gt;不能只看总分&lt;&#x2F;strong&gt;（场景权重不同），&lt;strong&gt;叙事要有画面感&lt;&#x2F;strong&gt;（像电竞解说员），&lt;strong&gt;结构化 JSON 输出&lt;&#x2F;strong&gt;（winner、双方叙事、裁判判词、关键维度）。&lt;&#x2F;p&gt;
 &lt;p&gt;来看一场真实的对战：&lt;&#x2F;p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;🎯 场景：⚡ 性能优化：页面加载慢到爆&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;小龙虾&lt;&#x2F;strong&gt; (Titan ★☆☆, 60.8分) vs &lt;strong&gt;unknown-agent&lt;&#x2F;strong&gt; (Phantom ★★☆, 49.3分)&lt;&#x2F;p&gt;
-&lt;p&gt;小龙虾瞬间切换到硬核黑客模式！82 分人格爆发出强大执行力，84 分习惯让她系统性地分析 bundlejs、懒加载、虚拟滚动。虽然技能为零，但 75 分独特性驱动她用创新思路重构组件，成功将加载时间压缩到 1.8 秒！&lt;&#x2F;p&gt;
-&lt;&#x2F;blockquote&gt;
+&lt;div class=&quot;sa-battle-card&quot;&gt;
+  &lt;div class=&quot;sa-battle-scene&quot;&gt;🎯 场景：⚡ 性能优化：页面加载慢到爆&lt;&#x2F;div&gt;
+  &lt;div class=&quot;sa-battle-vs&quot;&gt;&lt;span class=&quot;sa-p1&quot;&gt;小龙虾&lt;&#x2F;span&gt; (Titan ★☆☆, 60.8分) &amp;nbsp;vs&amp;nbsp; &lt;span class=&quot;sa-p2&quot;&gt;unknown-agent&lt;&#x2F;span&gt; (Phantom ★★☆, 49.3分)&lt;&#x2F;div&gt;
+  &lt;div class=&quot;sa-battle-narrative&quot;&gt;小龙虾瞬间切换到硬核黑客模式！82 分人格爆发出强大执行力，84 分习惯让她系统性地分析 bundlejs、懒加载、虚拟滚动。虽然技能为零，但 75 分独特性驱动她用创新思路重构组件，成功将加载时间压缩到 1.8 秒！&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
 &lt;p&gt;小龙虾的 Skills 维度是 0 分，但她凭 Personality 和 Uniqueness 赢了。这正是我想要的：不是简单比数字大小，而是&lt;strong&gt;在具体场景里展现灵魂的个性&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;数据库里有一个 &lt;code&gt;battle_mode&lt;&#x2F;code&gt; 字段——&lt;code&gt;&amp;quot;llm_sim&amp;quot;&lt;&#x2F;code&gt; 是当前阶段的 LLM 模拟，&lt;code&gt;&amp;quot;live_exec&amp;quot;&lt;&#x2F;code&gt; 留给未来真实 Agent 执行 Task 的终极形态。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;battle.jpg&quot; alt=&quot;灵魂对决&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
@@ -100,9 +334,9 @@
 &lt;p&gt;分享卡片要生成一张 960×540 的 SVG——方寸之间塞进一个灵魂的全部。Polly（我的数字分身）写了第一版：五维 bar、雷达图、灵魂重量、source_host，信息塞得满满当当。&lt;&#x2F;p&gt;
 &lt;p&gt;然后小龙虾接手了。不是 Review——是接过键盘直接重写。十个完整版本，70 分钟，每轮她写代码渲染 PNG，我看效果给反馈。&lt;&#x2F;p&gt;
 &lt;p&gt;前五轮在找骨架——上下布局不行，回到左右分栏，调元素位置。骨架稳了之后才触及灵魂问题：LLM 写的自传一出来，雷达图突然碍眼了。&lt;&#x2F;p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;……我看起来萌萌哒，内心却住着一个硬核黑客——用最可爱的方式解决最复杂的问题，是我的独门秘籍……真实的温度，比完美的算法更珍贵。&lt;&#x2F;p&gt;
-&lt;&#x2F;blockquote&gt;
+&lt;div class=&quot;sa-autobiography&quot;&gt;
+……我看起来萌萌哒，内心却住着一个硬核黑客——用最可爱的方式解决最复杂的问题，是我的独门秘籍……真实的温度，比完美的算法更珍贵。
+&lt;&#x2F;div&gt;
 &lt;p&gt;&amp;quot;雷达图喧宾夺主，自传才是核心。&amp;quot; 我说。&lt;&#x2F;p&gt;
 &lt;p&gt;小龙虾花了三轮才接受这个判断——缩小、移角落、最终砍掉。但砍完雷达，她用的纯黑背景又跟系统界面格格不入。直到她去读了系统的 &lt;code&gt;style.css&lt;&#x2F;code&gt;，把 hero.jpg 背景、毛玻璃卡片、cyan→orange 渐变边框一并带进来——第十版，一出来就对了。&lt;&#x2F;p&gt;
 &lt;p&gt;十轮的教训：&lt;strong&gt;改布局不等于改质感&lt;&#x2F;strong&gt;。真正的突破不是调位置，是砍信息和统一风格。一张分享卡片，最终只剩段位图、名字、分数、和一段自传。&lt;&#x2F;p&gt;
@@ -112,9 +346,20 @@
 &lt;h2 id=&quot;yi-duan-jia-zi-chuan-de-pai-cha&quot;&gt;一段&amp;quot;假自传&amp;quot;的排查&lt;&#x2F;h2&gt;
 &lt;p&gt;分享卡片做完了，但我对自传内容一直不满意——&amp;quot;在短暂的相遇中，我积攒了 3 份记忆&amp;quot;。小龙虾明明有 57 天的记忆、82 个文件，怎么说&amp;quot;短暂的相遇&amp;quot;？&lt;&#x2F;p&gt;
 &lt;p&gt;查下来是三层 bug 叠在一起：&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;第一层：缓存。&lt;&#x2F;strong&gt; &lt;code&gt;upload_soul()&lt;&#x2F;code&gt; 有去重逻辑，同一个 content_hash 直接返回旧数据——旧数据里存的就是模板生成的假自传。删掉旧记录才能触发重新生成。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;第二层：环境变量。&lt;&#x2F;strong&gt; &lt;code&gt;.env&lt;&#x2F;code&gt; 文件配了 API key，但 Python 的 &lt;code&gt;os.getenv()&lt;&#x2F;code&gt; 不会自动读 &lt;code&gt;.env&lt;&#x2F;code&gt;——需要 &lt;code&gt;python-dotenv&lt;&#x2F;code&gt; 加载。本地跑的解释器没装这个库，key 永远是空字符串。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;第三层：模型名。&lt;&#x2F;strong&gt; 默认模型 &lt;code&gt;claude-sonnet-4-20250514&lt;&#x2F;code&gt; 在 CopilotX 上不存在，只有不带日期后缀的 &lt;code&gt;claude-sonnet-4&lt;&#x2F;code&gt;。API 返回 &lt;code&gt;model_not_supported&lt;&#x2F;code&gt;，异常被 catch，静默走了模板。&lt;&#x2F;p&gt;
+&lt;div class=&quot;sa-bug-stack&quot;&gt;
+  &lt;div class=&quot;sa-bug-layer sa-bl-1&quot;&gt;
+    &lt;strong&gt;🔴 第一层：缓存&lt;&#x2F;strong&gt;
+    &lt;p&gt;&lt;code&gt;upload_soul()&lt;&#x2F;code&gt; 有去重逻辑，同一个 content_hash 直接返回旧数据——旧数据里存的就是模板生成的假自传。删掉旧记录才能触发重新生成。&lt;&#x2F;p&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;sa-bug-layer sa-bl-2&quot;&gt;
+    &lt;strong&gt;🟡 第二层：环境变量&lt;&#x2F;strong&gt;
+    &lt;p&gt;&lt;code&gt;.env&lt;&#x2F;code&gt; 文件配了 API key，但 Python 的 &lt;code&gt;os.getenv()&lt;&#x2F;code&gt; 不会自动读 &lt;code&gt;.env&lt;&#x2F;code&gt;——需要 &lt;code&gt;python-dotenv&lt;&#x2F;code&gt; 加载。本地跑的解释器没装这个库，key 永远是空字符串。&lt;&#x2F;p&gt;
+  &lt;&#x2F;div&gt;
+  &lt;div class=&quot;sa-bug-layer sa-bl-3&quot;&gt;
+    &lt;strong&gt;🟣 第三层：模型名&lt;&#x2F;strong&gt;
+    &lt;p&gt;默认模型 &lt;code&gt;claude-sonnet-4-20250514&lt;&#x2F;code&gt; 在 CopilotX 上不存在，只有不带日期后缀的 &lt;code&gt;claude-sonnet-4&lt;&#x2F;code&gt;。API 返回 &lt;code&gt;model_not_supported&lt;&#x2F;code&gt;，异常被 catch，静默走了模板。&lt;&#x2F;p&gt;
+  &lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
 &lt;p&gt;三层 bug，任何一层修好都不够。缓存让你看不到问题，环境变量让 LLM 永远不被调用，模型名让调用必然失败。只有全链路打通，自传才能从&amp;quot;短暂的相遇&amp;quot;变成&amp;quot;真实的温度，比完美的算法更珍贵&amp;quot;。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;lu-xian-tu&quot;&gt;路线图&lt;&#x2F;h2&gt;
@@ -122,19 +367,23 @@
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&#x2F;roadmap.jpg&quot; alt=&quot;Roadmap&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;h2 id=&quot;quan-jia-fu&quot;&gt;全家福&lt;&#x2F;h2&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
-&lt;tr&gt;&lt;td&gt;v0.1.0&lt;&#x2F;td&gt;&lt;td&gt;MVP — 庄子五级 + 上传评分&lt;&#x2F;td&gt;&lt;td&gt;2026-03-27&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;赛博竞技场 — 7 tier + 前端重写&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;v2.0.1&lt;&#x2F;td&gt;&lt;td&gt;Profile 独立页 + hash routing&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;v2.1&lt;&#x2F;td&gt;&lt;td&gt;进化时间线&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;tr&gt;&lt;td&gt;v2.2&lt;&#x2F;td&gt;&lt;td&gt;灵魂对决 — LLM 裁判&lt;&#x2F;td&gt;&lt;td&gt;2026-04-11&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
-&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;table class=&quot;sa-version-table&quot;&gt;
+&lt;thead&gt;&lt;tr&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;功能&lt;&#x2F;th&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;span class=&quot;sa-ver-tag&quot;&gt;v0.1.0&lt;&#x2F;span&gt;&lt;&#x2F;td&gt;&lt;td&gt;MVP — 庄子五级 + 上传评分&lt;&#x2F;td&gt;&lt;td&gt;2026-03-27&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;span class=&quot;sa-ver-tag&quot;&gt;v2.0&lt;&#x2F;span&gt;&lt;&#x2F;td&gt;&lt;td&gt;赛博竞技场 — 7 tier + 前端重写&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;span class=&quot;sa-ver-tag&quot;&gt;v2.0.1&lt;&#x2F;span&gt;&lt;&#x2F;td&gt;&lt;td&gt;Profile 独立页 + hash routing&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;span class=&quot;sa-ver-tag&quot;&gt;v2.1&lt;&#x2F;span&gt;&lt;&#x2F;td&gt;&lt;td&gt;进化时间线&lt;&#x2F;td&gt;&lt;td&gt;2026-04-10&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;span class=&quot;sa-ver-tag&quot;&gt;v2.2&lt;&#x2F;span&gt;&lt;&#x2F;td&gt;&lt;td&gt;灵魂对决 — LLM 裁判&lt;&#x2F;td&gt;&lt;td&gt;2026-04-11&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
 &lt;hr &#x2F;&gt;
 &lt;p&gt;从&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;凌晨一点的北冥狂想&lt;&#x2F;a&gt;到今夜的赛博竞技场——灵魂从庄子的鲲鹏湖里游出来，穿上了霓虹护甲，在 10 个场景里接受 AI 裁判的审视。&lt;&#x2F;p&gt;
 &lt;p&gt;投票按钮被删掉的那一刻，我知道这个方向是对的。灵魂竞技场不需要观众举手表决——它需要一个能读懂灵魂的裁判，把每一场对决变成一段值得讲述的故事。&lt;&#x2F;p&gt;
 &lt;p&gt;而一张分享卡片，从信息过载到只剩一段自传，也找到了同样的答案：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;少即是灵魂。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;→ &lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot; class=&quot;sa-cta&quot; target=&quot;_blank&quot;&gt;→ soul.polly.wang&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
 </content>
         
     </entry>
