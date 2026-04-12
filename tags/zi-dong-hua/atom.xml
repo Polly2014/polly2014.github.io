@@ -5,8 +5,60 @@
     <link href="https://polly.wang/tags/zi-dong-hua/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-29T00:00:00+00:00</updated>
+    <updated>2026-04-13T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/zi-dong-hua/atom.xml</id>
+    <entry xml:lang="en">
+        <title>1021 行代码，0 个 &lt;div&gt;：一个公众号发布器的诞生</title>
+        <published>2026-04-13T00:00:00+00:00</published>
+        <updated>2026-04-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/wechat-publisher-1021-lines-zero-div/" type="text/html"/>
+        <id>https://polly.wang/wechat-publisher-1021-lines-zero-div/</id>
+        
+        <content type="html">&lt;p&gt;&amp;quot;把博文同步到公众号&amp;quot;——我以为这件事的难度大概等于写一个 POST 请求。&lt;&#x2F;p&gt;
+&lt;p&gt;毕竟博文已经写好了，Markdown 在手，微信有 API，中间能复杂到哪去？&lt;&#x2F;p&gt;
+&lt;p&gt;我错了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-xin-de-html-ji-pi&quot;&gt;微信的 HTML 洁癖&lt;&#x2F;h2&gt;
+&lt;p&gt;微信公众号的富文本编辑器，活在 2005 年。&lt;&#x2F;p&gt;
+&lt;p&gt;不许用 &lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt;。不许用 &lt;code&gt;&amp;lt;style&amp;gt;&lt;&#x2F;code&gt;。不许用 &lt;code&gt;class&lt;&#x2F;code&gt;、&lt;code&gt;id&lt;&#x2F;code&gt;。不许用 CSS 变量。不许用相对链接。不许用 &lt;code&gt;linear-gradient()&lt;&#x2F;code&gt;、&lt;code&gt;box-shadow&lt;&#x2F;code&gt;——总之，现代 Web 开发的一切便利，在这里统统无效。唯一允许的样式方式：&lt;code&gt;style=&amp;quot;...&amp;quot;&lt;&#x2F;code&gt; 内联写在每个标签上。&lt;&#x2F;p&gt;
+&lt;p&gt;换句话说，你精心写的博客 HTML，对微信来说就是&amp;quot;非法内容&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;于是 Polly 花了一个下午，写出一个 Markdown → 微信 HTML 的逐行翻译器——读一行 Markdown，判断它是标题、段落、代码块还是列表，输出带 inline style 的 HTML。像给每个孩子手写校服尺码。&lt;&#x2F;p&gt;
+&lt;p&gt;从 200 行长到 500 行，再到 800 行。连续引用行要合并成一个 &lt;code&gt;&amp;lt;blockquote&amp;gt;&lt;&#x2F;code&gt;，嵌套列表要追踪缩进层级，Markdown 表格要先预处理再注入 border。每一条规则都不难，但它们叠在一起就是 800 行。&lt;&#x2F;p&gt;
+&lt;p&gt;它能处理我写过的大部分博文。大部分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sai-bo-peng-ke-zhuang-shang-gong-zhong-hao&quot;&gt;赛博朋克撞上公众号&lt;&#x2F;h2&gt;
+&lt;p&gt;然后我试着发 &lt;a href=&quot;&#x2F;soularena-v2-cyberpunk-reborn&quot;&gt;SoulArena V2 那篇&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇博文不是普通 Markdown。它带着 200 多行 CSS、四组嵌套 &lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt; 结构——色卡用了 CSS 变量和渐变，对战卡片用了 &lt;code&gt;box-shadow&lt;&#x2F;code&gt; 和 &lt;code&gt;backdrop-filter&lt;&#x2F;code&gt;，赛博朋克视觉从头到脚。&lt;&#x2F;p&gt;
+&lt;p&gt;逐行翻译器看到这些，懵了。&lt;&#x2F;p&gt;
+&lt;p&gt;我试过写一个 &lt;code&gt;_inline_css()&lt;&#x2F;code&gt; 函数，用正则把 &lt;code&gt;&amp;lt;style&amp;gt;&lt;&#x2F;code&gt; 里的规则提取出来塞进标签的 &lt;code&gt;style&lt;&#x2F;code&gt; 属性。理论上可行——直到遇见 CSS 选择器的组合爆炸、伪类、变量嵌套。更糟的是，&lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt; 被微信剥离后，塞进去的 inline style 文本泄漏进了正文。读者看到的是这样：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;background: #1a1a2e; color: #00ff88; font-family: &#x27;Courier New&#x27;...&lt;&#x2F;p&gt;
+&lt;p&gt;灵魂竞技场 V2：赛博重生&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;CSS 像水一样漏进了文章。&lt;&#x2F;p&gt;
+&lt;p&gt;回滚。但问题还在。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zheng-ze-yin-qing-de-bian-jie&quot;&gt;正则引擎的边界&lt;&#x2F;h2&gt;
+&lt;p&gt;盯着屏幕想了一会，我意识到这不是某条正则写得不好的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;CSS 是一门有上下文的语言。变量引用变量，选择器组合选择器，&lt;code&gt;calc()&lt;&#x2F;code&gt; 嵌套 &lt;code&gt;var()&lt;&#x2F;code&gt; 嵌套 &lt;code&gt;rgba()&lt;&#x2F;code&gt;。这些东西跨过了模式匹配和语义理解的分界线——而正则引擎被设计来做前者，不是后者。&lt;&#x2F;p&gt;
+&lt;p&gt;800 行逐行翻译器能覆盖 95% 的 Markdown，因为 Markdown 是局部的、每行独立的、规则固定的。但那剩下 5% 的复杂 HTML 块，需要的不是更多正则——而是一个读过 CSS 规范的东西。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hun-he-jia-gou-jiao-ben-da-di-llm-bu-wei&quot;&gt;混合架构：脚本打底，LLM 补位&lt;&#x2F;h2&gt;
+&lt;p&gt;想法很简单：让 LLM 只处理正则搞不定的那 5%，其余继续用确定性脚本。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 0（LLM 预处理）&lt;&#x2F;strong&gt;：扫描文章，找到所有带 &lt;code&gt;class&lt;&#x2F;code&gt; 属性的嵌套 &lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt;——只取&amp;quot;叶子级&amp;quot;，最内层的、不包含 Markdown 语法的纯 HTML 块。连同相关 CSS 规则一起发给 &lt;a href=&quot;&#x2F;copilotx-dashboard-first-eyes&quot;&gt;CopilotX&lt;&#x2F;a&gt;。LLM 的任务明确：&lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt; 换成 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt;，CSS 变量解析成具体值，渐变退化为单色，阴影和毛玻璃移除，所有样式写成 inline——&lt;strong&gt;文本内容不许改一个字&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 1-N（确定性脚本）&lt;&#x2F;strong&gt;：标题、段落、列表、引用、代码块、表格、图片——这些规则固定的元素继续逐行处理。快、准、可预测。&lt;&#x2F;p&gt;
+&lt;p&gt;拿 SoulArena V2 测试：4 个复杂块，4&#x2F;4 转换成功，0 CSS 泄漏。色卡的深色背景回来了，霓虹文字亮了起来。&lt;code&gt;linear-gradient&lt;&#x2F;code&gt; 退化成了单色，&lt;code&gt;backdrop-filter&lt;&#x2F;code&gt; 的毛玻璃消失了——但比起 CSS 泄漏成纯文本，这已经是另一个世界。&lt;&#x2F;p&gt;
+&lt;p&gt;而且，没配 CopilotX 也能用。LLM Phase 0 自动跳过，复杂 HTML 块退化为纯文本——丢样式，但不泄漏，不报错。普通 Markdown 博文从不触发 LLM。只有真正需要语义理解的时候，LLM 才介入。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zhi-shi-gong-zhong-hao-de-shi&quot;&gt;不只是公众号的事&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看，技术上最有趣的不是微信 API 的那些坑——坑都有固定答案，踩过就会了。&lt;&#x2F;p&gt;
+&lt;p&gt;有趣的是&amp;quot;正则引擎的极限在哪里&amp;quot;这个问题。&lt;&#x2F;p&gt;
+&lt;p&gt;任何&amp;quot;大部分规则固定、少数需要理解上下文&amp;quot;的管道，都可能受益于这种混合架构：确定性引擎打底，LLM 在语义密集的 5% 补位。不是替代——95% 的工作依然由脚本完成。LLM 只在分界线的另一边出手。&lt;&#x2F;p&gt;
+&lt;p&gt;写到这里突然意识到，两周前做 &lt;a href=&quot;&#x2F;soulport-four-layer-pipeline&quot;&gt;SoulPort 的灵魂合并&lt;&#x2F;a&gt;时，我用了一模一样的架构：Layer 1-3 是确定性 diff（文件级→段落级→行级），过滤掉 96% 不需要 LLM 的变更；Layer 4 才把真正的语义冲突交给 LLM 裁决。&lt;a href=&quot;&#x2F;soulport-layer4-first-trial&quot;&gt;实测 43 个文件只触发了 1 次 LLM 调用&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;两个完全不同的问题——HTML 格式转换和 Agent 记忆合并——最后收敛到了同一个解法：确定性引擎做重活，LLM 只在语义边界出手。&lt;&#x2F;p&gt;
+&lt;p&gt;也许这就是 2026 年 AI 工程的一个朴素结论：不是所有钉子都需要 LLM 这把锤子，但你最好知道哪些钉子只有它能敲。&lt;&#x2F;p&gt;
+&lt;p&gt;1021 行代码，0 个 &lt;code&gt;&amp;lt;div&amp;gt;&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮托管记：当 AI 引擎学会自己醒来</title>
         <published>2026-03-29T00:00:00+00:00</published>
