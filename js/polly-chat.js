@@ -577,7 +577,8 @@ class PollyChat {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'text/event-stream'
+                    'Accept': 'text/event-stream',
+                    'X-Conversation-Id': this.conversationId  // Phase 2: 访客记忆
                 },
                 body: JSON.stringify(body),
                 signal: controller.signal
