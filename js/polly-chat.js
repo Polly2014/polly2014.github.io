@@ -168,18 +168,20 @@ class PollyChat {
     }
     
     updateDynamicChips() {
-        if (!this.systemPrompt) return;
         const dynamicChip = document.querySelector('.welcome-chips .chip-dynamic');
         if (!dynamicChip) return;
         
-        // Extract first 🟢 project name
-        const projectMatch = this.systemPrompt.match(/\*\*(.+?)\*\*\s*\(🟢\)/);
-        if (projectMatch) {
-            const name = projectMatch[1];
-            const shortName = name.length > 10 ? name.slice(0, 10) + '…' : name;
-            dynamicChip.textContent = `🔬 ${shortName}`;
-            dynamicChip.dataset.msg = `What is ${name}? Tell me about it`;
-        }
+        // 从 blog-index.json 取最新博文作为动态 chip
+        fetch('/blog-index.json')
+            .then(r => r.ok ? r.json() : [])
+            .then(posts => {
+                if (!posts.length) return;
+                const latest = posts.sort((a, b) => b.date.localeCompare(a.date))[0];
+                const shortTitle = latest.title.length > 12 ? latest.title.slice(0, 12) + '…' : latest.title;
+                dynamicChip.textContent = `🔬 ${shortTitle}`;
+                dynamicChip.dataset.msg = `跟我聊聊 ${latest.title}`;
+            })
+            .catch(() => {});
     }
     
     handlePaste(e) {
