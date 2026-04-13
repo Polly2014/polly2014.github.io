@@ -715,7 +715,10 @@ class PollyChat {
     renderMarkdown(text) {
         let html;
         if (typeof marked !== 'undefined') {
-            html = marked.parse(text);
+            // 转义反引号外的裸 HTML 标签，防止标题里的 <div> 等被当真实标签解析
+            const escaped = text.replace(/(`[^`]*`)|(<\/?[a-zA-Z][^>]*>)/g,
+                (m, code) => code ? code : m.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+            html = marked.parse(escaped);
         } else {
             // Fallback: 基础格式化
             html = text
