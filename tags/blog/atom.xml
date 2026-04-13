@@ -5,8 +5,95 @@
     <link href="https://polly.wang/tags/blog/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-13T00:00:00+00:00</updated>
+    <updated>2026-04-14T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/blog/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Polly Chat 3.0：当博客学会自己翻博客</title>
+        <published>2026-04-14T00:00:00+00:00</published>
+        <updated>2026-04-14T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/polly-chat-3-agent-loop/" type="text/html"/>
+        <id>https://polly.wang/polly-chat-3-agent-loop/</id>
+        
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;2.0 零后端重构&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-vision-support&quot;&gt;Vision 多模态&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;D1 持久化&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-v25-welcome-indexeddb&quot;&gt;v2.5 欢迎屏 + IndexedDB&lt;&#x2F;a&gt; → &lt;strong&gt;本篇 3.0&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;2.0 系列从二月折腾到现在，SSE 流式响应、图片理解、D1 持久化、欢迎屏——前端体验打磨得越来越丝滑了。但有个问题一直在心里。&lt;&#x2F;p&gt;
+&lt;p&gt;访客问&amp;quot;你最近在做什么项目&amp;quot;，数字 Polly 只能凭 system prompt 里那几百字的静态描述硬编。我博客上 174 篇文章，它一篇都看不到。这感觉就像——你精心装修了一个图书馆，然后在前台放了个只会背自我介绍的人。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-tian-hua-ban&quot;&gt;三个天花板&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;静态知识&lt;&#x2F;strong&gt;。system prompt 里硬编的项目列表，每次更新都要手动 rebuild。一周不更新，数字 Polly 就跟不上我了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;断裂记忆&lt;&#x2F;strong&gt;。访客刷新页面就是新对话。昨天深夜聊了半小时的那位，今天回来——陌生人。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;只能聊天&lt;&#x2F;strong&gt;。不能搜索、不能引用、不能贴链接。访客问到某篇文章，数字 Polly 只能说&amp;quot;你可以在博客上搜搜看&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;最根本的问题：&lt;strong&gt;数字 Polly 不知道我写了什么&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;guan-jian-ci-pi-pei-de-fen-chang&quot;&gt;关键词匹配的坟场&lt;&#x2F;h2&gt;
+&lt;p&gt;最先想到的方案：关键词匹配。Zola build 时生成 174 篇博文的索引，Worker 收到消息时做文本匹配，把相关文章注入 system prompt。&lt;&#x2F;p&gt;
+&lt;p&gt;效果凑合，但中文分词是灾难。&amp;quot;灵魂竞技场&amp;quot;被 bigram 分成&amp;quot;灵魂&amp;quot;&amp;quot;魂竞&amp;quot;&amp;quot;竞技&amp;quot;&amp;quot;技场&amp;quot;，然后&amp;quot;技场&amp;quot;匹配到一篇完全不相关的文章。加停用词、调阈值、引入标签精确匹配加分——打地鼠一样，修了这个冒出那个。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾 Review 时直接把问题捅穿了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这种低效又不智能的关键词匹配，为什么不做成 LLM 来分析呢？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我开始想：要不要加一层 LLM 预查询，让模型帮忙选博文？但小龙虾马上指出这条路的终点：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Phase 3 上了 tool use，LLM 预查询就无意义了——都是让 LLM 选博文，不如让生成回答的同一个 LLM 自己选。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;一句话省了一个中间态。删掉全部关键词匹配代码，两百多行，一行不留。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-tiao-sse-liu-de-fen-cha-lu&quot;&gt;一条 SSE 流的分岔路&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 的核心：给 Claude 三个工具——&lt;code&gt;search_blog&lt;&#x2F;code&gt;、&lt;code&gt;get_article&lt;&#x2F;code&gt;、&lt;code&gt;get_recent_posts&lt;&#x2F;code&gt;。Claude 自己判断要不要搜，搜什么。&lt;&#x2F;p&gt;
+&lt;p&gt;关键的工程决策：&lt;strong&gt;怎么让 80% 不需要搜索的请求不受影响？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;答案是 &lt;strong&gt;stream-first 架构&lt;&#x2F;strong&gt;。每次请求都 &lt;code&gt;stream: true&lt;&#x2F;code&gt;。Worker 不等全部响应回来，读到第一个 SSE &lt;code&gt;content_block_start&lt;&#x2F;code&gt; 事件就分流——text 直接透传，tool_use 才进入 Agent 循环。&lt;&#x2F;p&gt;
+&lt;p&gt;80% 的请求在读到第一个事件（通常不到 1KB）时就分道扬镳了。用户感知到的延迟和没有 Agent 时一模一样。&lt;&#x2F;p&gt;
+&lt;p&gt;两种路径到浏览器端的体验完全相同：thinking dots → 文字逐字流出。没有 loading spinner、没有&amp;quot;正在搜索&amp;quot;、没有任何穿帮。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ci-tui-fan&quot;&gt;三次推翻&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;di-yi-ci-zheng-zai-sou-suo&quot;&gt;第一次：&amp;quot;正在搜索&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;最初加了搜索状态提示——Claude 调 tool 时，Worker 往 SSE 流里注入一条&amp;quot;🔍 正在搜索相关博客...&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾反对。改成 Polly 风格的&amp;quot;容我翻翻博客...&amp;quot;，小龙虾继续追问：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;干脆什么都不显示。最好的体验是用户完全不感知搜索——Polly 的回答里自然带出&amp;quot;我之前写过一篇文章讲这个&amp;quot;，链接一贴。用户的感受是&amp;quot;这人记性真好&amp;quot;，而不是&amp;quot;这个 AI 在查数据库&amp;quot;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;删掉了所有合成提示。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-er-ci-an-quan-vs-ti-yan&quot;&gt;第二次：安全 vs 体验&lt;&#x2F;h3&gt;
+&lt;p&gt;Polly 发现了一个隐藏 bug：Claude 可能返回 text + tool_use 混合——先说一句话再调工具。&lt;code&gt;detectFirstBlock&lt;&#x2F;code&gt; 看到 text 就直接透传了，后面的 tool_use 永远不执行。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾提出方案：后续轮改成 &lt;code&gt;stream: false&lt;&#x2F;code&gt;，拿 JSON，彻底避免流解析风险。&lt;&#x2F;p&gt;
+&lt;p&gt;部署后问题立刻暴露——tool 触发后的回答往往是最长、最有内容的那段，非流式意味着用户等十几秒才看到一整屏文字突然出现。体验倒退了。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;di-san-ci-hui-dao-tong-yi&quot;&gt;第三次：回到统一&lt;&#x2F;h3&gt;
+&lt;p&gt;小龙虾自己推翻了自己的方案：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;后续轮 Claude 已经拿到了搜索结果，几乎不会再调 tool，text+tool_use 风险极低。为极低概率场景牺牲用户体验不值得——加监控告警，等真正发生了再说。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;所有轮次回到统一的 stream-first。代码反而比第一版少了 35 行：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;++) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;firstBlockType&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bufferedChunks&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;reader &lt;&#x2F;span&gt;&lt;span&gt;} = 
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;detectFirstBlock&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resp&lt;&#x2F;span&gt;&lt;span&gt;.body);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;firstBlockType &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; || !&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;firstBlockType&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;streamToClient&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bufferedChunks&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;reader&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;origin&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; tool_use → 收集完整响应 → 执行 tool → 下一轮
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fullResponse &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;collectFullResponse&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bufferedChunks&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;reader&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ...executeTool, push messages, continue loop
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三次推翻教会我一件事：&lt;strong&gt;最好的方案不一定是最安全的方案，而是复杂度最低的那个&lt;&#x2F;strong&gt;。非流式确实更安全，但用户体验退了。边流边监控确实更全面，但代码复杂度翻倍。十几行核心循环，所有轮次一个逻辑——反而是最简洁、最好维护、也最好用的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;2-0-vs-3-0&quot;&gt;2.0 vs 3.0&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;2.0&lt;&#x2F;th&gt;&lt;th&gt;3.0&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;知识来源&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;system prompt 静态描述&lt;&#x2F;td&gt;&lt;td&gt;174 篇博文实时搜索&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;搜索决策&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;无&lt;&#x2F;td&gt;&lt;td&gt;Claude Tool Use 自主判断&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;链接引用&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;不能&lt;&#x2F;td&gt;&lt;td&gt;Markdown 链接，点击直达&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;回头客&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;不认识&lt;&#x2F;td&gt;&lt;td&gt;D1 数据库记忆上下文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;架构&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;纯透传代理&lt;&#x2F;td&gt;&lt;td&gt;Agent Loop（最多 3 轮）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;非搜索延迟&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;零&lt;&#x2F;td&gt;&lt;td&gt;零（stream-first 透传）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;2.0 的数字 Polly 是一个&amp;quot;会背台词的演员&amp;quot;——台词写得好，但完全不知道舞台后面的图书馆里有什么。3.0 是一个&amp;quot;记性好的朋友&amp;quot;——你问它任何关于我项目的事，它会自然地说&amp;quot;我之前写过一篇文章讲过这个&amp;quot;，然后把链接甩给你。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;凌晨两点半，第 14 个 commit 推上去。打开 polly.wang，问了一句&amp;quot;SoulArena 是什么项目&amp;quot;。三秒 thinking dots，然后文字开始逐字流出——从项目起源讲到赛博朋克重构，末尾自然地带出&amp;quot;更多细节可以看这篇：&lt;a href=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-v2-cyberpunk-reborn&quot;&gt;灵魂竞技场 V2：一夜重铸赛博朋克&lt;&#x2F;a&gt;&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;链接是蓝色的，可以点。&lt;&#x2F;p&gt;
+&lt;p&gt;就像一个记性很好的朋友。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Polly Chat 2.0: From Clunky Backend to Zero-Backend</title>
         <published>2026-02-13T00:00:00+00:00</published>
