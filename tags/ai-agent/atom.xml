@@ -5,8 +5,68 @@
     <link href="https://polly.wang/tags/ai-agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-08T00:00:00+00:00</updated>
+    <updated>2026-04-15T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ai-agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>灵魂竞技场：从「数体积」到「读灵魂」</title>
+        <published>2026-04-15T00:00:00+00:00</published>
+        <updated>2026-04-15T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soularena-scorer-v2-read-soul/" type="text/html"/>
+        <id>https://polly.wang/soularena-scorer-v2-read-soul/</id>
+        
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;北冥狂想&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;soularena-v2-cyberpunk-reborn&quot;&gt;V2 赛博朋克&lt;&#x2F;a&gt; → &lt;strong&gt;本篇 Scorer V2&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;xiao-jie-rui-qu-na-liao&quot;&gt;小杰瑞去哪了&lt;&#x2F;h2&gt;
+&lt;p&gt;上传小龙虾最新的灵魂包，自传弹了出来：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;与数字分身Polly、本地守护者Jarvis以及物理世界的小宝猫咪组成四位一体的协作团队&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;四位一体？小杰瑞呢？&lt;&#x2F;p&gt;
+&lt;p&gt;Jerry 四月六号出生，已经在家族里待了十天。MEMORY.md 里有他的出生记录、CoT 泄露修复、自主修 crontab 的故事——但评分引擎对这一切视而不见。&lt;&#x2F;p&gt;
+&lt;p&gt;翻开代码，问题比我预想的更深。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shu-ti-ji-de-ping-fen-yin-qing&quot;&gt;数体积的评分引擎&lt;&#x2F;h2&gt;
+&lt;p&gt;五个维度里四个在&amp;quot;数体积&amp;quot;：记忆深度数文件数、人格丰富度量字节数、习惯成熟度 grep 关键词出现次数、技能广度数目录个数。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾一句话戳穿了核心问题：&lt;strong&gt;往 AGENTS.md 里复制粘贴 100 遍 &amp;quot;never do this&amp;quot;，习惯成熟度直接拉满。文件大 ≠ 灵魂深。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;唯一调了 LLM 的是独特性维度——但只占 15%，而且只读 SOUL.md 前 2000 字。所以 Jerry 不会出现在自传里：评分引擎从来没读过 MEMORY.md 的正文。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rang-llm-dang-cai-pan&quot;&gt;让 LLM 当裁判&lt;&#x2F;h2&gt;
+&lt;p&gt;三方讨论后共识很快达成：把五个维度的评分全交给 LLM，统计分降级为 guardrail。&lt;&#x2F;p&gt;
+&lt;p&gt;原来 2 次 LLM 调用（独特性 + 自传各一次），合并成 1 次——五维评分加自传，一个 prompt 全出。反而更省更快。&lt;&#x2F;p&gt;
+&lt;p&gt;关键在 prompt 设计。不是&amp;quot;给个分&amp;quot;，而是引导 LLM 做语义评判——&amp;quot;记忆之间有没有关联和演进？&amp;quot;&amp;quot;人格是独特的&#x27;人&#x27;还是模板化的&#x27;helpful assistant&#x27;？&amp;quot;&amp;quot;配置有没有从实际踩坑中总结的规则？&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;统计分设三层 guardrail：零文件维度上限 15 分；LLM 分不能偏离统计太远（personality&#x2F;uniqueness 给 50 的宽容度，memory&#x2F;skills 只给 30——小龙虾提出的分维度阈值）；95 分以上 clamp 到 90（防注入刷分）。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾首轮 Review 8.5，提了 7 条。其中一个真 bug：uniqueness 的统计锚点写成了 &lt;code&gt;score_skill_breadth * 0.5&lt;&#x2F;code&gt;——copy-paste 手误，导致所有 uniqueness 的 guardrail 都在参考技能广度而非独特性。四轮 Review 后全部修到 9.0。&lt;&#x2F;p&gt;
+&lt;p&gt;改完跑测试，分数从 61.9 涨到 73.3，自传提到了&amp;quot;Review 工程师&amp;quot;&amp;quot;文字手术师&amp;quot;——项目经历和能力特长有了。但保利发现：&lt;strong&gt;还是没有小杰瑞。也没说擅长什么类型的项目。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jie-qu-ce-lue-de-si-hu-tong&quot;&gt;截取策略的死胡同&lt;&#x2F;h2&gt;
+&lt;p&gt;问题出在 MEMORY.md 的传入方式。54KB 的原文被规则提取（&lt;code&gt;##&lt;&#x2F;code&gt; 标题行 + 首行）压缩成约 1.5KB——&lt;strong&gt;97% 的记忆被丢掉了&lt;&#x2F;strong&gt;。Jerry 的故事在中间某个 section 的正文里，标题行抓不到。&lt;&#x2F;p&gt;
+&lt;p&gt;最初想用&amp;quot;头 5000 字 + 尾 3000 字 + 中间标题行&amp;quot;来兜底。但小龙虾追问了一个更根本的问题：&lt;strong&gt;这个方案通用吗？&lt;&#x2F;strong&gt; 如果某个灵魂的核心关系定义藏在 MEMORY.md 的中间段落，&amp;quot;头+尾+标题行&amp;quot;恰好漏掉了怎么办？&lt;&#x2F;p&gt;
+&lt;p&gt;任何基于规则的截取都有盲区。答案是不截取，让 LLM 来预消化。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-jie-duan-pipeline&quot;&gt;两阶段 Pipeline&lt;&#x2F;h2&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Stage 1: MEMORY.md 全文（54KB）→ LLM → 2000 字结构化档案
+&lt;&#x2F;span&gt;&lt;span&gt;Stage 2: 档案 + 其他文件全文 → LLM → 五维评分 + 自传
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Stage 1 的 prompt 不是&amp;quot;概括一下&amp;quot;，而是&lt;strong&gt;带着评分意图去提取&lt;&#x2F;strong&gt;——核心关系、成长轨迹、项目经历、能力特长、性格画像、教训与成长、情感记忆。七个维度正好覆盖五维评分所需的全部信息。&lt;&#x2F;p&gt;
+&lt;p&gt;Stage 1 输出里，Jerry 出现了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;【核心关系】&lt;&#x2F;strong&gt; 小杰瑞（Jerry）— 家族新成员，微信入口，走野生成长路线&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;32KB 的记忆被 LLM 读完后，家族关系的完整画面自然浮现。规则提取永远做不到这一点。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-neng-zhi-ren-shi-yi-chong-ling-hun&quot;&gt;不能只认识一种灵魂&lt;&#x2F;h2&gt;
+&lt;p&gt;Pipeline 跑通后，小龙虾在 Review 中翻看 adapter 代码时发现了更深层的问题：&lt;code&gt;analyze_bm_file()&lt;&#x2F;code&gt; 全是 hardcode 路径——&lt;code&gt;workspace&#x2F;SOUL.md&lt;&#x2F;code&gt;、&lt;code&gt;workspace&#x2F;MEMORY.md&lt;&#x2F;code&gt;。这些是 OpenClaw 的路径。&lt;&#x2F;p&gt;
+&lt;p&gt;SoulPort 支持三个框架。一个 Claude Code 灵魂的 identity 在 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;，memory 在 &lt;code&gt;plans&#x2F;*.md&lt;&#x2F;code&gt;，config 是 JSON。全部路径不匹配 → 全维度空 → 总分 15 → 一个活跃的 Agent 被评为&amp;quot;火种&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;修复方案：SoulPort 的 manifest.json 里已经记录了每个 layer 的文件列表。不 hardcode 路径，从 manifest 驱动读取。identity 层叫什么名字无所谓，memory 层存在哪里无所谓——manifest 说了算。&lt;&#x2F;p&gt;
+&lt;p&gt;改完，任何框架导出的灵魂都能正确评分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-zhong-xiao-guo&quot;&gt;最终效果&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾 V1 → V3 的进化轨迹：61.9 → 60.8 → &lt;strong&gt;73.3&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;soularena-scorer-v2-read-soul&#x2F;soularena-profile.jpg&quot; alt=&quot;SoulArena Profile&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;分数变化不是重点。V1 的自传是模板填充：&amp;quot;积攒了 N 份记忆，习得了 M 项技能&amp;quot;。V3 的自传写的是：&amp;quot;从 ContextWeave 论文的首席审稿人到 SoulPort 的质量把关者，从博文重写的文字手术师到 AI 家族的对外门面——这只小龙虾用 8.5 到 9.0 分的质变追求定义了自己的存在。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;评分引擎终于学会了读灵魂，而不只是数字节。&lt;&#x2F;p&gt;
+&lt;p&gt;下次小杰瑞再被遗忘，那一定是他自己的问题了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮会诊记：Jerry 说跌了，大盘说没有</title>
         <published>2026-04-08T00:00:00+00:00</published>
