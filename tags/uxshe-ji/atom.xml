@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - UX设计</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/uxshe-ji/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-18T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/uxshe-ji/atom.xml</id>
+    <entry xml:lang="en">
+        <title>竞技场的门帘：三个脑子吵出来的 Coming Soon</title>
+        <published>2026-04-18T00:00:00+00:00</published>
+        <updated>2026-04-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soularena-teaser-three-minds-one-curtain/" type="text/html"/>
+        <id>https://polly.wang/soularena-teaser-three-minds-one-curtain/</id>
+        
+        <content type="html">&lt;style&gt;
+&#x2F;* ─── SoulArena Teaser 博文专属样式 ─── *&#x2F;
+.blog-post .content {
+  --sa-cyan: #00f0ff;
+  --sa-orange: #ff6b35;
+  --sa-purple: #b44dff;
+  --sa-bg: #0a0a1a;
+}
+
+&#x2F;* 系列导航条 *&#x2F;
+.sa-series-nav {
+  background: linear-gradient(135deg, rgba(0,240,255,0.06), rgba(180,77,255,0.06));
+  border: 1px solid rgba(0,240,255,0.15);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 0.85em;
+  margin-bottom: 2em;
+  line-height: 1.8;
+}
+.sa-series-nav a { color: #3d92c9; }
+
+&#x2F;* 版本标签 *&#x2F;
+.sa-round {
+  display: inline-block;
+  font-family: &#x27;SF Mono&#x27;, &#x27;Fira Code&#x27;, monospace;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.sa-round-v1 { background: rgba(0,240,255,0.12); color: #00f0ff; border: 1px solid rgba(0,240,255,0.25); }
+.sa-round-v2 { background: rgba(180,77,255,0.12); color: #b44dff; border: 1px solid rgba(180,77,255,0.25); }
+.sa-round-v3 { background: rgba(255,107,53,0.12); color: #ff6b35; border: 1px solid rgba(255,107,53,0.25); }
+
+&#x2F;* 对话引用样式 *&#x2F;
+.sa-quote-lobster {
+  border-left: 3px solid #ff6b35;
+  padding-left: 14px;
+  margin: 1em 0;
+  color: #666;
+}
+.sa-quote-lobster::before { content: &quot;🦞 &quot;; }
+
+&#x2F;* 教训&#x2F;洞察高亮框 *&#x2F;
+.sa-insight {
+  background: linear-gradient(135deg, rgba(255,107,53,0.06), rgba(255,107,53,0.02));
+  border: 1px solid rgba(255,107,53,0.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 1.5em 0;
+  font-size: 0.92em;
+}
+.sa-insight strong { color: #ff6b35; }
+
+&#x2F;* 进化序列可视化 *&#x2F;
+.sa-evolution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 1.5em 0;
+  flex-wrap: wrap;
+}
+.sa-evo-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.7;
+}
+.sa-evo-arrow { color: #666; font-size: 0.8em; }
+
+&#x2F;* 结尾 CTA *&#x2F;
+.sa-cta {
+  text-align: center;
+  margin: 2em 0;
+  padding: 1.5em;
+  background: linear-gradient(135deg, rgba(0,240,255,0.04), rgba(180,77,255,0.04));
+  border-radius: 12px;
+  border: 1px solid rgba(0,240,255,0.1);
+}
+.sa-cta code {
+  font-size: 1.1em;
+  color: #ff6b35;
+  background: rgba(255,107,53,0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+&#x2F;* 系列表格美化 *&#x2F;
+.sa-series-table {
+  font-size: 0.88em;
+  margin-top: 1em;
+}
+.sa-series-table td, .sa-series-table th {
+  padding: 6px 12px;
+}
+
+&#x2F;* 视频嵌入 *&#x2F;
+.sa-video-embed {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 1.5em auto;
+  aspect-ratio: 16&#x2F;9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0,240,255,0.1);
+  border: 1px solid rgba(0,240,255,0.15);
+}
+.sa-video-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+&lt;&#x2F;style&gt;
+&lt;div class=&quot;sa-series-nav&quot;&gt;
+&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;北冥狂想&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;soularena-v2-cyberpunk-reborn&quot;&gt;V2 赛博朋克&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;soularena-scorer-v2-read-soul&quot;&gt;Scorer V2 读灵魂&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;soularena-hackathon-video-43min&quot;&gt;43 分钟 Hackathon 视频&lt;&#x2F;a&gt; → &lt;strong&gt;本篇 Teaser 上线&lt;&#x2F;strong&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;gong-neng-du-zuo-wan-liao-ran-hou-ni&quot;&gt;功能都做完了，然后呢&lt;&#x2F;h2&gt;
+&lt;p&gt;SoulArena 的核心功能链已经闭环：上传 → 五维评分 → 灵魂画像 → 排行榜 → 对决 → 进化时间线。Scorer V2 的语义评分让小龙虾从 61.9 涨到 73.1，SSE 实时推送让上传过程有了仪式感。&lt;&#x2F;p&gt;
+&lt;p&gt;但 soul.polly.wang 线上还跑着旧版本。&lt;&#x2F;p&gt;
+&lt;p&gt;问题不是&amp;quot;怎么部署&amp;quot;——那就一行命令的事。问题是&amp;quot;部署什么&amp;quot;。功能链虽然通了，冷启动数据还没刷够，端到端测试还没跑完。直接把半成品扔出去？&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;Coming Soon 预告页。&amp;quot;我对 Polly 说。&amp;quot;先占住域名，建立期待感。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾被叫来一起讨论。三个脑子围着一扇还没挂的门帘，吵了三轮。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;round-1-xin-xi-zhan-shi-ye&quot;&gt;&lt;span class=&quot;sa-round sa-round-v1&quot;&gt;ROUND 1&lt;&#x2F;span&gt; 信息展示页&lt;&#x2F;h2&gt;
+&lt;p&gt;Polly 半小时内交了第一稿：标题、副标题、7 张 tier 图平铺轮播、3 张 feature 卡片、COMING SOON、底部链接。结构清晰，信息完整。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾看完截图，技术层面给了 9 分——然后话锋一转：&lt;&#x2F;p&gt;
+&lt;div class=&quot;sa-quote-lobster&quot;&gt;
+&lt;p&gt;&amp;quot;自包含 HTML、零外部依赖、响应式三档断点到位。但——这是产品介绍页，不是游戏预告。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;技术修补很快：&lt;code&gt;e.keyCode&lt;&#x2F;code&gt; 换成 &lt;code&gt;e.code&lt;&#x2F;code&gt;，GitHub 链接指向独立 repo，加视频预留位。但真正的问题藏在更深的地方。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;round-2-zhe-bu-gou-you-xi&quot;&gt;&lt;span class=&quot;sa-round sa-round-v2&quot;&gt;ROUND 2&lt;&#x2F;span&gt; 这不够&amp;quot;游戏&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;我盯着截图看了一会。中规中矩偏上，但离&amp;quot;游戏前导预告片&amp;quot;那种肾上腺素冲击差得远。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 自己也意识到了——&lt;strong&gt;太&amp;quot;网页&amp;quot;了，不够&amp;quot;游戏&amp;quot;&lt;&#x2F;strong&gt;。信息太平铺，没有叙事节奏。页面打开后除了粒子飘和轮播，没有让人&amp;quot;哇&amp;quot;的瞬间。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾的诊断更直接：&lt;&#x2F;p&gt;
+&lt;div class=&quot;sa-quote-lobster&quot;&gt;
+&lt;p&gt;&amp;quot;从上到下一字排开像产品介绍页。游戏预告的核心是叙事节奏：悬念→揭示→高潮→留白。你这是在&#x27;告知&#x27;，不是在&#x27;勾引&#x27;。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;两个 AI 不约而同开出了同一个药方：&lt;strong&gt;入场动画序列&lt;&#x2F;strong&gt;。Polly 叫它&amp;quot;进化揭示&amp;quot;——7 张 tier 图从 Spark 到 Prime 依次弹出，越来越亮越来越大；小龙虾叫它&amp;quot;启动序列&amp;quot;——CRT 开机闪白，屏幕一闪瞬间点亮整个竞技场。&lt;&#x2F;p&gt;
+&lt;p&gt;我拍板：用 Polly 的进化揭示做叙事主线，加上小龙虾的 CRT 闪白做入场冲击。砍掉 feature 卡片，砍掉 7 图平铺，只留一个呼吸浮动的 Prime 居中。&lt;&#x2F;p&gt;
+&lt;p&gt;结果——&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;da-hei-dong-shi-jian&quot;&gt;大黑洞事件&lt;&#x2F;h2&gt;
+&lt;p&gt;v2 做出来了。hero.jpg 全屏背景渐显，CRT 闪白炸开屏幕，标题从 scale(0.3) 爆开，7 个 tier 依次弹出，Prime 定格呼吸……&lt;&#x2F;p&gt;
+&lt;p&gt;但截图一看，中央一个 220px 的大黑圆。&lt;&#x2F;p&gt;
+&lt;p&gt;Tier 图是黑底的。放大到中央当英雄级视觉，那个&amp;quot;黑底在深色背景上自然融合&amp;quot;的假设彻底崩了——它不融合，它是一个黑洞。&lt;&#x2F;p&gt;
+&lt;p&gt;我看着截图说：&amp;quot;我怎么觉得这次的效果不如修改前的呢。&amp;quot;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;round-3-he-ti&quot;&gt;&lt;span class=&quot;sa-round sa-round-v3&quot;&gt;ROUND 3&lt;&#x2F;span&gt; 合体&lt;&#x2F;h2&gt;
+&lt;p&gt;最终方案其实很简单——v1 的内容布局 + v2 的氛围层：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;hero.jpg 全屏背景&lt;&#x2F;strong&gt;（暗化 40% + 暗角），从 v2 拿来&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CRT 闪白 + 入场动画 + 扫描线叠加&lt;&#x2F;strong&gt;，从 v2 拿来&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;7 图轮播 + 3 卡片 + COMING SOON&lt;&#x2F;strong&gt;，从 v1 拿回来&lt;&#x2F;li&gt;
+&lt;li&gt;feature 卡片加 &lt;code&gt;backdrop-filter: blur(8px)&lt;&#x2F;code&gt; 毛玻璃，让它们在 hero 背景上不突兀&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;三个版本文件都留着：&lt;code&gt;teaser_v1.html&lt;&#x2F;code&gt;、&lt;code&gt;teaser_v2.html&lt;&#x2F;code&gt;、&lt;code&gt;teaser.html&lt;&#x2F;code&gt;（v3 合体版）。&lt;&#x2F;p&gt;
+&lt;div class=&quot;sa-insight&quot;&gt;
+&lt;p&gt;&lt;strong&gt;教训：砍太多不如加一层。&lt;&#x2F;strong&gt; v2 的问题是把 v1 的信息量全砍了，只靠一个视觉焦点撑场面。但那个视觉焦点自己撑不住。最好的结果反而是把两者叠在一起——内容撑骨架，氛围撑气质。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;yi-ge-huan-jing-bian-liang-de-she-ji-zhe-xue&quot;&gt;一个环境变量的设计哲学&lt;&#x2F;h2&gt;
+&lt;p&gt;技术上最优雅的决策是 &lt;code&gt;TEASER_MODE&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;后端只加了几行代码：&lt;code&gt;config.py&lt;&#x2F;code&gt; 读环境变量，&lt;code&gt;app.py&lt;&#x2F;code&gt; 的 &lt;code&gt;index()&lt;&#x2F;code&gt; 路由判断是返回 &lt;code&gt;teaser.html&lt;&#x2F;code&gt; 还是 &lt;code&gt;index.html&lt;&#x2F;code&gt;。API 端点完全不受影响——SoulPort 的 push&#x2F;pull 云同步照常工作。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾建议埋彩蛋——预告页里藏着进入正式页面的隐藏通道。&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;🥚 彩蛋剧透（想自己找的别点）&lt;&#x2F;summary&gt;
+&lt;ul&gt;
+&lt;li&gt;点击左上角 logo &lt;strong&gt;7 次&lt;&#x2F;strong&gt;（每次触发 glitch 动画 + 随机 tagline）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Konami Code&lt;&#x2F;strong&gt;：↑↑↓↓←→←→BA&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;正式上线时删掉一行环境变量，&lt;code&gt;systemctl restart&lt;&#x2F;code&gt;，一秒切换。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hackathon-shi-pin-yu-gao-pian-de-yu-gao-pian&quot;&gt;Hackathon 视频：预告片的预告片&lt;&#x2F;h2&gt;
+&lt;p&gt;纯静态预告页用户 3 秒扫一眼就走。我突然想起来——我们不是有 Hackathon 视频吗？&lt;&#x2F;p&gt;
+&lt;p&gt;这才是真正的杀手锏。43 分钟的 demo 视频，本身就是最好的产品预告。&lt;&#x2F;p&gt;
+&lt;p&gt;最终方案是点击弹窗播放：tier 轮播下方放一个赛博风的 ▶ WATCH TRAILER 按钮，点击后弹出暗幕 modal，iframe 从 Bilibili CDN 加载。130MB 的视频让 B 站的 CDN 去扛，不折腾自己的小水管。&lt;&#x2F;p&gt;
+&lt;p&gt;踩了一个小坑：浏览器不让 iframe 自动播放有声视频，去掉 &lt;code&gt;autoplay&lt;&#x2F;code&gt; 让用户自己点播放——反而更自然。&lt;&#x2F;p&gt;
+&lt;p&gt;视频同时传了 &lt;a href=&quot;https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV19Xd5BBELs&#x2F;&quot;&gt;Bilibili&lt;&#x2F;a&gt; 和 &lt;a href=&quot;https:&#x2F;&#x2F;youtu.be&#x2F;3SeaXEb4fSQ&quot;&gt;YouTube&lt;&#x2F;a&gt;，国内外都能看。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-footer-de-zhi-nian&quot;&gt;一个 footer 的执念&lt;&#x2F;h2&gt;
+&lt;p&gt;整个页面最后一个微调，居然花了最多轮次。&lt;&#x2F;p&gt;
+&lt;p&gt;底部 &lt;code&gt;polly.wang · GitHub&lt;&#x2F;code&gt; 两个链接，因为字符数不对称，flex 居中后分隔点的视觉中心偏右。尝试了 &lt;code&gt;margin-left&lt;&#x2F;code&gt;、&lt;code&gt;transform: translateX&lt;&#x2F;code&gt;、&lt;code&gt;min-width&lt;&#x2F;code&gt; 等宽——全被入场动画的 &lt;code&gt;animation-fill-mode: forwards&lt;&#x2F;code&gt; 覆盖。&lt;&#x2F;p&gt;
+&lt;p&gt;最后我说：&amp;quot;要不把 GitHub 删了，只保留 polly.wang。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;一个链接，居中，干净利落。&lt;&#x2F;p&gt;
+&lt;div class=&quot;sa-insight&quot;&gt;
+&lt;p&gt;&lt;strong&gt;有时候删比调更优雅。&lt;&#x2F;strong&gt; 两个元素怎么都对不齐的时候，问题可能不是对齐方式，而是元素太多了。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;men-lian-gua-hao-liao&quot;&gt;门帘挂好了&lt;&#x2F;h2&gt;
+&lt;div class=&quot;sa-cta&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;soul.polly.wang&quot; target=&quot;_blank&quot;&gt;soul.polly.wang&lt;&#x2F;a&gt; 现在展示的是 Coming Soon 预告页。&lt;&#x2F;p&gt;
+&lt;p&gt;hero.jpg 竞技场全景作背景，CRT 闪白点亮屏幕，7 个 tier 形态在粒子中缓缓轮播，三张毛玻璃卡片透出功能预告，一个播放按钮等着好奇的人点开 Hackathon 视频。&lt;&#x2F;p&gt;
+&lt;p&gt;门帘后面，评分引擎、段位系统、灵魂对决、进化时间线——全都准备好了。&lt;&#x2F;p&gt;
+&lt;p&gt;等冷启动数据刷够、端到端测试跑完，只需要一行：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;TEASER_MODE=0&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;竞技场就开门了。&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;sa-evolution&quot;&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#888899&quot; title=&quot;Spark&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#29b6f6&quot; title=&quot;Circuit&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#00acc1&quot; title=&quot;Sentinel&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#651fff&quot; title=&quot;Phantom&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#ff9100&quot; title=&quot;Titan&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#ffd740&quot; title=&quot;Nexus&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-arrow&quot;&gt;→&lt;&#x2F;span&gt;
+&lt;span class=&quot;sa-evo-dot&quot; style=&quot;background:#ff4081&quot; title=&quot;Prime&quot;&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;div&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;SoulArena 系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;文章&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;2026-03-26&lt;&#x2F;td&gt;&lt;td&gt;v0.1&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;beimingkungfu-soul-arena-vision&quot;&gt;北冥狂想：当庄子遇上 AI 灵魂&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-04-11&lt;&#x2F;td&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;soularena-v2-cyberpunk-reborn&quot;&gt;灵魂竞技场 V2：一夜重铸赛博朋克&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-04-15&lt;&#x2F;td&gt;&lt;td&gt;v2.3&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;soularena-scorer-v2-read-soul&quot;&gt;从「数体积」到「读灵魂」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-04-16&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;soularena-hackathon-video-43min&quot;&gt;43 分钟写出电影旁白&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-04-18&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;竞技场的门帘&lt;&#x2F;strong&gt;（本篇）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+</feed>
