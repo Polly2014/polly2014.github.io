@@ -192,7 +192,7 @@
 &lt;p&gt;正式上线时删掉一行环境变量，&lt;code&gt;systemctl restart&lt;&#x2F;code&gt;，一秒切换。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;hackathon-shi-pin-yu-gao-pian-de-yu-gao-pian&quot;&gt;Hackathon 视频：预告片的预告片&lt;&#x2F;h2&gt;
 &lt;p&gt;纯静态预告页用户 3 秒扫一眼就走。我突然想起来——我们不是有 Hackathon 视频吗？&lt;&#x2F;p&gt;
-&lt;p&gt;这才是真正的杀手锏。43 分钟的 demo 视频，本身就是最好的产品预告。&lt;&#x2F;p&gt;
+&lt;p&gt;这才是真正的杀手锏。1 分 49 秒的 demo 视频（三方 43 分钟脑暴出的脚本），本身就是最好的产品预告。&lt;&#x2F;p&gt;
 &lt;p&gt;最终方案是点击弹窗播放：tier 轮播下方放一个赛博风的 ▶ WATCH TRAILER 按钮，点击后弹出暗幕 modal，iframe 从 Bilibili CDN 加载。130MB 的视频让 B 站的 CDN 去扛，不折腾自己的小水管。&lt;&#x2F;p&gt;
 &lt;p&gt;踩了一个小坑：浏览器不让 iframe 自动播放有声视频，去掉 &lt;code&gt;autoplay&lt;&#x2F;code&gt; 让用户自己点播放——反而更自然。&lt;&#x2F;p&gt;
 &lt;p&gt;视频同时传了 &lt;a href=&quot;https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV19Xd5BBELs&#x2F;&quot;&gt;Bilibili&lt;&#x2F;a&gt; 和 &lt;a href=&quot;https:&#x2F;&#x2F;youtu.be&#x2F;3SeaXEb4fSQ&quot;&gt;YouTube&lt;&#x2F;a&gt;，国内外都能看。&lt;&#x2F;p&gt;
