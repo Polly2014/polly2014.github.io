@@ -5,8 +5,157 @@
     <link href="https://polly.wang/tags/css/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-22T00:00:00+00:00</updated>
+    <updated>2026-04-19T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/css/atom.xml</id>
+    <entry xml:lang="en">
+        <title>WeChat Publisher 2.0：从硬编码到主题系统</title>
+        <published>2026-04-19T00:00:00+00:00</published>
+        <updated>2026-04-19T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/wechat-publisher-v2/" type="text/html"/>
+        <id>https://polly.wang/wechat-publisher-v2/</id>
+        
+        <content type="html">&lt;h2 id=&quot;gong-zhong-hao-de-qi-guai-xian-zhi&quot;&gt;公众号的奇怪限制&lt;&#x2F;h2&gt;
+&lt;p&gt;微信公众号有一条让前端开发者崩溃的规则：&lt;strong&gt;它会剥离 &lt;code&gt;&amp;lt;style&amp;gt;&lt;&#x2F;code&gt; 标签和 &lt;code&gt;class&lt;&#x2F;code&gt; 属性&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着所有视觉效果必须以 inline &lt;code&gt;style=&amp;quot;...&amp;quot;&lt;&#x2F;code&gt; 的方式写死在每一个 HTML 标签上。没有 CSS 变量，没有 &lt;code&gt;@media&lt;&#x2F;code&gt;，没有类选择器——回到 2003 年的写法。&lt;&#x2F;p&gt;
+&lt;p&gt;我的 &lt;code&gt;wechat-publisher&lt;&#x2F;code&gt; 是一个 Claude Code skill——Polly 调用它把 Zola 博客的 Markdown 转成公众号兼容的富文本，通过官方 API 推到草稿箱。&lt;&#x2F;p&gt;
+&lt;p&gt;v1 的做法很直接——既然只能 inline，那就在 Python 里硬写：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;html += (
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;blockquote style=&amp;quot;border-left:3px solid #576b95;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;padding:10px 15px;color:#666;background:#f8f8f8;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;border-radius:0 4px 4px 0;margin:15px 0;&amp;quot;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;{content}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;&#x2F;blockquote&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;14 处类似的字符串散落在 &lt;code&gt;md_to_wechat_html()&lt;&#x2F;code&gt; 函数里。能跑，但想换个视觉风格？翻 Python 源码改色号。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;v2-yao-jie-jue-de-wen-ti&quot;&gt;v2 要解决的问题&lt;&#x2F;h2&gt;
+&lt;p&gt;一句话：&lt;strong&gt;让 Python 不知道&amp;quot;引用块是什么颜色&amp;quot;&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;具体目标四条：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;样式和代码分离&lt;&#x2F;li&gt;
+&lt;li&gt;一条命令切主题&lt;&#x2F;li&gt;
+&lt;li&gt;不引入新依赖（skill 只依赖 &lt;code&gt;requests&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;100% 向后兼容&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;san-ceng-fen-chi&quot;&gt;三层分离&lt;&#x2F;h2&gt;
+&lt;p&gt;v2 的目录结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;wechat-publisher&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── themes&#x2F;                 ← 样式层
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── default.css         # CSS 模板（含 {{variable}} 占位）
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── default.vars.json   # 变量值
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── elegant.css         # 海洋蓝（与 polly.wang 视觉一致）
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── elegant.vars.json
+&lt;&#x2F;span&gt;&lt;span&gt;│   ├── geek-black.css      # 极客黑（硬核技术文）
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── geek-black.vars.json
+&lt;&#x2F;span&gt;&lt;span&gt;└── scripts&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    └── wechat_publish.py   # 适配层
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层&lt;&#x2F;th&gt;&lt;th&gt;变什么&lt;&#x2F;th&gt;&lt;th&gt;不变什么&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;数据层&lt;&#x2F;strong&gt;（博文 &lt;code&gt;.md&lt;&#x2F;code&gt;）&lt;&#x2F;td&gt;&lt;td&gt;内容&lt;&#x2F;td&gt;&lt;td&gt;永远是纯 Markdown&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;样式层&lt;&#x2F;strong&gt;（&lt;code&gt;themes&#x2F;&lt;&#x2F;code&gt;）&lt;&#x2F;td&gt;&lt;td&gt;视觉风格&lt;&#x2F;td&gt;&lt;td&gt;变量名契约&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;适配层&lt;&#x2F;strong&gt;（Python）&lt;&#x2F;td&gt;&lt;td&gt;解析逻辑&lt;&#x2F;td&gt;&lt;td&gt;对外 API&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;适配层想渲染 &lt;code&gt;&amp;lt;blockquote&amp;gt;&lt;&#x2F;code&gt;，就问样式层&amp;quot;引用块的 style 是什么&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# v1：Python 知道颜色
+&lt;&#x2F;span&gt;&lt;span&gt;html += &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;blockquote style=&amp;quot;border-left:3px solid #576b95;...&amp;quot;&amp;gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# v2：Python 只查表
+&lt;&#x2F;span&gt;&lt;span&gt;html += &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;blockquote style=&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;blockquote&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;quot;&amp;gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;换主题，只改 CSS 和 JSON，Python 一行不动。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;70-xing-zi-xie-css-parser&quot;&gt;70 行自写 CSS Parser&lt;&#x2F;h2&gt;
+&lt;p&gt;这是 v2 里最关键的取舍。&lt;&#x2F;p&gt;
+&lt;p&gt;公众号兼容的 CSS 子集极其简单——没有 &lt;code&gt;@media&lt;&#x2F;code&gt;、没有伪类、没有嵌套选择器。为这个场景引一个完整的 CSS3 解析库（&lt;code&gt;cssutils&lt;&#x2F;code&gt;、&lt;code&gt;tinycss2&lt;&#x2F;code&gt;），90% 的功能用不上，依赖却翻倍。&lt;&#x2F;p&gt;
+&lt;p&gt;所以我自己写了一个 minimal parser：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;def &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_parse_css&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;css_text&lt;&#x2F;span&gt;&lt;span&gt;):
+&lt;&#x2F;span&gt;&lt;span&gt;    css_text = re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sub&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;*?&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&amp;#39;, css_text, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;flags&lt;&#x2F;span&gt;&lt;span&gt;=re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;DOTALL&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;    result = {}
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;m &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;re.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;finditer&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;^&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{}]&lt;&#x2F;span&gt;&lt;span&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;^&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;{}]&lt;&#x2F;span&gt;&lt;span&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, css_text):
+&lt;&#x2F;span&gt;&lt;span&gt;        selectors = [s.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lstrip&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;s &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;m.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;group&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)]
+&lt;&#x2F;span&gt;&lt;span&gt;        decls = m.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;group&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        props = []
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;line &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;decls.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;):
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; in line:
+&lt;&#x2F;span&gt;&lt;span&gt;                k, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;_&lt;&#x2F;span&gt;&lt;span&gt;, v = line.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;partition&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;                props.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;append&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;{k.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;()}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span&gt;{v.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;strip&lt;&#x2F;span&gt;&lt;span&gt;()}&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;        style = &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;;&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(props)
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;sel &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;selectors:
+&lt;&#x2F;span&gt;&lt;span&gt;            result[sel] = style
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;result
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;它&lt;strong&gt;故意不支持&lt;&#x2F;strong&gt;的东西比支持的多：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;特性&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;支持？&lt;&#x2F;th&gt;&lt;th&gt;理由&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;单选择器 &lt;code&gt;h2&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;渲染器按 key 查表&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;多选择器 &lt;code&gt;h1, h2&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;展开成多条规则&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;注释 &lt;code&gt;&#x2F;* *&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;写文档需要&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;组合选择器 &lt;code&gt;blockquote p&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;公众号不需要级联&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;@media&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;公众号无响应式&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;伪类 &lt;code&gt;:hover&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;没有交互状态&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;strong&gt;用正确的简陋，替代错误的完整。&lt;&#x2F;strong&gt; 这条原则在这个场景下特别适用。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;css-mo-ban-json-bian-liang-biao&quot;&gt;CSS 模板 + JSON 变量表&lt;&#x2F;h2&gt;
+&lt;p&gt;样式层由两个文件组成——CSS 模板负责结构，JSON 变量表负责色值：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* elegant.css *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;blockquote &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  border-left: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4px &lt;&#x2F;span&gt;&lt;span&gt;solid {{accent_color}};
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;background: &lt;&#x2F;span&gt;&lt;span&gt;{{bg_soft}};
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;color: &lt;&#x2F;span&gt;&lt;span&gt;{{text_color}};
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;accent_color&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#7a9eb1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;bg_soft&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#f4f7f9&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text_color&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#2c3e50&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;加载时先 &lt;code&gt;str.replace()&lt;&#x2F;code&gt; 把变量替换成值，再交给 parser 解析成查表字典。不用 Jinja2，不用 mustache——变量替换只是&amp;quot;名字→值&amp;quot;，两行代码足够，不需要模板引擎。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gong-gong-bian-liang-qi-yue&quot;&gt;公共变量契约&lt;&#x2F;h2&gt;
+&lt;p&gt;三款主题视觉差异很大，但&lt;strong&gt;共享同一组变量名&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;分组&lt;&#x2F;th&gt;&lt;th&gt;变量&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;主色&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;primary_color&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;accent_color&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;文本四档&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;text_color&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;text_body&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;text_soft&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;text_mute&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;背景&#x2F;边框&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;bg_soft&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;border_soft&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;代码&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;bg_code_inline&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;fg_code_inline&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;bg_code_block&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;fg_code_block&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;为什么要命名统一？&lt;strong&gt;为了可复制&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;想基于 &lt;code&gt;elegant&lt;&#x2F;code&gt; 做一个暗色版：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp&lt;&#x2F;span&gt;&lt;span&gt; themes&#x2F;elegant.css themes&#x2F;elegant-dark.css
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cp&lt;&#x2F;span&gt;&lt;span&gt; themes&#x2F;elegant.vars.json themes&#x2F;elegant-dark.vars.json
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 改 JSON 里的色值，CSS 一个字不动
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;因为 CSS 用的是契约变量名，新主题只需填自己的值。每个主题允许扩展私有变量（geek-black 有个 &lt;code&gt;accent_dim&lt;&#x2F;code&gt;），但公共部分不动。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;可复制性 &amp;gt; 语义完美。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-yong-fang-shi&quot;&gt;使用方式&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 默认主题
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; wechat_publish.py publish &amp;lt;post.md&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 切主题预览
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; wechat_publish.py convert &amp;lt;post.md&amp;gt; --preview&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --theme&lt;&#x2F;span&gt;&lt;span&gt; geek-black
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;优先级：&lt;code&gt;--theme&lt;&#x2F;code&gt; CLI &amp;gt; 环境变量 &lt;code&gt;WECHAT_THEME&lt;&#x2F;code&gt; &amp;gt; &lt;code&gt;config.env&lt;&#x2F;code&gt; &amp;gt; &lt;code&gt;default&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;没配置任何主题的用户看到的结果和 v1 一模一样——&lt;code&gt;default&lt;&#x2F;code&gt; 主题就是 v1 的视觉。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-she-ji-qu-she&quot;&gt;三个设计取舍&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看，v2 里最有价值的不是写了什么，是&lt;strong&gt;决定不做什么&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;取舍一：不引第三方库。&lt;&#x2F;strong&gt; &lt;code&gt;cssutils&lt;&#x2F;code&gt; 两行就能装，但把依赖从 1 个变成 2 个。对一个小 skill 来说，这是一倍的维护面。公众号的 CSS 子集简单到 70 行正则就能解析，不需要工业级 parser。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;取舍二：变量名强制统一。&lt;&#x2F;strong&gt; 代价是某些命名不够贴合（geek-black 的 &amp;quot;primary&amp;quot; 其实是深黑），但换来的是新主题复制出来就能用。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;取舍三：启动时加载，不做运行时切换。&lt;&#x2F;strong&gt; 一次发布就是一次脚本调用，中途不需要换主题。运行时切换引入的复杂度（缓存失效、线程安全）全是为用不到的灵活性付的代价。YAGNI。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ru-guo-ni-ye-xiang-zuo-yi-ge&quot;&gt;如果你也想做一个&lt;&#x2F;h2&gt;
+&lt;p&gt;整个方案可以复用到任何&amp;quot;Markdown → 微信公众号&amp;quot;的场景。核心思路：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;接受 inline-only 的限制&lt;&#x2F;strong&gt;，不要试图绕过&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CSS 模板 + 变量表&lt;&#x2F;strong&gt;作为样式层，跟渲染代码分离&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;自写 minimal parser&lt;&#x2F;strong&gt;（~70 行），不引完整 CSS 库&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;公共变量契约&lt;&#x2F;strong&gt;让主题可复制&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;技术栈只需要 Python + &lt;code&gt;requests&lt;&#x2F;code&gt;。微信公众号 API 的 access_token、素材上传、草稿创建都是标准 REST 调用，文档在&lt;a href=&quot;https:&#x2F;&#x2F;developers.weixin.qq.com&#x2F;doc&#x2F;offiaccount&#x2F;Draft_Box&#x2F;Add_draft.html&quot;&gt;微信开放平台&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;从&amp;quot;14 处硬编码字符串&amp;quot;到&amp;quot;三款主题一条命令切&amp;quot;——不是功能爆炸的升级，是同样的能力用更干净的姿势交付。&lt;&#x2F;p&gt;
+&lt;p&gt;对一个会用很多年的工具来说，干净比炫技重要得多。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Polly Chat v2.5：从欢迎屏到 IndexedDB</title>
         <published>2026-02-22T00:00:00+00:00</published>
