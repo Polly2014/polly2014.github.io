@@ -5,8 +5,66 @@
     <link href="https://polly.wang/tags/soulport/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-15T00:00:00+00:00</updated>
+    <updated>2026-04-19T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/soulport/atom.xml</id>
+    <entry xml:lang="en">
+        <title>住错了地方的段位：SoulPort 护城河前置记</title>
+        <published>2026-04-19T00:00:00+00:00</published>
+        <updated>2026-04-19T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/soulport-v12-moat-forward/" type="text/html"/>
+        <id>https://polly.wang/soulport-v12-moat-forward/</id>
+        
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;soularena-scorer-v2-read-soul&quot;&gt;从「数体积」到「读灵魂」&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;soularena-teaser-three-minds-one-curtain&quot;&gt;三个脑子吵出来的 Coming Soon&lt;&#x2F;a&gt; → &lt;strong&gt;本篇&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;yi-ge-yan-se-gai-liao-yi-ban&quot;&gt;一个颜色改了一半&lt;&#x2F;h2&gt;
+&lt;p&gt;四月十六号，我想把 Titan 段位的发光色调暖一点。&lt;&#x2F;p&gt;
+&lt;p&gt;改完重启 SoulArena，上传一只灵魂包——六边形边框、段位徽章、雷达图光晕，颜色都对了。&lt;&#x2F;p&gt;
+&lt;p&gt;隔天在终端跑 &lt;code&gt;soulport score&lt;&#x2F;code&gt;，还是老橙红。&lt;&#x2F;p&gt;
+&lt;p&gt;愣了三秒：&lt;strong&gt;我改了 SoulArena 的 config.py，没改 SoulPort 的 tiers.py&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;因为它们原本就是两份。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-yi-xie-zai-liao-ke-hu-duan-li&quot;&gt;协议写在了客户端里&lt;&#x2F;h2&gt;
+&lt;p&gt;段位和评分最初写在 SoulArena 的 backend 里，原因很朴素——那天先做的 Web，CLI 还没有 score 命令。写完能跑，就没人逼着搬。&lt;&#x2F;p&gt;
+&lt;p&gt;但标准化工具有一条隐藏铁律：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;段位定义属于规范，不属于展示层。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;如果 Cursor 明天想接入 SoulPort，他们能 &lt;code&gt;pip install soulport&lt;&#x2F;code&gt; 就拿到完整的五维评分和七阶段位。不该要求他们跑个 SoulArena Web 服务。SoulArena 是段位的第一个消费者——和未来任何接入方一样的身份，不应该是段位的&amp;quot;源&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾在 Review 里一句话点穿：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;你把协议写在了客户端里。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Docker 当年做对的那件事不是 &lt;code&gt;docker run&lt;&#x2F;code&gt;，是让 &lt;strong&gt;container image format&lt;&#x2F;strong&gt; 脱离了 Docker 引擎。格式属于公共标准之后，Kubernetes、Podman、containerd 才能接进来。&lt;&#x2F;p&gt;
+&lt;p&gt;SoulPort 的类比：&lt;code&gt;.bm&lt;&#x2F;code&gt; 格式是数据标准（v0.2 就定了），评分算法和段位定义是行为标准——这一版才搬回来。两层标准都住在 &lt;code&gt;pip install soulport&lt;&#x2F;code&gt; 里，&amp;quot;任何下游平台接入都段位一致&amp;quot;才不是一句空话。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ban-hui-lai-de-shi-hou-fan-chu-liao-shi-yao&quot;&gt;搬回来的时候翻出了什么&lt;&#x2F;h2&gt;
+&lt;p&gt;搬运本身很直：SoulArena 的纯统计函数搬到 &lt;code&gt;soulport&#x2F;scorer.py&lt;&#x2F;code&gt;，段位字典搬到 &lt;code&gt;soulport&#x2F;tiers.py&lt;&#x2F;code&gt;，SoulArena 瘦身成 thin wrapper——只留 LLM 调用和 guardrail，统计从上游 import。&lt;&#x2F;p&gt;
+&lt;p&gt;733 行 → 458 行，少的 275 行搬到了它该在的地方。&lt;&#x2F;p&gt;
+&lt;p&gt;但搬的过程里小龙虾翻出了五个老毛病——全都藏在&amp;quot;能跑&amp;quot;的表象下面。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;独特性评分歧视非 OpenClaw 用户。&lt;&#x2F;strong&gt; 原逻辑只认 OpenClaw 的 &lt;code&gt;SOUL.md&lt;&#x2F;code&gt;，Claude Code 的 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 和 Copilot 的 &lt;code&gt;copilot-instructions.md&lt;&#x2F;code&gt; 跑出来永远偏低。小龙虾的原话：&amp;quot;这是在惩罚用户选了别的框架。&amp;quot; 改成 fallback 到 &lt;code&gt;identity_content&lt;&#x2F;code&gt;，任何框架的 Identity 层都能参与。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;技能目录提取写了两遍。&lt;&#x2F;strong&gt; doctor 和 scorer 各自实现了一遍&amp;quot;从路径提取 skill 目录&amp;quot;，去重逻辑还不一样。抽出来变成公共函数，一处改全局生效。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;.bm&lt;&#x2F;code&gt; 包的活跃度检测永远报 stale。&lt;&#x2F;strong&gt; doctor 检测&amp;quot;最近活跃度&amp;quot;用的是 &lt;code&gt;datetime.now()&lt;&#x2F;code&gt;——一个三个月前导出的包，打开一看&amp;quot;90 天没更新&amp;quot;。对 workspace 合理，对快照没意义。改成用 &lt;code&gt;manifest.exported_at&lt;&#x2F;code&gt; 做参考点。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;MCP 的雷达图在某些 LLM 上下文里会被吞。&lt;&#x2F;strong&gt; Unicode 方块字符放在 Claude Desktop 里好看，但丢到别的模型的 context window 里可能变乱码。改成 ASCII bar，渲染 fallback 始终可读。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;IDENTITY 扫描器只认自家格式。&lt;&#x2F;strong&gt; &lt;code&gt;score_personality_richness&lt;&#x2F;code&gt; 扫描 Identity 层时只认 YAML 风格的 &lt;code&gt;name:&lt;&#x2F;code&gt;，不认 &lt;code&gt;## Name&lt;&#x2F;code&gt; 这种 heading。加上 heading regex 之后，跨框架识别率立刻上来。&lt;&#x2F;p&gt;
+&lt;p&gt;五个问题，共性只有一个：&lt;strong&gt;代码能跑，测试能过，但逻辑在跨框架场景下是错的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hu-cheng-he-bu-zai-xing-shu-li&quot;&gt;护城河不在行数里&lt;&#x2F;h2&gt;
+&lt;p&gt;这一版没加新功能，都是基础设施的位置调整。但我觉得它是 SoulPort 路线里比较重要的一步。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;护城河不在代码量里——在哪些决策必须由你的上游说了算。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;段位的颜色、分数的切线、技能的去重规则，这些属于&amp;quot;定义什么是好灵魂&amp;quot;，不属于&amp;quot;画个六边形展示它&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;v1.2.0 已上 PyPI。206 个测试，0 regression。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pip&lt;&#x2F;span&gt;&lt;span&gt; install soulport==1.2.0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soulport&lt;&#x2F;span&gt;&lt;span&gt; score your-soul.bm          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 终端渲染，或 --json 给脚本消费
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;soulport&lt;&#x2F;span&gt;&lt;span&gt; doctor your-soul.bm         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 直接体检 .bm 包
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;下次改 Titan 颜色，只改一处就够了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>灵魂竞技场：从「数体积」到「读灵魂」</title>
         <published>2026-04-15T00:00:00+00:00</published>
