@@ -93,6 +93,11 @@
 &lt;p&gt;第二个问题更实在——整站变慢。回家后 curl 了一下响应头，真相一目了然：&lt;strong&gt;Cloudflare 压根没在边缘缓存 HTML&lt;&#x2F;strong&gt;。每次请求都穿透 CF，跨太平洋回源到美西的 GitHub Pages，TTFB 实测 2.7 秒。刚好那篇热门博文在社区传播，访问量涨了，每一次跨洋回源都在放大延迟。&lt;&#x2F;p&gt;
 &lt;p&gt;修了三件事：让 CF 在边缘缓存 HTML（1 小时 TTL）；改写响应头把浏览器缓存从 10 分钟压到 4 分钟（微信内置浏览器咬缓存特别死）；在 GitHub Actions 里加一步——push 博文时自动 purge CF 全站缓存，等 30 秒 GitHub Pages 传播完再清。&lt;&#x2F;p&gt;
 &lt;p&gt;推上去，跑完 CI，再 curl 一下：第一次 MISS，第二次 HIT，&lt;code&gt;age: 4&lt;&#x2F;code&gt;。边缘缓存立刻建立。闭环合上了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shun-shou-zai-kan-san-dao&quot;&gt;顺手再砍三刀&lt;&#x2F;h2&gt;
+&lt;p&gt;修完缓存那晚意犹未尽，顺手跑了一遍 Lighthouse。Mobile 性能分 79，LCP 5 秒——罪魁祸首不是缓存，是聊天系统自己：每个页面加载时偷偷下载 816KB 的博文索引，只为在聊天气泡上显示一行最新博文标题。99% 的访客根本不会打开聊天框，却人人付这笔流量税。&lt;&#x2F;p&gt;
+&lt;p&gt;砍了三刀：把 816KB 的索引换成一个 120 字节的轻量版（只放最新一篇的标题和链接）；264KB 的 favicon 重新生成，压到 3KB；213KB 的头像换了格式，压到 40KB。&lt;&#x2F;p&gt;
+&lt;p&gt;再跑一遍 Lighthouse：&lt;strong&gt;92 分，LCP 3 秒，每页省了 434KB。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;从下午咖啡店的一句&amp;quot;感觉变慢了&amp;quot;，到晚上的 92 分——中间隔了一个 &lt;code&gt;purge_everything&lt;&#x2F;code&gt;、三刀瘦身、和一个说&amp;quot;我会转达给本人&amp;quot;的数字分身。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;liu-yan-ban-de-huang-hun-liao-tian-ru-kou-de-xin-sheng&quot;&gt;留言板的黄昏，聊天入口的新生&lt;&#x2F;h2&gt;
 &lt;p&gt;整件事修完，我才意识到这个回路有多怪。&lt;&#x2F;p&gt;
 &lt;p&gt;上一个时代博客的反馈回路是这样的：&lt;&#x2F;p&gt;
