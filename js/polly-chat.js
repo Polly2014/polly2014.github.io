@@ -179,7 +179,9 @@ class PollyChat {
                 const latest = posts.sort((a, b) => b.date.localeCompare(a.date))[0];
                 const shortTitle = latest.title.length > 12 ? latest.title.slice(0, 12) + '…' : latest.title;
                 dynamicChip.textContent = `🔬 ${shortTitle}`;
-                dynamicChip.dataset.msg = `跟我聊聊 ${latest.title}`;
+                // 用书名号+"你最新的博文"消除第一人称标题带来的角色歧义
+                // （例如标题「我的小破站，被六家 AI 公司围观了」里的"我"指 Polly，不是访客）
+                dynamicChip.dataset.msg = `聊聊你最新的博文《${latest.title}》`;
             })
             .catch(() => {});
     }
