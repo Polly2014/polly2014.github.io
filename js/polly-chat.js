@@ -171,12 +171,12 @@ class PollyChat {
         const dynamicChip = document.querySelector('.welcome-chips .chip-dynamic');
         if (!dynamicChip) return;
         
-        // 从 blog-index.json 取最新博文作为动态 chip
-        fetch('/blog-index.json')
-            .then(r => r.ok ? r.json() : [])
-            .then(posts => {
-                if (!posts.length) return;
-                const latest = posts.sort((a, b) => b.date.localeCompare(a.date))[0];
+        // 用轻量 latest-post.json (~120B) 而非 blog-index.json (816KB)，避免阻塞 LCP
+        // 完整索引由 worker.js 在收到聊天消息时拉取（带三级缓存），前端不参与
+        fetch('/latest-post.json')
+            .then(r => r.ok ? r.json() : null)
+            .then(latest => {
+                if (!latest || !latest.title) return;
                 const shortTitle = latest.title.length > 12 ? latest.title.slice(0, 12) + '…' : latest.title;
                 dynamicChip.textContent = `🔬 ${shortTitle}`;
                 // 用书名号+"你最新的博文"消除第一人称标题带来的角色歧义
