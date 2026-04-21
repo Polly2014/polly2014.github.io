@@ -5,8 +5,89 @@
     <link href="https://polly.wang/tags/ocr/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2025-12-26T00:00:00+00:00</updated>
+    <updated>2026-04-22T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ocr/atom.xml</id>
+    <entry xml:lang="en">
+        <title>小红书一键获取纯文字版：从想法到产品</title>
+        <published>2026-04-22T00:00:00+00:00</published>
+        <updated>2026-04-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/xhs-extractor-idea-to-product/" type="text/html"/>
+        <id>https://polly.wang/xhs-extractor-idea-to-product/</id>
+        
+        <content type="html">&lt;p&gt;朋友发来一条小红书链接：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;有没有办法把这里面的字抠出来？我复制不了，图太多了手敲要死。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;小红书的正文，大部分&lt;strong&gt;藏在图片里&lt;&#x2F;strong&gt;。产品设计使然——防搬运、防洗稿、锁在 App 里。对想收藏某段话的人来说，是一面复制不动的墙。&lt;&#x2F;p&gt;
+&lt;p&gt;我当时就想：OCR 一下不就完了？&lt;&#x2F;p&gt;
+&lt;p&gt;当晚 9 点半开写。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-tiao-lu-zou-dao-di&quot;&gt;一条路，走到底&lt;&#x2F;h2&gt;
+&lt;p&gt;技术路径极短：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;拿到链接 → Playwright 无头浏览器打开页面 → 从前端状态里取出标题、正文摘要、图片列表&lt;&#x2F;li&gt;
+&lt;li&gt;每张图并发送 GPT-4o 做 OCR → 拿回逐页文字&lt;&#x2F;li&gt;
+&lt;li&gt;启发式拼接跨页断句 → 输出一篇完整的 Markdown&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;关键约束只有一条：&lt;strong&gt;不总结、不改写、不润色。图片里是啥，输出就是啥。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这条约束贯穿了所有决策。之前试过让 Claude 直接&amp;quot;看图写文&amp;quot;，它会把人名改掉；试过 OCR 之后再让 LLM 合并，合并这一步就会悄悄把原文总结掉。&lt;&#x2F;p&gt;
+&lt;p&gt;读者想要的是搬运，不是二次创作。所以 LLM 只负责 OCR 这一件事，拼接全靠规则：上一页末尾没有句号、下一页开头不是新段落 → 粘起来；否则保留段落分隔。简单，但够用。&lt;&#x2F;p&gt;
+&lt;p&gt;v0.1.0 → v0.2.0，CLI 搞定：&lt;code&gt;xhsx &amp;lt;url&amp;gt;&lt;&#x2F;code&gt; 敲一下，终端里出 Markdown。&lt;&#x2F;p&gt;
+&lt;p&gt;但朋友不会用命令行。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-cli-dao-web&quot;&gt;从 CLI 到 Web&lt;&#x2F;h2&gt;
+&lt;p&gt;于是加了 FastAPI 后端 + SSE 实时进度 + 邀请码配额，包了个单页 Web，部署上线。&lt;&#x2F;p&gt;
+&lt;p&gt;发给她。五分钟后：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;链接贴进去转圈十秒，然后报错了。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;她发来的是一条&lt;strong&gt;微信分享链接&lt;&#x2F;strong&gt;。带着 &lt;code&gt;wechatOrigin=menu&lt;&#x2F;code&gt; 和一堆追踪参数。小红书对这种 URL 会做一次重定向，跳到一个中间页，真实笔记数据要等二次跳转才加载。我的代码在第一跳就拿数据，拿到的是空壳。&lt;&#x2F;p&gt;
+&lt;p&gt;这只是开始。接下来是一连串环环相扣的问题：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;用正则从 HTML 里扒前端状态 → JSON 里嵌套了 HTML 字符串，正则过早截断&lt;&#x2F;li&gt;
+&lt;li&gt;改用浏览器内 JS 直接读对象 → Vue 的 reactive proxy 有循环引用，&lt;code&gt;JSON.stringify&lt;&#x2F;code&gt; 炸了&lt;&#x2F;li&gt;
+&lt;li&gt;加循环引用保护 → 整棵状态树太深，JSON 递归深度爆了&lt;&#x2F;li&gt;
+&lt;li&gt;改成只摘需要的子树 → 对象存在不代表数据填好了，Vue 是异步水合的&lt;&#x2F;li&gt;
+&lt;li&gt;加等待条件 → 某些冷门笔记水合特别慢，超时了&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;六个 bug，每一个都推翻上一个的假设。&lt;&#x2F;strong&gt; 从 22:44 到 23:05，二十分钟六连改。&lt;&#x2F;p&gt;
+&lt;p&gt;改完发微信：&amp;quot;好了，重试一下。&amp;quot;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;看到了。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;截图发过来，是她上周收藏的一篇长文，正文一字不差。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;xhs-extractor-idea-to-product&#x2F;result.jpg&quot; alt=&quot;xhs.polly.wang 实际效果&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xing-neng-cong-18-miao-ya-dao-13-miao&quot;&gt;性能：从 18 秒压到 13 秒&lt;&#x2F;h2&gt;
+&lt;p&gt;功能跑通后开始压时间。18 秒的耗时分两块：浏览器冷启动约 6 秒，6 张图 OCR 约 12 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;三步优化：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;屏蔽无用资源&lt;&#x2F;strong&gt;：Playwright 拦截图片&#x2F;媒体&#x2F;字体请求——反正图片是后面用 httpx 单独下载的，浏览器不需要加载&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;OCR 并发从 4 提到 6&lt;&#x2F;strong&gt;：6 张图一波跑完，省掉一次等待&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;浏览器池化&lt;&#x2F;strong&gt;：FastAPI 启动时开一个常驻 chromium，每次请求只开新 context，省掉 2-3 秒冷启动&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;最终稳定在 13 秒左右。剩下的全是 GPT-4o 的 OCR 延迟，物理极限。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ui-yi-ge-footer-gai-liao-wu-ban&quot;&gt;UI：一个 footer 改了五版&lt;&#x2F;h2&gt;
+&lt;p&gt;功能和性能搞定后，开始做视觉。毛玻璃卡片、双栏布局、进度条、鼠标视差背景——这些一次就过了。&lt;&#x2F;p&gt;
+&lt;p&gt;但页脚我想写一句特别的话。&lt;&#x2F;p&gt;
+&lt;p&gt;第一版，贴纸风格，毛玻璃药丸底——太花了，像喜帖。第二版，裸文字加意大利斜体——感觉差点意思。加粗到 700——太壮了。降到 500——刚好。&lt;&#x2F;p&gt;
+&lt;p&gt;五个 commit，就为了一行字的字体粗细。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾一直说&amp;quot;别改了&amp;quot;。结果下一个 commit 她自己提了个 &lt;code&gt;padding-bottom: 12vh&lt;&#x2F;code&gt;——因为她发现视觉中线偏低，按光学甜点往上顶了一截。说好不改了，她自己先动手了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou-yi-bu&quot;&gt;最后一步&lt;&#x2F;h2&gt;
+&lt;p&gt;凌晨 0:53，&lt;code&gt;v0.4.14&lt;&#x2F;code&gt; 推上 PyPI。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;pip install xhsx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;从第一个 commit 到最后一个，&lt;strong&gt;3 小时 28 分钟，35 个 commit，14 个版本&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;从 CLI 到 Web 产品，从正则解析到浏览器池，从功能到性能到视觉，一气呵成。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看，整个项目没有任何一步是&amp;quot;难&amp;quot;的。Playwright 抓页面、GPT-4o 做 OCR、FastAPI 包一层——每一步都是现成的轮子。真正花时间的是那六连 bug，和一个 footer 的字体粗细。&lt;&#x2F;p&gt;
+&lt;p&gt;但这大概就是做东西的乐趣：&lt;strong&gt;不是每一步都难，但每一步都得对。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;工具挂在 &lt;a href=&quot;https:&#x2F;&#x2F;xhs.polly.wang&quot;&gt;xhs.polly.wang&lt;&#x2F;a&gt;，链接一贴就出原文。需要邀请码，找 Baoli 要一个就行。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>2025年PDF转Markdown工具终极指南：MinerU、Marker、Nougat等8款工具深度对比</title>
         <published>2025-12-26T00:00:00+00:00</published>
