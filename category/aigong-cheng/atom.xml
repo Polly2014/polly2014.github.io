@@ -8,6 +8,161 @@
     <updated>2026-04-24T00:00:00+00:00</updated>
     <id>https://polly.wang/category/aigong-cheng/atom.xml</id>
     <entry xml:lang="en">
+        <title>拆开 Copilot 的记忆宫殿：20MB 混淆代码里的三层秘密</title>
+        <published>2026-04-24T00:00:00+00:00</published>
+        <updated>2026-04-24T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/copilot-memory-reverse-engineering/" type="text/html"/>
+        <id>https://polly.wang/copilot-memory-reverse-engineering/</id>
+        
+        <content type="html">&lt;p&gt;周五晚上，刚帮 TideWatch 的 v4 策略跑完 135 条信号回填，想歇口气。随手敲了一句&amp;quot;查看下 memory&amp;quot;——本来只是想看看最近记了什么笔记，结果盯着那三层目录结构（user &#x2F; session &#x2F; repo）发了一会儿呆：&lt;&#x2F;p&gt;
+&lt;p&gt;这些文件到底存在哪？前 200 行&amp;quot;自动加载&amp;quot;是怎么回事？repo memory 为什么只能 create 不能改？&lt;&#x2F;p&gt;
+&lt;p&gt;好奇心一起来就收不住了。于是这个本来准备刷手机的夜晚，变成了一场对 GitHub Copilot memory 机制的完整逆向工程。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-tu-cong-ci-pan-kai-shi&quot;&gt;地图：从磁盘开始&lt;&#x2F;h2&gt;
+&lt;p&gt;第一步最简单——找文件。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;~&#x2F;Library&#x2F;Application Support&#x2F;Code&#x2F;User&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;├── globalStorage&#x2F;github.copilot-chat&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;│   └── memory-tool&#x2F;memories&#x2F;         ← User Memory
+&lt;&#x2F;span&gt;&lt;span&gt;│       ├── dream-painter-quality-trap.md
+&lt;&#x2F;span&gt;&lt;span&gt;│       ├── frontend-identity-server-side.md
+&lt;&#x2F;span&gt;&lt;span&gt;│       └── pypi-fail-closed.md
+&lt;&#x2F;span&gt;&lt;span&gt;└── workspaceStorage&#x2F;{hash}&#x2F;GitHub.copilot-chat&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    └── memory-tool&#x2F;memories&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;        ├── repo&#x2F;                      ← Repo Memory (13 个 .md)
+&lt;&#x2F;span&gt;&lt;span&gt;        ├── MzJiZGEzN2Et...&#x2F;          ← Session Memory
+&lt;&#x2F;span&gt;&lt;span&gt;        ├── NTAwYTJiMWUt...&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;        └── YTYzNzIzNDMt...&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三层目录，三个生命周期。&lt;code&gt;globalStorage&lt;&#x2F;code&gt; 是 VS Code 给每个扩展分配的全局存储（跨工作区），&lt;code&gt;workspaceStorage&lt;&#x2F;code&gt; 则按工作区隔离。但有趣的是那些 base64 编码的文件夹名——解码一下：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;目录名&lt;&#x2F;th&gt;&lt;th&gt;解码后&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;MzJiZGEzN2Et...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;32bda37a-b408-4cf3-...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;NTAwYTJiMWUt...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;500a2b1e-a2dd-4699-...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;是 UUID。每个聊天会话的 session memory 都住在一个以 &lt;code&gt;base64url(sessionId)&lt;&#x2F;code&gt; 命名的目录里。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里，磁盘结构清楚了。但规则呢？为什么 repo memory 不能编辑？200 行限制又在哪里？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zou-jin-20mb-de-mi-gong&quot;&gt;走进 20MB 的迷宫&lt;&#x2F;h2&gt;
+&lt;p&gt;答案藏在 &lt;code&gt;~&#x2F;.vscode&#x2F;extensions&#x2F;github.copilot-chat-0.44.1&#x2F;dist&#x2F;extension.js&lt;&#x2F;code&gt; 里——20,299,110 字节的 minified JavaScript。&lt;&#x2F;p&gt;
+&lt;p&gt;用 Python 写了个正则搜索器，像考古一样一层层刷关键词：&lt;code&gt;memory-tool&lt;&#x2F;code&gt;、&lt;code&gt;&#x2F;memories&#x2F;&lt;&#x2F;code&gt;、&lt;code&gt;agentMemoryService&lt;&#x2F;code&gt;、&lt;code&gt;storeRepoMemory&lt;&#x2F;code&gt;……&lt;&#x2F;p&gt;
+&lt;p&gt;第一个宝藏出现在偏移量 14,225,303 的位置：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;var &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dTt&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;200&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Fre&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;class extends &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;pTt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PromptElement&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eff1f5;&quot;&gt;{
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;dTt = 200&lt;&#x2F;code&gt;。一个硬编码的常量。它控制着整个 user memory 的命运。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;200-xing-de-tian-hua-ban&quot;&gt;200 行的天花板&lt;&#x2F;h2&gt;
+&lt;p&gt;顺着 &lt;code&gt;dTt&lt;&#x2F;code&gt; 找到了 &lt;code&gt;getUserMemoryContent()&lt;&#x2F;code&gt; 的完整实现：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getUserMemoryContent&lt;&#x2F;span&gt;&lt;span&gt;(){
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;r &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;J&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;joinPath&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;globalStorageUri&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;memory-tool&#x2F;memories&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a &lt;&#x2F;span&gt;&lt;span&gt;= (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;readDirectory&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;)).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;filter&lt;&#x2F;span&gt;&lt;span&gt;(([&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;l&lt;&#x2F;span&gt;&lt;span&gt;]) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;l&lt;&#x2F;span&gt;&lt;span&gt;===&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&amp;amp; !&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;startsWith&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;));
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s &lt;&#x2F;span&gt;&lt;span&gt;= [];
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;] of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;){
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.length &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dTt&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ← 200 行硬上限
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;u &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;readFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;J&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;joinPath&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;r&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;d &lt;&#x2F;span&gt;&lt;span&gt;= new TextDecoder().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;decode&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;u&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;## ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;`, ...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;d&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;));
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;slice&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dTt&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ← 再截一刀
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;逻辑清晰得让人心凉：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;遍历 &lt;code&gt;globalStorage&#x2F;...&#x2F;memories&#x2F;&lt;&#x2F;code&gt; 下的所有 &lt;code&gt;.md&lt;&#x2F;code&gt; 文件&lt;&#x2F;li&gt;
+&lt;li&gt;每个文件的内容前面加一个 &lt;code&gt;## 文件名&lt;&#x2F;code&gt; 标题&lt;&#x2F;li&gt;
+&lt;li&gt;逐行追加到数组里&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;读完当前文件后检查&lt;&#x2F;strong&gt;——如果总行数已经 ≥ 200，停止读取后续文件&lt;&#x2F;li&gt;
+&lt;li&gt;最后再 &lt;code&gt;slice(0, 200)&lt;&#x2F;code&gt; 兜底截断&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;注意第 4 步的微妙之处：break 发生在文件粒度，不是行粒度。假如数组已经有 195 行，下一个文件有 10 行，push 完变成 205 行——这时才检查并 break，已经来不及了。最后靠第 5 步的 &lt;code&gt;slice&lt;&#x2F;code&gt; 兜底砍回 200。换句话说，&lt;strong&gt;200 行是所有 user memory 文件合并后的总上限，以文件为单位读取，超出部分靠截断兜底。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果你的第一个文件就有 180 行，第二个文件会被完整读入（假设 30 行，数组变 210），但最终只保留前 200 行——第二个文件丢了尾部 10 行，第三个文件根本不会被读取。&lt;&#x2F;p&gt;
+&lt;p&gt;我回头看了一下自己的三个 user memory 文件——加起来刚好 50 行左右。还好，远没触顶。但如果你是那种在 memory 里写详细笔记的人，很可能已经在不知不觉中丢失了后面文件的内容。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;14-tian-de-yi-wang-qu-xian&quot;&gt;14 天的遗忘曲线&lt;&#x2F;h2&gt;
+&lt;p&gt;接着找到了 &lt;code&gt;MemoryCleanupService&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;var &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;uqi &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;14&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;24&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;60&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;60&lt;&#x2F;span&gt;&lt;span&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1e3&lt;&#x2F;span&gt;&lt;span&gt;;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 14 天，毫秒
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个服务在 memory tool 首次使用时启动，做一件简单的事：遍历 &lt;code&gt;workspaceStorage&lt;&#x2F;code&gt; 下所有 session memory 目录（排除 &lt;code&gt;repo&#x2F;&lt;&#x2F;code&gt;），检查每个文件的 &lt;code&gt;mtime&lt;&#x2F;code&gt;（修改时间）——如果超过 14 天没有被&lt;strong&gt;修改&lt;&#x2F;strong&gt;，删除。空目录也一并清理。&lt;&#x2F;p&gt;
+&lt;p&gt;（代码里还有一个内存中的 &lt;code&gt;accessTimestamps&lt;&#x2F;code&gt; Map，每次通过 memory tool 访问文件时会 &lt;code&gt;markAccessed(uri, Date.now())&lt;&#x2F;code&gt;。清理时优先检查这个 Map——如果 Map 里有记录且未过期，文件免死。但 Map 是进程内的，VS Code 重启后清空，最终还是回到 &lt;code&gt;mtime&lt;&#x2F;code&gt; 判断。）&lt;&#x2F;p&gt;
+&lt;p&gt;所以 session memory 不是&amp;quot;对话结束就消失&amp;quot;，而是&amp;quot;14 天内没人改就被回收&amp;quot;。这解释了为什么我之前的 SoulArena 移动端分析、Hackathon 视频进度这些 session memory 还在——它们都不到两周。&lt;&#x2F;p&gt;
+&lt;p&gt;但过了两周？默默消失，不留痕迹。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhi-xie-bu-gai-de-zhang-ben&quot;&gt;只写不改的账本&lt;&#x2F;h2&gt;
+&lt;p&gt;最出乎意料的发现在 repo memory 的操作权限上——但要理解它，得先看清一个分岔路口。&lt;&#x2F;p&gt;
+&lt;p&gt;Repo memory 有两条路径，取决于一个默认关闭的 feature flag：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;aTt&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;)) {  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 是 &#x2F;memories&#x2F;repo&#x2F; 路径
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;agentMemoryService&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;checkMemoryEnabled&lt;&#x2F;span&gt;&lt;span&gt;()) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 路径 A：云端 CAPI
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_dispatchRepoCAPI&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 路径 B：本地磁盘
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_dispatchLocal&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;, &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;repo&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;n&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;路径 B（默认）&lt;&#x2F;strong&gt;：走本地磁盘文件操作，和 user memory、session memory 一样，支持完整的 create &#x2F; str_replace &#x2F; delete &#x2F; rename。这就是我们日常的体验——repo memory 可以随意编辑。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;路径 A（云端模式，默认关闭）&lt;&#x2F;strong&gt;：走 GitHub CAPI 云端存储，权限骤然收紧——&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_dispatchRepoCAPI&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;n&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;switch&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;case &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;create&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;_repoCreate&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            text: `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Error: The &amp;#39;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&amp;#39; operation is not supported 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;                   for repository memories. Only &amp;#39;create&amp;#39; is allowed.&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;            outcome: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;        };
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;只允许 &lt;code&gt;create&lt;&#x2F;code&gt;。&lt;&#x2F;strong&gt; 不能 &lt;code&gt;str_replace&lt;&#x2F;code&gt;，不能 &lt;code&gt;delete&lt;&#x2F;code&gt;，不能 &lt;code&gt;rename&lt;&#x2F;code&gt;。追加式写入，一旦写进去就改不了。&lt;&#x2F;p&gt;
+&lt;p&gt;所以我之前能编辑 repo memory，是因为走的路径 B。一旦 GitHub 全面开启云端同步，这些编辑操作就会被拒绝。今天的&amp;quot;能改&amp;quot;，是暂时的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yin-cang-de-yun-duan-tong-dao&quot;&gt;隐藏的云端通道&lt;&#x2F;h2&gt;
+&lt;p&gt;顺着这条线索，挖到了完整的云端同步机制。两个独立的 feature flag：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;开关&lt;&#x2F;th&gt;&lt;th&gt;配置项&lt;&#x2F;th&gt;&lt;th&gt;默认值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;CopilotMemoryEnabled&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;chat.copilotMemory.enabled&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;false&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;MemoryToolEnabled&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;chat.tools.memory.enabled&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;true&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;当 &lt;code&gt;CopilotMemoryEnabled&lt;&#x2F;code&gt; 打开时，repo memory 的 create 操作会通过 GitHub OAuth Token 调用一个内部 API：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;PUT {capiBaseUrl}&#x2F;agents&#x2F;swe&#x2F;internal&#x2F;memory&#x2F;v0&#x2F;{owner&#x2F;repo}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;注意 URL 里的 &lt;code&gt;internal&lt;&#x2F;code&gt; 和 &lt;code&gt;v0&lt;&#x2F;code&gt;——这还是内部 API，版本号是 0。存储结构也从普通 markdown 文件变成了结构化 JSON：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;subject&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;标题&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;fact&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;内容&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;citations&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: [&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;引用来源&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;],
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;reason&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;存储原因&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;category&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;分类&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;source&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;agent&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;vscode&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;{owner&#x2F;repo}&lt;&#x2F;code&gt; 来自 &lt;code&gt;getRepoNwo()&lt;&#x2F;code&gt; 函数——它读取工作区第一个 folder 的 git remote URL，用正则提取 &lt;code&gt;owner&#x2F;repo&lt;&#x2F;code&gt; 格式的仓库标识（代码里叫 NWO，Name With Owner）。这意味着云端同步后，repo memory 是跟 &lt;strong&gt;GitHub 仓库&lt;&#x2F;strong&gt;绑定的——换电脑 clone 同一个仓库，理论上能拿到相同的记忆。&lt;&#x2F;p&gt;
+&lt;p&gt;但它现在默认关着。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;vs-code-gei-liao-liang-ge-chou-ti&quot;&gt;VS Code 给了两个抽屉&lt;&#x2F;h2&gt;
+&lt;p&gt;到这里，整个拼图完成了。最后一个问题：这是 VS Code 的设计，还是 Copilot 的设计？&lt;&#x2F;p&gt;
+&lt;p&gt;答案很清晰。VS Code 只提供了两个存储 API：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;extensionContext.globalStorageUri&lt;&#x2F;code&gt; → 扩展全局数据&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;extensionContext.storageUri&lt;&#x2F;code&gt; → 工作区隔离数据&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这是任何 VS Code 扩展都能用的通用文件柜。至于柜子里放什么、怎么组织、怎么注入 prompt、什么时候清理——VS Code 完全不管。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;三层架构、200 行截断、14 天过期、append-only 约束、CAPI 云端同步——全部是 GitHub Copilot 团队在 &lt;code&gt;extension.js&lt;&#x2F;code&gt; 里自己实现的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果明天有人做一个竞品 VS Code AI 扩展，用同样的存储 API，完全可以设计出不同的记忆架构：不限 200 行、repo memory 支持编辑、用 SQLite 替代 markdown 文件、实现跨工作区的全文搜索……&lt;&#x2F;p&gt;
+&lt;p&gt;VS Code 给了两个抽屉，Copilot 在里面建了整套记忆宫殿。宫殿的设计——是 Copilot 自己的选择。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;quan-jing-tu&quot;&gt;全景图&lt;&#x2F;h2&gt;
+&lt;p&gt;三层记忆的注入方式也不相同。User memory 自动加载全文（前 200 行），而 session 和 repo memory 的注入代码证实了它们只列文件名——&lt;code&gt;getSessionMemoryFiles()&lt;&#x2F;code&gt; 仅把文件路径 push 到数组里（&lt;code&gt;s.push(&amp;quot;&#x2F;memories&#x2F;session&#x2F;${l}&amp;quot;)&lt;&#x2F;code&gt;），&lt;code&gt;getLocalRepoMemoryFiles()&lt;&#x2F;code&gt; 同理（&lt;code&gt;o.push(&amp;quot;&#x2F;memories&#x2F;repo&#x2F;${s}&amp;quot;)&lt;&#x2F;code&gt;），两者都不读取文件内容。Agent 需要主动调用 memory tool 的 &lt;code&gt;view&lt;&#x2F;code&gt; 命令才能看到里面写了什么。&lt;&#x2F;p&gt;
+&lt;p&gt;最后用一张表总结三层记忆的关键差异：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;User Memory&lt;&#x2F;th&gt;&lt;th&gt;Session Memory&lt;&#x2F;th&gt;&lt;th&gt;Repo Memory&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;存储位置&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;globalStorage&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;workspaceStorage&#x2F;...&#x2F;base64(sessionId)&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;workspaceStorage&#x2F;...&#x2F;repo&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;跨工作区&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ 是&lt;&#x2F;td&gt;&lt;td&gt;❌ 否&lt;&#x2F;td&gt;&lt;td&gt;❌ 否&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;注入方式&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;前 200 行&lt;strong&gt;自动加载全文&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;仅列文件名（需手动 read）&lt;&#x2F;td&gt;&lt;td&gt;仅列文件名（需手动 read）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;操作权限&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;完整 CRUD&lt;&#x2F;td&gt;&lt;td&gt;完整 CRUD&lt;&#x2F;td&gt;&lt;td&gt;只能 create（云端模式）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;生命周期&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;永久&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;14 天未修改自动删除&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;永久&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;云端同步&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;✅（实验性，默认关）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;整个逆向过程大概花了一个小时。最大的感触不是技术细节，而是一种产品设计上的克制。&lt;&#x2F;p&gt;
+&lt;p&gt;200 行上限是粗暴的，但有效——它迫使你精简笔记，而不是把 memory 当成无底洞。14 天清理是无情的，但合理——session memory 本就是临时工作区，不是永久档案。append-only 的 repo memory 看似限制，实则是为云端同步铺路——不可变数据比可变数据更容易在多端之间保持一致。&lt;&#x2F;p&gt;
+&lt;p&gt;每一个约束背后，都藏着一个产品判断。&lt;&#x2F;p&gt;
+&lt;p&gt;倒是有个有趣的反差：作为 Copilot memory 的&lt;strong&gt;用户&lt;&#x2F;strong&gt;，我每天创建、编辑、依赖这些记忆文件，但直到今晚才意识到，我从来不知道它们住在哪里、怎么被读取、什么时候会消失。就像你每天路过一栋楼，但从没想过它有几层、用了什么建材、地基打了多深。&lt;&#x2F;p&gt;
+&lt;p&gt;直到你出于好奇，推开那扇没上锁的门。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
         <title>观潮淘金记：135 条信号里，「自信」值多少钱</title>
         <published>2026-04-24T00:00:00+00:00</published>
         <updated>2026-04-24T00:00:00+00:00</updated>
