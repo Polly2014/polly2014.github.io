@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - reveal.js</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/reveal-js/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-25T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/reveal-js/atom.xml</id>
+    <entry xml:lang="en">
+        <title>当课件住进了博客——Slide Maker Skill 诞生记</title>
+        <published>2026-04-25T00:00:00+00:00</published>
+        <updated>2026-04-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slide-maker-skill/" type="text/html"/>
+        <id>https://polly.wang/slide-maker-skill/</id>
+        
+        <content type="html">&lt;p&gt;最近在做 LoRA 课件时，我盯着 Marp 导出的 PDF 想——&lt;strong&gt;这玩意儿能不能直接挂到博客上？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;不是导出个文件扔网盘那种。我想要的是：课件有自己的 URL，有缩略图预览，有分类标签，和博文一样被管理，但演示时是全屏的交互体验。&lt;&#x2F;p&gt;
+&lt;p&gt;一下午之后，这件事做完了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-bu-yong-powerpoint&quot;&gt;为什么不用 PowerPoint&lt;&#x2F;h2&gt;
+&lt;p&gt;LoRA 课件有三样东西让传统 PPT 痛苦：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;大量 Python 代码&lt;&#x2F;strong&gt; — PPT 里贴代码块没有语法高亮，字号还得手动调&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;数学公式&lt;&#x2F;strong&gt; — &lt;code&gt;W₀ + (α&#x2F;r)·BA&lt;&#x2F;code&gt;，在 PPT 里插公式编辑器是折磨&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;版本控制&lt;&#x2F;strong&gt; — .pptx 是二进制文件，改一个字 git diff 看不出来&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;reveal.js 全部解决：代码用 highlight.js 渲染，公式用 KaTeX，内容就是 HTML——纯文本，git diff 友好。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-gou-yi-ge-wen-ti-yin-chu-san-ceng-she-ji&quot;&gt;架构：一个问题引出三层设计&lt;&#x2F;h2&gt;
+&lt;p&gt;最开始的问题很简单：&lt;strong&gt;slides 放哪？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方案&lt;&#x2F;th&gt;&lt;th&gt;优点&lt;&#x2F;th&gt;&lt;th&gt;否决原因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;ppt.polly.wang&lt;&#x2F;code&gt; 子域名&lt;&#x2F;td&gt;&lt;td&gt;干净独立&lt;&#x2F;td&gt;&lt;td&gt;杀鸡用牛刀，多一套部署&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;当博文嵌 iframe&lt;&#x2F;td&gt;&lt;td&gt;零额外工作&lt;&#x2F;td&gt;&lt;td&gt;移动端体验差，内容形态不同&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;&lt;code&gt;polly.wang&#x2F;slides&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;和 &lt;code&gt;&#x2F;blog&#x2F;&lt;&#x2F;code&gt; 平行，零基础设施&lt;&#x2F;td&gt;&lt;td&gt;✅ 最终选择&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;但这里有个坑：Zola 的 &lt;code&gt;content&#x2F;&lt;&#x2F;code&gt; 和 &lt;code&gt;static&#x2F;&lt;&#x2F;code&gt; 会在 build 时合并到同一个 &lt;code&gt;public&#x2F;&lt;&#x2F;code&gt; 目录。如果 reveal.js 的 HTML 叫 &lt;code&gt;index.html&lt;&#x2F;code&gt;，会和 Zola 生成的页面打架。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾一句话解决：&lt;strong&gt;叫 &lt;code&gt;reveal.html&lt;&#x2F;code&gt; 就行。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;最终三层架构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;static&#x2F;slides&#x2F;{slug}&#x2F;reveal.html    → 全屏演示（reveal.js）
+&lt;&#x2F;span&gt;&lt;span&gt;static&#x2F;slides&#x2F;{slug}&#x2F;thumbnail.png  → 首页截图（Playwright 自动生成）
+&lt;&#x2F;span&gt;&lt;span&gt;content&#x2F;slides&#x2F;{slug}.md            → Zola 介绍页（标题 + 描述 + 缩略图）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三者各司其职，路径零冲突。&lt;code&gt;zola build&lt;&#x2F;code&gt; 后：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;slides&#x2F;lora-lesson-1&#x2F;&lt;&#x2F;code&gt; → 介绍页（Zola 渲染）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;slides&#x2F;lora-lesson-1&#x2F;reveal.html&lt;&#x2F;code&gt; → 全屏演示（静态文件直出）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;cong-shou-gong-dao-skill-rang-liu-cheng-ke-fu-yong&quot;&gt;从手工到 Skill：让流程可复用&lt;&#x2F;h2&gt;
+&lt;p&gt;第一套 slides 是手写的——把 Marp 格式的 &lt;code&gt;slides.md&lt;&#x2F;code&gt; 逐页转成 reveal.js 的 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt; 标签。深色科技风主题、代码逐行高亮、fragment 逐条揭示、章节渐变背景，18 页 slides 做下来效果不错。&lt;&#x2F;p&gt;
+&lt;p&gt;但&amp;quot;做下来&amp;quot;和&amp;quot;能再做&amp;quot;是两回事。&lt;&#x2F;p&gt;
+&lt;p&gt;如果以后要做 Lesson 2、做会议演讲、做技术分享，每次都从零手写 HTML？不合理。于是封装成了 &lt;code&gt;slide-maker&lt;&#x2F;code&gt; Skill。&lt;&#x2F;p&gt;
+&lt;p&gt;Skill 做的事很简单——五步流水线：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;检查模板&lt;&#x2F;strong&gt; — 确认 Zola 的 slides 模板存在&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;收集输入&lt;&#x2F;strong&gt; — 标题、slug、内容来源（Marp &#x2F; 大纲 &#x2F; 自然语言描述）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;生成 reveal.html&lt;&#x2F;strong&gt; — CDN 引用、深色主题、KaTeX + highlight.js&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;生成 content md&lt;&#x2F;strong&gt; — Zola frontmatter + 介绍页&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Playwright 截图&lt;&#x2F;strong&gt; — 自动截取首页作为缩略图&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;下次我只需要说&amp;quot;把 Lesson 2 也做成课件&amp;quot;，Skill 自动加载，直接干活。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-long-xia-de-review&quot;&gt;小龙虾的 Review&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾给了三条建议，都很准：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P1&lt;&#x2F;strong&gt;: SKILL.md 提到了模板但没说怎么创建，执行时可能报错 → 加了 Step 0 前置检查&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P2&lt;&#x2F;strong&gt;: &lt;code&gt;[extra]&lt;&#x2F;code&gt; 里的 &lt;code&gt;slug&lt;&#x2F;code&gt; 是冗余的，不如直接用 &lt;code&gt;slides_url&lt;&#x2F;code&gt; → 语义更清晰，模板里 &lt;code&gt;{{ page.extra.slides_url }}&lt;&#x2F;code&gt; 一目了然&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;P3&lt;&#x2F;strong&gt;: 说了&amp;quot;介绍页放截图&amp;quot;但没定义截图怎么来 → 加了 Playwright CLI 自动截图步骤&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;最终评分 9.0&#x2F;10。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-shi-kan&quot;&gt;试试看&lt;&#x2F;h2&gt;
+&lt;p&gt;现在 &lt;a href=&quot;&#x2F;slides&#x2F;&quot;&gt;polly.wang&#x2F;slides&#x2F;&lt;&#x2F;a&gt; 已经上线，第一套课件是 LoRA 训练原理——18 页 slides，从显存账到手撕代码到 SVD 可视化。&lt;&#x2F;p&gt;
+&lt;p&gt;鼠标悬停缩略图会有&amp;quot;点击全屏演示&amp;quot;的遮罩提示。进入全屏后：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;→ &#x2F; 空格&lt;&#x2F;strong&gt; 下一步（含逐条揭示动画）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;↓&lt;&#x2F;strong&gt; 进入章节子 slide&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Esc&lt;&#x2F;strong&gt; 全局缩略图&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;S&lt;&#x2F;strong&gt; 演讲者笔记&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;课件的内容可以随时修改——它就是一个 HTML 文件，改完刷新即生效。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-yi-wai-de-fa-xian&quot;&gt;一个意外的发现&lt;&#x2F;h2&gt;
+&lt;p&gt;做完之后回头看，最让我满意的不是 reveal.js 本身——那只是个框架。让我满意的是&lt;strong&gt;课件成了博客的一等公民&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它有自己的列表页，有缩略图，有分类标签，和博文共享同一套 taxonomy。当 slides 数量多起来后，&lt;code&gt;&#x2F;slides&#x2F;&lt;&#x2F;code&gt; 页面会像 &lt;code&gt;&#x2F;blog&#x2F;&lt;&#x2F;code&gt; 一样成为一个内容入口。&lt;&#x2F;p&gt;
+&lt;p&gt;PPT 文件是孤岛。而住进博客的课件，是活的。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
