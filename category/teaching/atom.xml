@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Teaching</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/category/teaching/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-04-25T00:00:00+00:00</updated>
+    <id>https://polly.wang/category/teaching/atom.xml</id>
+    <entry xml:lang="en">
+        <title>LoRA 训练原理与手撕实操</title>
+        <published>2026-04-25T00:00:00+00:00</published>
+        <updated>2026-04-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slides/lora-lesson-1/" type="text/html"/>
+        <id>https://polly.wang/slides/lora-lesson-1/</id>
+        
+        <content type="html">&lt;p&gt;第一课课件，面向对外经贸大学 2026 春学期学生。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nei-rong-gai-yao&quot;&gt;内容概要&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Part 1 — 动机与数学&lt;&#x2F;strong&gt;：全量微调显存账（7B → 112GB）、PEFT 家族全景、LoRA 低秩分解公式 $\Delta W = BA$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 2 — 手撕代码&lt;&#x2F;strong&gt;：30 行 &lt;code&gt;LoRALinear&lt;&#x2F;code&gt; 实现、注入 Qwen2.5-0.5B（0.16% 参数）、Rank &amp;amp; Target Ablation&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 3 — 可视化与总结&lt;&#x2F;strong&gt;：SVD 奇异值谱验证低秩假设、GQA 架构陷阱、作业与下节预告&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;pei-tao-zi-yuan&quot;&gt;配套资源&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;📓 Notebook: &lt;code&gt;lesson1&#x2F;notebook_kaggle.ipynb&lt;&#x2F;code&gt;（Kaggle T4，零配置）&lt;&#x2F;li&gt;
+&lt;li&gt;📝 作业: &lt;code&gt;lesson1&#x2F;homework.md&lt;&#x2F;code&gt;（100 + 20 bonus 分）&lt;&#x2F;li&gt;
+&lt;li&gt;📚 参考: &lt;code&gt;RESOURCES.md&lt;&#x2F;code&gt;（LoRA &#x2F; QLoRA &#x2F; PEFT 论文 + 文档）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>

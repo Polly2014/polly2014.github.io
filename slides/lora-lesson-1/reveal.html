@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoRA 训练原理与手撕实操</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --r-background-color: #0d1117;
+      --r-main-color: #e6edf3;
+      --r-heading-color: #58a6ff;
+      --r-link-color: #58a6ff;
+    }
+    .reveal { font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { color: #58a6ff; font-weight: 700; }
+    .reveal h1 { font-size: 2.2em; text-shadow: 0 0 20px rgba(88,166,255,0.3); }
+    .reveal h2 { font-size: 1.6em; }
+    .reveal h3 { font-size: 1.2em; color: #7ee787; }
+
+    /* 代码块 */
+    .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 8px; }
+    .reveal pre code { font-size: 0.75em; line-height: 1.5; font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace; }
+    .reveal code { background: rgba(110,118,129,0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+
+    /* 表格 */
+    .reveal table { border-collapse: collapse; margin: 0.5em auto; font-size: 0.7em; }
+    .reveal table th { background: #161b22; color: #58a6ff; padding: 8px 16px; border-bottom: 2px solid #30363d; }
+    .reveal table td { padding: 8px 16px; border-bottom: 1px solid #21262d; }
+    .reveal table tr:hover td { background: rgba(88,166,255,0.05); }
+
+    /* 强调 */
+    .accent { color: #f0883e; font-weight: 700; }
+    .green { color: #7ee787; }
+    .red { color: #f85149; }
+    .blue { color: #58a6ff; }
+    .dim { color: #8b949e; font-size: 0.8em; }
+
+    /* 数学公式居中 */
+    .reveal .math { font-size: 1.1em; }
+
+    /* 引用块 */
+    .reveal blockquote { background: rgba(88,166,255,0.08); border-left: 4px solid #58a6ff; padding: 12px 20px; font-style: normal; border-radius: 0 6px 6px 0; }
+
+    /* 分栏 */
+    .columns { display: flex; gap: 40px; align-items: flex-start; }
+    .columns > * { flex: 1; }
+
+    /* 大数字 */
+    .big-number { font-size: 3em; font-weight: 900; color: #f0883e; line-height: 1; }
+
+    /* slide 页码 */
+    .reveal .slide-number { font-size: 14px; color: #8b949e; }
+
+    /* lead slide */
+    .lead h1 { font-size: 2.6em; margin-bottom: 0.3em; }
+    .lead p { font-size: 0.9em; color: #8b949e; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============ TITLE ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%)">
+  <h1>第一课 · LoRA 训练原理<br>与手撕实操</h1>
+  <h3>从全量微调的显存账，到 $W + BA$ 的优雅解法</h3>
+</section>
+
+<!-- ============ 三个问题 ============ -->
+<section>
+  <h2>今天要回答的三个问题</h2>
+  <ol>
+    <li class="fragment"><strong>为什么</strong>全量微调在消费级 GPU 上跑不动？</li>
+    <li class="fragment"><strong>LoRA 到底改了什么</strong>——用一页数学说清楚</li>
+    <li class="fragment"><strong>动手</strong>：20 行 PyTorch，让 Qwen2.5-0.5B 跑起来</li>
+  </ol>
+</section>
+
+<!-- ============ 时间线 ============ -->
+<section>
+  <h2>课堂时间线</h2>
+  <table>
+    <thead><tr><th>Part</th><th>模块</th><th>形式</th></tr></thead>
+    <tbody>
+      <tr class="fragment"><td>Part 1</td><td>动机：显存账 + PEFT 全景</td><td>讲授</td></tr>
+      <tr class="fragment"><td>Part 1</td><td>数学：$W + \frac{\alpha}{r}BA$</td><td>讲授</td></tr>
+      <tr class="fragment"><td>Part 2</td><td>手撕 <code>LoRALinear</code> + 挂到 Qwen2.5-0.5B</td><td><span class="accent">敲代码</span></td></tr>
+      <tr class="fragment"><td>Part 2</td><td>Rank + Target Ablation</td><td><span class="accent">敲代码</span></td></tr>
+      <tr class="fragment"><td>Part 3</td><td>SVD 可视化 + 洞察</td><td>分析</td></tr>
+      <tr class="fragment"><td>Part 3</td><td>作业 + Q&A</td><td>收尾</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ SECTION: 动机 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>① 动机</h1>
+    <h3>全量微调为什么贵？</h3>
+  </section>
+
+  <section>
+    <h2>一笔显存账</h2>
+    <p>训练一个 <span class="accent">7B 模型</span>，fp32 + AdamW：</p>
+    <table>
+      <thead><tr><th>项目</th><th>占用</th><th>计算</th></tr></thead>
+      <tbody>
+        <tr class="fragment"><td>模型参数</td><td>28 GB</td><td>7B × 4 bytes</td></tr>
+        <tr class="fragment"><td>梯度</td><td>28 GB</td><td>同参数</td></tr>
+        <tr class="fragment"><td>Adam 一阶动量</td><td>28 GB</td><td>同参数</td></tr>
+        <tr class="fragment"><td>Adam 二阶动量</td><td>28 GB</td><td>同参数</td></tr>
+        <tr class="fragment" style="font-weight:700;"><td class="red">合计</td><td class="red">112 GB</td><td class="red">❌ 消费级 GPU 完全跑不动</td></tr>
+      </tbody>
+    </table>
+    <p class="fragment dim">一张 4090 只有 24GB。这就是为什么必须有 PEFT。</p>
+  </section>
+
+  <section>
+    <h2>PEFT 家族全景</h2>
+    <p><span class="blue">PEFT = Parameter-Efficient Fine-Tuning</span></p>
+    <table>
+      <thead><tr><th>方法</th><th>核心思路</th><th>代表工作</th></tr></thead>
+      <tbody>
+        <tr class="fragment"><td>Adapter</td><td>插入小 MLP</td><td>Houlsby 2019</td></tr>
+        <tr class="fragment"><td>Prefix / Prompt Tuning</td><td>学一段前缀 token</td><td>Li & Liang 2021</td></tr>
+        <tr class="fragment"><td>BitFit</td><td>只训 bias</td><td>Zaken 2022</td></tr>
+        <tr class="fragment" style="background: rgba(88,166,255,0.1);"><td><strong>LoRA ⭐</strong></td><td>低秩分解 $\Delta W$</td><td><strong>Hu 2021</strong></td></tr>
+        <tr class="fragment"><td>QLoRA</td><td>4bit 量化 + LoRA</td><td>Dettmers 2023</td></tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<!-- ============ SECTION: 数学 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>② 数学</h1>
+    <h3>LoRA 怎么工作</h3>
+  </section>
+
+  <section>
+    <h2>核心假设</h2>
+    <blockquote>
+      <strong>权重更新是低秩的</strong>（Intrinsic Rank Hypothesis）
+    </blockquote>
+    <p class="fragment">全量微调得到 $\Delta W \in \mathbb{R}^{d \times k}$，但其"有效信息"只占极少维度。</p>
+    <p class="fragment"><strong>LoRA 的做法</strong>：强制分解为两个小矩阵</p>
+    <div class="fragment">
+      $$\Delta W = BA, \quad B \in \mathbb{R}^{d \times r},\ A \in \mathbb{R}^{r \times k},\ r \ll \min(d,k)$$
+    </div>
+  </section>
+
+  <section>
+    <h2>前向传播</h2>
+    <div style="font-size: 1.3em; margin: 0.5em 0;">
+      $$h = W_0 x + \frac{\alpha}{r} \cdot BAx$$
+    </div>
+    <ul>
+      <li class="fragment">$W_0$：原始权重，<span class="accent">冻结</span>（不算梯度）</li>
+      <li class="fragment">$A$：高斯初始化 $\mathcal{N}(0, \sigma^2)$</li>
+      <li class="fragment">$B$：<span class="green">零初始化</span> → 训练起点 $\Delta W = 0$</li>
+      <li class="fragment">$\alpha / r$：缩放因子，防超参跨 rank 变化</li>
+    </ul>
+    <p class="fragment dim">可训练参数 = $r(d+k)$，远小于原始 $d \times k$</p>
+  </section>
+
+  <section>
+    <h2>一个直观例子</h2>
+    <p>Qwen2.5-0.5B 的 <code>q_proj</code>：896 × 896</p>
+    <table>
+      <thead><tr><th>方案</th><th>可训练参数</th><th>压缩比</th></tr></thead>
+      <tbody>
+        <tr><td>全量</td><td>802,816</td><td>1×</td></tr>
+        <tr class="fragment" style="background: rgba(126,231,135,0.1);"><td>LoRA r=8</td><td>14,336</td><td class="green"><strong>56×</strong></td></tr>
+        <tr class="fragment" style="background: rgba(126,231,135,0.15);"><td>LoRA r=1</td><td>1,792</td><td class="green"><strong>448×</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="fragment">整个模型 LoRA (QV, r=8)：只训 <span class="accent">~0.16%</span> 参数 ✨</p>
+  </section>
+
+  <section>
+    <h2>⚠️ GQA 预警</h2>
+    <p>Qwen2.5-0.5B 使用 <span class="accent">Grouped Query Attention</span>：</p>
+    <div class="columns">
+      <div>
+        <ul>
+          <li><code>num_attention_heads = 14</code>（Q）</li>
+          <li><code>num_key_value_heads = 2</code>（K/V <span class="red">共享</span>）</li>
+        </ul>
+      </div>
+      <div class="fragment">
+        <ul>
+          <li><code>q_proj</code> → [896, 896]</li>
+          <li><code>k_proj</code> → [<span class="red">128</span>, 896]</li>
+          <li><code>v_proj</code> → [<span class="red">128</span>, 896]</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fragment" style="margin-top: 1em;">
+      <strong>结论</strong>：<span class="red">QKVO ≠ QV × 2</span>。一会儿你会亲眼看到。
+    </p>
+  </section>
+</section>
+
+<!-- ============ SECTION: 手撕代码 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a2332 0%, #0d2137 100%)">
+    <h1>③ 手撕代码</h1>
+    <h3>30 行 PyTorch 搞定 LoRA</h3>
+  </section>
+
+  <section>
+    <h2>Part A · <code>LoRALinear</code></h2>
+    <pre><code class="python" data-trim data-line-numbers="|3-5|6-8|9-10|12-13">
+class LoRALinear(nn.Module):
+    def __init__(self, base_linear, r=8, alpha=16):
+        super().__init__()
+        self.base = base_linear
+        for p in self.base.parameters():
+            p.requires_grad = False          # 冻结 W0
+        d_in  = base_linear.in_features
+        d_out = base_linear.out_features
+        self.lora_A = nn.Parameter(torch.empty(r, d_in))
+        self.lora_B = nn.Parameter(torch.zeros(d_out, r))
+        nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
+        self.scaling = alpha / r
+
+    def forward(self, x):
+        return self.base(x) \
+             + (x @ self.lora_A.T) @ self.lora_B.T * self.scaling
+    </code></pre>
+    <p class="fragment dim">➡️ Kaggle notebook, Section 4</p>
+  </section>
+
+  <section>
+    <h2>Part B · 挂到 Qwen2.5-0.5B</h2>
+    <pre><code class="python" data-trim data-line-numbers="|2|4-5|6">
+def inject_lora(model, target_names=("q_proj", "v_proj"),
+                r=8, alpha=16):
+    for p in model.parameters():
+        p.requires_grad = False
+    for module in model.modules():
+        for name, child in module.named_children():
+            if isinstance(child, nn.Linear) \
+               and name in target_names:
+                setattr(module, name,
+                        LoRALinear(child, r=r, alpha=alpha))
+    </code></pre>
+    <div class="fragment" style="margin-top: 1em; padding: 16px; background: rgba(126,231,135,0.1); border-radius: 8px; text-align: center;">
+      <code>Trainable: 786,432 / 494,032,768</code>
+      <span class="big-number" style="font-size: 2em; margin-left: 20px;">0.16%</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part C · 两个 Ablation</h2>
+    <div class="columns">
+      <div>
+        <h3>实验 1：Rank</h3>
+        <p>固定 QV, α=16</p>
+        <p><code>r ∈ {1, 4, 8, 32}</code></p>
+        <p class="dim">→ 画 loss 曲线</p>
+      </div>
+      <div>
+        <h3>实验 2：Target</h3>
+        <p>固定 r=8, α=16</p>
+        <p><code>QV / QKVO / FFN / ALL</code></p>
+        <p class="dim">→ 对比参数量 + val_loss</p>
+      </div>
+    </div>
+    <p class="fragment dim" style="margin-top: 1.5em;">课堂先各跑 2 个配置，剩下作业补齐</p>
+  </section>
+</section>
+
+<!-- ============ SECTION: SVD ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>④ 可视化洞察</h1>
+    <h3>SVD 奇异值谱</h3>
+  </section>
+
+  <section>
+    <h2>把 $\Delta W$ 打开看看</h2>
+    <p>合并 $\Delta W = \frac{\alpha}{r} BA$，做奇异值分解：</p>
+    <div style="font-size: 1.2em; margin: 0.8em 0;">
+      $$BA = U \Sigma V^\top$$
+    </div>
+    <blockquote class="fragment">
+      如果低秩假设成立，前 ~r 个 $\sigma_i$ 应远大于其余
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>典型的奇异值谱</h2>
+    <pre style="background: transparent; box-shadow: none; text-align: center; font-size: 0.8em;"><code class="nohighlight" data-trim>
+σᵢ / σ₀  (log scale)
+
+ 1.0  ●
+      ●
+      │ ●
+ 0.1  │  ●
+      │   ● ●
+0.01  │       ● ● ●
+      │             ● ● ● ● ● ● ● ● ●
+      └────┬───────────────────────────────
+        前 5–8 个                后续 ≈ 0
+    </code></pre>
+    <ul>
+      <li class="fragment">前 5–8 个奇异值衰减陡峭</li>
+      <li class="fragment">后面几十个几乎为零</li>
+      <li class="fragment">→ $\Delta W$ 的"有效秩" ≈ r，<span class="green">假设成立 ✅</span></li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============ SECTION: 作业 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a2332 0%, #0d2137 100%)">
+    <h1>⑤ 作业 & Q&A</h1>
+  </section>
+
+  <section>
+    <h2>作业（详见 <code>homework.md</code>）</h2>
+    <div class="columns">
+      <div>
+        <h3>必做（100 分）</h3>
+        <ol style="font-size: 0.75em;">
+          <li class="fragment">Rank Ablation：<code>r ∈ {1,4,8,32}</code>（30 分）</li>
+          <li class="fragment">Target Ablation：QV/QKVO/FFN/ALL（30 分）</li>
+          <li class="fragment">SVD 分析（≥3 层 + 200 字）（30 分）</li>
+          <li class="fragment">推理对比（5 条样例）（10 分）</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Bonus（20 分）</h3>
+        <ul style="font-size: 0.75em;" class="fragment">
+          <li>跨 rank SVD 对比</li>
+          <li>本地算力挑战</li>
+          <li>第二课数据集预热</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fragment dim" style="margin-top: 1em;">截止：下节课前一天 23:59</p>
+  </section>
+
+  <section>
+    <h2>下节课预告</h2>
+    <h3>第二课：<code>peft</code> + QLoRA 实操</h3>
+    <ul>
+      <li class="fragment">模型：Qwen2.5-<span class="accent">1.5B</span>-Instruct</li>
+      <li class="fragment">任务：<span class="green">外贸术语问答</span>（Incoterms 2020 + HS 编码）</li>
+      <li class="fragment">数据：500 训练 + 50 盲测</li>
+      <li class="fragment">工具：<code>peft</code> + <code>trl</code> + <code>bitsandbytes</code></li>
+      <li class="fragment">终极目标：同数据集横向对比各组 LoRA 配置</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============ Q&A ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%)">
+  <h1>Q & A</h1>
+  <p style="font-size: 1.3em; margin: 0.8em 0;">一切问题都是好问题。</p>
+  <div style="margin-top: 2em; color: #8b949e; font-size: 0.8em;">
+    <p>📓 notebook: <code>lesson1/notebook_kaggle.ipynb</code></p>
+    <p>📝 作业: <code>lesson1/homework.md</code></p>
+    <p>📚 参考: <code>RESOURCES.md</code></p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    center: true,
+    width: 1280,
+    height: 720,
+    margin: 0.08,
+    plugins: [
+      RevealHighlight,
+      RevealMath.KaTeX,
+      RevealNotes
+    ],
+    math: {
+      mathjax: null,
+      config: 'TeX-AMS_HTML-full',
+    },
+    highlight: {
+      beforeHighlight: hljs => hljs.configure({ languages: ['python'] })
+    }
+  });
+</script>
+</body>
+</html>
