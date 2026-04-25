@@ -48,7 +48,7 @@
 &lt;li&gt;&lt;code&gt;&#x2F;slides&#x2F;lora-lesson-1&#x2F;reveal.html&lt;&#x2F;code&gt; → 全屏演示（静态文件直出）&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;cong-shou-gong-dao-skill-rang-liu-cheng-ke-fu-yong&quot;&gt;从手工到 Skill：让流程可复用&lt;&#x2F;h2&gt;
-&lt;p&gt;第一套 slides 是手写的——把 Marp 格式的 &lt;code&gt;slides.md&lt;&#x2F;code&gt; 逐页转成 reveal.js 的 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt; 标签。深色科技风主题、代码逐行高亮、fragment 逐条揭示、章节渐变背景，18 页 slides 做下来效果不错：&lt;&#x2F;p&gt;
+&lt;p&gt;第一套 slides 是手写的——把 Marp 格式的 &lt;code&gt;slides.md&lt;&#x2F;code&gt; 逐页转成 reveal.js 的 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt; 标签。深色科技风主题、代码逐行高亮、fragment 逐条揭示、章节渐变背景，22 页 slides 做下来效果不错：&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;slide-maker-skill&#x2F;slides-preview.png&quot; alt=&quot;LoRA Lesson 1 首页&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;但&amp;quot;做下来&amp;quot;和&amp;quot;能再做&amp;quot;是两回事。&lt;&#x2F;p&gt;
 &lt;p&gt;如果以后要做 Lesson 2、做会议演讲、做技术分享，每次都从零手写 HTML？不合理。于是封装成了 &lt;code&gt;slide-maker&lt;&#x2F;code&gt; Skill。&lt;&#x2F;p&gt;
@@ -70,7 +70,7 @@
 &lt;&#x2F;blockquote&gt;
 &lt;p&gt;最终评分 9.0&#x2F;10。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;shi-shi-kan&quot;&gt;试试看&lt;&#x2F;h2&gt;
-&lt;p&gt;现在 &lt;a href=&quot;&#x2F;slides&#x2F;&quot;&gt;polly.wang&#x2F;slides&#x2F;&lt;&#x2F;a&gt; 已经上线，第一套课件是 LoRA 训练原理——18 页 slides，从显存账到手撕代码到 SVD 可视化。&lt;&#x2F;p&gt;
+&lt;p&gt;现在 &lt;a href=&quot;&#x2F;slides&#x2F;&quot;&gt;polly.wang&#x2F;slides&#x2F;&lt;&#x2F;a&gt; 已经上线，第一套课件是 LoRA 训练原理——22 页 slides，从显存账到手撕代码到 SVD 可视化。&lt;&#x2F;p&gt;
 &lt;p&gt;鼠标悬停缩略图会有&amp;quot;点击全屏演示&amp;quot;的遮罩提示。进入全屏后：&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;→ &#x2F; 空格&lt;&#x2F;strong&gt; 下一步（含逐条揭示动画）&lt;&#x2F;li&gt;
