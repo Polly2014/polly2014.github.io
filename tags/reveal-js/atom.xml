@@ -19,7 +19,7 @@
         
         <content type="html">&lt;p&gt;最近在做 LoRA 课件时，我盯着 Marp 导出的 PDF 想——&lt;strong&gt;这玩意儿能不能直接挂到博客上？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;不是导出个文件扔网盘那种。我想要的是：课件有自己的 URL，有缩略图预览，有分类标签，和博文一样被管理，但演示时是全屏的交互体验。&lt;&#x2F;p&gt;
-&lt;p&gt;一下午之后，这件事做完了。&lt;&#x2F;p&gt;
+&lt;p&gt;两个多小时后，这件事做完了。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;wei-shi-yao-bu-yong-powerpoint&quot;&gt;为什么不用 PowerPoint&lt;&#x2F;h2&gt;
 &lt;p&gt;LoRA 课件有三样东西让传统 PPT 痛苦：&lt;&#x2F;p&gt;
 &lt;ul&gt;
@@ -48,7 +48,8 @@
 &lt;li&gt;&lt;code&gt;&#x2F;slides&#x2F;lora-lesson-1&#x2F;reveal.html&lt;&#x2F;code&gt; → 全屏演示（静态文件直出）&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;cong-shou-gong-dao-skill-rang-liu-cheng-ke-fu-yong&quot;&gt;从手工到 Skill：让流程可复用&lt;&#x2F;h2&gt;
-&lt;p&gt;第一套 slides 是手写的——把 Marp 格式的 &lt;code&gt;slides.md&lt;&#x2F;code&gt; 逐页转成 reveal.js 的 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt; 标签。深色科技风主题、代码逐行高亮、fragment 逐条揭示、章节渐变背景，18 页 slides 做下来效果不错。&lt;&#x2F;p&gt;
+&lt;p&gt;第一套 slides 是手写的——把 Marp 格式的 &lt;code&gt;slides.md&lt;&#x2F;code&gt; 逐页转成 reveal.js 的 &lt;code&gt;&amp;lt;section&amp;gt;&lt;&#x2F;code&gt; 标签。深色科技风主题、代码逐行高亮、fragment 逐条揭示、章节渐变背景，18 页 slides 做下来效果不错：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;slide-maker-skill&#x2F;slides-preview.png&quot; alt=&quot;LoRA Lesson 1 首页&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;但&amp;quot;做下来&amp;quot;和&amp;quot;能再做&amp;quot;是两回事。&lt;&#x2F;p&gt;
 &lt;p&gt;如果以后要做 Lesson 2、做会议演讲、做技术分享，每次都从零手写 HTML？不合理。于是封装成了 &lt;code&gt;slide-maker&lt;&#x2F;code&gt; Skill。&lt;&#x2F;p&gt;
 &lt;p&gt;Skill 做的事很简单——五步流水线：&lt;&#x2F;p&gt;
@@ -61,7 +62,7 @@
 &lt;&#x2F;ol&gt;
 &lt;p&gt;下次我只需要说&amp;quot;把 Lesson 2 也做成课件&amp;quot;，Skill 自动加载，直接干活。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;xiao-long-xia-de-review&quot;&gt;小龙虾的 Review&lt;&#x2F;h2&gt;
-&lt;p&gt;小龙虾给了三条建议，都很准：&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾给了三条建议，三条都落地了：&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;P1&lt;&#x2F;strong&gt;: SKILL.md 提到了模板但没说怎么创建，执行时可能报错 → 加了 Step 0 前置检查&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;P2&lt;&#x2F;strong&gt;: &lt;code&gt;[extra]&lt;&#x2F;code&gt; 里的 &lt;code&gt;slug&lt;&#x2F;code&gt; 是冗余的，不如直接用 &lt;code&gt;slides_url&lt;&#x2F;code&gt; → 语义更清晰，模板里 &lt;code&gt;{{ page.extra.slides_url }}&lt;&#x2F;code&gt; 一目了然&lt;&#x2F;p&gt;
