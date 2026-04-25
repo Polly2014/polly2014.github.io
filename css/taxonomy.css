@@ -1,0 +1,282 @@
+/* Taxonomy pages: category & tags (list + single) */
+
+.taxonomy-page {
+    max-width: 100%;
+    margin: 0;
+}
+
+/* ── Page header / stats ── */
+.taxonomy-page .page-stats {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.taxonomy-page .stats-text {
+    color: #888;
+    font-size: 0.9rem;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* ── Breadcrumb (single) ── */
+.taxonomy-page .breadcrumb {
+    font-size: 0.9rem;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.taxonomy-page .breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.taxonomy-page .breadcrumb a:hover {
+    color: rgb(61, 146, 201);
+}
+
+.taxonomy-page .breadcrumb .separator {
+    color: #ccc;
+    margin: 0 0.5rem;
+}
+
+.taxonomy-page .breadcrumb .current {
+    color: #333;
+    font-weight: 500;
+}
+
+/* ── List view: term cards grid (weighted by post count) ── */
+.term-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.term-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem 1rem;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.term-card:hover {
+    border-color: rgb(61, 146, 201);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.term-name {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+    transition: color 0.15s ease;
+}
+
+.term-card:hover .term-name {
+    color: rgb(61, 146, 201);
+}
+
+.term-count {
+    font-size: 0.78rem;
+    color: #999;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Weight tiers: size + emphasis grow with post count.
+   Applied in templates via class names. */
+.term-card.size-xl .term-name { font-size: 1.55rem; }
+.term-card.size-l  .term-name { font-size: 1.3rem;  }
+.term-card.size-m  .term-name { font-size: 1.1rem;  }
+.term-card.size-s  .term-name { font-size: 0.98rem; }
+
+.term-card.size-xl { border-color: #aaa; }
+.term-card.size-l  { border-color: #bbb; }
+.term-card.size-m  { border-color: #ccc; }
+.term-card.size-s  { border-color: #ddd; }
+
+.term-card.size-xl .term-name,
+.term-card.size-l  .term-name { color: #222; }
+
+/* Tag-specific compact chip layout (used on /tags/) */
+.term-grid.term-grid--chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.6rem;
+}
+
+.term-grid.term-grid--chips .term-card {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+}
+
+.term-grid.term-grid--chips .term-name {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.term-grid.term-grid--chips .term-card.size-xl .term-name { font-size: 1.15rem; }
+.term-grid.term-grid--chips .term-card.size-l  .term-name { font-size: 1.05rem; }
+.term-grid.term-grid--chips .term-card.size-m  .term-name { font-size: 0.95rem; }
+.term-grid.term-grid--chips .term-card.size-s  .term-name { font-size: 0.85rem; }
+
+.term-grid.term-grid--chips .term-count {
+    font-size: 0.72rem;
+}
+
+/* ── Single view: posts grouped by year (mirrors archive) ── */
+.taxonomy-timeline {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.taxonomy-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #ddd 0%, #eee 100%);
+}
+
+.taxonomy-timeline .year-section {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.taxonomy-timeline .year-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    margin-left: -1.5rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.taxonomy-timeline .year-header::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: #666;
+    border-radius: 50%;
+    border: 2px solid #f2f2f2;
+}
+
+.taxonomy-timeline .year-label {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.taxonomy-timeline .year-count {
+    font-size: 0.72rem;
+    color: #999;
+    background: #e8e8e8;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.taxonomy-timeline .posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 0.5rem;
+}
+
+.taxonomy-timeline .post-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.55rem 0.6rem;
+    border-bottom: 1px solid #eee;
+    transition: background 0.15s ease;
+}
+
+.taxonomy-timeline .post-item:last-child {
+    border-bottom: none;
+}
+
+.taxonomy-timeline .post-item:hover {
+    background: #fafafa;
+}
+
+.taxonomy-timeline .post-date {
+    font-size: 0.82rem;
+    color: #999;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    min-width: 55px;
+    flex-shrink: 0;
+}
+
+.taxonomy-timeline .post-title {
+    color: #333;
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+}
+
+.taxonomy-timeline .post-title:hover {
+    color: rgb(61, 146, 201);
+    text-decoration: none;
+}
+
+/* ── Empty state ── */
+.taxonomy-page .empty-state {
+    color: #888;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.taxonomy-page .empty-state i {
+    display: block;
+    font-size: 2rem;
+    color: #ccc;
+    margin-bottom: 0.6rem;
+}
+
+.taxonomy-page .empty-state a {
+    color: rgb(61, 146, 201);
+    text-decoration: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .term-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.7rem;
+    }
+
+    .term-card {
+        padding: 0.9rem 0.8rem;
+    }
+
+    .term-card.size-xl .term-name { font-size: 1.3rem; }
+    .term-card.size-l  .term-name { font-size: 1.15rem; }
+    .term-card.size-m  .term-name { font-size: 1rem;   }
+    .term-card.size-s  .term-name { font-size: 0.92rem; }
+
+    .taxonomy-timeline .year-label {
+        font-size: 1.15rem;
+    }
+
+    .taxonomy-timeline .post-item {
+        flex-wrap: wrap;
+        gap: 0.3rem 0.5rem;
+    }
+
+    .taxonomy-timeline .post-date {
+        font-size: 0.75rem;
+    }
+}
