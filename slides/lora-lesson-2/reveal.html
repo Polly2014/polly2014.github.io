@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第二课 · 用 peft + QLoRA 炼一个外贸小助手</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --r-background-color: #0d1117;
+      --r-main-color: #e6edf3;
+      --r-heading-color: #58a6ff;
+      --r-link-color: #58a6ff;
+    }
+    .reveal { font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { color: #58a6ff; font-weight: 700; }
+    .reveal h1 { font-size: 2.2em; text-shadow: 0 0 20px rgba(88,166,255,0.3); }
+    .reveal h2 { font-size: 1.6em; }
+    .reveal h3 { font-size: 1.2em; color: #7ee787; }
+
+    /* 代码块 */
+    .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 8px; }
+    .reveal pre code { font-size: 0.7em; line-height: 1.5; font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace; }
+    .reveal code { background: rgba(110,118,129,0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+
+    /* 表格 */
+    .reveal table { border-collapse: collapse; margin: 0.5em auto; font-size: 0.7em; }
+    .reveal table th { background: #161b22; color: #58a6ff; padding: 8px 16px; border-bottom: 2px solid #30363d; }
+    .reveal table td { padding: 8px 16px; border-bottom: 1px solid #21262d; }
+    .reveal table tr:hover td { background: rgba(88,166,255,0.05); }
+
+    /* 强调 */
+    .accent { color: #f0883e; font-weight: 700; }
+    .green { color: #7ee787; }
+    .red { color: #f85149; }
+    .blue { color: #58a6ff; }
+    .dim { color: #8b949e; font-size: 0.8em; }
+
+    /* 引用块 */
+    .reveal blockquote { background: rgba(88,166,255,0.08); border-left: 4px solid #58a6ff; padding: 12px 20px; font-style: normal; border-radius: 0 6px 6px 0; }
+
+    /* 分栏 */
+    .columns { display: flex; gap: 40px; align-items: flex-start; }
+    .columns > * { flex: 1; }
+
+    /* 大数字 */
+    .big-number { font-size: 3em; font-weight: 900; color: #f0883e; line-height: 1; }
+
+    /* slide 页码 */
+    .reveal .slide-number { font-size: 14px; color: #8b949e; }
+
+    /* lead slide */
+    .lead h1 { font-size: 2.6em; margin-bottom: 0.3em; }
+    .lead p { font-size: 0.9em; color: #8b949e; }
+
+    /* ASCII 流程图 */
+    .ascii-flow {
+      font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+      font-size: 0.65em;
+      line-height: 1.4;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 18px 24px;
+      text-align: left;
+      color: #c9d1d9;
+      white-space: pre;
+      display: inline-block;
+    }
+    .ascii-flow .hl { color: #f0883e; font-weight: 700; }
+    .ascii-flow .gh { color: #7ee787; }
+    .ascii-flow .dimc { color: #8b949e; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============ TITLE ============ -->
+<section class="lead" data-background-gradient="linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%)">
+  <h1>第二课 · 用 peft + QLoRA<br>炼一个外贸小助手</h1>
+  <h3>从手撕 → 工程化</h3>
+  <p>Qwen2.5-1.5B · 500 条 Incoterms + HS QA · Kaggle T4</p>
+  <p class="dim">Polly Wang · 对外经贸大学 · 2026</p>
+</section>
+
+<!-- ============ 路线图 ============ -->
+<section>
+  <h2>📚 今日路线</h2>
+  <ol>
+    <li class="fragment">第一课回顾：我们到哪里了？</li>
+    <li class="fragment">PEFT 家族与 QLoRA 原理 <span class="dim">（15 min）</span></li>
+    <li class="fragment">数据加载 + SFTTrainer 配置 <span class="dim">（20 min）</span></li>
+    <li class="fragment">训练、合并、推理、评测 <span class="dim">（75 min）</span></li>
+    <li class="fragment">部署 demo 一页纸 <span class="dim">（15 min）</span></li>
+    <li class="fragment">组间展示评比 <span class="dim">（30 min）</span></li>
+  </ol>
+</section>
+
+<!-- ============ 第一课回顾 ============ -->
+<section>
+  <h2>1. 第一课回顾</h2>
+  <div class="columns">
+    <div class="fragment">
+      <h3>第一课（原理课）</h3>
+      <ul>
+        <li>手写 <code>LoRALinear</code>（~30 行）</li>
+        <li>挂到 <code>q_proj</code> / <code>v_proj</code></li>
+        <li>可训练参数 <span class="accent">0.16%</span></li>
+        <li>SVD 验证低秩假设</li>
+      </ul>
+    </div>
+    <div class="fragment">
+      <h3>第二课（实战课）</h3>
+      <ul>
+        <li>换 🤗 <code>peft</code> 工业级工具</li>
+        <li>4bit 量化底座（<span class="accent">QLoRA</span>）</li>
+        <li>更大模型（1.5B-Instruct）</li>
+        <li>真·下游任务（外贸 QA）</li>
+      </ul>
+    </div>
+  </div>
+  <blockquote class="fragment">手撕过一遍 → 用框架更有感觉：你知道 <code>peft</code> 底层每一步在做什么</blockquote>
+</section>
+
+<!-- ============ SECTION: 原理 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>② PEFT 家族 与 QLoRA 原理</h1>
+    <h3>15 min · 把"为什么 4bit 还能训"讲清楚</h3>
+  </section>
+
+  <section>
+    <h2>2.1 PEFT 家族全景</h2>
+    <table>
+      <thead><tr><th>方法</th><th>核心思想</th><th>代表</th></tr></thead>
+      <tbody>
+        <tr class="fragment"><td><strong>Prompt Tuning</strong></td><td>学一段可训练的 soft prompt</td><td>GPT-3 soft prompt</td></tr>
+        <tr class="fragment"><td><strong>Prefix Tuning</strong></td><td>每层注入可训练的 prefix KV</td><td>Li &amp; Liang 2021</td></tr>
+        <tr class="fragment"><td class="green"><strong>LoRA</strong></td><td>权重更新低秩分解 $W + BA$</td><td>Hu et al. 2021</td></tr>
+        <tr class="fragment"><td class="accent"><strong>QLoRA</strong></td><td>4bit 量化底座 + LoRA</td><td>Dettmers 2023</td></tr>
+        <tr class="fragment"><td><strong>DoRA / AdaLoRA</strong></td><td>幅度/方向解耦、自适应秩</td><td>2024+</td></tr>
+      </tbody>
+    </table>
+    <p class="fragment"><strong>工业界主流</strong>：<span class="accent">LoRA / QLoRA</span>（简单、快、adapter 小）</p>
+  </section>
+
+  <section>
+    <h2>2.2 QLoRA 一页纸</h2>
+    <div class="ascii-flow">原模型 Qwen2.5-1.5B (fp16, 3GB)
+          ↓ <span class="hl">4bit NF4 量化</span>
+量化底座 (0.9GB) <span class="dimc">────冻结不训练────</span>
+          +
+每个 Linear 外挂 <span class="gh">LoRA (A, B)</span> ── fp16 训练 ──
+          ↓
+前向：h = dequant(W_4bit) @ x + (α/r) · B·A·x
+反向：<span class="hl">只对 A, B 求梯度</span></div>
+    <p class="fragment"><strong>三项关键技术</strong>：NF4 量化 · 双重量化 · Paged Optimizer</p>
+    <p class="fragment"><strong>效果</strong>：1.5B 模型在 Kaggle T4 (16GB) 上训练占用 <span class="accent">~6GB</span></p>
+  </section>
+
+  <section>
+    <h2>2.3 为什么能压到这么小？</h2>
+    <table>
+      <thead><tr><th>存储项</th><th>全量微调</th><th>QLoRA</th></tr></thead>
+      <tbody>
+        <tr class="fragment"><td>模型参数</td><td>3 GB (fp16)</td><td class="green">0.9 GB (4bit)</td></tr>
+        <tr class="fragment"><td>梯度</td><td>3 GB</td><td class="green">~35 MB</td></tr>
+        <tr class="fragment"><td>AdamW state</td><td>6 GB (2×)</td><td class="green">~70 MB</td></tr>
+        <tr class="fragment"><td>激活 (MAX_LEN=512, bs=2)</td><td>~4 GB</td><td>~4 GB</td></tr>
+        <tr class="fragment" style="font-weight:700;"><td>合计</td><td class="red">~16 GB</td><td class="green">~5 GB</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="fragment">🎯 Kaggle T4 (16GB) 全量微调 1.5B 都已经很勉强，QLoRA 可以轻松跑 7B</blockquote>
+  </section>
+</section>
+
+<!-- ============ SECTION: 数据 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>③ 数据 与 Loss Mask</h1>
+    <h3>20 min · 让模型"学答不学问"</h3>
+  </section>
+
+  <section>
+    <h2>3.1 任务：外贸术语 QA</h2>
+    <p><strong>训练集</strong>：500 条（Polly 备好）<br>
+       <strong>盲测集</strong>：50 条（不给学生看，课堂评分用）</p>
+    <p><strong>数据格式</strong>（Alpaca-style）：</p>
+    <pre><code class="language-json" data-trim>
+{
+  "instruction": "请解释 FOB 和 CIF 的区别。",
+  "input": "",
+  "output": "FOB（Free On Board）..."
+}
+    </code></pre>
+    <p class="fragment"><strong>覆盖面</strong>：Incoterms 11 术语 + HS 编码归类规则 + 中国出口实务</p>
+  </section>
+
+  <section>
+    <h2>3.2 数据处理：Chat Template + Loss Mask</h2>
+    <p>Qwen2.5-Instruct 用 ChatML：</p>
+    <pre><code data-trim data-noescape>
+&lt;|im_start|&gt;user
+请解释 FOB。&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant
+FOB（Free On Board）...&lt;|im_end|&gt;
+    </code></pre>
+    <p class="fragment"><strong>关键技巧</strong>：</p>
+    <pre class="fragment"><code class="language-python" data-trim>labels = [-100]*len(prompt) + full_ids[len(prompt):]</code></pre>
+    <p class="fragment">→ 只对 <span class="accent">assistant 段</span> 计算 loss，模型学<span class="accent">答</span>不学<span class="dim">问</span></p>
+  </section>
+</section>
+
+<!-- ============ SECTION: 训练 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>④ peft 三板斧</h1>
+    <h3>75 min · 训练 + 合并 + 推理 + 评测</h3>
+  </section>
+
+  <section>
+    <h2>4.1 peft 三板斧</h2>
+    <h3>① <code>LoraConfig</code>（怎么挂）</h3>
+    <pre><code class="language-python" data-trim data-line-numbers="|2|3-4|5">
+LoraConfig(
+    r=8, lora_alpha=16, lora_dropout=0.05,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                    "gate_proj", "up_proj", "down_proj"],
+    task_type="CAUSAL_LM", bias="none",
+)
+    </code></pre>
+    <h3 class="fragment">② <code>get_peft_model</code>（挂上去）</h3>
+    <pre class="fragment"><code class="language-python" data-trim>
+model = get_peft_model(base_model, config)
+model.print_trainable_parameters()
+# trainable: 8.8M / 1.55B (0.566%)
+    </code></pre>
+  </section>
+
+  <section>
+    <h2>4.2 peft 三板斧（续）</h2>
+    <h3>③ <code>save_pretrained</code> / <code>merge_and_unload</code></h3>
+    <pre><code class="language-python" data-trim data-line-numbers="|2|5-6">
+# 只存 adapter（30-40 MB）
+model.save_pretrained("./adapter")
+
+# 或：合并回底座，导出完整模型（需非量化底座）
+merged = PeftModel.from_pretrained(base_fp16, "./adapter").merge_and_unload()
+merged.save_pretrained("./merged")
+    </code></pre>
+    <p><strong>两种部署形态</strong>：</p>
+    <ul>
+      <li class="fragment"><span class="green"><strong>Adapter only</strong></span>：热切换多任务，推理多一次矩阵乘</li>
+      <li class="fragment"><span class="accent"><strong>Merged model</strong></span>：部署简单，但失去热切换能力</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4.3 训练配置（常用）</h2>
+    <pre><code class="language-python" data-trim data-line-numbers="|3-4|5|7|8|9">
+TrainingArguments(
+    num_train_epochs=3,
+    per_device_train_batch_size=2,
+    gradient_accumulation_steps=4,     # 有效 bs=8
+    learning_rate=2e-4,                # LoRA 专用，比全量 FT 大 10×
+    warmup_ratio=0.05,
+    fp16=True,
+    gradient_checkpointing=True,        # QLoRA 必开
+    optim="paged_adamw_8bit",           # QLoRA 专属
+)
+    </code></pre>
+    <p class="fragment">Kaggle T4 训练时间：<span class="accent">3-5 分钟 / 3 epochs</span></p>
+  </section>
+</section>
+
+<!-- ============ SECTION: 评测 + 部署 ============ -->
+<section>
+  <section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+    <h1>⑤ 评测 与 部署</h1>
+    <h3>BLEU / ROUGE-L · 三种部署形态</h3>
+  </section>
+
+  <section>
+    <h2>5. 评测：BLEU + ROUGE-L</h2>
+    <p><strong>中文评测必做</strong>：用 <code>jieba</code> 分词后再算</p>
+    <pre><code class="language-python" data-trim>
+import jieba
+preds_tok = [" ".join(jieba.lcut(p)) for p in preds]
+
+# BLEU: sacrebleu.corpus_bleu
+# ROUGE-L: rouge_scorer.RougeScorer(["rougeL"])
+    </code></pre>
+    <p class="fragment"><strong>参考区间</strong>（500 训练 + 50 测）：</p>
+    <table class="fragment">
+      <thead><tr><th></th><th>BLEU</th><th>ROUGE-L</th></tr></thead>
+      <tbody>
+        <tr><td>基座 Qwen2.5-1.5B-Instruct</td><td>12-18</td><td>28-35</td></tr>
+        <tr><td>LoRA 后</td><td class="green">20-28</td><td class="green">42-50</td></tr>
+        <tr><td>Δ</td><td class="accent">+8</td><td class="accent">+12</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="fragment">中文 QA 的 BLEU 绝对值不高，<span class="accent">看相对提升</span>更重要</blockquote>
+  </section>
+
+  <section>
+    <h2>6. 部署 demo（老师演示）</h2>
+    <h3 class="fragment">方案 A — HuggingFace Hub</h3>
+    <pre class="fragment"><code class="language-bash" data-trim>
+huggingface-cli upload your-name/qwen-trade ./adapter
+# 别人: base + PeftModel.from_pretrained("your-name/qwen-trade")
+    </code></pre>
+    <h3 class="fragment">方案 B — Ollama（合并后转 GGUF）</h3>
+    <pre class="fragment"><code class="language-bash" data-trim>
+ollama create trade-bot -f Modelfile
+ollama run trade-bot "什么是 DPU 术语？"
+    </code></pre>
+    <h3 class="fragment">方案 C — 微信云函数 <span class="dim">（组 3 亮点）</span></h3>
+    <ul class="fragment">
+      <li>合并模型转 ONNX / TensorRT</li>
+      <li>云函数挂载模型，HTTP 触发推理</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>7. Kaggle / Mac 对比</h2>
+    <table>
+      <thead><tr><th></th><th>Kaggle T4</th><th>Mac M1-M4</th></tr></thead>
+      <tbody>
+        <tr class="fragment"><td>框架分支</td><td><code>bitsandbytes</code> (4bit)</td><td>fp16 native</td></tr>
+        <tr class="fragment"><td>训练速度</td><td class="green">3-5 min / 3 epoch</td><td>15-20 min</td></tr>
+        <tr class="fragment"><td>显存占用</td><td>~6 GB</td><td>~4 GB</td></tr>
+        <tr class="fragment"><td>代码差异</td><td><code>MODE="qlora"</code></td><td><code>MODE="fp16_lora"</code></td></tr>
+      </tbody>
+    </table>
+    <blockquote class="fragment">同一份 notebook 两边跑——关键在于 <code>prepare_model_for_kbit_training</code> 只在 CUDA 下调用</blockquote>
+  </section>
+</section>
+
+<!-- ============ 作业 ============ -->
+<section>
+  <h2>8. 作业要求（摘要）</h2>
+  <h3>必做（100 分）</h3>
+  <ol>
+    <li class="fragment">跑通训练 + 50 条盲测集评分 <span class="dim">（30 分）</span></li>
+    <li class="fragment">参数量报告 + adapter 大小 <span class="dim">（20 分）</span></li>
+    <li class="fragment">至少 1 个 ablation（rank / target / lr 三选一）<span class="dim">（20 分）</span></li>
+    <li class="fragment">失败案例分析 <span class="dim">（20 分）</span></li>
+    <li class="fragment">组间展示 <span class="dim">（10 分，课堂打分）</span></li>
+  </ol>
+  <p class="fragment"><strong class="accent">加分（+20）</strong>：部署 demo · HF Hub 发布 · <code>unsloth</code> 加速</p>
+  <p class="fragment dim">详见 <code>homework.md</code></p>
+</section>
+
+<!-- ============ 收尾 ============ -->
+<section class="lead" data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a2332 100%)">
+  <h1>🦞 开始训练吧</h1>
+  <p>打开 <code>notebook_qlora_kaggle.ipynb</code></p>
+  <p><strong>Run All</strong> → 大约 10 分钟后你就有一个外贸小助手</p>
+  <p class="dim">有问题随时问 · 下次课带着盲测分来</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    transitionSpeed: 'default',
+    backgroundTransition: 'fade',
+    center: true,
+    width: 1280,
+    height: 720,
+    margin: 0.08,
+    plugins: [
+      RevealHighlight,
+      RevealMath.KaTeX,
+      RevealNotes
+    ],
+    math: {
+      mathjax: null,
+      config: 'TeX-AMS_HTML-full',
+    },
+    highlight: {
+      beforeHighlight: hljs => hljs.configure({ languages: ['python', 'json', 'bash'] })
+    }
+  });
+</script>
+</body>
+</html>

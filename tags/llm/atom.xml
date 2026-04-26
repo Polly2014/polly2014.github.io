@@ -5,8 +5,36 @@
     <link href="https://polly.wang/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-25T00:00:00+00:00</updated>
+    <updated>2026-04-26T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>用 peft + QLoRA 炼一个外贸小助手</title>
+        <published>2026-04-26T00:00:00+00:00</published>
+        <updated>2026-04-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slides/lora-lesson-2/" type="text/html"/>
+        <id>https://polly.wang/slides/lora-lesson-2/</id>
+        
+        <content type="html">&lt;p&gt;第二课课件。从手撕 → 工程化：用 🤗 &lt;code&gt;peft&lt;&#x2F;code&gt; + QLoRA 把第一课的原理跑成一个真·下游任务的小助手。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nei-rong-gai-yao&quot;&gt;内容概要&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Part 1 — 原理&lt;&#x2F;strong&gt;：PEFT 家族全景、QLoRA 一页纸（NF4 量化 + 双重量化 + Paged Optimizer）、显存账（16GB → 5GB）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 2 — 数据&lt;&#x2F;strong&gt;：Alpaca-style 外贸 QA 数据（Incoterms 11 + HS 编码）、ChatML 模板、Loss Mask 让模型「学答不学问」&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 3 — 训练&lt;&#x2F;strong&gt;：peft 三板斧（&lt;code&gt;LoraConfig&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;get_peft_model&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;merge_and_unload&lt;&#x2F;code&gt;）、Kaggle T4 上 3-5 min 跑完 3 epochs&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 4 — 评测部署&lt;&#x2F;strong&gt;：BLEU + ROUGE-L（jieba 分词）、HF Hub &#x2F; Ollama &#x2F; 微信云函数三种部署形态、Kaggle T4 vs Mac M1-M4 对比&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;pei-tao-zi-yuan&quot;&gt;配套资源&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;📓 Notebook: &lt;code&gt;lesson2&#x2F;notebook_qlora_kaggle.ipynb&lt;&#x2F;code&gt;（Kaggle T4 + QLoRA 一键 Run All）&lt;&#x2F;li&gt;
+&lt;li&gt;📊 Eval: &lt;code&gt;lesson2&#x2F;eval.py&lt;&#x2F;code&gt;（BLEU + ROUGE-L 中文评测脚本）&lt;&#x2F;li&gt;
+&lt;li&gt;📁 Data: &lt;code&gt;lesson2&#x2F;data&#x2F;&lt;&#x2F;code&gt;（500 条训练 + 50 条盲测）&lt;&#x2F;li&gt;
+&lt;li&gt;📝 作业: &lt;code&gt;lesson2&#x2F;homework.md&lt;&#x2F;code&gt;（100 + 20 bonus 分）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>LoRA 训练原理与手撕实操</title>
         <published>2026-04-25T00:00:00+00:00</published>
