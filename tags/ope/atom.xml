@@ -5,8 +5,93 @@
     <link href="https://polly.wang/tags/ope/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-07T00:00:00+00:00</updated>
+    <updated>2026-04-28T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ope/atom.xml</id>
+    <entry xml:lang="en">
+        <title>新火试新茶</title>
+        <published>2026-04-28T00:00:00+00:00</published>
+        <updated>2026-04-28T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/experiment-book-translation-in-hours/" type="text/html"/>
+        <id>https://polly.wang/experiment-book-translation-in-hours/</id>
+        
+        <content type="html">&lt;h2 id=&quot;demo-huan-mei-yan-wan-teams-dan-liao-yi-fen-pdf&quot;&gt;Demo 还没演完，Teams 弹了一份 PDF&lt;&#x2F;h2&gt;
+&lt;p&gt;这几个月 Master Translator 一直在走一条“重后台、轻前台”的路——&lt;a href=&quot;&#x2F;from-idea-to-patent-100-days-of-digital-avatar-evolution&quot;&gt;专利申请&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;contextweave-paper-three-lines-converge&quot;&gt;ContextWeave 论文一轮又一轮的迭代&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;contextweave-milestone-33-percent-improvement&quot;&gt;领域验证&lt;&#x2F;a&gt;。技术上越磨越细，但一直缺一个东西——一个能让它去“试一下”的真实场景。&lt;&#x2F;p&gt;
+&lt;p&gt;昨天（4 月 27 日，周一）下午，Jay——美国总部的 EVP——飞到北京，跟随他的还有 Colin。Demo 是我准备了一周的——Master Translator、ContextWeave 的结果、几条真实文档的翻译现场。&lt;&#x2F;p&gt;
+&lt;p&gt;Colin 是特意过来的，全程站在最前面听。讲完之后他单独又问了几个细节，然后回到自己座位上——四点半左右，Teams 弹出一条他发来的消息。&lt;&#x2F;p&gt;
+&lt;p&gt;一份 PDF，封面上一个鲜红的感叹号，&lt;strong&gt;《Experiment!》&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;紧接着是一行字：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;这是我写的书，讲 A&#x2F;B 测试和实验文化。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;明天下午我有一场 Tech Talk。要是现场能有中文版，效果一定会好很多——你这个 Master Translator，来得及吗？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我看了眼屏幕右下角，下午四点半。Tech Talk 是第二天下午四点。&lt;&#x2F;p&gt;
+&lt;p&gt;不到二十三个小时。&lt;&#x2F;p&gt;
+&lt;p&gt;苏轼说&amp;quot;且将新火试新茶，诗酒趁年华&amp;quot;。这不就是那把新火么。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-gen-ta-shuo-shi-shi&quot;&gt;我跟他说：“试试”&lt;&#x2F;h2&gt;
+&lt;p&gt;等的就是这一刻。我手里有：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Master Translator&lt;&#x2F;strong&gt;：自己写的长文档翻译 MCP 服务，跑过 60 万字符的书没掉过链子&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;ContextWeave&lt;&#x2F;strong&gt;：跨块上下文编织，让超长文档前后术语保持一致&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CopilotX&lt;&#x2F;strong&gt;：把 Claude Opus 4.6 接成 OpenAI 兼容 API，并发稳定&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我跟 Colin 说：&amp;quot;试试。&amp;quot;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhu-yu-xian-xing&quot;&gt;术语先行&lt;&#x2F;h2&gt;
+&lt;p&gt;直接把 PDF 扔进 Master Translator 不是最优解。技术书最容易翻车的不是长度，是&lt;strong&gt;术语不一致&lt;&#x2F;strong&gt;——A&#x2F;B test、HiPPO、kill switch 这些词，全书出现几十上百次，任何一次跑偏读者都会出戏。&lt;&#x2F;p&gt;
+&lt;p&gt;所以第一步是术语表。我让 Master Translator 自动扫了三遍，吐出 101 个候选术语。然后用了二十分钟过了一遍，加了 11 个补充，调整了几个有争议的：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;原词&lt;&#x2F;th&gt;&lt;th&gt;第一版译法&lt;&#x2F;th&gt;&lt;th&gt;我改成&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;ramp-up&lt;&#x2F;td&gt;&lt;td&gt;逐步放量&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;灰度放量&lt;&#x2F;strong&gt;（更贴国内工程师习惯）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;kill switch&lt;&#x2F;td&gt;&lt;td&gt;终止开关&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;熔断开关&lt;&#x2F;strong&gt;（金融工程通用译法）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;HiPPO&lt;&#x2F;td&gt;&lt;td&gt;老板说了算&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;HiPPO&lt;&#x2F;strong&gt;（保留原词，正文加注）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Frankensite&lt;&#x2F;td&gt;&lt;td&gt;拼接网站&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;科学怪人网站&lt;&#x2F;strong&gt;（这是 Colin 的梗，必须留）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最终 117 个术语锁死。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;24-ge-fen-kuai-4-fen-zhong&quot;&gt;24 个分块，4 分钟&lt;&#x2F;h2&gt;
+&lt;p&gt;术语表喂回去，让 Master Translator 跑全书。24 个分块，并行跑了 243.7 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;零失败。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-ge-zheng-lun-liao-san-lun-de-shu-ming&quot;&gt;那个争论了三轮的书名&lt;&#x2F;h2&gt;
+&lt;p&gt;中间最纠结的不是技术，是&lt;strong&gt;书名怎么译&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;第一版我自作主张写成《&lt;strong&gt;大胆实验：网站转化率优化——A&#x2F;B 测试与多变量测试实战&lt;&#x2F;strong&gt;》。&lt;&#x2F;p&gt;
+&lt;p&gt;工整、信息全、有&amp;quot;实战&amp;quot;——典型的国内技术书译名套路。&lt;&#x2F;p&gt;
+&lt;p&gt;但今天上午我又看了一遍封面，越看越不对。原书就一个词加感叹号：&lt;em&gt;Experiment!&lt;&#x2F;em&gt;。Colin 整本书都在讲一件事——&lt;strong&gt;少策划，多放手&lt;&#x2F;strong&gt;。这种气质被一个二十二字的长副标题拍死了。&lt;&#x2F;p&gt;
+&lt;p&gt;回头讨论了三轮，最后定下来——&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;《Experiment!》&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;网站转化率优化：从假设到上线的实验文化&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;主标题保留原文。副标题里&amp;quot;实验文化&amp;quot;取代&amp;quot;实战&amp;quot;——这才是 Colin 真正想说的。&lt;&#x2F;p&gt;
+&lt;p&gt;像《Lean Startup 精益创业》《Hooked 上瘾》《Atomic Habits 原子习惯》一样，引进书保留英文原名，是对作者最大的尊重。封面上那个感叹号，是整本书态度的浓缩——译没了，书也就空了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;pai-ban-he-word-jiao-jing&quot;&gt;排版：和 Word 较劲&lt;&#x2F;h2&gt;
+&lt;p&gt;翻译只是上半场。Colin 要的是一份能在 Tech Talk 现场展示的中文版，那就得有像样的排版。&lt;&#x2F;p&gt;
+&lt;p&gt;第一反应是 pandoc 一条命令出 docx，三秒搞定。打开 WPS，傻眼了——纸张改成 A5 后，图片完全没跟着缩。&lt;&#x2F;p&gt;
+&lt;p&gt;研究了一圈，pandoc 把图片按原始 DPI 写死了像素尺寸。试了各种方案：reference.docx 模板、python-docx 改 XML、HTML 中间转换……越走越复杂。&lt;&#x2F;p&gt;
+&lt;p&gt;最后停下来想了想：&lt;strong&gt;Word 的事就让 Word 干&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;放弃在 pandoc 里调样式，切到 Microsoft Word，三行 VBA 把所有超宽图片锁定纵横比缩到 13cm。图片问题解决。&lt;&#x2F;p&gt;
+&lt;p&gt;接下来是页眉。用 Word 的 STYLEREF 域字段直接抓“标题 1”——翻到第三章，页眉自动变“关于方法”；翻到第六章，自动变“关于创意”。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;写脚本三十分钟搞不定的事，Word 里点四下三十秒解决。这是出版界的真相：中间这步从来没人靠 pandoc 调到 100%。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;zhe-ge-gong-ju-lian-zhen-zheng-de-yang-zi&quot;&gt;这个工具链真正的样子&lt;&#x2F;h2&gt;
+&lt;p&gt;凌晨一点，最终稿导出。&lt;&#x2F;p&gt;
+&lt;p&gt;回过头想，这一夜真正发生的事不是&amp;quot;AI 翻译了一本书&amp;quot;。是一条工具链第一次被推到生产场景里检验：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;环节&lt;&#x2F;th&gt;&lt;th&gt;工具&lt;&#x2F;th&gt;&lt;th&gt;时间&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;术语提取 + 校对&lt;&#x2F;td&gt;&lt;td&gt;Master Translator + 人工&lt;&#x2F;td&gt;&lt;td&gt;30 分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;全书翻译&lt;&#x2F;td&gt;&lt;td&gt;Master Translator (Claude via CopilotX)&lt;&#x2F;td&gt;&lt;td&gt;4 分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;质检&lt;&#x2F;td&gt;&lt;td&gt;validate_translation + 人眼抽查&lt;&#x2F;td&gt;&lt;td&gt;40 分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Markdown → docx&lt;&#x2F;td&gt;&lt;td&gt;pandoc&lt;&#x2F;td&gt;&lt;td&gt;3 秒&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;排版调整&lt;&#x2F;td&gt;&lt;td&gt;Word + VBA&lt;&#x2F;td&gt;&lt;td&gt;90 分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;封面&lt;&#x2F;td&gt;&lt;td&gt;Canva&lt;&#x2F;td&gt;&lt;td&gt;60 分钟&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;加起来不到四个小时的关键路径——剩下大块时间是&amp;quot;等&amp;quot;和&amp;quot;想&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这次的&amp;quot;几个小时&amp;quot;不是侥幸，是 Master Translator 在过去半年从 &lt;a href=&quot;&#x2F;master-translator-architecture-design&quot;&gt;Hackathon 起步&lt;&#x2F;a&gt;、经历过 &lt;a href=&quot;&#x2F;ope-book-translation-48-hours&quot;&gt;60 万字符长文压测&lt;&#x2F;a&gt;、被 &lt;a href=&quot;&#x2F;contextweave-milestone-33-percent-improvement&quot;&gt;ContextWeave 论文反复打磨&lt;&#x2F;a&gt; 之后，第一次走进一个真实的、有 deadline 的、被陌生作者亲手交付的场景。&lt;&#x2F;p&gt;
+&lt;p&gt;它经住了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Colin 在书的封底写：「最好的实验，是你今天就能开始的那一个。」&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从东京到巴黎：用 Claude Opus 4.6 把 OPE 书翻成了法语和日语</title>
         <published>2026-04-07T00:00:00+00:00</published>
