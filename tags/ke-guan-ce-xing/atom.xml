@@ -5,8 +5,68 @@
     <link href="https://polly.wang/tags/ke-guan-ce-xing/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-06T00:00:00+00:00</updated>
+    <updated>2026-05-05T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ke-guan-ce-xing/atom.xml</id>
+    <entry xml:lang="en">
+        <title>当翻译终端开始呼吸：我把日志墙改成了实时仪表盘</title>
+        <published>2026-05-05T00:00:00+00:00</published>
+        <updated>2026-05-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/translator-live-dashboard/" type="text/html"/>
+        <id>https://polly.wang/translator-live-dashboard/</id>
+        
+        <content type="html">&lt;p&gt;盯着终端里一行行刷过去的日志，脑子里只有一个念头：&lt;&#x2F;p&gt;
+&lt;p&gt;我知道它在跑，但我不知道它现在到底跑到了哪里。&lt;&#x2F;p&gt;
+&lt;p&gt;批量翻译的旧体验，就是一堵会滚动的文字墙。每个 chunk 最终完成时你能看到，但在进行中，三件关键事情一眼判断不了：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;整体进度是不是健康&lt;&#x2F;li&gt;
+&lt;li&gt;哪几个块在卡住&lt;&#x2F;li&gt;
+&lt;li&gt;当前吞吐到底是快还是慢&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;当规模从几块变成几十块、再到多语言并行的几百次调用时，这三件事不清楚，焦虑指数级上升。&lt;&#x2F;p&gt;
+&lt;p&gt;目标很朴素：&lt;strong&gt;做成像 top 那样，一眼可读。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gai-liao-shi-yao&quot;&gt;改了什么&lt;&#x2F;h2&gt;
+&lt;p&gt;核心思路：把&amp;quot;事件日志&amp;quot;变成&amp;quot;状态面板&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;三层显示策略&lt;&#x2F;strong&gt;，确保任何环境都能跑：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;auto&lt;&#x2F;code&gt;：检测终端与依赖，能上面板就上&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;rich&lt;&#x2F;code&gt;：强制面板&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;plain&lt;&#x2F;code&gt;：回退到传统日志&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;体验升级不绑架可用性——终端条件不好时自动降级，不影响翻译主流程。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;面板分两层：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;上层——全局态势：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;总进度条 + ETA&lt;&#x2F;li&gt;
+&lt;li&gt;成功率&lt;&#x2F;li&gt;
+&lt;li&gt;瞬时吞吐（近 5s chars&#x2F;s）与平均吞吐（全程 chars&#x2F;s）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;下层——逐块状态：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;chunk 编号 + 状态（pending &#x2F; running &#x2F; retry &#x2F; done &#x2F; failed）&lt;&#x2F;li&gt;
+&lt;li&gt;百分比 + 实时字符数&lt;&#x2F;li&gt;
+&lt;li&gt;耗时 + 重试备注&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;两个吞吐并排是我最满意的细节。平均值告诉你全程表现，瞬时值告诉你此刻体感——只看一个，要么忽略突发抖动，要么被短期波动误导。两者并排，才是可操作的信息。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhen-zheng-zhi-qian-de-bu-shi-jie-mian&quot;&gt;真正值钱的不是界面&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;translator-live-dashboard&#x2F;screen_shot.png&quot; alt=&quot;Screen Shot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;表面看是终端好看了。实际是工程行为变了。&lt;&#x2F;p&gt;
+&lt;p&gt;以前等任务跑完，再回头看哪里慢、哪里失败。现在运行中就能做判断：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;某块长期低百分比——模型慢还是网络慢？&lt;&#x2F;li&gt;
+&lt;li&gt;某批吞吐突然下滑——系统波动还是内容复杂度上升？&lt;&#x2F;li&gt;
+&lt;li&gt;成功率变化——偶发失败还是配置问题？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&amp;quot;排障&amp;quot;变成了&amp;quot;调度&amp;quot;。从被动监工到主动驾驶。&lt;&#x2F;p&gt;
+&lt;p&gt;用实验书稿重跑了一遍全流程验证：6 chunk 全部成功，面板实时可读，每块百分比让&amp;quot;哪里慢&amp;quot;一眼可见。这类反馈在小任务里是锦上添花，在 24 chunk × 10 语言的规模里就是救命信息。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ju-hua&quot;&gt;一句话&lt;&#x2F;h2&gt;
+&lt;p&gt;当系统进入规模化阶段，界面不是装饰，它是控制面。&lt;&#x2F;p&gt;
+&lt;p&gt;而且这次，我终于能在终端里看到它&amp;quot;呼吸&amp;quot;了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🔍 CopilotX v2.4：盲飞三个月后，它终于睁开了眼</title>
         <published>2026-04-06T00:00:00+00:00</published>
