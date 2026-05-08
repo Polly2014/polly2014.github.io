@@ -10,7 +10,7 @@ class PollyChat {
     constructor(options = {}) {
         this.apiUrl = options.apiUrl || 'https://api.polly.wang';
         this.apiKey = options.apiKey || '';
-        this.model = options.model || 'claude-sonnet-4';
+        this.model = options.model || 'claude-sonnet-4.6';
         this.systemPrompt = '';
         this.messages = [];
         this.isStreaming = false;
