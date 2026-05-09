@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpatialQA 架构解析实战</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --r-background-color: #0d1117;
+      --r-main-color: #e6edf3;
+      --r-heading-color: #58a6ff;
+      --r-link-color: #58a6ff;
+    }
+    .reveal { font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { color: #58a6ff; font-weight: 700; }
+    .reveal h1 { font-size: 2.2em; text-shadow: 0 0 20px rgba(88,166,255,0.3); }
+    .reveal h2 { font-size: 1.6em; }
+    .reveal h3 { font-size: 1.2em; color: #7ee787; }
+
+    .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 8px; }
+    .reveal pre code { font-size: 0.72em; line-height: 1.5; font-family: "JetBrains Mono", "Fira Code", "SF Mono", monospace; }
+    .reveal code { background: rgba(110,118,129,0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+
+    .reveal table { border-collapse: collapse; margin: 0.5em auto; font-size: 0.65em; }
+    .reveal table th { background: #161b22; color: #58a6ff; padding: 8px 14px; border-bottom: 2px solid #30363d; }
+    .reveal table td { padding: 7px 14px; border-bottom: 1px solid #21262d; }
+    .reveal table tr:hover td { background: rgba(88,166,255,0.05); }
+
+    .accent  { color: #f0883e; font-weight: 700; }
+    .green   { color: #7ee787; }
+    .red     { color: #f85149; }
+    .blue    { color: #58a6ff; }
+    .dim     { color: #8b949e; font-size: 0.8em; }
+    .warn    { color: #f0883e; }
+
+    .reveal blockquote { background: rgba(88,166,255,0.08); border-left: 4px solid #58a6ff; padding: 12px 20px; font-style: normal; border-radius: 0 6px 6px 0; }
+    .columns { display: flex; gap: 36px; align-items: flex-start; }
+    .columns > * { flex: 1; }
+    .big-number { font-size: 2.6em; font-weight: 900; color: #f0883e; line-height: 1; }
+    .reveal .slide-number { font-size: 14px; color: #8b949e; }
+
+    .phase-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.7em; font-weight: 700; margin-right: 6px;
+    }
+    .phase-now  { background: rgba(126,231,135,0.15); color: #7ee787; border: 1px solid #7ee787; }
+    .phase-next { background: rgba(88,166,255,0.1);  color: #58a6ff; border: 1px solid #58a6ff; }
+    .phase-far  { background: rgba(240,136,62,0.1);  color: #f0883e; border: 1px solid #f0883e; }
+
+    .path-box {
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      padding: 16px 20px; margin: 8px 0;
+    }
+    .path-box h4 { color: #58a6ff; margin: 0 0 6px 0; font-size: 0.9em; }
+    .path-box ul { margin: 0; padding-left: 1.2em; font-size: 0.8em; color: #c9d1d9; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============ TITLE ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #0d2137 50%, #0d1117 100%)">
+  <h1>SpatialQA<br>架构解析实战</h1>
+  <p style="color:#8b949e; margin-top: 0.6em; font-size: 0.85em;">
+    城市级空间数据问答引擎 · 阿布扎比 DMT-POP 项目
+  </p>
+  <p style="color:#58a6ff; font-size: 0.75em; margin-top: 1.2em;">Baoli Wang</p>
+</section>
+
+<!-- ============ 今日目标 ============ -->
+<section>
+  <h2>今日目标</h2>
+  <p style="color:#8b949e; font-size:0.8em; margin-bottom: 0.8em;">这场结束后，你能独立完成以下 5 件事</p>
+  <ol style="font-size: 0.85em;">
+    <li class="fragment">说清 SpatialQA 在项目里的位置与<span class="accent">边界</span></li>
+    <li class="fragment">从自然语言问题走到<span class="green">工具调用或 SQL</span></li>
+    <li class="fragment">解释 MCP 工具 + Text-to-SQL <span class="blue">混合策略</span>的必要性</li>
+    <li class="fragment">理解 <span class="warn">SRID 不一致</span>为什么让空间查询性能崩掉</li>
+    <li class="fragment">独立完成 1 个小场景改造并写出<span class="green">可验收测试</span></li>
+  </ol>
+</section>
+
+<!-- ============ CHAPTER 1: 业务背景 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a2740 100%)">
+  <h2 style="color:#7ee787;">Part 1</h2>
+  <h1>先讲业务<br>不先讲代码</h1>
+</section>
+
+<!-- 我们在做什么 -->
+<section>
+  <h2>我们在做什么</h2>
+  <div class="columns">
+    <div>
+      <h3>输入</h3>
+      <blockquote style="font-size:0.85em;">
+        "全市 200 米以上的楼有哪些？"
+      </blockquote>
+      <blockquote style="font-size:0.85em;">
+        "大清真寺保护区内违规建筑"
+      </blockquote>
+    </div>
+    <div>
+      <h3>输出（五类）</h3>
+      <ul style="font-size:0.82em;">
+        <li class="fragment">Thinking 过程（推理轨迹）</li>
+        <li class="fragment">格式化结果（JSON）</li>
+        <li class="fragment">图表配置（ECharts）</li>
+        <li class="fragment">地图/三维指令（GeoJSON + 场景控制）</li>
+        <li class="fragment">可读结论（自然语言摘要）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 三个阶段 -->
+<section>
+  <h2>三个阶段</h2>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>能力范围</th><th>数据源</th><th>主要挑战</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment">
+        <td><span class="phase-badge phase-now">Demo ← 当前</span></td>
+        <td>5 场景 · 5 个 MCP 工具 + text_to_sql 兜底 55 表<br><span style="font-size:0.85em;color:#8b949e">规划 77 表 + 宜居 64 表 = 142 表 · 1149 万行 · 7.7 GB</span></td>
+        <td>本地 PostGIS<br>真实数据</td>
+        <td>架构是否正确<br>工具是否稳定</td>
+      </tr>
+      <tr class="fragment">
+        <td><span class="phase-badge phase-next">Phase 1</span></td>
+        <td>9 场景 · 11 个 MCP 工具<br>Schema 分层注入</td>
+        <td>飞渡生产 PostGIS</td>
+        <td>Schema 分层<br>覆盖率 → 9/13</td>
+      </tr>
+      <tr class="fragment">
+        <td><span class="phase-badge phase-far">Phase 2</span></td>
+        <td>13 场景全覆盖 · 15 个工具<br>跨源空间查询</td>
+        <td>+ 飞渡生产<br>SQLServer/SDE（64 张表）</td>
+        <td>双源路由<br>SRID 统一</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Demo 坑点预警 -->
+<section>
+  <h2>Demo 写错了，Phase 2 会炸</h2>
+  <p style="color:#8b949e; font-size:0.75em; margin-bottom:0.4em;">三个现在就必须设计对的地方</p>
+  <div style="display:flex; flex-direction:column; gap:6px; margin-top:0.3em;">
+    <div class="path-box fragment">
+      <h4 style="font-size:0.75em;">⚠️ SRID</h4>
+      <ul style="font-size:0.65em; margin:0;">
+        <li>Demo 数据全是 4326，写死不报错</li>
+        <li>Phase 2 宜居类是 32640，写死就崩</li>
+        <li>路由层要做 <span class="accent">SRID 感知</span>，不能 hardcode</li>
+      </ul>
+    </div>
+    <div class="path-box fragment">
+      <h4 style="font-size:0.75em;">⚠️ 数据源路由</h4>
+      <ul style="font-size:0.65em; margin:0;">
+        <li><code>datasource.py</code> SQLServer 分支目前是占位逻辑</li>
+        <li>Phase 2 接入前<span class="red">必须补全</span>，不要等到那时候再动</li>
+      </ul>
+    </div>
+    <div class="path-box fragment">
+      <h4 style="font-size:0.75em;">⚠️ Schema 数量</h4>
+      <ul style="font-size:0.65em; margin:0;">
+        <li>Demo 全量注入 ~1.5K tokens，还行</li>
+        <li>Phase 1 接 120 图层就会 token 爆炸</li>
+        <li><span class="green">分层注入逻辑现在就要设计好</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 边界意识 -->
+<section>
+  <h2>边界意识：我们做什么，不做什么</h2>
+  <div class="columns">
+    <div>
+      <h3 style="color:#7ee787;">✅ 我们负责</h3>
+      <ul style="font-size:0.85em;">
+        <li>Agent 引擎</li>
+        <li>MCP 工具</li>
+        <li>数据查询（SQL/空间分析）</li>
+        <li>输出结构（JSON/图表/GeoJSON）</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:#f85149;">❌ 不负责</h3>
+      <ul style="font-size:0.85em;">
+        <li>前端产品化</li>
+        <li>3D 引擎渲染</li>
+        <li>用户权限体系</li>
+        <li>部署运维</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHAPTER 2: 数据层 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a2037 100%)">
+  <h2 style="color:#7ee787;">Part 2</h2>
+  <h1>规划类 vs 宜居类<br>必须讲清</h1>
+</section>
+
+<!-- 规划 vs 宜居 -->
+<section>
+  <h2>两类数据，两套数据源</h2>
+  <div class="columns">
+    <div class="path-box">
+      <h4>🏙 规划类（Planning）</h4>
+      <ul style="font-size:0.78em;">
+        <li>数据源：PostGIS</li>
+        <li>规模：~120 图层（生产）</li>
+        <li>对象：建筑、地块、规划边界、overlay</li>
+        <li>场景：合规检查、开发完成度、空间分布</li>
+      </ul>
+    </div>
+    <div class="path-box">
+      <h4>🌿 宜居类（Liveability）</h4>
+      <ul style="font-size:0.78em;">
+        <li>数据源：SQLServer + ArcGIS SDE（生产）</li>
+        <li>规模：64 张表，最大单表 39 万行</li>
+        <li>对象：公交、医院、清真寺等设施</li>
+        <li>场景：服务覆盖、可达性、设施缺口</li>
+      </ul>
+    </div>
+  </div>
+  <blockquote class="fragment" style="margin-top:1em; font-size:0.78em;">
+    Demo 阶段两类数据都已导入本地 PostGIS（<span class="green">真实数据，非 mock</span>）：<br>
+    规划类 77 表 · 宜居类 64 表 = <span class="accent">142 表 · 1149 万行 · 7.7 GB</span>
+  </blockquote>
+</section>
+
+<!-- Demo 重点表 -->
+<section>
+  <h2>Demo 阶段的核心表</h2>
+  <table>
+    <thead>
+      <tr><th>表名</th><th>主要字段</th><th>数据规模</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment"><td><code>udm_building</code></td><td>building_id, height, floors, land_use, geom</td><td>38 万行</td></tr>
+      <tr class="fragment"><td><code>udm_plot</code></td><td>plot_id, status, area, zone_id, geom</td><td>41 万行</td></tr>
+      <tr class="fragment"><td><code>bus_stop</code></td><td>stop_id, name, geom</td><td>3.3K 行</td></tr>
+      <tr class="fragment"><td><code>grand_mosque_overlay</code></td><td>id, geom (polygon)</td><td>保护区边界</td></tr>
+      <tr class="fragment"><td><code>airport_overlay</code></td><td>id, geom (polygon)</td><td>保护区边界</td></tr>
+      <tr class="fragment"><td><code>masterplan_boundary</code></td><td>project_id, zone_id, stage, area, geom</td><td>规划分区</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 数据覆盖层级 -->
+<section>
+  <h2>数据覆盖层级：L0 → L3</h2>
+  <p style="color:#8b949e; font-size:0.7em; margin-bottom:0.6em;">从飞渡全量到 LLM 理解，逐级收窄</p>
+  <table>
+    <thead>
+      <tr><th>层级</th><th>规划</th><th>宜居</th><th>合计</th><th>覆盖方式</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment">
+        <td><span class="dim">L0</span> PRD 全量</td>
+        <td>~120</td><td>64</td><td><span class="accent">180+</span></td>
+        <td>飞渡生产 DB（动态）</td>
+      </tr>
+      <tr class="fragment">
+        <td><span class="dim">L1</span> 数据库层</td>
+        <td>77</td><td>64 ✅</td><td><span class="blue">142</span></td>
+        <td>本地 PostGIS（静态导入）</td>
+      </tr>
+      <tr class="fragment">
+        <td><span class="dim">L2</span> 工具可达</td>
+        <td>26</td><td>29</td><td><span class="green">55</span></td>
+        <td>MCP + text_to_sql 白名单</td>
+      </tr>
+      <tr class="fragment">
+        <td><span class="dim">L3</span> Schema</td>
+        <td>5</td><td>6</td><td><span class="green">11</span></td>
+        <td>YAML 注入 prompt</td>
+      </tr>
+    </tbody>
+  </table>
+  <blockquote class="fragment" style="font-size:0.72em; margin-top:0.6em;">
+    <span class="warn">关键缺口</span>：L2 白名单 55 表中只有 11 表有 Schema →
+    LLM 对其余 44 表只能猜列名，查询准确度低。Phase 1 需要补齐。
+  </blockquote>
+</section>
+
+<!-- PRD 场景覆盖全景 -->
+<section>
+  <h2>PRD 13 场景 × 3 阶段覆盖</h2>
+  <table style="font-size:0.55em; width:95%;">
+    <thead>
+      <tr><th>SN</th><th>主题</th><th>问题示例</th><th>Demo</th><th>Phase 1</th><th>Phase 2</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>规划</td><td>高亮亚斯岛未建地块</td><td></td><td>✅</td><td></td></tr>
+      <tr style="color:#7ee787;"><td><strong>2</strong></td><td>规划</td><td>投资区域开发完成度排名</td><td><strong>✅ S4</strong></td><td>✅</td><td></td></tr>
+      <tr style="color:#7ee787;"><td><strong>3</strong></td><td>规划</td><td>200米以上的楼</td><td><strong>✅ S1</strong></td><td>✅</td><td></td></tr>
+      <tr><td>4</td><td>规划</td><td>T9 楼层/单元/房间</td><td></td><td>✅</td><td></td></tr>
+      <tr style="color:#7ee787;"><td><strong>5</strong></td><td>合规</td><td>大清真寺保护区违规建筑</td><td><strong>✅ S2</strong></td><td>✅</td><td></td></tr>
+      <tr><td>6</td><td>合规</td><td>机场净空区超高建筑</td><td></td><td>✅</td><td></td></tr>
+      <tr style="color:#7ee787;"><td><strong>7</strong></td><td>交通</td><td>距公交站400米外住宅区</td><td><strong>✅ S3</strong></td><td>✅</td><td></td></tr>
+      <tr><td>8</td><td>交通</td><td>机场到市中心可达性</td><td></td><td>✅</td><td></td></tr>
+      <tr><td>9</td><td>环境</td><td>洪水高水位线内地块</td><td></td><td>✅</td><td></td></tr>
+      <tr><td>10</td><td>宜居</td><td>各社区宜居指标排名</td><td></td><td></td><td>✅</td></tr>
+      <tr><td>11</td><td>宜居</td><td>宜居指数同比环比</td><td></td><td></td><td>✅</td></tr>
+      <tr><td>12</td><td>专项</td><td>地块用途变更分析</td><td></td><td></td><td>✅</td></tr>
+      <tr><td>13</td><td>专项</td><td>商场选址 TOP3</td><td></td><td></td><td>✅</td></tr>
+    </tbody>
+  </table>
+  <p class="fragment" style="text-align:center; font-size:0.82em; margin-top:0.5em;">
+    覆盖率：Demo <span class="accent">4/13</span> → Phase 1 <span class="blue">9/13</span> → Phase 2 <span class="green">13/13</span>
+  </p>
+</section>
+
+<!-- ============ CHAPTER 3: 系统架构 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a3020 100%)">
+  <h2 style="color:#7ee787;">Part 3</h2>
+  <h1>系统架构<br>一条请求怎么走完</h1>
+</section>
+
+<!-- 请求链路 -->
+<section>
+  <h2>请求链路</h2>
+  <pre><code class="text" data-trim data-line-numbers="|1|2-5|6-10|11-15">
+用户自然语言提问
+    ↓
+Agentic Orchestration Engine (FastAPI)
+    ├── Schema 分层注入 (核心表全量 + 主题动态)
+    ├── LLM 推理 → 选工具 + 填参数
+    │   ├── 路径 A: MCP 工具 (参数化 SQL, 高频)
+    │   └── 路径 B: Text-to-SQL (长尾兜底)
+    ├── PostGIS / SQLServer 双数据源路由
+    ├── 错误回传重试 (最多 3 次)
+    └── 多轮对话 (Session + 滑动窗口)
+    ↓
+输出层
+    ├── 结构化 JSON
+    ├── ECharts option JSON (20+ 图表类型)
+    ├── GeoJSON + 3D 场景控制指令
+    └── 自然语言解读
+  </code></pre>
+  <p class="fragment dim" style="text-align:center; margin-top:0.5em;">Agent 决定怎么查 · Tool/SQL 决定查什么 · Output 决定怎么给前端消费</p>
+</section>
+
+<!-- 代码结构 -->
+<section>
+  <h2>你每天会碰到的文件</h2>
+  <div class="columns">
+    <div>
+      <h3>核心链路</h3>
+      <ul style="font-size:0.78em;">
+        <li><code>server.py</code> — FastAPI 入口</li>
+        <li><code>agent.py</code> — 推理循环（核心）</li>
+        <li><code>schema_loader.py</code> — Schema 注入</li>
+        <li><code>session.py</code> — 多轮上下文</li>
+        <li><code>datasource.py</code> — 双源路由</li>
+      </ul>
+    </div>
+    <div>
+      <h3>工具与输出</h3>
+      <ul style="font-size:0.78em;">
+        <li><code>tools/query_buildings.py</code></li>
+        <li><code>tools/overlay_compliance.py</code></li>
+        <li><code>tools/spatial_buffer.py</code></li>
+        <li><code>tools/rank_areas.py</code></li>
+        <li><code>tools/text_to_sql.py</code></li>
+        <li><code>output/chart_generator.py</code></li>
+        <li><code>output/scene_control.py</code></li>
+      </ul>
+    </div>
+  </div>
+  <p class="fragment dim" style="text-align:center; margin-top:0.6em;">学习顺序：server → agent → tools → schema/session/output</p>
+</section>
+
+<!-- ============ CHAPTER 4: 五场景 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a1a37 100%)">
+  <h2 style="color:#7ee787;">Part 4</h2>
+  <h1>五个 Demo 场景<br>是我们的验收基线</h1>
+</section>
+
+<!-- 五场景表格 -->
+<section>
+  <h2>Demo 五场景</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>问题</th><th>工具</th><th>预期输出</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment"><td>S1</td><td>全市 200 米以上建筑</td><td><code>query_buildings</code></td><td>表格 + 柱状图 + 3D 高亮</td></tr>
+      <tr class="fragment"><td>S2</td><td>大清真寺保护区违规建筑</td><td><code>overlay_compliance</code></td><td>违规清单 + 3D 红色高亮</td></tr>
+      <tr class="fragment"><td>S3</td><td>距公交站 400 米外住宅区</td><td><code>spatial_buffer</code></td><td>TOP 统计 + GeoJSON</td></tr>
+      <tr class="fragment"><td>S4</td><td>五大投资区域开发完成度排名</td><td><code>rank_areas</code></td><td>排名柱状图</td></tr>
+      <tr class="fragment"><td>S5</td><td>"刚才那个结果，按区域分组"</td><td>多轮追问</td><td>Session + 聚合结果</td></tr>
+    </tbody>
+  </table>
+  <blockquote class="fragment" style="margin-top:0.8em; font-size:0.78em;">
+    先跑通五个场景 → 记录每个命中的工具与 SQL → 复盘每一步决策是否符合预期
+  </blockquote>
+</section>
+
+<!-- 截图 -->
+<section>
+  <h2>S1 实际运行效果</h2>
+  <img src="screen_shot.png" alt="SpatialQA Demo S1" style="max-height: 420px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+  <p class="dim fragment" style="text-align:center; margin-top:0.4em;">
+    工具：<code>query_buildings(min_height=200)</code> · 返回 32 栋 · 耗时 9.4s
+  </p>
+</section>
+
+<!-- ============ CHAPTER 5: Agent 决策 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #261a37 100%)">
+  <h2 style="color:#7ee787;">Part 5</h2>
+  <h1>Agent 决策机制<br>混合策略为什么必要</h1>
+</section>
+
+<!-- 两条路径 -->
+<section>
+  <h2>两条查询路径</h2>
+  <div class="columns" style="margin-top:0.5em;">
+    <div class="path-box">
+      <h4>路径 A — MCP 工具</h4>
+      <ul style="font-size:0.8em;">
+        <li>适合：高频、确定性、可复用</li>
+        <li class="green">稳定 · 可控 · 可优化</li>
+        <li>示例：<code>query_buildings</code></li>
+      </ul>
+    </div>
+    <div class="path-box">
+      <h4>路径 B — Text-to-SQL</h4>
+      <ul style="font-size:0.8em;">
+        <li>适合：长尾问题兜底</li>
+        <li class="blue">灵活 · 覆盖未知问题</li>
+        <li>示例：临时聚合/跨表组合</li>
+      </ul>
+    </div>
+  </div>
+  <blockquote class="fragment" style="margin-top:0.8em; font-size:0.82em;">
+    只用工具：覆盖率不够 &nbsp;|&nbsp; 只用 Text-to-SQL：稳定性不够<br>
+    <span class="green">混合 = 主干稳定 + 尾部覆盖</span>
+  </blockquote>
+</section>
+
+<!-- 新能力判断框架 -->
+<section>
+  <h2>写新能力时的判断框架</h2>
+  <p style="font-size:0.85em; color:#8b949e;">每次新增场景，先问自己这两个问题</p>
+  <div style="display:flex; flex-direction:column; gap:16px; margin-top:0.8em;">
+    <div class="path-box fragment">
+      <h4 class="green">这是高频主干场景吗？</h4>
+      <p style="font-size:0.82em; margin:0;">→ <span class="green">是</span>：做成 MCP 工具，参数化、可测试、可复用</p>
+    </div>
+    <div class="path-box fragment">
+      <h4 class="blue">是偶发长尾场景吗？</h4>
+      <p style="font-size:0.82em; margin:0;">→ <span class="blue">是</span>：走 Text-to-SQL 兜底，不要过早工具化</p>
+    </div>
+    <div class="path-box fragment">
+      <h4 class="accent">工具或 SQL 报错了？</h4>
+      <p style="font-size:0.82em; margin:0;">→ 错误信息回传模型修正，最多重试 3 次，超出后<span class="red">明确失败</span>，不要悄悄错</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHAPTER 6: Schema & 性能 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #261a20 100%)">
+  <h2 style="color:#7ee787;">Part 6</h2>
+  <h1>Schema 策略<br>与 SRID 性能大坑</h1>
+</section>
+
+<!-- Schema 策略 -->
+<section>
+  <h2>Schema 注入策略</h2>
+  <div class="columns">
+    <div>
+      <h3>Demo</h3>
+      <ul style="font-size:0.82em;">
+        <li>全量注入</li>
+        <li>~1.5K tokens，可控</li>
+      </ul>
+    </div>
+    <div>
+      <h3>生产</h3>
+      <ul style="font-size:0.82em;">
+        <li>核心 30 表常驻</li>
+        <li>其余按主题动态注入</li>
+        <li>规划 / 宜居 / 交通分批加载</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:1em;">
+    <blockquote style="font-size:0.82em;">
+      <strong>三条硬规则</strong><br>
+      1. 注入不是越多越好<br>
+      2. 目标是"足够决策"，不是百科全书<br>
+      3. Schema 描述要写：业务含义 + 关键字段 + 常用筛选条件
+    </blockquote>
+  </div>
+</section>
+
+<!-- SRID 大坑 -->
+<section>
+  <h2>SRID 与性能：我们踩过的大坑</h2>
+  <div class="columns">
+    <div>
+      <div class="big-number">12<span style="font-size:0.4em; color:#8b949e;">min+</span></div>
+      <p style="color:#f85149; font-size:0.8em;">跨 SRID 查询挂起时间</p>
+    </div>
+    <div>
+      <div class="big-number">35<span style="font-size:0.4em; color:#8b949e;">s</span></div>
+      <p style="color:#7ee787; font-size:0.8em;">SRID 统一 + 索引重建后</p>
+    </div>
+  </div>
+  <div class="fragment" style="margin-top:0.8em;">
+    <h3>正确做法</h3>
+    <ul style="font-size:0.8em;">
+      <li>在数据层一次性统一 SRID（统一到 4326）</li>
+      <li>重建 GIST 空间索引</li>
+      <li>避免在高频 SQL 里临时 <code>ST_Transform</code></li>
+    </ul>
+  </div>
+  <blockquote class="fragment" style="font-size:0.78em; margin-top:0.6em;">
+    性能公式：<span class="green">SRID 一致</span> + <span class="blue">GIST 索引</span> + <span class="accent">查询可走索引</span> — 三者缺一不可
+  </blockquote>
+</section>
+
+<!-- SRID 状态表 -->
+<section>
+  <h2>当前 SRID 状态</h2>
+  <table>
+    <thead>
+      <tr><th>数据集</th><th>SRID</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment">
+        <td>规划类（pg_dump）</td>
+        <td><span class="green">4326</span> (WGS84)</td>
+        <td>原始数据即 4326</td>
+      </tr>
+      <tr class="fragment">
+        <td>宜居类（FileGDB）</td>
+        <td><span class="warn">32640</span> (UTM 40N)</td>
+        <td>FileGDB 导入保留原 SRID</td>
+      </tr>
+      <tr class="fragment">
+        <td><code>bus_stop</code>（特殊）</td>
+        <td><span class="green">4326</span> ← 原 32640</td>
+        <td>ALTER TABLE ST_Transform 永久转换</td>
+      </tr>
+    </tbody>
+  </table>
+  <blockquote class="fragment" style="font-size:0.78em; margin-top:0.8em;">
+    ⚠️ Phase 2 接入 SQLServer 宜居类时，SRID 不一致是数据本身属性，不是导入问题。<br>
+    需在 ETL 层一次性转换，而非运行时 <code>ST_Transform</code>。
+  </blockquote>
+</section>
+
+<!-- ============ CHAPTER 7: 实战 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #1a2a1a 100%)">
+  <h2 style="color:#7ee787;">Part 7</h2>
+  <h1>动手改造<br>标准流程与验收</h1>
+</section>
+
+<!-- 5步流程 -->
+<section>
+  <h2>新增工具场景的 5 步流程</h2>
+  <ol style="font-size:0.82em;">
+    <li class="fragment"><strong>定义问题与输出</strong>：明确输出字段、是否要图表、是否要 3D 高亮</li>
+    <li class="fragment"><strong>写工具</strong>：<code>spatialqa/tools/</code> 下新增模块，参数化 SQL（禁止字符串拼接）</li>
+    <li class="fragment"><strong>注册与可发现</strong>：工具能被 Agent 发现，Schema 补齐触发描述</li>
+    <li class="fragment"><strong>补测试</strong>：工具级（边界/空结果/非法参数）+ chat API 集成（自然语言触发）</li>
+    <li class="fragment"><strong>按验收指标自检</strong>：首次命中率 · 平均耗时 · 输出完整性 · 错误可解释性</li>
+  </ol>
+</section>
+
+<!-- 排查清单 -->
+<section>
+  <h2>常见问题排查清单</h2>
+  <table>
+    <thead>
+      <tr><th>现象</th><th>先检查</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment"><td>模型选错工具</td><td>Schema 描述是否模糊 · 工具命名是否打架 · 触发词是否缺失</td></tr>
+      <tr class="fragment"><td>查询变慢</td><td>SRID 是否一致 · GIST/功能索引是否存在 · where 是否破坏索引</td></tr>
+      <tr class="fragment"><td>多轮答非所问</td><td>session 截断是否过早 · 上轮摘要是否丢关键字段</td></tr>
+      <tr class="fragment"><td>图表不对</td><td>图表类型 vs 数据类型 · category/value 映射是否反 · 空值处理</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 培训安排 & 达标 ============ -->
+<section>
+  <h2>今天的安排</h2>
+  <div class="columns">
+    <div>
+      <h3>培训议程（3 小时）</h3>
+      <ul style="font-size:0.8em;">
+        <li><span class="dim">Part A · 45 min</span> 架构与链路</li>
+        <li><span class="dim">Part B · 60 min</span> 五场景走读 + 日志追踪</li>
+        <li><span class="dim">Part C · 60 min</span> 每人完成一个小改造</li>
+        <li><span class="dim">Part D · 15 min</span> 复盘与问答</li>
+      </ul>
+    </div>
+    <div>
+      <h3>最低达标标准</h3>
+      <ul style="font-size:0.78em;">
+        <li class="fragment">把业务问题映射到工具或兜底路径</li>
+        <li class="fragment">新增一个安全的参数化筛选条件</li>
+        <li class="fragment">解释 SRID 不一致的性能影响机制</li>
+        <li class="fragment">跑通 1 条工具测试 + 1 条 API 测试</li>
+        <li class="fragment">PR 写清：改了什么 · 为什么 · 如何验证</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 结尾 ============ -->
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #0d2137 100%)">
+  <h2>开始吧</h2>
+  <p style="font-size:0.9em; color:#8b949e; margin-top:0.8em;">
+    五个场景先跑通，再问问题
+  </p>
+</section>
+
+</div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    width: 1280,
+    height: 720,
+    margin: 0.08,
+    plugins: [RevealHighlight, RevealMath.KaTeX, RevealNotes]
+  });
+</script>
+</body>
+</html>

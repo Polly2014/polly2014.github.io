@@ -5,8 +5,32 @@
     <link href="https://polly.wang/category/teaching/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-26T00:00:00+00:00</updated>
+    <updated>2026-05-09T00:00:00+00:00</updated>
     <id>https://polly.wang/category/teaching/atom.xml</id>
+    <entry xml:lang="en">
+        <title>SpatialQA 架构解析实战</title>
+        <published>2026-05-09T00:00:00+00:00</published>
+        <updated>2026-05-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slides/spatialqa-intro/" type="text/html"/>
+        <id>https://polly.wang/slides/spatialqa-intro/</id>
+        
+        <content type="html">&lt;p&gt;飞渡实习生入门培训课件。目标：一场培训后能独立上手，不只是复述概念。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nei-rong-gai-yao&quot;&gt;内容概要&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Part 1 — 业务背景&lt;&#x2F;strong&gt;：SpatialQA 在 DMT-POP 项目的位置、三阶段规划（Demo 4&#x2F;13 → P1 9&#x2F;13 → P2 13&#x2F;13 场景覆盖）、坑点预警&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 2 — 数据层&lt;&#x2F;strong&gt;：规划类（PostGIS 77 表）vs 宜居类（64 表，从 SQLServer FileGDB 转入），142 表 · 1149 万行 · 7.7 GB 全量真实数据；L0→L3 四级数据覆盖层级&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 3 — 系统架构&lt;&#x2F;strong&gt;：完整请求链路、代码模块速读、学习顺序建议&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 4 — 五场景&lt;&#x2F;strong&gt;：Demo 验收基线 + 实际运行截图解读&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 5 — Agent 决策&lt;&#x2F;strong&gt;：MCP 工具 vs Text-to-SQL 混合策略、新能力判断框架、重试原则&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 6 — Schema &amp;amp; 性能&lt;&#x2F;strong&gt;：分层注入策略、SRID 大坑（12min+ → 35s 真实案例）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 7 — 实战开发&lt;&#x2F;strong&gt;：5 步新增工具流程、排查清单、培训达标标准&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>LoRA 工程化：peft + QLoRA 实战</title>
         <published>2026-04-26T00:00:00+00:00</published>
