@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - GPT-Image-2</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/gpt-image-2/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-05-10T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/gpt-image-2/atom.xml</id>
+    <entry xml:lang="en">
+        <title>一个点号的代价：翻译《低空时代》时踩过的三个坑</title>
+        <published>2026-05-10T00:00:00+00:00</published>
+        <updated>2026-05-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/low-altitude-era-book-translation/" type="text/html"/>
+        <id>https://polly.wang/low-altitude-era-book-translation/</id>
+        
+        <content type="html">&lt;h2 id=&quot;you-fan-yi-ben-shu&quot;&gt;「又」翻一本书&lt;&#x2F;h2&gt;
+&lt;p&gt;这是我用自研翻译工具链翻译的第 6 本书了。&lt;&#x2F;p&gt;
+&lt;p&gt;前几本积累了不少经验：&lt;a href=&quot;&#x2F;av1-book-translation-journey&quot;&gt;AV1 视频编解码那本&lt;&#x2F;a&gt;是凌晨一点到六点的通宵战，让我验证了&amp;quot;两跳导出 Word&amp;quot;的方案；OPE 新书是 48 小时极限交付。每一本都在推动工具进化——术语注入、分块策略、断点续翻、Rich 实时面板，都是在实战中长出来的功能。&lt;&#x2F;p&gt;
+&lt;p&gt;这次的任务是《低空时代》，一本关于低空经济的专著。31 万字符，338 个标题，71 张图。中译英，方向反过来了——之前都是英译中。&lt;&#x2F;p&gt;
+&lt;p&gt;我以为流程已经很成熟了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhu-yu-biao-zhe-ben-shu-zi-dai-da-an&quot;&gt;术语表：这本书自带答案&lt;&#x2F;h2&gt;
+&lt;p&gt;通常翻译前最费时的是构建术语表。但这本书的作者很贴心——书尾自带了一个完整的术语表章节，64 个中英对照的专业术语，从&amp;quot;低空经济（Low-Altitude Economy）&amp;quot;到&amp;quot;智能融合低空系统（SILAS）&amp;quot;，覆盖了核心概念。&lt;&#x2F;p&gt;
+&lt;p&gt;我让 AI 扫描正文，补充了术语表中缺失的高频词：分布式电推进（DEP）、通感一体化（ISAC）、型号合格证（TC）、空中的士（air taxi）……最终 120 条术语，涵盖航空法规、飞行器构型、空域管理、通信导航四大领域。&lt;&#x2F;p&gt;
+&lt;p&gt;有了书中自带的权威对照，这次术语表的可信度比以往任何一次都高。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-yi-yi-ge-dian-hao-25-ge-kong-wen-jian&quot;&gt;转折一：一个点号，25 个空文件&lt;&#x2F;h2&gt;
+&lt;p&gt;分块、配置、术语表，一切就绪。启动批量翻译，8 并发，Rich 面板亮起来——&lt;&#x2F;p&gt;
+&lt;p&gt;16 秒后，25&#x2F;25 全部显示 ✅ done。&lt;&#x2F;p&gt;
+&lt;p&gt;太快了。&lt;&#x2F;p&gt;
+&lt;p&gt;打开输出文件一看：&lt;strong&gt;全是 0 字节。&lt;&#x2F;strong&gt; 313K 字符的原文，翻译成了 25 个空文件。但 &lt;code&gt;translation_state.json&lt;&#x2F;code&gt; 里每个 chunk 都标记成了 &lt;code&gt;done&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;问题出在模型名。CopilotX API 的模型名是 &lt;code&gt;claude-sonnet-4.6&lt;&#x2F;code&gt;（点号），我传的是 &lt;code&gt;claude-sonnet-4-6&lt;&#x2F;code&gt;（连字符）。API 没报错，也没返回内容，脚本把空响应当成了成功。&lt;&#x2F;p&gt;
+&lt;p&gt;修正后重跑。这次 Rich 面板里的数字开始跳动：&lt;code&gt;14,793→58,148 chars&lt;&#x2F;code&gt;、&lt;code&gt;3,004→11,857 chars&lt;&#x2F;code&gt;……13 分钟后，25 个 chunk 全部真正完成。313K → 1,141K 字符，膨胀比 3.64x。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;教训：空响应不等于成功。后续应该在脚本里加一个 &lt;code&gt;output_chars == 0&lt;&#x2F;code&gt; 的检查。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;zhuan-zhe-er-jpg-bu-ren-shi&quot;&gt;转折二：JPG？不认识&lt;&#x2F;h2&gt;
+&lt;p&gt;文字翻译搞定了，接下来是 71 张图。这本书的图几乎都是技术图表——架构图、流程图、空域分类示意图——满满的中文标注，必须翻译。&lt;&#x2F;p&gt;
+&lt;p&gt;用 GPT-Image-2 的 &lt;code&gt;&#x2F;images&#x2F;edits&lt;&#x2F;code&gt; 端点，喂入原图 + 翻译指令，API 会输出一张保留原始布局但文字变成英文的新图。&lt;&#x2F;p&gt;
+&lt;p&gt;第一批输出看起来不错，但仔细一看：前两张 PNG（原图 1900×972 横版）输出成了 1536×1024 横版，没问题。但第三张 JPG（原图 918×540 横版）输出成了 1024×1024 正方形。&lt;&#x2F;p&gt;
+&lt;p&gt;翻代码一看——&lt;code&gt;_detect_png_size()&lt;&#x2F;code&gt; 函数只读 PNG 文件头的 magic bytes 来获取尺寸。JPG 呢？返回 &lt;code&gt;(0, 0)&lt;&#x2F;code&gt;，fallback 到默认的 1024×1024。&lt;&#x2F;p&gt;
+&lt;p&gt;GPT-Image-2 只支持三种输出尺寸：1024×1024、1536×1024、1024×1536。脚本需要根据原图宽高比选择最接近的一种。但它从来没学会读 JPG。&lt;&#x2F;p&gt;
+&lt;p&gt;修复很直接：加一个 &lt;code&gt;_detect_jpeg_size()&lt;&#x2F;code&gt; 函数，解析 JPEG 的 SOF（Start of Frame）marker 来读取尺寸。不依赖 PIL，纯 struct 解析文件头，几十行代码。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-san-2-rpm-de-nai-xin&quot;&gt;转折三：2 RPM 的耐心&lt;&#x2F;h2&gt;
+&lt;p&gt;GPT-Image-2 的速率限制是每分钟 2 次请求。62 张需要翻译的图（排除了 9 张纯照片），每 32 秒一张，预计 33 分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;原来的脚本用 &lt;code&gt;ThreadPoolExecutor&lt;&#x2F;code&gt; 并发调用，没有任何限速逻辑——第一张还没回来，8 张请求已经飞出去了。&lt;&#x2F;p&gt;
+&lt;p&gt;写了个包装脚本：串行执行，每次请求后 &lt;code&gt;time.sleep(32)&lt;&#x2F;code&gt;，检查输出文件是否已存在以支持断点续翻。跑到第 18 张时网络超时，跑到第 28 张时 subprocess 超时整个脚本崩了。&lt;&#x2F;p&gt;
+&lt;p&gt;加上 &lt;code&gt;try&#x2F;except&lt;&#x2F;code&gt; 容错，失败的图跳过继续，下次运行自动补翻。最终修复合回了 skill 脚本：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;默认并发改为 1（配合限速）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;--rate-limit 32&lt;&#x2F;code&gt; 参数控制请求间隔&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;--skip-existing&lt;&#x2F;code&gt; 支持断点续翻&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;--output-dir&lt;&#x2F;code&gt; 支持输出到独立目录&lt;&#x2F;li&gt;
+&lt;li&gt;异常不崩溃，记录错误继续下一张&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;word-dao-chu-liang-tiao-fang-an&quot;&gt;Word 导出：两跳方案&lt;&#x2F;h2&gt;
+&lt;p&gt;翻译完成后需要导出 Word。之前翻 AV1 那本时验证过：Pandoc 直接 MD→DOCX 会把 HTML 表格（这本书里有大量 &lt;code&gt;&amp;lt;table&amp;gt;&lt;&#x2F;code&gt; 标签）变成纯文本。解决方案是&amp;quot;两跳&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;MD → HTML（--mathjax + CSS 注入） → DOCX（+ python-docx 后处理）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;第一跳用 Pandoc 把 Markdown 转成 HTML，注入自定义 CSS（表格边框、图片居中）；第二跳再从 HTML 转 DOCX，相对路径引用图片让 Pandoc 自动嵌入。最后用 python-docx 做一轮后处理——给所有表格加 OOXML 边框、把图片段落设为居中对齐。&lt;&#x2F;p&gt;
+&lt;p&gt;最终输出：38.8 MB 的 Word 文件，71 张图片全部嵌入，32 个表格有边框且居中。&lt;&#x2F;p&gt;
+&lt;p&gt;这个脚本也固化回了翻译工具链，以后一行命令搞定：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; scripts&#x2F;md_to_word.py translated.md&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; output.docx
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;mei-yi-ben-shu-du-zai-jin-hua-gong-ju&quot;&gt;每一本书都在进化工具&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看这次翻译，文字翻译本身很顺利——25 个 chunk、13 分钟、100% 成功率。真正的工作量在周边：术语表构建、图片翻译、Word 导出、以及修复过程中发现的三个 bug。&lt;&#x2F;p&gt;
+&lt;p&gt;但这正是我喜欢这套工具链的原因。每翻一本书，工具就进化一点：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;AV1 那本：验证了&amp;quot;两跳 Word 导出&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;OPE 那本：打磨了术语注入和分块策略&lt;&#x2F;li&gt;
+&lt;li&gt;这本：修复了 JPG 尺寸检测、加了图片翻译限速、固化了 Word 导出脚本&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;三个 bug 发现于实战，修复于实战，即时合回 skill。下一本书不会再踩同样的坑。&lt;&#x2F;p&gt;
+&lt;p&gt;工具还在内测打磨中。但核心理念已经清晰：&lt;strong&gt;翻译不是一次性任务，而是工具链的持续进化。&lt;&#x2F;strong&gt; 每一本书都是下一本书的铺路石。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
