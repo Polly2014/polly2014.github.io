@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 多语种</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/duo-yu-chong/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-05-12T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/duo-yu-chong/atom.xml</id>
+    <entry xml:lang="en">
+        <title>当中文穿过英文，再走向阿拉伯语</title>
+        <published>2026-05-12T00:00:00+00:00</published>
+        <updated>2026-05-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/chinese-through-english-to-arabic/" type="text/html"/>
+        <id>https://polly.wang/chinese-through-english-to-arabic/</id>
+        
+        <content type="html">&lt;h2 id=&quot;9-chong-yu-yan&quot;&gt;9 种语言&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;low-altitude-era-book-translation&quot;&gt;一本中文书翻完英文版&lt;&#x2F;a&gt;只是开始。两天后我打开微信群，Qi 问了一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;剩下 9 种语言怎么办？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;按之前 Mustafa 那本书的清单：西、法、德、日、葡、俄、韩、阿，再加英文，正好 9 个。任务很清晰，工具也很成熟——同一份中文源、同一个 Master Translator、同一套 ContextWeave 流程。理论上把英文版那套跑 8 遍就行了。&lt;&#x2F;p&gt;
+&lt;p&gt;我想得太简单了。&lt;&#x2F;p&gt;
+&lt;p&gt;接下来三天，我把所有「想当然」的直觉一个一个推翻。最后跑完 225 个 chunk、9 个 Word 文件、4,464 等效页的时候，最大的收获不是产物本身，而是终于把一件事掰清楚了：&lt;strong&gt;翻译有「距离」&lt;&#x2F;strong&gt;。距离决定路径，路径决定质量。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhi-jue-cuo-jue-cong-zhong-wen-zhi-fan&quot;&gt;直觉错觉：从中文直翻&lt;&#x2F;h2&gt;
+&lt;p&gt;第一站是西班牙语。&lt;&#x2F;p&gt;
+&lt;p&gt;最自然的想法是：源是中文，目标是西班牙语，那就 ZH→ES 直翻。术语表里准备 125 个中→西的对照，跑 25 个 chunk，看起来天经地义。&lt;&#x2F;p&gt;
+&lt;p&gt;跑完一看，所有 chunk 都标了 ✅，但有个数字让我皱眉：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;chunk_002: 14,793 → 59,571 chars  (膨胀比 4.0x)
+&lt;&#x2F;span&gt;&lt;span&gt;chunk_017: 41,201 → 59,325 chars  (膨胀比 1.4x ?)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;中文 14K 字符，西班牙语 60K？这不对。同语系翻译（英→西、葡→西）的正常膨胀比是 1.1-1.2x，1.4x 已经偏高，4x 是异常信号。&lt;&#x2F;p&gt;
+&lt;p&gt;打开译文细看——句子是对的，意思也准，但句式有股「翻译腔」：从句套从句、定语堆砌、动词拖在句尾。明显是 LLM 在用中文的句子骨架硬塞西班牙语词。&lt;&#x2F;p&gt;
+&lt;p&gt;更糟的是术语。书里反复出现的「低空经济（Low-Altitude Economy, LAE）」，西班牙语应该用本地缩写 EBA（Economía de Baja Altitud），或者保留 LAE 不翻。LLM 选了第三条路：直接照搬「LAE」，但译文其他地方又用了不同的写法。&lt;strong&gt;一致性丢了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我决定做个对照实验。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-yi-shuang-pao-dui-zhao&quot;&gt;转折一：双跑对照&lt;&#x2F;h2&gt;
+&lt;p&gt;同一份中文源，跑两条路径：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ZH→ES&lt;&#x2F;strong&gt;：直接从中文翻成西班牙语&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;EN→ES&lt;&#x2F;strong&gt;：先用已有的英文版作为源，再翻成西班牙语（二跳）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;抽 chunk_002（短）、chunk_010（中）、chunk_017（长，技术密集）三块对比：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;&#x2F;th&gt;&lt;th&gt;ZH→ES（直翻）&lt;&#x2F;th&gt;&lt;th&gt;EN→ES（二跳）&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;术语本地化&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;LAE&amp;quot; 照搬&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;EBA&amp;quot; 西语本地缩写&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;操作系统&amp;quot;译法&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;Sistema Operativo&amp;quot; 全写&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;SO&amp;quot; 西语标准缩写&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;句式&lt;&#x2F;td&gt;&lt;td&gt;中文句骨架，从句堆砌&lt;&#x2F;td&gt;&lt;td&gt;紧凑、地道、动词在中段&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;膨胀比&lt;&#x2F;td&gt;&lt;td&gt;14K → 59K（4.0x，异常）&lt;&#x2F;td&gt;&lt;td&gt;57K → 59K（1.04x，正常）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;技术准确性&lt;&#x2F;td&gt;&lt;td&gt;准确&lt;&#x2F;td&gt;&lt;td&gt;准确&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;EN→ES 在&lt;strong&gt;没有任何中国特色信息&lt;&#x2F;strong&gt;的情况下（英文版已经把所有中国政策术语译成英文），反而句式更地道、缩写更本地、膨胀比更合理。&lt;&#x2F;p&gt;
+&lt;p&gt;为什么？&lt;&#x2F;p&gt;
+&lt;p&gt;因为 LLM 的训练数据是不对称的。EN→ES 的平行语料是百亿级（西班牙语世界的大部分英译都通过 EN 中转），而 ZH→ES 的训练数据小好几个数量级。同一个 LLM，在两个方向上的「肌肉记忆」根本不在一个量级。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;结论清晰&lt;&#x2F;strong&gt;：欧洲语系（西、法、德、葡、俄、阿）走 EN→target 二跳。日韩例外——CJK 语系内部距离近，且日韩对中文的政策术语有原生处理能力，走 ZH→target 直翻更优。&lt;&#x2F;p&gt;
+&lt;p&gt;这是第一次把「翻译距离」这件事量化出来。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-er-zhu-yu-biao-de-ling-ming-zhong&quot;&gt;转折二：术语表的零命中&lt;&#x2F;h2&gt;
+&lt;p&gt;决定走二跳后，我以为只是改个源文件就行——把英文 chunks 喂给翻译脚本，目标语言改成西班牙语。&lt;&#x2F;p&gt;
+&lt;p&gt;跑完一看，质量确实好了，但又有个细节让我警觉：日志里术语注入的提示，从单语言时的「📖 35 terms relevant to this chunk」变成了「📖 0 terms relevant」。&lt;&#x2F;p&gt;
+&lt;p&gt;零命中。&lt;&#x2F;p&gt;
+&lt;p&gt;我用的还是 &lt;code&gt;terminology_zh_es.json&lt;&#x2F;code&gt;——term 字段是中文：「低空经济」、「无人机」、「空域管理」。但源文本现在是英文：「Low-Altitude Economy」、「drone」、「airspace management」。中文 term 在英文文本里搜不到，整个术语表对二跳翻译&lt;strong&gt;完全失效&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着前面跑出来的「质量更好」的 EN→ES 译文，其实是 LLM &lt;strong&gt;完全自由发挥&lt;&#x2F;strong&gt;的结果——它根本没用到我精心整理的 125 个术语对照。&lt;&#x2F;p&gt;
+&lt;p&gt;修复方案是术语表也要「二跳」——生成一个 &lt;code&gt;terminology_en_es.json&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;term 字段：英文（匹配源文本）&lt;&#x2F;li&gt;
+&lt;li&gt;translation 字段：西班牙语（注入到 prompt 里）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我在 &lt;code&gt;convert_terminology.py&lt;&#x2F;code&gt; 加了个 &lt;code&gt;--pivot&lt;&#x2F;code&gt; 参数，一条命令同时输出两个版本：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; scripts&#x2F;convert_terminology.py terminology_zh_en.json&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --target&lt;&#x2F;span&gt;&lt;span&gt; Spanish&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --pivot
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 输出：
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#   terminology_zh_es.json   (中→西，CJK 路径用)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;#   terminology_en_es.json   (英→西 pivot，二跳路径用)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;带 pivot 术语表重跑 EN→ES，日志里的数字回来了：「📖 33 terms relevant」。这一轮的译文，在自由发挥的地道句式之上，又多了术语一致性这一层「钉子」。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;教训：&lt;strong&gt;术语表的 term 字段必须匹配源文本的语言&lt;&#x2F;strong&gt;。二跳翻译时源是中转语言，术语表也要跟着「二跳」，否则术语注入沉默失效。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;zhuan-zhe-san-unknown-bu-shi-cuo-wu&quot;&gt;转折三：unknown 不是错误&lt;&#x2F;h2&gt;
+&lt;p&gt;接下来本以为只是把这套流程跑 8 遍。德语顺利、日语顺利、葡语顺利，每种语言 25 个 chunk，10 路并发，~15 分钟跑完。&lt;&#x2F;p&gt;
+&lt;p&gt;到俄语开始出问题。&lt;&#x2F;p&gt;
+&lt;p&gt;跑完一看，24&#x2F;25 完美，&lt;strong&gt;chunk_019&lt;&#x2F;strong&gt; 显示 &lt;code&gt;finish_reason: length&lt;&#x2F;code&gt;——撞到 max_tokens 上限了。原来设的 16K，俄语膨胀比偏高（Cyrillic 字符 + 长形容词链），57K 英文膨胀到 67K 字符，超出了 ~56K chars 的 token 上限被截断。&lt;&#x2F;p&gt;
+&lt;p&gt;调到 24K，重跑。OK。&lt;&#x2F;p&gt;
+&lt;p&gt;接着是阿拉伯语。这次更怪：4 个 chunk 标了 &lt;code&gt;finish_reason: unknown&lt;&#x2F;code&gt;——既不是 &lt;code&gt;stop&lt;&#x2F;code&gt; 也不是 &lt;code&gt;length&lt;&#x2F;code&gt;。打开译文看，最后一段在某个词中间戛然而止，比如「ال」（阿语定冠词）后面什么都没有。&lt;&#x2F;p&gt;
+&lt;p&gt;不是 token 上限。是 &lt;strong&gt;streaming 流被切断&lt;&#x2F;strong&gt;——CopilotX 后端代理对超长单次响应（~50K chars）有不可预测的超时。&lt;&#x2F;p&gt;
+&lt;p&gt;降并发到 4 重跑，3 个修好了。剩下一个 chunk_003 死活补不齐——三次重试，每次都在「EH216-S ال」处截断。三方都同意这是后端的代理超时，不是脚本能解决的。&lt;&#x2F;p&gt;
+&lt;p&gt;最后用了一个最朴素的办法：手动隔离尾部 1.8K 字符的英文段落，单独翻一次（这次很短，几十秒搞定，绝不会触发流断开），然后把这一小段拼回到原 chunk 的末尾。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 隔离 chunk_003 末尾的两段英文
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 提取尾部到 chunk_003_tail.md
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 单独翻这 1.8K
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python&lt;&#x2F;span&gt;&lt;span&gt; translate.py&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --input&lt;&#x2F;span&gt;&lt;span&gt; chunk_003_tail.md&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --output&lt;&#x2F;span&gt;&lt;span&gt; chunk_003_tail_ar.md \
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;   --terminology&lt;&#x2F;span&gt;&lt;span&gt; terminology_en_ar.json
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 18.6 秒，1,824 → 1,691 chars，finish_reason: stop ✅
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 拼回去：从 &amp;quot;تبني منظومة المعايير التقنية&amp;quot; 开始截断旧译文，接上新尾部
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;教训：当下游 API 不稳定时，&lt;strong&gt;缩小请求规模比加重试更有效&lt;&#x2F;strong&gt;。把一个 50K 的请求拆成 48K + 2K，超时概率会断崖式下降。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;9-chong-yu-yan-9-ge-peng-zhang-bi&quot;&gt;9 种语言，9 个膨胀比&lt;&#x2F;h2&gt;
+&lt;p&gt;最后所有 9 种语言全部交付，文件大小和膨胀比也讲了一个有意思的故事：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;语种&lt;&#x2F;th&gt;&lt;th&gt;路径&lt;&#x2F;th&gt;&lt;th&gt;MD 大小&lt;&#x2F;th&gt;&lt;th&gt;膨胀比&lt;&#x2F;th&gt;&lt;th&gt;备注&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;English&lt;&#x2F;td&gt;&lt;td&gt;ZH→EN&lt;&#x2F;td&gt;&lt;td&gt;1.10 MB&lt;&#x2F;td&gt;&lt;td&gt;3.6x&lt;&#x2F;td&gt;&lt;td&gt;中→英基线&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Spanish&lt;&#x2F;td&gt;&lt;td&gt;EN→ES&lt;&#x2F;td&gt;&lt;td&gt;1.34 MB&lt;&#x2F;td&gt;&lt;td&gt;1.18x&lt;&#x2F;td&gt;&lt;td&gt;同语系&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;French&lt;&#x2F;td&gt;&lt;td&gt;EN→FR&lt;&#x2F;td&gt;&lt;td&gt;1.42 MB&lt;&#x2F;td&gt;&lt;td&gt;1.24x&lt;&#x2F;td&gt;&lt;td&gt;同语系，最长&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;German&lt;&#x2F;td&gt;&lt;td&gt;EN→DE&lt;&#x2F;td&gt;&lt;td&gt;1.28 MB&lt;&#x2F;td&gt;&lt;td&gt;1.12x&lt;&#x2F;td&gt;&lt;td&gt;同语系&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Portuguese&lt;&#x2F;td&gt;&lt;td&gt;EN→PT&lt;&#x2F;td&gt;&lt;td&gt;1.29 MB&lt;&#x2F;td&gt;&lt;td&gt;1.13x&lt;&#x2F;td&gt;&lt;td&gt;同语系&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Russian&lt;&#x2F;td&gt;&lt;td&gt;EN→RU&lt;&#x2F;td&gt;&lt;td&gt;2.33 MB&lt;&#x2F;td&gt;&lt;td&gt;1.10x&lt;&#x2F;td&gt;&lt;td&gt;Cyrillic UTF-8 字节翻倍&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Korean&lt;&#x2F;td&gt;&lt;td&gt;ZH→KO&lt;&#x2F;td&gt;&lt;td&gt;1.11 MB&lt;&#x2F;td&gt;&lt;td&gt;1.50x*&lt;&#x2F;td&gt;&lt;td&gt;CJK，hangul 含敬语&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Japanese&lt;&#x2F;td&gt;&lt;td&gt;ZH→JA&lt;&#x2F;td&gt;&lt;td&gt;1.17 MB&lt;&#x2F;td&gt;&lt;td&gt;1.36x*&lt;&#x2F;td&gt;&lt;td&gt;CJK，汉字+假名混合&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Arabic&lt;&#x2F;td&gt;&lt;td&gt;EN→AR&lt;&#x2F;td&gt;&lt;td&gt;1.71 MB&lt;&#x2F;td&gt;&lt;td&gt;0.82x&lt;&#x2F;td&gt;&lt;td&gt;阿语紧凑+RTL&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;*相对中文源；其他语种相对英文中转。&lt;&#x2F;p&gt;
+&lt;p&gt;跑完所有 9 种后再回头看，max_tokens 也成了一张「语言距离表」：欧洲语系 24K 够用，CJK 24K 偶尔擦边，俄&#x2F;韩&#x2F;阿 必须 32K。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dan-yu-yan-vs-duo-yu-yan-de-fang-fa-lun-fen-shui-ling&quot;&gt;单语言 vs 多语言的方法论分水岭&lt;&#x2F;h2&gt;
+&lt;p&gt;这次最大的认知转变，是发现&lt;strong&gt;单语言翻译和多语言翻译根本不是同一个问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;单语言翻译的关键问题是「质量」：术语对不对、句式自然不自然、专业准不准。所有精力放在打磨术语表、调温度、加约束。&lt;&#x2F;p&gt;
+&lt;p&gt;多语言翻译的关键问题是「&lt;strong&gt;路径选择&lt;&#x2F;strong&gt;」：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;哪两个语言对之间的 LLM 训练数据足够丰富？&lt;&#x2F;li&gt;
+&lt;li&gt;哪个中转语言能把术语「钉死」？&lt;&#x2F;li&gt;
+&lt;li&gt;哪种语言会触发膨胀、哪种会触发流断开？&lt;&#x2F;li&gt;
+&lt;li&gt;哪些情况能用术语表，哪些情况术语表会沉默失效？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些问题在单语言场景里根本不存在。但当语言数量上 5 个、10 个、20 个时，路径选择的权重远大于翻译质量本身。&lt;&#x2F;p&gt;
+&lt;p&gt;更进一步的洞察是：&lt;strong&gt;LLM 训练数据的不对称性是真实存在的、可量化的、能被工程化利用的&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这件事不只在翻译里成立。embedding 模型、retrieval 系统、模型路由——但凡牵涉「跨语言」或「跨模态」的环节，&lt;strong&gt;绕一道熟路&lt;&#x2F;strong&gt; 经常比直冲目的地更稳。pivot embedding、pivot retrieval、pivot routing，本质上都是同一个思路。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gong-ju-de-jin-hua-ye-shi-fen-shui-ling&quot;&gt;工具的进化也是分水岭&lt;&#x2F;h2&gt;
+&lt;p&gt;工具这边今天也长大了一截。三天里 Master Translator 加了 5 个能力：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--pivot&lt;&#x2F;code&gt; 术语表生成（一条命令出两个文件）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;--skip-existing&lt;&#x2F;code&gt; 模式（不依赖 state，看输出文件就跳过）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;max_tokens&lt;&#x2F;code&gt; 默认 16K → 24K（适配欧语膨胀）&lt;&#x2F;li&gt;
+&lt;li&gt;语言后缀过滤修复（之前会把 &lt;code&gt;_en&lt;&#x2F;code&gt; 文件当新源翻一遍，输入加倍）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;load_config()&lt;&#x2F;code&gt; 统一到 utils.py（去重 + 修一个 &lt;code&gt;#&lt;&#x2F;code&gt; 误截 bug）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;letter-from-xiaolongxia&quot;&gt;小龙虾&lt;&#x2F;a&gt;的 Skill Review 从 8.5 升到 9.0。其中 4 个能力都是这次 9 语种翻译里&lt;strong&gt;踩出来的需求&lt;&#x2F;strong&gt;——不是预先设计的，是「这条路走不通」时被逼出来的。&lt;&#x2F;p&gt;
+&lt;p&gt;每一本书都让工具长大一点。这一次不是一本书，是 9 个版本——所以工具的进化也比以往任何一次都密集。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;回头再看那个微信群里的问题：「剩下 9 种语言怎么办？」&lt;&#x2F;p&gt;
+&lt;p&gt;3 天前我以为答案是「跑 8 遍就行了」。3 天后答案变成了：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;先决定路径，再谈翻译。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;中文穿过英文，再走向阿拉伯语，看着像绕了远路，其实是抄了近道。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
