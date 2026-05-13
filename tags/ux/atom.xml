@@ -35,16 +35,13 @@
 &lt;p&gt;v3.0 解决的是&amp;quot;知识天花板&amp;quot;——访客问一篇博文，数字 Polly 不再凭 system prompt 硬编，而是真的去 search_blog &#x2F; get_article 翻一遍。从工程上讲已经挺现代了：worker + agent loop + 三个可调用的博客 tool。&lt;&#x2F;p&gt;
 &lt;p&gt;但 v3.0 上线后有个隐藏问题，&lt;strong&gt;只有访客真正问到需要查博文的问题时才会暴露&lt;&#x2F;strong&gt;——比如&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;v3-0-de-si-jie-tool-lu-jing-hui-rang-ren-gan-deng&quot;&gt;v3.0 的死结：tool 路径会让人干等&lt;&#x2F;h2&gt;
-&lt;p&gt;复现路径很简单。访客问一句&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;浏览器 ──► Worker ──► CopilotX (第1轮)：模型决定调 search_blog
-&lt;&#x2F;span&gt;&lt;span&gt;                  ◄── 完整响应（必须等完）
-&lt;&#x2F;span&gt;&lt;span&gt;            ├─ 执行 search_blog（命中 L1 缓存也要 ~100ms）
-&lt;&#x2F;span&gt;&lt;span&gt;            ├─► CopilotX (第2轮)：可能再调 get_article
-&lt;&#x2F;span&gt;&lt;span&gt;            ◄── 完整响应（又等一次）
-&lt;&#x2F;span&gt;&lt;span&gt;            ├─ 执行 get_article
-&lt;&#x2F;span&gt;&lt;span&gt;            ├─► CopilotX (第3轮)：最终 text 答复
-&lt;&#x2F;span&gt;&lt;span&gt;            ◄── 这才开始 stream 给浏览器
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;复现路径很简单。访客问一句&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;，Worker 要跑三轮 LLM：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;第 1 轮——模型决定调 &lt;code&gt;search_blog&lt;&#x2F;code&gt;，Worker 等响应返回，执行 tool&lt;&#x2F;li&gt;
+&lt;li&gt;第 2 轮——模型拿到搜索结果，决定调 &lt;code&gt;get_article&lt;&#x2F;code&gt;，执行 tool&lt;&#x2F;li&gt;
+&lt;li&gt;第 3 轮——模型拿到文章内容，才给出文本答复&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;问题在于：&lt;strong&gt;三轮都跑完，Worker 才返回 &lt;code&gt;Response&lt;&#x2F;code&gt; 给浏览器&lt;&#x2F;strong&gt;。访客在这之前看不到任何东西。&lt;&#x2F;p&gt;
 &lt;p&gt;实测三组 curl：&lt;&#x2F;p&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;测试&lt;&#x2F;th&gt;&lt;th&gt;触发 tool？&lt;&#x2F;th&gt;&lt;th&gt;TTFB&lt;&#x2F;th&gt;&lt;th&gt;Total&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&amp;quot;你好&amp;quot;（无 tool）&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;4s&lt;&#x2F;td&gt;&lt;td&gt;5s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -142,19 +139,9 @@
 &lt;li&gt;&lt;strong&gt;&lt;code&gt;tool_call&lt;&#x2F;code&gt; + &lt;code&gt;tool_result&lt;&#x2F;code&gt; 配对合并到同一张卡片&lt;&#x2F;strong&gt;：从&amp;quot;&lt;code&gt;⟳ 翻翻博客里有没有&amp;quot;镜子&amp;quot;&lt;&#x2F;code&gt;&amp;quot;原地变成&amp;quot;&lt;code&gt;✓ 翻翻博客里有没有&amp;quot;镜子&amp;quot; · 1 条结果&lt;&#x2F;code&gt;&amp;quot;&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;最后访客看到的是一栈整洁的 mini bubble：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────┐
-&lt;&#x2F;span&gt;&lt;span&gt;│  ⟳  翻翻博客里有没有 &amp;quot;镜子里的我&amp;quot;        │
-&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
-&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐
-&lt;&#x2F;span&gt;&lt;span&gt;│  ⟳  详细看看《mirror-self-editing-self》 │
-&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;[这周还挺高产的，最近这周写了好几篇——...]   ← 答案紧接着流出
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;strong&gt;当前正在跑的卡片有呼吸边框&lt;&#x2F;strong&gt;——蓝色 &lt;code&gt;box-shadow&lt;&#x2F;code&gt; 1.6s 脉冲，告诉访客&amp;quot;这步还在跑&amp;quot;。完成后边框消失，spinner 变成 &lt;code&gt;✓&lt;&#x2F;code&gt;。流结束后整栈折叠成顶部一行小灰条：&lt;&#x2F;p&gt;
-&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;[ ✓ Polly 想了 19 秒    展开 ]
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;点击展开能看到完整步骤。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;polly-chat-v35-thinking-visible&#x2F;ScreenShot_Polly_Chat.png&quot; alt=&quot;Polly Chat v3.5 思考卡片栈实际效果：折叠的 trace pill + 带链接的多篇博文总结 + 引用块的答案格式&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;上面是两轮实际对话。每条 Polly 的回复上方都有一个 &lt;code&gt;✓ Polly 想了 16 秒 · 展开&lt;&#x2F;code&gt; 的灯火色折叠条，点开能看到完整的思考过程。答案里的博文链接（《镜子里的我》、《当中文穿过英文》、《一个点号的代价》……）是博客主蓝，鼠标 hover 有虚线变实线的微动。&lt;&#x2F;p&gt;
+&lt;p&gt;在流的过程中，&lt;strong&gt;当前正在跑的卡片有呼吸边框&lt;&#x2F;strong&gt;——蓝色 &lt;code&gt;box-shadow&lt;&#x2F;code&gt; 1.6s 脉冲，告诉访客&amp;quot;这步还在跑&amp;quot;。完成后边框消失，spinner 变成 &lt;code&gt;✓&lt;&#x2F;code&gt;。流结束后整栈折叠为上图的那个灯火色 pill，点击展开能看到完整步骤。&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;guan-jian-gai-zao-si-trace-chi-jiu-hua-bu-zhi-shi-shun-tai-te-xiao&quot;&gt;关键改造四：trace 持久化（不只是瞬态特效）&lt;&#x2F;h3&gt;
 &lt;p&gt;刷新页面之后，访客如果还想看一眼之前 Polly 是怎么想的，trace 不能就这么消失。这件事其实可做可不做——很多家的&amp;quot;思考链&amp;quot;也是看完即丢。但选择做的时候有两个理由：&lt;&#x2F;p&gt;
 &lt;ol&gt;
@@ -199,7 +186,7 @@
 &lt;p&gt;这不是博客 chat 独有的教训。任何后端要跑 ≥ 5 秒的 agent loop，前端都面临同样的取舍：要么等到底再说话，要么把过程拆成结构化事件流出去。让用户看见，而不是让用户等待——这条原则适用于推荐引擎的&amp;quot;正在为你筛选...&amp;quot;、复杂搜索的&amp;quot;已扫描 1.2k 文档...&amp;quot;、长文档翻译的&amp;quot;正在处理第 3&#x2F;12 章...&amp;quot;。区别只是：你愿不愿意把&amp;quot;思考过程&amp;quot;也设计成产品的一部分。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;p&gt;下一格是什么？v4.0 大概会是真正的范式跃迁——实时 voice 对话，或者多模态 tool（看着访客贴的截图直接回答），或者 agent 之间互相通信。但那是另一篇博文的事了。&lt;&#x2F;p&gt;
-&lt;p&gt;眼下的 v3.5 先把基础打好：刷新博客首页，问 Polly：&amp;quot;聊聊你最新的博文&amp;quot;。看着那行绿色的 &lt;code&gt;✓ Polly 想了 19 秒&lt;&#x2F;code&gt; 出现在历史里——这次，等待是看得见的。&lt;&#x2F;p&gt;
+&lt;p&gt;眼下的 v3.5 先把基础打好：刷新博客首页，问 Polly：&amp;quot;聊聊你最新的博文&amp;quot;。看着那个 &lt;code&gt;✓ Polly 想了 19 秒&lt;&#x2F;code&gt; 的折叠条出现在历史里——这次，等待是看得见的。&lt;&#x2F;p&gt;
 </content>
         
     </entry>
