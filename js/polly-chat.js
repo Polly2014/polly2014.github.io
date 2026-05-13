@@ -620,6 +620,8 @@ class PollyChat {
         let traceCardCount = 0;
         let pendingThinkingCard = null;  // 当前尚未匹配 tool_call 的 thinking 卡片
         let lastToolCard = null;          // 最近一张 tool_call 卡片，用于合并 tool_result
+        // 持久化用：收集所有 status 事件 (按顺序) 用于以后重建 trace
+        const traceEvents = [];
         
         const ensureStack = () => {
             if (bubble._traceStack) return bubble._traceStack;
@@ -770,6 +772,8 @@ class PollyChat {
                     
                     // Phase 4: worker 推送的自定义事件
                     if (currentEvent === 'status') {
+                        // 先记入收集数组用于持久化
+                        traceEvents.push(event);
                         if (event.phase === 'thinking') {
                             // thinking 不立即建卡片：先 pending，等下个 tool_call 升级
                             // 如果已经有 pending 就不重复建（连续 thinking 合并）
@@ -843,14 +847,19 @@ class PollyChat {
         // 流结束：把 thinking trace 折叠为 "Thought for Xs · N steps" 摘要
         if (typeof bubble._finalizeTrace === 'function') bubble._finalizeTrace();
         
-        // 保存完整回复到历史
-        this.messages.push({ role: 'assistant', content: fullText });
+        // trace 持久化所需的元数据
+        const traceMeta = traceEvents.length > 0
+            ? { events: traceEvents, elapsed_ms: Date.now() - traceStartTs }
+            : null;
+        
+        // 保存完整回复到历史（带 trace）
+        this.messages.push({ role: 'assistant', content: fullText, trace: traceMeta });
         
         // 持久化到 IndexedDB
         this.saveHistory();
         
         // D1 持久化: 同步助手回复 (fire-and-forget)
-        this.syncMessage('assistant', fullText);
+        this.syncMessage('assistant', fullText, 0, traceMeta);
         
         return fullText;
     }
@@ -1013,15 +1022,20 @@ class PollyChat {
             // 渲染历史消息到页面（区分纯文本 vs 含图消息）
             data.messages.forEach(msg => {
                 const role = msg.role === 'user' ? 'user' : 'assistant';
+                let bubble;
                 if (typeof msg.content === 'string') {
-                    this.appendMessage(role, msg.content);
+                    bubble = this.appendMessage(role, msg.content);
                 } else {
                     // 从 Anthropic content 数组提取图片 + 文本
                     const images = msg.content
                         .filter(c => c.type === 'image')
                         .map(c => ({ base64: c.source.data, mediaType: c.source.media_type }));
                     const text = msg.content.find(c => c.type === 'text')?.text || '';
-                    this.appendMessage(role, text, images);
+                    bubble = this.appendMessage(role, text, images);
+                }
+                // assistant 消息有 trace 元数据 → 重建 finalized 折叠 pill
+                if (role === 'assistant' && msg.trace?.events?.length) {
+                    this.renderSavedTrace(bubble, msg.trace);
                 }
             });
             
@@ -1037,6 +1051,84 @@ class PollyChat {
     
     showNewChatBtn() {
         if (this.newChatBtn) this.newChatBtn.style.display = 'inline-flex';
+    }
+    
+    /**
+     * 从持久化的 trace 数据（events + elapsed_ms）重建 trace stack。
+     * 直接渲染为 finalized + collapsed 状态（"Polly 想了 X 秒 · 展开"），
+     * 跳过 spinner 和呼吸动画，避免历史回放时跑 LLM 的视觉效果。
+     */
+    renderSavedTrace(bubble, trace) {
+        if (!bubble || !trace?.events?.length) return;
+        const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c =>
+            ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        
+        // 创建 wrapper（如果还没创建）
+        const container = bubble.closest('.message-container');
+        let wrapper = container?.querySelector('.assistant-block');
+        if (!wrapper && container) {
+            wrapper = document.createElement('div');
+            wrapper.className = 'assistant-block';
+            bubble.parentNode.insertBefore(wrapper, bubble);
+            wrapper.appendChild(bubble);
+        }
+        
+        const stack = document.createElement('div');
+        stack.className = 'trace-stack';
+        (wrapper || bubble.parentNode).insertBefore(stack, bubble);
+        
+        // 重建每张卡片：合并 tool_call + tool_result 为单条 done 卡片
+        let cardsBuilt = 0;
+        let lastToolCard = null;
+        let lastToolPhase = null;
+        for (const ev of trace.events) {
+            if (ev.phase === 'tool_call') {
+                const card = document.createElement('div');
+                card.className = 'trace-card done';
+                card.innerHTML = `
+                    <span class="trace-card-icon">✓</span>
+                    <span class="trace-card-label">${escapeHtml(ev.label || ev.tool || '')}</span>
+                `;
+                stack.appendChild(card);
+                lastToolCard = card;
+                lastToolPhase = ev;
+                cardsBuilt++;
+            } else if (ev.phase === 'tool_result' && lastToolCard) {
+                const cnt = ev.count;
+                const summary = ev.ok
+                    ? (cnt >= 1 ? `${cnt} 条结果` : '完成')
+                    : '没找到';
+                const labelEl = lastToolCard.querySelector('.trace-card-label');
+                const labelText = labelEl ? labelEl.textContent : '';
+                lastToolCard.className = 'trace-card ' + (ev.ok ? 'done' : 'failed');
+                lastToolCard.innerHTML = `
+                    <span class="trace-card-icon">${ev.ok ? '✓' : '✗'}</span>
+                    <span class="trace-card-label">${escapeHtml(labelText)}</span>
+                    <span class="trace-card-result">${escapeHtml(summary)}</span>
+                `;
+                lastToolCard = null;
+            }
+            // thinking 事件不单独建卡（跟 streamResponse 行为一致）
+        }
+        
+        if (cardsBuilt === 0) return;  // 没真实工具调用就不显示 summary
+        
+        // 加 summary pill 并直接 collapsed
+        const elapsed = Math.round((trace.elapsed_ms || 0) / 1000);
+        const summary = document.createElement('div');
+        summary.className = 'trace-summary';
+        summary.innerHTML = `
+            <span class="trace-summary-icon">✓</span>
+            <span class="trace-summary-text">Polly 想了 ${elapsed} 秒</span>
+            <span class="trace-summary-toggle">展开</span>
+        `;
+        stack.classList.add('finalized', 'collapsed');
+        stack.insertBefore(summary, stack.firstChild);
+        summary.onclick = () => {
+            stack.classList.toggle('collapsed');
+            summary.querySelector('.trace-summary-toggle').textContent =
+                stack.classList.contains('collapsed') ? '展开' : '收起';
+        };
     }
     
     newChat() {
@@ -1071,7 +1163,7 @@ class PollyChat {
         return id;
     }
     
-    syncMessage(role, content, imageCount = 0) {
+    syncMessage(role, content, imageCount = 0, trace = null) {
         // Fire-and-forget: 绝不阻塞聊天体验
         try {
             const metadata = this.messages.length <= 1 ? {
@@ -1091,6 +1183,7 @@ class PollyChat {
                     content,
                     image_count: imageCount,
                     metadata,
+                    trace,  // 可选：agent thinking trace (events + elapsed_ms)
                 }),
             }).catch(() => {}); // 静默失败
         } catch (e) {
