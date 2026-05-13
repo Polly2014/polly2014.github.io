@@ -1207,10 +1207,14 @@ table td {
     color: rgb(61, 146, 201);
     text-decoration: none;
     border-bottom: 1px dashed rgba(61, 146, 201, 0.4);
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, border-bottom-style 0.15s ease;
 }
 .chat-bubble.polly a:hover,
 .chat-answer a:hover {
+    /* 覆盖全局 a:hover { text-decoration: underline }，
+       否则 dashed border + underline 会同时显示成两条线 */
+    text-decoration: none;
+    border-bottom-style: solid;
     border-bottom-color: rgb(61, 146, 201);
 }
 /* 答案里加粗强调（Markdown **xxx**）也用博客蓝，跟博文风格一致 */

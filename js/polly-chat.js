@@ -860,13 +860,14 @@ class PollyChat {
         // 使用原有 CSS 类名：message-container + user-message/polly-message
         const roleClass = role === 'user' ? 'user-message' : 'polly-message';
         wrapper.className = `message-container ${roleClass}`;
-        
-        const avatar = document.createElement('div');
-        avatar.className = 'chat-avatar';
-        // 使用图标而非 emoji
-        avatar.innerHTML = role === 'user' 
-            ? '<i class="fas fa-user"></i>' 
-            : '<img src="/images/polly.png" alt="Polly">';
+
+        // 只为 Polly 加头像；用户侧不加头像（位置已足以区分身份）
+        if (role !== 'user') {
+            const avatar = document.createElement('div');
+            avatar.className = 'chat-avatar';
+            avatar.innerHTML = '<img src="/images/polly.png" alt="Polly">';
+            wrapper.appendChild(avatar);
+        }
         
         const bubble = document.createElement('div');
         // 使用原有 CSS 类名：chat-bubble + user/polly
@@ -890,7 +891,7 @@ class PollyChat {
         // 等 trace 卡片出来或答案文字到达再显示，避免空白扁条
         if (!bubbleContent) bubble.style.display = 'none';
         
-        wrapper.appendChild(avatar);
+        // avatar 已在上面的 if(role!=='user') 分支里 append
         wrapper.appendChild(bubble);
         this.chatBox.appendChild(wrapper);
         
