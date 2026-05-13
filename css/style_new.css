@@ -1064,14 +1064,12 @@ table td {
     background: #f4f4f6;
     border-color: #e6e6ea;
     color: #666;
-    cursor: help;
 }
 
 .trace-card.failed {
     background: #fbf3f3;
     border-color: #ead8d8;
     color: #8a5050;
-    cursor: help;
 }
 
 /* 旋转 spinner（thinking / running 状态用），用博客主蓝 */
@@ -1276,28 +1274,8 @@ table td {
     width: 100%;
 }
 
-/* 添加消息气泡的小尾巴 */
-.chat-bubble.user:after {
-    content: '';
-    position: absolute;
-    right: -8px;
-    bottom: 0;
-    width: 10px;
-    height: 10px;
-    background-color: #333;
-    clip-path: polygon(0 0, 0% 100%, 100% 100%);
-}
-
-.chat-bubble.polly:after {
-    content: '';
-    position: absolute;
-    left: -8px;
-    bottom: 0;
-    width: 10px;
-    height: 10px;
-    background-color: #e8e8e8;
-    clip-path: polygon(100% 0, 0 100%, 100% 100%);
-}
+/* 保留身体的 4px 直角（border-bottom-radius:4px）已足以暗示“这是聊天气泡”，
+   不再画额外的三角小尾巴（iMessage/Claude.ai/ChatGPT 都已放弃这种 2010s 语言）。 */
 
 #user-input {
     width: 100%;

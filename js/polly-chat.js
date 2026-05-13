@@ -656,11 +656,10 @@ class PollyChat {
             ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         
         // 添加一张 thinking 卡片（pending 状态：转圈圈）
-        const addThinkingCard = (label, tooltip) => {
+        const addThinkingCard = (label) => {
             const stack = ensureStack();
             const card = document.createElement('div');
             card.className = 'trace-card running';  // running = 呼吸边框
-            if (tooltip) card.title = tooltip;
             card.innerHTML = `
                 <span class="trace-card-spinner"></span>
                 <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -672,12 +671,11 @@ class PollyChat {
         };
         
         // tool_call: 把当前 thinking 卡片升级为 tool 卡片（或新建一张）
-        const startToolCard = (label, tooltip) => {
+        const startToolCard = (label) => {
             let card;
             if (pendingThinkingCard) {
                 card = pendingThinkingCard;
                 card.className = 'trace-card running';
-                if (tooltip) card.title = tooltip;
                 card.innerHTML = `
                     <span class="trace-card-spinner"></span>
                     <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -687,7 +685,6 @@ class PollyChat {
                 const stack = ensureStack();
                 card = document.createElement('div');
                 card.className = 'trace-card running';
-                if (tooltip) card.title = tooltip;
                 card.innerHTML = `
                     <span class="trace-card-spinner"></span>
                     <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -700,16 +697,11 @@ class PollyChat {
         };
         
         // tool_result: 把对应 tool 卡片标记完成 + 追加结果摘要
-        const completeToolCard = (resultText, ok, errorReason) => {
+        const completeToolCard = (resultText, ok) => {
             if (!lastToolCard) return;
             lastToolCard.className = 'trace-card ' + (ok ? 'done' : 'failed');
             const labelEl = lastToolCard.querySelector('.trace-card-label');
             const labelText = labelEl ? labelEl.textContent : '';
-            // 失败时 tooltip 追加原因
-            if (!ok && errorReason) {
-                const oldTitle = lastToolCard.title || '';
-                lastToolCard.title = oldTitle + (oldTitle ? '\n\n' : '') + '原因：' + errorReason;
-            }
             lastToolCard.innerHTML = `
                 <span class="trace-card-icon">${ok ? '✓' : '✗'}</span>
                 <span class="trace-card-label">${escapeHtml(labelText)}</span>
@@ -789,16 +781,13 @@ class PollyChat {
                                 lastToolCard = null;
                             }
                         } else if (event.phase === 'tool_call') {
-                            // 拼 tooltip：完整 input 参数
-                            const inputStr = event.input ? JSON.stringify(event.input, null, 0) : '';
-                            const tooltip = `工具: ${event.tool}${inputStr ? '\n参数: ' + inputStr : ''}`;
-                            lastToolCard = startToolCard(event.label || event.tool, tooltip);
+                            lastToolCard = startToolCard(event.label || event.tool);
                         } else if (event.phase === 'tool_result') {
                             const cnt = event.count;
                             const summary = event.ok
                                 ? (cnt >= 1 ? `${cnt} 条结果` : '完成')
                                 : '没找到';
-                            completeToolCard(summary, event.ok, event.error_reason);
+                            completeToolCard(summary, event.ok);
                         }
                         continue;
                     }
