@@ -612,17 +612,19 @@ class PollyChat {
         let buffer = '';
         let currentEvent = 'message';  // 当前 SSE event 类型（默认 message）
         
-        // Phase 4: thinking trace 容器（首次推 status 时创建）
-        // bubble 结构：[chat-trace] [chat-answer]，互不影响
+        // Phase 4: thinking trace 卡片栈（每个 tool 调用 = 一张独立卡片）
+        // 结构：[trace-stack(动态卡片们)] [chat-answer(最终答案)]
         const traceStartTs = Date.now();
-        let traceStepCount = 0;
-        const ensureTraceEl = () => {
-            if (bubble._traceEl) return bubble._traceEl;
+        let traceCardCount = 0;
+        let pendingThinkingCard = null;  // 当前尚未匹配 tool_call 的 thinking 卡片
+        let lastToolCard = null;          // 最近一张 tool_call 卡片，用于合并 tool_result
+        
+        const ensureStack = () => {
+            if (bubble._traceStack) return bubble._traceStack;
             const el = document.createElement('div');
-            el.className = 'chat-trace';
-            // 插在最前（thinking dots 在它之上 / 答案在它之下）
+            el.className = 'trace-stack';
             bubble.insertBefore(el, bubble.firstChild);
-            bubble._traceEl = el;
+            bubble._traceStack = el;
             return el;
         };
         const ensureAnswerEl = () => {
@@ -633,40 +635,87 @@ class PollyChat {
             bubble._answerEl = el;
             return el;
         };
-        const addTraceStep = (label) => {
-            const el = ensureTraceEl();
-            const step = document.createElement('div');
-            step.className = 'chat-trace-step';
-            const safe = String(label).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            step.innerHTML = `<span class="chat-trace-bullet">●</span><span class="chat-trace-label">${safe}</span>`;
-            el.appendChild(step);
-            traceStepCount++;
+        const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => 
+            ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        
+        // 添加一张 thinking 卡片（pending 状态：转圈圈）
+        const addThinkingCard = (label) => {
+            const stack = ensureStack();
+            const card = document.createElement('div');
+            card.className = 'trace-card thinking';
+            card.innerHTML = `
+                <span class="trace-card-spinner"></span>
+                <span class="trace-card-label">${escapeHtml(label)}</span>
+            `;
+            stack.appendChild(card);
+            traceCardCount++;
             this.scrollToBottom();
-            return step;
+            return card;
         };
-        const markLastTraceDone = () => {
-            const el = bubble._traceEl;
-            if (!el) return;
-            const last = el.lastElementChild;
-            if (last) last.classList.add('done');
+        
+        // tool_call: 把当前 thinking 卡片升级为 tool 卡片（或新建一张）
+        const startToolCard = (label) => {
+            let card;
+            if (pendingThinkingCard) {
+                card = pendingThinkingCard;
+                card.className = 'trace-card running';
+                card.innerHTML = `
+                    <span class="trace-card-spinner"></span>
+                    <span class="trace-card-label">${escapeHtml(label)}</span>
+                `;
+                pendingThinkingCard = null;
+            } else {
+                const stack = ensureStack();
+                card = document.createElement('div');
+                card.className = 'trace-card running';
+                card.innerHTML = `
+                    <span class="trace-card-spinner"></span>
+                    <span class="trace-card-label">${escapeHtml(label)}</span>
+                `;
+                stack.appendChild(card);
+                traceCardCount++;
+            }
+            this.scrollToBottom();
+            return card;
         };
-        // 流结束后调用：把展开的 trace 收纳成 "Thought for Xs · N steps" 的可展开摘要
+        
+        // tool_result: 把对应 tool 卡片标记完成 + 追加结果摘要
+        const completeToolCard = (resultText, ok) => {
+            if (!lastToolCard) return;
+            lastToolCard.className = 'trace-card ' + (ok ? 'done' : 'failed');
+            const labelEl = lastToolCard.querySelector('.trace-card-label');
+            const labelText = labelEl ? labelEl.textContent : '';
+            lastToolCard.innerHTML = `
+                <span class="trace-card-icon">${ok ? '✓' : '✗'}</span>
+                <span class="trace-card-label">${escapeHtml(labelText)}</span>
+                <span class="trace-card-result">${escapeHtml(resultText)}</span>
+            `;
+            this.scrollToBottom();
+        };
+        
+        // 流结束后：把所有卡片折叠成顶部一行小灰条
         const finalizeTrace = () => {
-            const el = bubble._traceEl;
-            if (!el || el.classList.contains('finalized')) return;
-            // 标记所有 step done
-            for (const s of el.querySelectorAll('.chat-trace-step')) s.classList.add('done');
+            const stack = bubble._traceStack;
+            if (!stack || stack.classList.contains('finalized')) return;
+            // 把所有 pending 卡片标完成
+            for (const c of stack.querySelectorAll('.trace-card.thinking, .trace-card.running')) {
+                c.classList.remove('thinking', 'running');
+                c.classList.add('done');
+            }
             const elapsed = Math.round((Date.now() - traceStartTs) / 1000);
             const summary = document.createElement('div');
-            summary.className = 'chat-trace-summary';
-            summary.innerHTML = `<span class="chat-trace-summary-icon">✓</span><span>Thought for ${elapsed}s · ${traceStepCount} step${traceStepCount > 1 ? 's' : ''}</span><span class="chat-trace-summary-toggle">展开 ▾</span>`;
-            // 折叠：把所有 step 隐藏，只显示 summary；点击 summary 切换
-            el.classList.add('finalized', 'collapsed');
-            el.insertBefore(summary, el.firstChild);
+            summary.className = 'trace-summary';
+            summary.innerHTML = `
+                <span class="trace-summary-icon">✓</span>
+                <span class="trace-summary-text">思考了 ${elapsed} 秒 · ${traceCardCount} 步</span>
+                <span class="trace-summary-toggle">展开</span>
+            `;
+            stack.classList.add('finalized', 'collapsed');
+            stack.insertBefore(summary, stack.firstChild);
             summary.onclick = () => {
-                el.classList.toggle('collapsed');
-                summary.querySelector('.chat-trace-summary-toggle').textContent =
-                    el.classList.contains('collapsed') ? '展开 ▾' : '收起 ▴';
+                stack.classList.toggle('collapsed');
+                summary.querySelector('.trace-summary-toggle').textContent =
+                    stack.classList.contains('collapsed') ? '展开' : '收起';
             };
         };
         bubble._finalizeTrace = finalizeTrace;
@@ -705,19 +754,23 @@ class PollyChat {
                     // Phase 4: worker 推送的自定义事件
                     if (currentEvent === 'status') {
                         if (event.phase === 'thinking') {
-                            markLastTraceDone();
-                            addTraceStep(event.detail || '正在思考...');
+                            // thinking 不立即建卡片：先 pending，等下个 tool_call 升级
+                            // 如果已经有 pending 就不重复建（连续 thinking 合并）
+                            if (!pendingThinkingCard && !lastToolCard) {
+                                pendingThinkingCard = addThinkingCard(event.detail || '正在思考...');
+                            } else if (lastToolCard && !pendingThinkingCard) {
+                                // 已有 tool 卡片完成，新一轮 thinking 启动 → 建新 pending 卡片
+                                pendingThinkingCard = addThinkingCard(event.detail || '正在整理...');
+                                lastToolCard = null;
+                            }
                         } else if (event.phase === 'tool_call') {
-                            markLastTraceDone();
-                            addTraceStep(event.label || `调用 ${event.tool}`);
+                            lastToolCard = startToolCard(event.label || `调用 ${event.tool}`);
                         } else if (event.phase === 'tool_result') {
-                            markLastTraceDone();
                             const cnt = event.count;
                             const summary = event.ok
-                                ? (cnt > 1 ? `✓ 找到 ${cnt} 条结果` : '✓ 完成')
-                                : '✗ 没有找到';
-                            addTraceStep(summary);
-                            markLastTraceDone();
+                                ? (cnt >= 1 ? `${cnt} 条结果` : '完成')
+                                : '未找到';
+                            completeToolCard(summary, event.ok);
                         }
                         continue;
                     }
@@ -738,7 +791,18 @@ class PollyChat {
                             bubble._thinkingEl = null;
                             setTimeout(() => el.remove(), 300);
                         }
-                        if (bubble._traceEl) markLastTraceDone();
+                        // 把还在转的 pending thinking 卡片标完成
+                        if (pendingThinkingCard) {
+                            pendingThinkingCard.classList.remove('thinking');
+                            pendingThinkingCard.classList.add('done');
+                            const labelEl = pendingThinkingCard.querySelector('.trace-card-label');
+                            const labelText = labelEl ? labelEl.textContent : '正在整理...';
+                            pendingThinkingCard.innerHTML = `
+                                <span class="trace-card-icon">✓</span>
+                                <span class="trace-card-label">${escapeHtml(labelText)}</span>
+                            `;
+                            pendingThinkingCard = null;
+                        }
                         const ansEl = ensureAnswerEl();
                         ansEl.innerHTML = this.renderMarkdown(fullText);
                         this.scrollToBottom();

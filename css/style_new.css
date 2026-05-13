@@ -1006,116 +1006,172 @@ table td {
     font-style: italic;
 }
 
-/* ===== Live Thinking Trace (Phase 4) ===== */
-.chat-trace {
-    margin: 0 0 10px 0;
-    padding: 10px 14px;
-    background: linear-gradient(135deg, rgba(74, 144, 217, 0.06), rgba(74, 144, 217, 0.02));
-    border-left: 3px solid var(--accent-color, #4a90d9);
-    border-radius: 6px;
-    font-size: 0.82rem;
-    color: #555;
-    line-height: 1.7;
-    transition: max-height 0.35s ease, padding 0.35s ease;
-    overflow: hidden;
-    max-height: 600px;
-}
-
-/* finalized + collapsed = 折叠成单行 summary */
-.chat-trace.finalized.collapsed {
-    max-height: 32px;
-    padding: 6px 14px;
-    background: rgba(0, 0, 0, 0.03);
-    border-left-color: #8bc34a;
-}
-
-.chat-trace.finalized.collapsed .chat-trace-step {
-    display: none;
-}
-
-.chat-trace-summary {
+/* ===== Live Thinking Trace (Phase 4) — Card Stack 设计 ===== */
+.trace-stack {
+    margin: 0 0 12px 0;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-    color: #555;
-    font-size: 0.82rem;
-    padding: 2px 0;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.chat-trace.finalized:not(.collapsed) .chat-trace-summary {
-    margin-bottom: 6px;
-    padding-bottom: 6px;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
-}
-
-.chat-trace-summary-icon {
-    color: #8bc34a;
-    font-weight: bold;
-}
-
-.chat-trace-summary-toggle {
-    margin-left: auto;
-    color: #999;
-    font-size: 0.75rem;
-}
-
-.chat-trace-summary:hover {
-    color: var(--accent-color, #4a90d9);
-}
-
-.chat-trace-step {
+/* 单张卡片：mini bubble，独立呼吸 */
+.trace-card {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 3px 0;
-    animation: trace-fade-in 0.3s ease;
+    padding: 8px 14px;
+    background: #f5f5f7;
+    border: 1px solid #e5e5e8;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.4;
+    animation: trace-card-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
+    max-width: 100%;
+    width: fit-content;
 }
 
-.chat-trace-bullet {
-    color: var(--accent-color, #4a90d9);
-    font-size: 0.65rem;
-    line-height: 1;
-    animation: trace-pulse 1.2s ease-in-out infinite;
+.trace-card.thinking,
+.trace-card.running {
+    background: #f5f5f7;
+    color: #666;
+}
+
+.trace-card.done {
+    background: #f3f8f3;
+    border-color: #d8e8d8;
+    color: #4a6a4a;
+}
+
+.trace-card.failed {
+    background: #fbf3f3;
+    border-color: #e8d8d8;
+    color: #8a5050;
+}
+
+/* 旋转 spinner（thinking / running 状态用） */
+.trace-card-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid rgba(74, 144, 217, 0.25);
+    border-top-color: var(--accent-color, #4a90d9);
+    border-radius: 50%;
+    animation: trace-spin 0.8s linear infinite;
     flex-shrink: 0;
 }
 
-.chat-trace-step.done .chat-trace-bullet {
-    color: #8bc34a;
-    animation: none;
+/* 完成图标 */
+.trace-card-icon {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    color: #6a9a6a;
 }
 
-.chat-trace-label {
+.trace-card.failed .trace-card-icon {
+    color: #b87a7a;
+}
+
+.trace-card-label {
     flex: 1;
-    color: inherit;
+    min-width: 0;
 }
 
-@keyframes trace-fade-in {
-    from { opacity: 0; transform: translateY(-2px); }
+.trace-card-result {
+    color: #999;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.trace-card.done .trace-card-result {
+    color: #7a9a7a;
+}
+
+@keyframes trace-card-in {
+    from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes trace-pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+@keyframes trace-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 流结束后：折叠成顶部一行 summary */
+.trace-stack.finalized.collapsed .trace-card {
+    display: none;
+}
+
+.trace-stack.finalized .trace-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #f7f7f8;
+    border: 1px solid #ececef;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #888;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+    transition: all 0.2s ease;
+}
+
+.trace-stack.finalized .trace-summary:hover {
+    background: #efeff1;
+    color: #555;
+}
+
+.trace-summary-icon {
+    color: #6a9a6a;
+    font-weight: bold;
+}
+
+.trace-summary-toggle {
+    color: #aaa;
+    margin-left: 4px;
+    font-size: 0.72rem;
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+    .trace-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #b0b0b0;
+    }
+    .trace-card.done {
+        background: rgba(139, 195, 74, 0.08);
+        border-color: rgba(139, 195, 74, 0.18);
+        color: #aac9aa;
+    }
+    .trace-card.failed {
+        background: rgba(200, 100, 100, 0.08);
+        border-color: rgba(200, 100, 100, 0.18);
+        color: #c89a9a;
+    }
+    .trace-card-result {
+        color: #888;
+    }
+    .trace-card.done .trace-card-result {
+        color: #9ab89a;
+    }
+    .trace-stack.finalized .trace-summary {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #999;
+    }
 }
 
 .chat-answer {
     /* 答案区域：保持原 chat-bubble 内容样式继承 */
-}
-
-@media (prefers-color-scheme: dark) {
-    .chat-trace {
-        background: linear-gradient(135deg, rgba(74, 144, 217, 0.12), rgba(74, 144, 217, 0.04));
-        color: #c0c0c0;
-    }
-    .chat-trace.finalized.collapsed {
-        background: rgba(255, 255, 255, 0.04);
-    }
-    .chat-trace-summary {
-        color: #c0c0c0;
-    }
 }
 
 .chat-avatar {
