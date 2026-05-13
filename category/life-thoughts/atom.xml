@@ -5,8 +5,78 @@
     <link href="https://polly.wang/category/life-thoughts/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-28T00:00:00+00:00</updated>
+    <updated>2026-05-13T00:00:00+00:00</updated>
     <id>https://polly.wang/category/life-thoughts/atom.xml</id>
+    <entry xml:lang="en">
+        <title>镜子里的我，与编辑里的我</title>
+        <published>2026-05-13T00:00:00+00:00</published>
+        <updated>2026-05-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/mirror-self-editing-self/" type="text/html"/>
+        <id>https://polly.wang/mirror-self-editing-self/</id>
+        
+        <content type="html">&lt;p&gt;5 月 13 日上午 10:50，Colin McFarland 在 Teams 上发来：「Fun! Inspired by you 😊」附一个 GitHub 链接。&lt;&#x2F;p&gt;
+&lt;p&gt;他是《Experiment!》的作者——那本 2012 年出的、关于网站 A&#x2F;B 测试的小书。我们两周前才在微软的 Jay DemoFest 上第一次见面。&lt;&#x2F;p&gt;
+&lt;p&gt;点进链接。他用一个上午，把整本书的 23,600 个词交给 Claude 去拆，输出了一份 Markdown：12 个核心写作动作、一份&amp;quot;永远不要使用&amp;quot;的词汇黑名单。一份给 LLM 看的「我是谁」。&lt;&#x2F;p&gt;
+&lt;p&gt;我看着那份手册，心里冒出一个念头：&lt;strong&gt;那能不能反过来？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Colin 是用成稿反推 voice。但每个写过博客的人都在 git 里留下了另一种东西——&lt;strong&gt;修改痕迹&lt;&#x2F;strong&gt;。&amp;quot;凌晨想这么写&amp;quot;和&amp;quot;早上发出去的版本&amp;quot;之间的 diff。每一句被删掉的话。每一个被替换的词。&lt;&#x2F;p&gt;
+&lt;p&gt;那些痕迹比成稿更诚实。成稿是表演给别人看的，diff 是表演结束之后才改的。&lt;&#x2F;p&gt;
+&lt;p&gt;如果有一面镜子去照一个人三年的 diff，它会照出什么？&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;这面镜子我手里正好有。&lt;&#x2F;p&gt;
+&lt;p&gt;四月底花一周做的项目，原本是为了另一件事。它读 git history，用 LLM 给每一处编辑打上「动机&#x2F;修辞动作&#x2F;删除原因」三元组，再聚类成&amp;quot;编辑指纹&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;之前没把它对准过自己。觉得没必要——我有一套工具靠人工修正信号已经迭代过写作规则十几轮了。够透明、够及时。&lt;&#x2F;p&gt;
+&lt;p&gt;那天下午，我做了相反的事：把镜子掉过来照自己的 git。&lt;&#x2F;p&gt;
+&lt;p&gt;八分钟。232 个有意义的编辑标注成结构化数据，12 个聚类。两次 LLM 调用之后，得到一份自动提取的「我的写作习惯」，和一份&amp;quot;自动版 vs 我手写的 19KB 写作规则&amp;quot;的对比报告。&lt;&#x2F;p&gt;
+&lt;p&gt;我以为它会说：「你确实在按你写的规则写。」&lt;&#x2F;p&gt;
+&lt;p&gt;它说：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;重叠率：约 40-45%。直接 contradiction：1 处，关键。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;那一处 contradiction 是关于「我」这个字。&lt;&#x2F;p&gt;
+&lt;p&gt;写作规则里有一条加粗的：「&lt;strong&gt;始终使用第一人称叙述&lt;&#x2F;strong&gt;」——博客是私人的，「我」让文字有体温。&lt;&#x2F;p&gt;
+&lt;p&gt;镜子告诉我：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;他反复地、系统地、几乎在每一篇技术段落里，&lt;strong&gt;把「我」删掉&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;code&gt;我设计了一个 pipeline&lt;&#x2F;code&gt; → &lt;code&gt;pipeline 包含三层&lt;&#x2F;code&gt;。
+&lt;code&gt;我发现这个方案不行&lt;&#x2F;code&gt; → &lt;code&gt;这个方案存在三个问题&lt;&#x2F;code&gt;。
+&lt;code&gt;我用了 HDBSCAN&lt;&#x2F;code&gt; → &lt;code&gt;聚类采用 HDBSCAN&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;232 次编辑里，&lt;strong&gt;全部&lt;&#x2F;strong&gt;这样改。&lt;&#x2F;p&gt;
+&lt;p&gt;一个嘴上写着「始终用我」、手上却把每一个技术段落里的「我」一个一个抠掉的人。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;最难受的不是被打脸。&lt;&#x2F;p&gt;
+&lt;p&gt;是我&lt;strong&gt;完全没意识到&lt;&#x2F;strong&gt;自己在这么做。&lt;&#x2F;p&gt;
+&lt;p&gt;我专门写了 19KB 的写作规则来 codify 自己——这本身就是一种声明：&lt;strong&gt;我了解自己的写作风格，可以把它形式化下来&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;结果一面只看 diff 的镜子，八分钟告诉我：你写的规则和你做的事，差了整整一条 contradiction。&lt;&#x2F;p&gt;
+&lt;p&gt;不止这一条。还有一条更微妙的：规则说&amp;quot;项目记录默认用场景开篇&amp;quot;——&amp;quot;凌晨两点，最后一行代码通过测试时&amp;quot;这种。但每次用了这种开篇，第二天都会被删掉，换成一条新闻、一个外部事件、一个不以&amp;quot;我&amp;quot;开头的句子。&lt;&#x2F;p&gt;
+&lt;p&gt;个人场景从 lead 变成了 zoom-in。规则说的和手做的，又差了一截。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;我意识到一件事。&lt;&#x2F;p&gt;
+&lt;p&gt;我以为写作规则是「我」的镜子——我把风格写进去，AI 读它就能模仿我。&lt;strong&gt;但镜子里的我，和真正在编辑器里改文章的那个我，是两个不同的人。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;镜子里的我，是我&lt;strong&gt;想成为&lt;&#x2F;strong&gt;的那个我——有理论、有边界、有自我认识。&lt;&#x2F;p&gt;
+&lt;p&gt;编辑里的我，是我&lt;strong&gt;实际是&lt;&#x2F;strong&gt;的那个我——没有理论，只有反射动作。看到技术段落里的「我」就忍不住删，因为多余。看到 pros&#x2F;cons 结尾就忍不住改成明确推荐，因为对冲让人厌烦。看到给自己写的 meta-disclaimer（&amp;quot;这当然只是一种简化&amp;quot;）就忍不住删，因为对自己的解读都不信就别写。&lt;&#x2F;p&gt;
+&lt;p&gt;这两个「我」之间差出去的部分，&lt;strong&gt;就是我从未意识到自己已经形成的习惯&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;每一句「我是一个 X 的人」都是一面镜子。但镜子是什么时候照的、照的是哪个角度，由你决定。所以镜子里的你永远是&lt;strong&gt;经过你自己审稿的你&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;而 git，或者任何完整的行为日志，是没经过审稿的。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;我把镜子的发现写回了写作规则。&lt;&#x2F;p&gt;
+&lt;p&gt;规则从「始终用我」变成了「叙事段落用我，技术段落 depersonalize」。从「场景开篇」变成了「项目记录默认新闻钩子，内省文才用场景」。从没有对比规则变成了「对比必须落到推荐，砍掉对冲」。&lt;&#x2F;p&gt;
+&lt;p&gt;下一次写博客的时候，AI 会按一份&lt;strong&gt;比我更了解我&lt;&#x2F;strong&gt;的规则来辅助我。&lt;&#x2F;p&gt;
+&lt;p&gt;第一次，我写的「我」，被一面看过三年 diff 的镜子校正了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;凌晨了。北京很安静。&lt;&#x2F;p&gt;
+&lt;p&gt;写《等风来》的那晚，我说：&amp;quot;我看到了海，但评价体系还是一口井。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;今天想说的是另一件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我以为我了解的那个「我」，也是一口井。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;而 git，是镜子。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Innovator. — 关于今天的三件礼物</title>
         <published>2026-04-28T00:00:00+00:00</published>
