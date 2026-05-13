@@ -621,13 +621,17 @@ class PollyChat {
         
         const ensureStack = () => {
             if (bubble._traceStack) return bubble._traceStack;
+            // 一旦要建 trace stack，说明后端已经跟上进度，立即移除 bubble 内的 thinking dots。
+            // 否则 dots + trace card spinner 会同时存在，看起来像两组点。
+            if (bubble._thinkingEl) {
+                bubble._thinkingEl.remove();
+                bubble._thinkingEl = null;
+            }
             const el = document.createElement('div');
             el.className = 'trace-stack';
             // 把 trace 放在 bubble 之上的兄弟位置，避免被 bubble 的 padding/width 挤压
-            // message-container 是 flex row（user 是 row-reverse），所以包一层 wrapper 让 trace 占满整行
             const container = bubble.closest('.message-container');
             if (container) {
-                // 创建外部 wrapper：trace 在上，bubble 在下，整体替换原 bubble 位置
                 let wrapper = container.querySelector('.assistant-block');
                 if (!wrapper) {
                     wrapper = document.createElement('div');
@@ -654,10 +658,11 @@ class PollyChat {
             ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         
         // 添加一张 thinking 卡片（pending 状态：转圈圈）
-        const addThinkingCard = (label) => {
+        const addThinkingCard = (label, tooltip) => {
             const stack = ensureStack();
             const card = document.createElement('div');
-            card.className = 'trace-card thinking';
+            card.className = 'trace-card running';  // running = 呼吸边框
+            if (tooltip) card.title = tooltip;
             card.innerHTML = `
                 <span class="trace-card-spinner"></span>
                 <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -669,11 +674,12 @@ class PollyChat {
         };
         
         // tool_call: 把当前 thinking 卡片升级为 tool 卡片（或新建一张）
-        const startToolCard = (label) => {
+        const startToolCard = (label, tooltip) => {
             let card;
             if (pendingThinkingCard) {
                 card = pendingThinkingCard;
                 card.className = 'trace-card running';
+                if (tooltip) card.title = tooltip;
                 card.innerHTML = `
                     <span class="trace-card-spinner"></span>
                     <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -683,6 +689,7 @@ class PollyChat {
                 const stack = ensureStack();
                 card = document.createElement('div');
                 card.className = 'trace-card running';
+                if (tooltip) card.title = tooltip;
                 card.innerHTML = `
                     <span class="trace-card-spinner"></span>
                     <span class="trace-card-label">${escapeHtml(label)}</span>
@@ -695,11 +702,16 @@ class PollyChat {
         };
         
         // tool_result: 把对应 tool 卡片标记完成 + 追加结果摘要
-        const completeToolCard = (resultText, ok) => {
+        const completeToolCard = (resultText, ok, errorReason) => {
             if (!lastToolCard) return;
             lastToolCard.className = 'trace-card ' + (ok ? 'done' : 'failed');
             const labelEl = lastToolCard.querySelector('.trace-card-label');
             const labelText = labelEl ? labelEl.textContent : '';
+            // 失败时 tooltip 追加原因
+            if (!ok && errorReason) {
+                const oldTitle = lastToolCard.title || '';
+                lastToolCard.title = oldTitle + (oldTitle ? '\n\n' : '') + '原因：' + errorReason;
+            }
             lastToolCard.innerHTML = `
                 <span class="trace-card-icon">${ok ? '✓' : '✗'}</span>
                 <span class="trace-card-label">${escapeHtml(labelText)}</span>
@@ -722,7 +734,7 @@ class PollyChat {
             summary.className = 'trace-summary';
             summary.innerHTML = `
                 <span class="trace-summary-icon">✓</span>
-                <span class="trace-summary-text">思考了 ${elapsed} 秒 · ${traceCardCount} 步</span>
+                <span class="trace-summary-text">Polly 想了 ${elapsed} 秒</span>
                 <span class="trace-summary-toggle">展开</span>
             `;
             stack.classList.add('finalized', 'collapsed');
@@ -772,20 +784,23 @@ class PollyChat {
                             // thinking 不立即建卡片：先 pending，等下个 tool_call 升级
                             // 如果已经有 pending 就不重复建（连续 thinking 合并）
                             if (!pendingThinkingCard && !lastToolCard) {
-                                pendingThinkingCard = addThinkingCard(event.detail || '正在思考...');
+                                pendingThinkingCard = addThinkingCard(event.detail || '在脑子里翻一翻...');
                             } else if (lastToolCard && !pendingThinkingCard) {
                                 // 已有 tool 卡片完成，新一轮 thinking 启动 → 建新 pending 卡片
-                                pendingThinkingCard = addThinkingCard(event.detail || '正在整理...');
+                                pendingThinkingCard = addThinkingCard(event.detail || '让我想想...');
                                 lastToolCard = null;
                             }
                         } else if (event.phase === 'tool_call') {
-                            lastToolCard = startToolCard(event.label || `调用 ${event.tool}`);
+                            // 拼 tooltip：完整 input 参数
+                            const inputStr = event.input ? JSON.stringify(event.input, null, 0) : '';
+                            const tooltip = `工具: ${event.tool}${inputStr ? '\n参数: ' + inputStr : ''}`;
+                            lastToolCard = startToolCard(event.label || event.tool, tooltip);
                         } else if (event.phase === 'tool_result') {
                             const cnt = event.count;
                             const summary = event.ok
                                 ? (cnt >= 1 ? `${cnt} 条结果` : '完成')
-                                : '未找到';
-                            completeToolCard(summary, event.ok);
+                                : '没找到';
+                            completeToolCard(summary, event.ok, event.error_reason);
                         }
                         continue;
                     }
