@@ -1256,6 +1256,13 @@ table td {
     background-color: #555;
 }
 
+/* Polly 头像：浅冷灰底 + 1px 边框 + 微阴影，让冰山照"贴在背景上"有立体感 */
+.polly-message .chat-avatar {
+    background-color: #f0f4f7;
+    border: 1px solid #e6e8ec;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
 .chat-bubble {
     padding: 5px 16px;
     border-radius: 16px;
