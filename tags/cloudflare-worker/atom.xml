@@ -8,16 +8,19 @@
     <updated>2026-05-13T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/cloudflare-worker/atom.xml</id>
     <entry xml:lang="en">
-        <title>Polly Chat v3.0：从干等 24 秒到流动的思考</title>
+        <title>Polly Chat v3.5：让思考被看见</title>
         <published>2026-05-13T00:00:00+00:00</published>
         <updated>2026-05-13T00:00:00+00:00</updated>
         <author>
           <name>Unknown</name>
         </author>
-        <link rel="alternate" href="https://polly.wang/polly-chat-v3-agentic-loop/" type="text/html"/>
-        <id>https://polly.wang/polly-chat-v3-agentic-loop/</id>
+        <link rel="alternate" href="https://polly.wang/polly-chat-v35-thinking-visible/" type="text/html"/>
+        <id>https://polly.wang/polly-chat-v35-thinking-visible/</id>
         
-        <content type="html">&lt;p&gt;Polly Chat 进化树更新一格——v3.0 落地。&lt;&#x2F;p&gt;
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;系列回顾&lt;&#x2F;strong&gt;：&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;2.0 零后端重构&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-vision-support&quot;&gt;Vision 多模态&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;D1 持久化&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-v25-welcome-indexeddb&quot;&gt;v2.5 欢迎屏 + IndexedDB&lt;&#x2F;a&gt; → &lt;a href=&quot;&#x2F;polly-chat-3-agent-loop&quot;&gt;3.0 自己翻博客&lt;&#x2F;a&gt; → &lt;strong&gt;本篇 v3.5&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Polly Chat 进化树更新一格——v3.5 落地。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;yi-ke-man-man-chang-chu-lai-de-shu&quot;&gt;一棵慢慢长出来的树&lt;&#x2F;h2&gt;
 &lt;p&gt;往回数，这个挂在博客首页右下角的小聊天框，已经偷偷长了大半年：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;v1.0  (2025-02)  ─  原始形态：FastAPI 后端 + DeepSeek 直连，问一句答一句
@@ -25,12 +28,13 @@
 &lt;&#x2F;span&gt;&lt;span&gt;v2.1  (2026-02)  ─  视觉：支持粘贴&#x2F;上传图片，多图并发
 &lt;&#x2F;span&gt;&lt;span&gt;v2.2  (2026-02)  ─  记忆：D1 持久化 + 回头客识别（&amp;quot;你之前问过 X...&amp;quot;）
 &lt;&#x2F;span&gt;&lt;span&gt;v2.5  (2026-02)  ─  欢迎屏 + IndexedDB 客户端持久化
-&lt;&#x2F;span&gt;&lt;span&gt;v2.7  (2026-04)  ─  Agent + Tools：能调 search_blog &#x2F; get_article &#x2F; get_recent_posts
-&lt;&#x2F;span&gt;&lt;span&gt;v3.0  (2026-05)  ─  Agentic Loop 流式可视化（本篇）  ✨
+&lt;&#x2F;span&gt;&lt;span&gt;v3.0  (2026-04)  ─  Agent + Tools：搜索&#x2F;阅读&#x2F;最近博文，让博客自己翻博客
+&lt;&#x2F;span&gt;&lt;span&gt;v3.5  (2026-05)  ─  让思考被看见：流式 trace 可视化（本篇）  ✨
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;中间有几篇博文记下了关键节点：&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;v2.0 把后端拆掉&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;D1 给它装上记忆&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-v25-welcome-indexeddb&quot;&gt;v2.5 加欢迎屏和 IndexedDB&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
-&lt;p&gt;到 v2.7 之后，技术栈看起来已经挺现代了：worker + agent loop + 三个可调用的博客 tool。但有个隐藏的问题，&lt;strong&gt;只有访客真正问到需要查博文的问题时才会暴露&lt;&#x2F;strong&gt;——比如&amp;quot;聊聊你最新的博文&amp;quot;。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;v2-7-de-si-jie-tool-lu-jing-hui-rang-ren-gan-deng&quot;&gt;v2.7 的死结：tool 路径会让人干等&lt;&#x2F;h2&gt;
+&lt;p&gt;几篇前作记下了关键节点：&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;v2.0 把后端拆掉&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;D1 给它装上记忆&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-v25-welcome-indexeddb&quot;&gt;v2.5 加欢迎屏和 IndexedDB&lt;&#x2F;a&gt;，以及一个月前的 &lt;a href=&quot;&#x2F;polly-chat-3-agent-loop&quot;&gt;v3.0 让它学会自己翻博客&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;v3.0 解决的是&amp;quot;知识天花板&amp;quot;——访客问一篇博文，数字 Polly 不再凭 system prompt 硬编，而是真的去 search_blog &#x2F; get_article 翻一遍。从工程上讲已经挺现代了：worker + agent loop + 三个可调用的博客 tool。&lt;&#x2F;p&gt;
+&lt;p&gt;但 v3.0 上线后有个隐藏问题，&lt;strong&gt;只有访客真正问到需要查博文的问题时才会暴露&lt;&#x2F;strong&gt;——比如&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;v3-0-de-si-jie-tool-lu-jing-hui-rang-ren-gan-deng&quot;&gt;v3.0 的死结：tool 路径会让人干等&lt;&#x2F;h2&gt;
 &lt;p&gt;复现路径很简单。访客问一句&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;浏览器 ──► Worker ──► CopilotX (第1轮)：模型决定调 search_blog
 &lt;&#x2F;span&gt;&lt;span&gt;                  ◄── 完整响应（必须等完）
@@ -53,13 +57,13 @@
 &lt;p&gt;🤔 Hmm, thinking too hard...&lt;&#x2F;p&gt;
 &lt;&#x2F;blockquote&gt;
 &lt;p&gt;错误文案再可爱，本质还是一个体验事故。&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;v3-0-de-po-ti-rang-yong-hu-kan-jian-er-bu-shi-rang-yong-hu-deng-dai&quot;&gt;v3.0 的破题：让用户看见，而不是让用户等待&lt;&#x2F;h2&gt;
+&lt;h2 id=&quot;v3-5-de-po-ti-rang-yong-hu-kan-jian-er-bu-shi-rang-yong-hu-deng-dai&quot;&gt;v3.5 的破题：让用户看见，而不是让用户等待&lt;&#x2F;h2&gt;
 &lt;p&gt;修复方向其实是个二选一题：&lt;&#x2F;p&gt;
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方向&lt;&#x2F;th&gt;&lt;th&gt;利弊&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;A. 应急药&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;把前端 timeout 从 15s 拉到 45s。能止血，但访客仍然要面对一个 24 秒的空白屏。治标不治本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;strong&gt;B. 根治&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;立即返回 &lt;code&gt;Response&lt;&#x2F;code&gt;，agent loop 移到后台跑，用 SSE 推自定义事件让前端实时展示思考过程&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
-&lt;p&gt;两个都做了——A 作为最低保障 5 分钟改完，B 作为真正的 v3.0 用了三个小时。本文讲 B。&lt;&#x2F;p&gt;
+&lt;p&gt;两个都做了——A 作为最低保障 5 分钟改完，B 作为真正的 v3.5 用了三个小时。本文讲 B。&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;guan-jian-gai-zao-yi-worker-li-ji-fan-hui-agent-loop-pao-hou-tai&quot;&gt;关键改造一：Worker 立即返回，agent loop 跑后台&lt;&#x2F;h3&gt;
 &lt;p&gt;新版 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;www.polly.com&#x2F;blob&#x2F;main&#x2F;scripts&#x2F;woker.js&quot;&gt;&lt;code&gt;handleProxyWithTools&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; 的核心结构变成了这样：&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handleProxyWithTools&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;backend&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;origin&lt;&#x2F;span&gt;&lt;span&gt;) {
@@ -185,7 +189,7 @@
 &lt;p&gt;工程师习惯说&amp;quot;调用 search_blog tool&amp;quot;，访客感受到的是一个数字分身在翻自己的记忆。这是同一件事的两种叙述，但后者把&amp;quot;工具&amp;quot;翻译成了&amp;quot;行为&amp;quot;。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;zhen-zheng-jie-jue-de-wen-ti-shi-gan-zhi&quot;&gt;真正解决的问题，是感知&lt;&#x2F;h2&gt;
 &lt;p&gt;实测对比：&lt;&#x2F;p&gt;
-&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;v2.7&lt;&#x2F;th&gt;&lt;th&gt;v3.0&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;v3.0&lt;&#x2F;th&gt;&lt;th&gt;v3.5&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
 &lt;tr&gt;&lt;td&gt;TTFB（tool 路径）&lt;&#x2F;td&gt;&lt;td&gt;12.5s&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1.7s&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;后端总耗时（不变）&lt;&#x2F;td&gt;&lt;td&gt;~25s&lt;&#x2F;td&gt;&lt;td&gt;~23s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
 &lt;tr&gt;&lt;td&gt;前端误判 522 超时&lt;&#x2F;td&gt;&lt;td&gt;✅ 必发&lt;&#x2F;td&gt;&lt;td&gt;❌ 不再发生&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
@@ -194,8 +198,8 @@
 &lt;p&gt;后端总耗时几乎没变——LLM 跑 23 秒是物理上限，跑不掉。但&lt;strong&gt;感知耗时&lt;&#x2F;strong&gt;从 24 秒降到 ~2 秒。&lt;&#x2F;p&gt;
 &lt;p&gt;这不是博客 chat 独有的教训。任何后端要跑 ≥ 5 秒的 agent loop，前端都面临同样的取舍：要么等到底再说话，要么把过程拆成结构化事件流出去。让用户看见，而不是让用户等待——这条原则适用于推荐引擎的&amp;quot;正在为你筛选...&amp;quot;、复杂搜索的&amp;quot;已扫描 1.2k 文档...&amp;quot;、长文档翻译的&amp;quot;正在处理第 3&#x2F;12 章...&amp;quot;。区别只是：你愿不愿意把&amp;quot;思考过程&amp;quot;也设计成产品的一部分。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
-&lt;p&gt;下一格是什么？v3.5 大概会让访客在 trace 卡片上点击 tool 名直接跳转到那篇博文——把 trace 从&amp;quot;只能看&amp;quot;升级成&amp;quot;也能用&amp;quot;。但那是另一篇博文的事了。&lt;&#x2F;p&gt;
-&lt;p&gt;刷新一下博客首页，问 Polly：&amp;quot;聊聊你最新的博文&amp;quot;。看着那行绿色的 &lt;code&gt;✓ Polly 想了 19 秒&lt;&#x2F;code&gt; 出现在历史里——这次，等待是看得见的。&lt;&#x2F;p&gt;
+&lt;p&gt;下一格是什么？v4.0 大概会是真正的范式跃迁——实时 voice 对话，或者多模态 tool（看着访客贴的截图直接回答），或者 agent 之间互相通信。但那是另一篇博文的事了。&lt;&#x2F;p&gt;
+&lt;p&gt;眼下的 v3.5 先把基础打好：刷新博客首页，问 Polly：&amp;quot;聊聊你最新的博文&amp;quot;。看着那行绿色的 &lt;code&gt;✓ Polly 想了 19 秒&lt;&#x2F;code&gt; 出现在历史里——这次，等待是看得见的。&lt;&#x2F;p&gt;
 </content>
         
     </entry>
