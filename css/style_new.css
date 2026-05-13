@@ -1012,6 +1012,12 @@ table td {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 240px;
+}
+
+/* 有 trace 时气泡要撑开 */
+.chat-bubble.polly:has(.trace-stack) {
+    width: 100%;
 }
 
 /* 单张卡片：mini bubble，独立呼吸 */
@@ -1226,6 +1232,7 @@ table td {
     background-color: #e8e8e8;
     color: #333;
     border-bottom-left-radius: 4px;
+    width: 100%;
 }
 
 /* 添加消息气泡的小尾巴 */
