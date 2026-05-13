@@ -527,6 +527,8 @@ class PollyChat {
                 ${showRetry ? '<button class="chat-error-retry" onclick="window.pollyChat.retryLast()"><i class="fas fa-redo-alt"></i> Retry</button>' : ''}
             </div>
         `;
+        // 错误时确保 bubble 可见（appendMessage 创建时 bubble 默认 display:none）
+        bubble.style.display = '';
         this.scrollToBottom();
     }
 
@@ -621,12 +623,6 @@ class PollyChat {
         
         const ensureStack = () => {
             if (bubble._traceStack) return bubble._traceStack;
-            // 一旦要建 trace stack，说明后端已经跟上进度，立即移除 bubble 内的 thinking dots。
-            // 否则 dots + trace card spinner 会同时存在，看起来像两组点。
-            if (bubble._thinkingEl) {
-                bubble._thinkingEl.remove();
-                bubble._thinkingEl = null;
-            }
             const el = document.createElement('div');
             el.className = 'trace-stack';
             // 把 trace 放在 bubble 之上的兄弟位置，避免被 bubble 的 padding/width 挤压
@@ -648,6 +644,8 @@ class PollyChat {
         };
         const ensureAnswerEl = () => {
             if (bubble._answerEl) return bubble._answerEl;
+            // 拿到答案才显示 bubble（如果之前被 trace 隐藏了）
+            bubble.style.display = '';
             const el = document.createElement('div');
             el.className = 'chat-answer';
             bubble.appendChild(el);
@@ -898,18 +896,16 @@ class PollyChat {
         if (content) {
             bubbleContent += this.renderMarkdown(content);
         }
-        bubble.innerHTML = bubbleContent || '<div class="thinking"><span></span><span></span><span></span></div>';
+        bubble.innerHTML = bubbleContent;
+        // 没有初始内容时（assistant 占位气泡），先隐藏 bubble；
+        // 等 trace 卡片出来或答案文字到达再显示，避免空白扁条
+        if (!bubbleContent) bubble.style.display = 'none';
         
         wrapper.appendChild(avatar);
         wrapper.appendChild(bubble);
         this.chatBox.appendChild(wrapper);
         
         this.scrollToBottom();
-        
-        // 记录 thinking 元素，用于过渡动画
-        if (!bubbleContent) {
-            bubble._thinkingEl = bubble.querySelector('.thinking');
-        }
         
         return bubble;
     }
