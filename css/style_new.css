@@ -1008,52 +1008,77 @@ table td {
 
 /* ===== Live Thinking Trace (Phase 4) ===== */
 .chat-trace {
-    margin: 0 0 8px 0;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.03);
-    border-left: 2px solid rgba(74, 144, 217, 0.5);
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #666;
-    line-height: 1.6;
-    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    margin: 0 0 10px 0;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(74, 144, 217, 0.06), rgba(74, 144, 217, 0.02));
+    border-left: 3px solid var(--accent-color, #4a90d9);
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.7;
+    transition: max-height 0.35s ease, padding 0.35s ease;
     overflow: hidden;
-    max-height: 400px;
+    max-height: 600px;
 }
 
-.chat-trace.collapsed {
-    max-height: 26px;
-    padding: 4px 12px;
-    cursor: pointer;
-    opacity: 0.65;
+/* finalized + collapsed = 折叠成单行 summary */
+.chat-trace.finalized.collapsed {
+    max-height: 32px;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, 0.03);
+    border-left-color: #8bc34a;
 }
 
-.chat-trace.collapsed:hover {
-    opacity: 1;
-}
-
-.chat-trace.collapsed .chat-trace-step:not(:first-child) {
+.chat-trace.finalized.collapsed .chat-trace-step {
     display: none;
 }
 
-.chat-trace.collapsed .chat-trace-step:first-child::after {
-    content: ' …';
-    color: #aaa;
+.chat-trace-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    color: #555;
+    font-size: 0.82rem;
+    padding: 2px 0;
+}
+
+.chat-trace.finalized:not(.collapsed) .chat-trace-summary {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.chat-trace-summary-icon {
+    color: #8bc34a;
+    font-weight: bold;
+}
+
+.chat-trace-summary-toggle {
+    margin-left: auto;
+    color: #999;
+    font-size: 0.75rem;
+}
+
+.chat-trace-summary:hover {
+    color: var(--accent-color, #4a90d9);
 }
 
 .chat-trace-step {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 2px 0;
+    gap: 10px;
+    padding: 3px 0;
     animation: trace-fade-in 0.3s ease;
 }
 
 .chat-trace-bullet {
     color: var(--accent-color, #4a90d9);
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     line-height: 1;
     animation: trace-pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
 .chat-trace-step.done .chat-trace-bullet {
@@ -1082,8 +1107,14 @@ table td {
 
 @media (prefers-color-scheme: dark) {
     .chat-trace {
+        background: linear-gradient(135deg, rgba(74, 144, 217, 0.12), rgba(74, 144, 217, 0.04));
+        color: #c0c0c0;
+    }
+    .chat-trace.finalized.collapsed {
         background: rgba(255, 255, 255, 0.04);
-        color: #aaa;
+    }
+    .chat-trace-summary {
+        color: #c0c0c0;
     }
 }
 

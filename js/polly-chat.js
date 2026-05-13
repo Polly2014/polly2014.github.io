@@ -614,6 +614,8 @@ class PollyChat {
         
         // Phase 4: thinking trace 容器（首次推 status 时创建）
         // bubble 结构：[chat-trace] [chat-answer]，互不影响
+        const traceStartTs = Date.now();
+        let traceStepCount = 0;
         const ensureTraceEl = () => {
             if (bubble._traceEl) return bubble._traceEl;
             const el = document.createElement('div');
@@ -638,6 +640,7 @@ class PollyChat {
             const safe = String(label).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
             step.innerHTML = `<span class="chat-trace-bullet">●</span><span class="chat-trace-label">${safe}</span>`;
             el.appendChild(step);
+            traceStepCount++;
             this.scrollToBottom();
             return step;
         };
@@ -647,6 +650,26 @@ class PollyChat {
             const last = el.lastElementChild;
             if (last) last.classList.add('done');
         };
+        // 流结束后调用：把展开的 trace 收纳成 "Thought for Xs · N steps" 的可展开摘要
+        const finalizeTrace = () => {
+            const el = bubble._traceEl;
+            if (!el || el.classList.contains('finalized')) return;
+            // 标记所有 step done
+            for (const s of el.querySelectorAll('.chat-trace-step')) s.classList.add('done');
+            const elapsed = Math.round((Date.now() - traceStartTs) / 1000);
+            const summary = document.createElement('div');
+            summary.className = 'chat-trace-summary';
+            summary.innerHTML = `<span class="chat-trace-summary-icon">✓</span><span>Thought for ${elapsed}s · ${traceStepCount} step${traceStepCount > 1 ? 's' : ''}</span><span class="chat-trace-summary-toggle">展开 ▾</span>`;
+            // 折叠：把所有 step 隐藏，只显示 summary；点击 summary 切换
+            el.classList.add('finalized', 'collapsed');
+            el.insertBefore(summary, el.firstChild);
+            summary.onclick = () => {
+                el.classList.toggle('collapsed');
+                summary.querySelector('.chat-trace-summary-toggle').textContent =
+                    el.classList.contains('collapsed') ? '展开 ▾' : '收起 ▴';
+            };
+        };
+        bubble._finalizeTrace = finalizeTrace;
         
         while (true) {
             const { done, value } = await reader.read();
@@ -708,17 +731,14 @@ class PollyChat {
                     if (event.type === 'content_block_delta') {
                         const delta = event.delta?.text || '';
                         fullText += delta;
-                        // 首次收到文字时，淡出 thinking dots + 折叠 trace
+                        // 首次收到文字时，淡出 thinking dots，但保留 trace 完整可见
                         if (bubble._thinkingEl) {
                             bubble._thinkingEl.classList.add('fade-out');
                             const el = bubble._thinkingEl;
                             bubble._thinkingEl = null;
                             setTimeout(() => el.remove(), 300);
                         }
-                        if (bubble._traceEl && !bubble._traceEl.classList.contains('collapsed')) {
-                            markLastTraceDone();
-                            bubble._traceEl.classList.add('collapsed');
-                        }
+                        if (bubble._traceEl) markLastTraceDone();
                         const ansEl = ensureAnswerEl();
                         ansEl.innerHTML = this.renderMarkdown(fullText);
                         this.scrollToBottom();
@@ -738,6 +758,9 @@ class PollyChat {
                 }
             }
         }
+        
+        // 流结束：把 thinking trace 折叠为 "Thought for Xs · N steps" 摘要
+        if (typeof bubble._finalizeTrace === 'function') bubble._finalizeTrace();
         
         // 保存完整回复到历史
         this.messages.push({ role: 'assistant', content: fullText });
