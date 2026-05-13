@@ -623,7 +623,22 @@ class PollyChat {
             if (bubble._traceStack) return bubble._traceStack;
             const el = document.createElement('div');
             el.className = 'trace-stack';
-            bubble.insertBefore(el, bubble.firstChild);
+            // 把 trace 放在 bubble 之上的兄弟位置，避免被 bubble 的 padding/width 挤压
+            // message-container 是 flex row（user 是 row-reverse），所以包一层 wrapper 让 trace 占满整行
+            const container = bubble.closest('.message-container');
+            if (container) {
+                // 创建外部 wrapper：trace 在上，bubble 在下，整体替换原 bubble 位置
+                let wrapper = container.querySelector('.assistant-block');
+                if (!wrapper) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'assistant-block';
+                    bubble.parentNode.insertBefore(wrapper, bubble);
+                    wrapper.appendChild(bubble);
+                }
+                wrapper.insertBefore(el, bubble);
+            } else {
+                bubble.insertBefore(el, bubble.firstChild);
+            }
             bubble._traceStack = el;
             return el;
         };
