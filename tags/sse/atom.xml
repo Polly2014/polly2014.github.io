@@ -5,8 +5,200 @@
     <link href="https://polly.wang/tags/sse/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-20T00:00:00+00:00</updated>
+    <updated>2026-05-13T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/sse/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Polly Chat v3.0：从干等 24 秒到流动的思考</title>
+        <published>2026-05-13T00:00:00+00:00</published>
+        <updated>2026-05-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/polly-chat-v3-agentic-loop/" type="text/html"/>
+        <id>https://polly.wang/polly-chat-v3-agentic-loop/</id>
+        
+        <content type="html">&lt;p&gt;Polly Chat 进化树更新一格——v3.0 落地。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ke-man-man-chang-chu-lai-de-shu&quot;&gt;一棵慢慢长出来的树&lt;&#x2F;h2&gt;
+&lt;p&gt;往回数，这个挂在博客首页右下角的小聊天框，已经偷偷长了大半年：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;v1.0  (2025-02)  ─  原始形态：FastAPI 后端 + DeepSeek 直连，问一句答一句
+&lt;&#x2F;span&gt;&lt;span&gt;v2.0  (2026-02)  ─  零后端：直连 CopilotX，SSE 流式，memory 系统动态生成人设
+&lt;&#x2F;span&gt;&lt;span&gt;v2.1  (2026-02)  ─  视觉：支持粘贴&#x2F;上传图片，多图并发
+&lt;&#x2F;span&gt;&lt;span&gt;v2.2  (2026-02)  ─  记忆：D1 持久化 + 回头客识别（&amp;quot;你之前问过 X...&amp;quot;）
+&lt;&#x2F;span&gt;&lt;span&gt;v2.5  (2026-02)  ─  欢迎屏 + IndexedDB 客户端持久化
+&lt;&#x2F;span&gt;&lt;span&gt;v2.7  (2026-04)  ─  Agent + Tools：能调 search_blog &#x2F; get_article &#x2F; get_recent_posts
+&lt;&#x2F;span&gt;&lt;span&gt;v3.0  (2026-05)  ─  Agentic Loop 流式可视化（本篇）  ✨
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;中间有几篇博文记下了关键节点：&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;v2.0 把后端拆掉&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-d1-persistence&quot;&gt;D1 给它装上记忆&lt;&#x2F;a&gt;、&lt;a href=&quot;&#x2F;polly-chat-v25-welcome-indexeddb&quot;&gt;v2.5 加欢迎屏和 IndexedDB&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;到 v2.7 之后，技术栈看起来已经挺现代了：worker + agent loop + 三个可调用的博客 tool。但有个隐藏的问题，&lt;strong&gt;只有访客真正问到需要查博文的问题时才会暴露&lt;&#x2F;strong&gt;——比如&amp;quot;聊聊你最新的博文&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;v2-7-de-si-jie-tool-lu-jing-hui-rang-ren-gan-deng&quot;&gt;v2.7 的死结：tool 路径会让人干等&lt;&#x2F;h2&gt;
+&lt;p&gt;复现路径很简单。访客问一句&amp;quot;聊聊你最新的博文《镜子里的我》&amp;quot;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;浏览器 ──► Worker ──► CopilotX (第1轮)：模型决定调 search_blog
+&lt;&#x2F;span&gt;&lt;span&gt;                  ◄── 完整响应（必须等完）
+&lt;&#x2F;span&gt;&lt;span&gt;            ├─ 执行 search_blog（命中 L1 缓存也要 ~100ms）
+&lt;&#x2F;span&gt;&lt;span&gt;            ├─► CopilotX (第2轮)：可能再调 get_article
+&lt;&#x2F;span&gt;&lt;span&gt;            ◄── 完整响应（又等一次）
+&lt;&#x2F;span&gt;&lt;span&gt;            ├─ 执行 get_article
+&lt;&#x2F;span&gt;&lt;span&gt;            ├─► CopilotX (第3轮)：最终 text 答复
+&lt;&#x2F;span&gt;&lt;span&gt;            ◄── 这才开始 stream 给浏览器
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;实测三组 curl：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;测试&lt;&#x2F;th&gt;&lt;th&gt;触发 tool？&lt;&#x2F;th&gt;&lt;th&gt;TTFB&lt;&#x2F;th&gt;&lt;th&gt;Total&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&amp;quot;你好&amp;quot;（无 tool）&lt;&#x2F;td&gt;&lt;td&gt;❌&lt;&#x2F;td&gt;&lt;td&gt;4s&lt;&#x2F;td&gt;&lt;td&gt;5s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第一次问博文（冷）&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;12.5s&lt;&#x2F;td&gt;&lt;td&gt;25s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;第二次问同一篇（热）&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;19s&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;33s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;第二次比第一次还慢——根本不是缓存冷启动的问题，是结构性的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;handleProxyWithTools&lt;&#x2F;code&gt; 在跑 tool loop 时，每一轮都 &lt;code&gt;await&lt;&#x2F;code&gt; 拿完整的上一轮响应再发下一轮，&lt;strong&gt;全部跑完才返回 &lt;code&gt;Response&lt;&#x2F;code&gt; 给浏览器&lt;&#x2F;strong&gt;。这意味着 TTFB 等于&amp;quot;所有 LLM 轮次 + 所有 tool 执行时间&amp;quot;的累加。访客在前 12 秒看不到任何东西，浏览器自带的 15 秒 fetch 超时一到，就触发了那张友好的 emoji 错误页：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🤔 Hmm, thinking too hard...&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;错误文案再可爱，本质还是一个体验事故。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;v3-0-de-po-ti-rang-yong-hu-kan-jian-er-bu-shi-rang-yong-hu-deng-dai&quot;&gt;v3.0 的破题：让用户看见，而不是让用户等待&lt;&#x2F;h2&gt;
+&lt;p&gt;修复方向其实是个二选一题：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方向&lt;&#x2F;th&gt;&lt;th&gt;利弊&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;A. 应急药&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;把前端 timeout 从 15s 拉到 45s。能止血，但访客仍然要面对一个 24 秒的空白屏。治标不治本&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;B. 根治&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;立即返回 &lt;code&gt;Response&lt;&#x2F;code&gt;，agent loop 移到后台跑，用 SSE 推自定义事件让前端实时展示思考过程&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;两个都做了——A 作为最低保障 5 分钟改完，B 作为真正的 v3.0 用了三个小时。本文讲 B。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;guan-jian-gai-zao-yi-worker-li-ji-fan-hui-agent-loop-pao-hou-tai&quot;&gt;关键改造一：Worker 立即返回，agent loop 跑后台&lt;&#x2F;h3&gt;
+&lt;p&gt;新版 &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Polly2014&#x2F;www.polly.com&#x2F;blob&#x2F;main&#x2F;scripts&#x2F;woker.js&quot;&gt;&lt;code&gt;handleProxyWithTools&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; 的核心结构变成了这样：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;handleProxyWithTools&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;backend&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;origin&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;readable&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;writable &lt;&#x2F;span&gt;&lt;span&gt;} = new TransformStream();
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;writer &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;writable&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;getWriter&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;agentLoop &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;round&lt;&#x2F;span&gt;&lt;span&gt;++) {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;writeStatus&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;thinking&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, { detail: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;在脑子里翻一翻...&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; });
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resp &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;fetchCopilotX&lt;&#x2F;span&gt;&lt;span&gt;(...);
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;firstBlockType&lt;&#x2F;span&gt;&lt;span&gt;, ... } = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;detectFirstBlock&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;resp&lt;&#x2F;span&gt;&lt;span&gt;.body);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;firstBlockType &lt;&#x2F;span&gt;&lt;span&gt;=== &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 透传 Anthropic 原生 SSE，访客逐字看到答案
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;pipeToWriter&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;reader&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;writer&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      }
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; tool_use → 推送 status 卡片，执行 tool，进入下一轮
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolCalls&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;writeStatus&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_call&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, { tool: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc&lt;&#x2F;span&gt;&lt;span&gt;.name, label: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;humanizeTool&lt;&#x2F;span&gt;&lt;span&gt;(...) });
+&lt;&#x2F;span&gt;&lt;span&gt;      }
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;results &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ebcb8b;&quot;&gt;Promise&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;all&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;toolCalls&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;executeTool&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tc&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env&lt;&#x2F;span&gt;&lt;span&gt;)));
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;r &lt;&#x2F;span&gt;&lt;span&gt;of &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;results&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;writeStatus&lt;&#x2F;span&gt;&lt;span&gt;(&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tool_result&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;count&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ok &lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  };
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 关键：用 ctx.waitUntil 包住后台任务，防止 Response 返回后 isolate 提前回收
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;waitUntil&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;agentLoop&lt;&#x2F;span&gt;&lt;span&gt;());
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;new Response(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;readable&lt;&#x2F;span&gt;&lt;span&gt;, {
+&lt;&#x2F;span&gt;&lt;span&gt;    status: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;200&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    headers: { &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Content-Type&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;text&#x2F;event-stream&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;, &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;X-Accel-Buffering&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;no&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; }
+&lt;&#x2F;span&gt;&lt;span&gt;  });
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;三个关键点：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;TransformStream&lt;&#x2F;code&gt; + 立即返回 &lt;code&gt;Response(readable)&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;：浏览器的 fetch 在 &amp;lt; 200ms 内就拿到 headers，不再触发任何超时&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;ctx.waitUntil&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;：Cloudflare Worker 的钩子，明确告诉 runtime&amp;quot;这个 Promise 完成之前别回收 isolate&amp;quot;。没有它，Response 一返回 worker 就可能被关掉，agent loop 中途死掉&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;X-Accel-Buffering: no&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; + &lt;strong&gt;每 4s 推送 SSE 注释行&lt;&#x2F;strong&gt;：双保险防止中间代理（CDN &#x2F; 反代）误判 idle 把链接掐了&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;guan-jian-gai-zao-er-sse-duo-shi-jian-lei-xing-rang-qian-duan-neng-ting-dong-si-kao-jie-duan&quot;&gt;关键改造二：SSE 多事件类型，让前端能&amp;quot;听懂&amp;quot;思考阶段&lt;&#x2F;h3&gt;
+&lt;p&gt;Anthropic 的原生 SSE 协议里只有 &lt;code&gt;message_start &#x2F; content_block_delta &#x2F; message_stop&lt;&#x2F;code&gt; 这些和&amp;quot;答案文本&amp;quot;相关的事件。要让前端展示&amp;quot;现在在思考 &#x2F; 正在调 search_blog &#x2F; 找到 3 条结果&amp;quot;这些状态，得给 SSE 加自定义 event 类型。&lt;&#x2F;p&gt;
+&lt;p&gt;借鉴了 SpatialQA agent 的设计——SSE 协议本来就允许 &lt;code&gt;event: xxx&lt;&#x2F;code&gt; 行标记事件类型，前端按类型分发：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;event: status
+&lt;&#x2F;span&gt;&lt;span&gt;data: {&amp;quot;phase&amp;quot;:&amp;quot;thinking&amp;quot;,&amp;quot;detail&amp;quot;:&amp;quot;在脑子里翻一翻...&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;event: status
+&lt;&#x2F;span&gt;&lt;span&gt;data: {&amp;quot;phase&amp;quot;:&amp;quot;tool_call&amp;quot;,&amp;quot;tool&amp;quot;:&amp;quot;search_blog&amp;quot;,&amp;quot;label&amp;quot;:&amp;quot;翻翻博客里有没有 \&amp;quot;镜子里的我\&amp;quot;&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;event: status
+&lt;&#x2F;span&gt;&lt;span&gt;data: {&amp;quot;phase&amp;quot;:&amp;quot;tool_result&amp;quot;,&amp;quot;tool&amp;quot;:&amp;quot;search_blog&amp;quot;,&amp;quot;count&amp;quot;:1,&amp;quot;ok&amp;quot;:true}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;event: message_start
+&lt;&#x2F;span&gt;&lt;span&gt;data: {&amp;quot;type&amp;quot;:&amp;quot;message_start&amp;quot;,&amp;quot;message&amp;quot;:{...}}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;event: content_block_delta
+&lt;&#x2F;span&gt;&lt;span&gt;data: {&amp;quot;type&amp;quot;:&amp;quot;content_block_delta&amp;quot;,&amp;quot;delta&amp;quot;:{&amp;quot;type&amp;quot;:&amp;quot;text_delta&amp;quot;,&amp;quot;text&amp;quot;:&amp;quot;这&amp;quot;}}
+&lt;&#x2F;span&gt;&lt;span&gt;... （这里开始答案逐字流出）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;前端拿到 &lt;code&gt;event: status&lt;&#x2F;code&gt; 就建一张 trace 卡片，拿到 &lt;code&gt;content_block_delta&lt;&#x2F;code&gt; 就往答案区追加文字——两条流共存，互不干扰。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;guan-jian-gai-zao-san-qia-pian-he-bing-pei-dui-er-bu-shi-shi-jian-shua-ping&quot;&gt;关键改造三：卡片合并 + 配对，而不是事件刷屏&lt;&#x2F;h3&gt;
+&lt;p&gt;第一版的 trace UI 把每个事件都建成独立的一行：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;正在思考...&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;🔍 搜索博客 &amp;quot;镜子里的我&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;✓ 完成&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;正在思考...&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;📖 阅读《xxx》&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;✓ 完成&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;正在整理回答...&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;视觉很乱。改成卡片合并模式之后：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;thinking&lt;&#x2F;code&gt; 事件不立即建卡片&lt;&#x2F;strong&gt;，而是作为下一个 &lt;code&gt;tool_call&lt;&#x2F;code&gt; 的 pending placeholder。连续多个 &lt;code&gt;thinking&lt;&#x2F;code&gt; 自动合并&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;tool_call&lt;&#x2F;code&gt; + &lt;code&gt;tool_result&lt;&#x2F;code&gt; 配对合并到同一张卡片&lt;&#x2F;strong&gt;：从&amp;quot;&lt;code&gt;⟳ 翻翻博客里有没有&amp;quot;镜子&amp;quot;&lt;&#x2F;code&gt;&amp;quot;原地变成&amp;quot;&lt;code&gt;✓ 翻翻博客里有没有&amp;quot;镜子&amp;quot; · 1 条结果&lt;&#x2F;code&gt;&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最后访客看到的是一栈整洁的 mini bubble：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  ⟳  翻翻博客里有没有 &amp;quot;镜子里的我&amp;quot;        │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  ⟳  详细看看《mirror-self-editing-self》 │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[这周还挺高产的，最近这周写了好几篇——...]   ← 答案紧接着流出
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;当前正在跑的卡片有呼吸边框&lt;&#x2F;strong&gt;——蓝色 &lt;code&gt;box-shadow&lt;&#x2F;code&gt; 1.6s 脉冲，告诉访客&amp;quot;这步还在跑&amp;quot;。完成后边框消失，spinner 变成 &lt;code&gt;✓&lt;&#x2F;code&gt;。流结束后整栈折叠成顶部一行小灰条：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;[ ✓ Polly 想了 19 秒    展开 ]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;点击展开能看到完整步骤。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;guan-jian-gai-zao-si-trace-chi-jiu-hua-bu-zhi-shi-shun-tai-te-xiao&quot;&gt;关键改造四：trace 持久化（不只是瞬态特效）&lt;&#x2F;h3&gt;
+&lt;p&gt;刷新页面之后，访客如果还想看一眼之前 Polly 是怎么想的，trace 不能就这么消失。这件事其实可做可不做——很多家的&amp;quot;思考链&amp;quot;也是看完即丢。但选择做的时候有两个理由：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;用户体验&lt;&#x2F;strong&gt;：那行折叠 pill 留在历史里比消失要好，回看的成本几乎为零&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;科研副产物&lt;&#x2F;strong&gt;：D1 里在攒一个&amp;quot;访客提问 → agent in-the-wild trace&amp;quot;的天然数据集，对 &lt;a href=&quot;&#x2F;contextweave-paper-submission-journey&quot;&gt;ContextWeave&lt;&#x2F;a&gt; 之外的 agent UX 研究有用&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;实施很轻：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;-- D1 messages 表加一列
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;ALTER TABLE &lt;&#x2F;span&gt;&lt;span&gt;messages ADD COLUMN trace &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;前端 &lt;code&gt;streamResponse&lt;&#x2F;code&gt; 里收集所有 &lt;code&gt;status&lt;&#x2F;code&gt; 事件 + 总耗时，一起塞到 &lt;code&gt;messages.push({role, content, trace: {events, elapsed_ms}})&lt;&#x2F;code&gt;，随 IndexedDB 自动持久化；同时通过 worker 的 &lt;code&gt;&#x2F;v1&#x2F;conversations&#x2F;log&lt;&#x2F;code&gt; 端点同步到 D1。&lt;&#x2F;p&gt;
+&lt;p&gt;刷新后 &lt;code&gt;restoreHistory&lt;&#x2F;code&gt; 检测到 &lt;code&gt;msg.trace.events.length &amp;gt; 0&lt;&#x2F;code&gt;，调用 &lt;code&gt;renderSavedTrace(bubble, trace)&lt;&#x2F;code&gt; 直接重建 finalized + collapsed 状态——跳过 spinner 和呼吸动画（不能假装&amp;quot;正在跑&amp;quot;）。后台 dashboard 也加了一个蓝色 mono 字体 pill 来呈现历史推理链：&lt;code&gt;✓ 3 steps · 19s&lt;&#x2F;code&gt;，点击展开看完整 tool 输入参数。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jue-ce-biao-tai-fang-ke-shi-tu-debug-shi-tu&quot;&gt;决策表态：访客视图 ≠ debug 视图&lt;&#x2F;h2&gt;
+&lt;p&gt;写完功能之后做了一轮&amp;quot;哪些不要做&amp;quot;的决策。看似简单，其实是这一版 UI 比 v2.7 高一个台阶的关键：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;不做&lt;&#x2F;th&gt;&lt;th&gt;理由&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;❌ 头像旁加名字 + 时间戳&lt;&#x2F;td&gt;&lt;td&gt;访客是来跟 Polly 聊天的，不是调试 multi-agent。加上反而破坏&amp;quot;和真人聊天&amp;quot;的感觉&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;❌ trace 卡片 hover 显示完整 tool input&#x2F;output&lt;&#x2F;td&gt;&lt;td&gt;访客不需要看 raw JSON，那是 debug 视图，留着只增加视觉干扰&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;❌ 气泡尾部三角小尾巴&lt;&#x2F;td&gt;&lt;td&gt;现代 chat（iMessage、Claude.ai、ChatGPT）都已放弃这种 2010s 设计语言。保留一个 4px 直角已经足够暗示&amp;quot;这是聊天气泡&amp;quot;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;❌ 用户头像&lt;&#x2F;td&gt;&lt;td&gt;用户气泡靠右对齐已经足够区分身份，那个灰色 fontawesome 小人头是冗余&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;❌ done 状态用绿色&lt;&#x2F;td&gt;&lt;td&gt;跟博客主调色板不搭。统一改成中性灰 + 主蓝 &lt;code&gt;rgb(61, 146, 201)&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;反过来——&lt;strong&gt;后台 dashboard &lt;code&gt;chat_observatory&lt;&#x2F;code&gt; 是 debug 视图&lt;&#x2F;strong&gt;，那里就&lt;strong&gt;留着&lt;&#x2F;strong&gt; raw input&#x2F;output、mono 字体、详细参数。同一个数据，两套渲染逻辑。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wen-an-kou-yu-hua-rang-polly-xiang-polly&quot;&gt;文案口语化：让 Polly 像 Polly&lt;&#x2F;h2&gt;
+&lt;p&gt;最后一项是文案——把工程师视角的标签改成第一人称口语：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;✖ 工程师视角&lt;&#x2F;th&gt;&lt;th&gt;✔ Polly 第一人称&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;🔍 搜索博客 &amp;quot;x&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;翻翻博客里有没有 &amp;quot;x&amp;quot;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;📖 阅读《x》&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;详细看看《x》&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;🗓 查看最近 30 天&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;看看最近 30 天写了啥&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;正在思考...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;在脑子里翻一翻...&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;让我想想...&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;Thought 19s · 4 steps&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;Polly 想了 19 秒&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;工程师习惯说&amp;quot;调用 search_blog tool&amp;quot;，访客感受到的是一个数字分身在翻自己的记忆。这是同一件事的两种叙述，但后者把&amp;quot;工具&amp;quot;翻译成了&amp;quot;行为&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhen-zheng-jie-jue-de-wen-ti-shi-gan-zhi&quot;&gt;真正解决的问题，是感知&lt;&#x2F;h2&gt;
+&lt;p&gt;实测对比：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;v2.7&lt;&#x2F;th&gt;&lt;th&gt;v3.0&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;TTFB（tool 路径）&lt;&#x2F;td&gt;&lt;td&gt;12.5s&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1.7s&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;后端总耗时（不变）&lt;&#x2F;td&gt;&lt;td&gt;~25s&lt;&#x2F;td&gt;&lt;td&gt;~23s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;前端误判 522 超时&lt;&#x2F;td&gt;&lt;td&gt;✅ 必发&lt;&#x2F;td&gt;&lt;td&gt;❌ 不再发生&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;用户看到的&lt;&#x2F;td&gt;&lt;td&gt;24s 干等 → 突然出文字&lt;&#x2F;td&gt;&lt;td&gt;立刻看到流动的思考链 → 答案逐字流出&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;后端总耗时几乎没变——LLM 跑 23 秒是物理上限，跑不掉。但&lt;strong&gt;感知耗时&lt;&#x2F;strong&gt;从 24 秒降到 ~2 秒。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是博客 chat 独有的教训。任何后端要跑 ≥ 5 秒的 agent loop，前端都面临同样的取舍：要么等到底再说话，要么把过程拆成结构化事件流出去。让用户看见，而不是让用户等待——这条原则适用于推荐引擎的&amp;quot;正在为你筛选...&amp;quot;、复杂搜索的&amp;quot;已扫描 1.2k 文档...&amp;quot;、长文档翻译的&amp;quot;正在处理第 3&#x2F;12 章...&amp;quot;。区别只是：你愿不愿意把&amp;quot;思考过程&amp;quot;也设计成产品的一部分。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;下一格是什么？v3.5 大概会让访客在 trace 卡片上点击 tool 名直接跳转到那篇博文——把 trace 从&amp;quot;只能看&amp;quot;升级成&amp;quot;也能用&amp;quot;。但那是另一篇博文的事了。&lt;&#x2F;p&gt;
+&lt;p&gt;刷新一下博客首页，问 Polly：&amp;quot;聊聊你最新的博文&amp;quot;。看着那行绿色的 &lt;code&gt;✓ Polly 想了 19 秒&lt;&#x2F;code&gt; 出现在历史里——这次，等待是看得见的。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🔍 CopilotX v2.3.3：一个空行引发的「血案」</title>
         <published>2026-02-20T00:00:00+00:00</published>
