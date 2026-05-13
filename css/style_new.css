@@ -1006,6 +1006,87 @@ table td {
     font-style: italic;
 }
 
+/* ===== Live Thinking Trace (Phase 4) ===== */
+.chat-trace {
+    margin: 0 0 8px 0;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-left: 2px solid rgba(74, 144, 217, 0.5);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.6;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    max-height: 400px;
+}
+
+.chat-trace.collapsed {
+    max-height: 26px;
+    padding: 4px 12px;
+    cursor: pointer;
+    opacity: 0.65;
+}
+
+.chat-trace.collapsed:hover {
+    opacity: 1;
+}
+
+.chat-trace.collapsed .chat-trace-step:not(:first-child) {
+    display: none;
+}
+
+.chat-trace.collapsed .chat-trace-step:first-child::after {
+    content: ' …';
+    color: #aaa;
+}
+
+.chat-trace-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+    animation: trace-fade-in 0.3s ease;
+}
+
+.chat-trace-bullet {
+    color: var(--accent-color, #4a90d9);
+    font-size: 0.6rem;
+    line-height: 1;
+    animation: trace-pulse 1.2s ease-in-out infinite;
+}
+
+.chat-trace-step.done .chat-trace-bullet {
+    color: #8bc34a;
+    animation: none;
+}
+
+.chat-trace-label {
+    flex: 1;
+    color: inherit;
+}
+
+@keyframes trace-fade-in {
+    from { opacity: 0; transform: translateY(-2px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes trace-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+.chat-answer {
+    /* 答案区域：保持原 chat-bubble 内容样式继承 */
+}
+
+@media (prefers-color-scheme: dark) {
+    .chat-trace {
+        background: rgba(255, 255, 255, 0.04);
+        color: #aaa;
+    }
+}
+
 .chat-avatar {
     width: 40px;
     height: 40px;

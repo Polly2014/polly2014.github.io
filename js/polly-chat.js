@@ -571,7 +571,8 @@ class PollyChat {
             stream: true
         };
         
-        // 连接超时：15 秒内拿不到响应就中断（大 payload + system prompt TTFB 可达 5s+）
+        // 首字节超时：worker 在 Phase 4 改造后会立即返回 headers + 推 thinking trace，
+        // TTFB < 1s。给 15s 已极宽松；超过仍不到响应说明真挂了。
         const controller = new AbortController();
         const connectTimeout = setTimeout(() => controller.abort(), 15000);
         
@@ -609,6 +610,43 @@ class PollyChat {
         const decoder = new TextDecoder();
         let fullText = '';
         let buffer = '';
+        let currentEvent = 'message';  // 当前 SSE event 类型（默认 message）
+        
+        // Phase 4: thinking trace 容器（首次推 status 时创建）
+        // bubble 结构：[chat-trace] [chat-answer]，互不影响
+        const ensureTraceEl = () => {
+            if (bubble._traceEl) return bubble._traceEl;
+            const el = document.createElement('div');
+            el.className = 'chat-trace';
+            // 插在最前（thinking dots 在它之上 / 答案在它之下）
+            bubble.insertBefore(el, bubble.firstChild);
+            bubble._traceEl = el;
+            return el;
+        };
+        const ensureAnswerEl = () => {
+            if (bubble._answerEl) return bubble._answerEl;
+            const el = document.createElement('div');
+            el.className = 'chat-answer';
+            bubble.appendChild(el);
+            bubble._answerEl = el;
+            return el;
+        };
+        const addTraceStep = (label) => {
+            const el = ensureTraceEl();
+            const step = document.createElement('div');
+            step.className = 'chat-trace-step';
+            const safe = String(label).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            step.innerHTML = `<span class="chat-trace-bullet">●</span><span class="chat-trace-label">${safe}</span>`;
+            el.appendChild(step);
+            this.scrollToBottom();
+            return step;
+        };
+        const markLastTraceDone = () => {
+            const el = bubble._traceEl;
+            if (!el) return;
+            const last = el.lastElementChild;
+            if (last) last.classList.add('done');
+        };
         
         while (true) {
             const { done, value } = await reader.read();
@@ -621,6 +659,18 @@ class PollyChat {
             buffer = lines.pop() || ''; // 保留不完整的行
             
             for (const line of lines) {
+                // SSE 注释（heartbeat）
+                if (line.startsWith(':')) continue;
+                
+                // 空行 = 一个事件结束 → 重置 event 类型
+                if (line === '') { currentEvent = 'message'; continue; }
+                
+                // event: xxx 标记当前事件类型
+                if (line.startsWith('event: ')) {
+                    currentEvent = line.slice(7).trim();
+                    continue;
+                }
+                
                 if (!line.startsWith('data: ')) continue;
                 
                 const data = line.slice(6);
@@ -629,29 +679,62 @@ class PollyChat {
                 try {
                     const event = JSON.parse(data);
                     
+                    // Phase 4: worker 推送的自定义事件
+                    if (currentEvent === 'status') {
+                        if (event.phase === 'thinking') {
+                            markLastTraceDone();
+                            addTraceStep(event.detail || '正在思考...');
+                        } else if (event.phase === 'tool_call') {
+                            markLastTraceDone();
+                            addTraceStep(event.label || `调用 ${event.tool}`);
+                        } else if (event.phase === 'tool_result') {
+                            markLastTraceDone();
+                            const cnt = event.count;
+                            const summary = event.ok
+                                ? (cnt > 1 ? `✓ 找到 ${cnt} 条结果` : '✓ 完成')
+                                : '✗ 没有找到';
+                            addTraceStep(summary);
+                            markLastTraceDone();
+                        }
+                        continue;
+                    }
+                    if (currentEvent === 'error') {
+                        const err = new Error(event.message || 'Stream error');
+                        err._httpStatus = 502;
+                        throw err;
+                    }
+                    
                     // Anthropic 格式
                     if (event.type === 'content_block_delta') {
                         const delta = event.delta?.text || '';
                         fullText += delta;
-                        // 首次收到文字时，淡出 thinking（动画并行，文字立即渲染）
+                        // 首次收到文字时，淡出 thinking dots + 折叠 trace
                         if (bubble._thinkingEl) {
                             bubble._thinkingEl.classList.add('fade-out');
                             const el = bubble._thinkingEl;
                             bubble._thinkingEl = null;
                             setTimeout(() => el.remove(), 300);
                         }
-                        bubble.innerHTML = this.renderMarkdown(fullText);
+                        if (bubble._traceEl && !bubble._traceEl.classList.contains('collapsed')) {
+                            markLastTraceDone();
+                            bubble._traceEl.classList.add('collapsed');
+                        }
+                        const ansEl = ensureAnswerEl();
+                        ansEl.innerHTML = this.renderMarkdown(fullText);
                         this.scrollToBottom();
                     }
                     
                     // OpenAI 格式 (fallback)
                     if (event.choices?.[0]?.delta?.content) {
                         fullText += event.choices[0].delta.content;
-                        bubble.innerHTML = this.renderMarkdown(fullText);
+                        const ansEl = ensureAnswerEl();
+                        ansEl.innerHTML = this.renderMarkdown(fullText);
                         this.scrollToBottom();
                     }
                 } catch (e) {
-                    // 跳过无法解析的行
+                    // 重新抛出 status=error 的真实错误，避免被吞
+                    if (e._httpStatus) throw e;
+                    // 其他 JSON parse 失败：跳过
                 }
             }
         }
