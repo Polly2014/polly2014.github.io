@@ -42,6 +42,13 @@
     .big-number { font-size: 2.6em; font-weight: 900; color: #f0883e; line-height: 1; }
     .reveal .slide-number { font-size: 14px; color: #8b949e; }
 
+    /* Mobile: stack columns, bump font sizes */
+    @media (max-width: 768px) {
+      .columns { flex-direction: column; gap: 16px; }
+      .reveal table { font-size: 0.8em; }
+      .reveal pre code { font-size: 0.85em; }
+    }
+
     .phase-badge {
       display: inline-block; padding: 3px 10px; border-radius: 12px;
       font-size: 0.7em; font-weight: 700; margin-right: 6px;
@@ -415,6 +422,27 @@ Agentic Orchestration Engine (FastAPI)
   </p>
 </section>
 
+<!-- 性能基线 -->
+<section>
+  <h2>Demo 性能基线（2026-05-09 实测）</h2>
+  <table style="font-size:0.65em; width:95%;">
+    <thead>
+      <tr><th>#</th><th>场景</th><th>工具</th><th>结果</th><th>耗时</th><th>瓶颈</th></tr>
+    </thead>
+    <tbody>
+      <tr class="fragment"><td>S1</td><td>200m+ 建筑</td><td><code>query_buildings</code></td><td>32 栋</td><td><span class="green">11.9s</span></td><td>LLM API</td></tr>
+      <tr class="fragment"><td>S2</td><td>保护区违规</td><td><code>overlay_compliance</code></td><td>违规清单</td><td><span class="green">7.7s</span></td><td>LLM API</td></tr>
+      <tr class="fragment"><td>S3</td><td>公交站缓冲区</td><td><code>spatial_buffer</code></td><td>50 地块</td><td><span class="warn">31.1s</span></td><td>空间计算</td></tr>
+      <tr class="fragment"><td>S4</td><td>区域排名</td><td><code>rank_areas</code></td><td>5 区域</td><td><span class="green">6.4s</span></td><td>LLM API</td></tr>
+      <tr class="fragment"><td>S5</td><td>多轮追问</td><td><code>text_to_sql</code></td><td>分组正确</td><td><span class="green">7.5s</span></td><td>LLM API</td></tr>
+    </tbody>
+  </table>
+  <blockquote class="fragment" style="font-size:0.72em; margin-top:0.6em;">
+    <span class="green">S1/S2/S4/S5</span> 瓶颈在 LLM API 延迟（~5-7s），本地大模型可优化 &nbsp;|&nbsp;
+    <span class="warn">S3</span> 瓶颈在空间计算（3338 站 × 41 万地块 ST_DWithin），Phase 1 可用 materialized view 预计算优化
+  </blockquote>
+</section>
+
 <!-- ============ CHAPTER 5: Agent 决策 ============ -->
 <section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #261a37 100%)">
   <h2 style="color:#7ee787;">Part 5</h2>
@@ -637,13 +665,14 @@ Agentic Orchestration Engine (FastAPI)
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
 <script>
+  var isMobile = window.innerWidth < 768;
   Reveal.initialize({
     hash: true,
     slideNumber: 'c/t',
     transition: 'slide',
-    width: 1280,
+    width: isMobile ? 960 : 1280,
     height: 720,
-    margin: 0.08,
+    margin: isMobile ? 0.04 : 0.08,
     plugins: [RevealHighlight, RevealMath.KaTeX, RevealNotes]
   });
 </script>

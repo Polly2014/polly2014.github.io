@@ -51,6 +51,13 @@
     /* slide 页码 */
     .reveal .slide-number { font-size: 14px; color: #8b949e; }
 
+    /* Mobile: stack columns, bump font sizes */
+    @media (max-width: 768px) {
+      .columns { flex-direction: column; gap: 16px; }
+      .reveal table { font-size: 0.85em; }
+      .reveal pre code { font-size: 0.85em; }
+    }
+
     /* lead slide */
     .lead h1 { font-size: 2.6em; margin-bottom: 0.3em; }
     .lead p { font-size: 0.9em; color: #8b949e; }
@@ -369,6 +376,7 @@ ollama run trade-bot "什么是 DPU 术语？"
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
 <script>
+  var isMobile = window.innerWidth < 768;
   Reveal.initialize({
     hash: true,
     slideNumber: 'c/t',
@@ -376,9 +384,9 @@ ollama run trade-bot "什么是 DPU 术语？"
     transitionSpeed: 'default',
     backgroundTransition: 'fade',
     center: true,
-    width: 1280,
+    width: isMobile ? 960 : 1280,
     height: 720,
-    margin: 0.08,
+    margin: isMobile ? 0.04 : 0.08,
     plugins: [
       RevealHighlight,
       RevealMath.KaTeX,
