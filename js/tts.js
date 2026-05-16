@@ -149,7 +149,6 @@
         '</div>' +
         '<span class="tts-p-time"></span>' +
         '<button class="tts-p-btn tts-speed" title="播放速度">1×</button>' +
-        '<span class="tts-p-title"></span>' +
         '<button class="tts-p-btn tts-close" title="停止">✕</button>' +
       '</div>';
     document.body.appendChild(playerEl);
@@ -158,15 +157,11 @@
     progressWrap = playerEl.querySelector('.tts-p-progress');
     progressBar = playerEl.querySelector('.tts-p-bar');
     timeDisplay = playerEl.querySelector('.tts-p-time');
-    titleDisplay = playerEl.querySelector('.tts-p-title');
     var closeBtn = playerEl.querySelector('.tts-close');
 
     var speedBtn = playerEl.querySelector('.tts-speed');
     var speeds = [1, 1.25, 1.5, 2];
     var speedIdx = 0;
-
-    var h1 = document.querySelector('.blog-post h1');
-    if (titleDisplay && h1) titleDisplay.textContent = h1.textContent;
 
     playBtn.addEventListener('click', toggle);
     closeBtn.addEventListener('click', stop);
