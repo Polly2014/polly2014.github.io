@@ -26,6 +26,7 @@
   function audioPause() { audio.pause(); state = 'paused'; updateUI(); }
   function audioStop() {
     audio.pause(); audio.currentTime = 0; state = 'idle'; updateUI();
+    clearHighlight(); lastHighlightIdx = -1;
     if (progressBar) progressBar.style.width = '0%';
     if (timeDisplay) timeDisplay.textContent = '';
   }
@@ -40,17 +41,82 @@
     return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
+  // ═══ 段落高亮（audio 模式共用） ═══
+  var contentParagraphs = null; // [{el, textLen, cumLen}]
+  var totalTextLen = 0;
+  var timingData = null; // WordBoundary JSON
+  var lastHighlightIdx = -1;
+
+  function buildParagraphMap() {
+    if (contentParagraphs) return;
+    var content = document.querySelector('.blog-post .content');
+    if (!content) return;
+    contentParagraphs = [];
+    var cum = 0;
+    content.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(function(el) {
+      if (el.closest('pre') || el.closest('.mermaid') || el.closest('code')) return;
+      var t = (el.innerText || el.textContent || '').trim();
+      if (t.length < 2) return;
+      cum += t.length;
+      contentParagraphs.push({ el: el, textLen: t.length, cumLen: cum });
+    });
+    totalTextLen = cum;
+  }
+
+  function highlightByCharOffset(charOffset) {
+    if (!contentParagraphs || !contentParagraphs.length) return;
+    var idx = 0;
+    for (var i = 0; i < contentParagraphs.length; i++) {
+      if (contentParagraphs[i].cumLen > charOffset) { idx = i; break; }
+      idx = i;
+    }
+    if (idx !== lastHighlightIdx) {
+      clearHighlight();
+      contentParagraphs[idx].el.classList.add('tts-reading');
+      currentHighlight = contentParagraphs[idx].el;
+      lastHighlightIdx = idx;
+      contentParagraphs[idx].el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function highlightByTime(currentTime) {
+    if (!timingData || !timingData.length) return;
+    // 二分找当前 word offset
+    var charOffset = 0;
+    for (var i = 0; i < timingData.length; i++) {
+      if (timingData[i].offset > currentTime) break;
+      charOffset += timingData[i].text.length;
+    }
+    highlightByCharOffset(charOffset);
+  }
+
   function initAudioMode(audioUrl) {
     mode = 'audio';
     audio = new Audio(audioUrl);
     audio.preload = 'metadata';
+    buildParagraphMap();
+
+    // 尝试加载 timing JSON
+    var timingUrl = audioUrl.replace(/\.mp3$/, '.json');
+    fetch(timingUrl).then(function(r) {
+      if (r.ok) return r.json();
+      return null;
+    }).then(function(data) {
+      timingData = data;
+    }).catch(function() {});
+
     audio.addEventListener('timeupdate', function () {
       if (!audio.duration) return;
       if (progressBar) progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
       if (timeDisplay) timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      // 精准高亮
+      if (state === 'playing') {
+        if (timingData) highlightByTime(audio.currentTime);
+        else if (totalTextLen > 0) highlightByCharOffset(Math.floor(audio.currentTime / audio.duration * totalTextLen));
+      }
     });
     audio.addEventListener('ended', function () {
-      state = 'idle'; updateUI();
+      state = 'idle'; updateUI(); clearHighlight(); lastHighlightIdx = -1;
       if (progressBar) progressBar.style.width = '100%';
     });
   }
