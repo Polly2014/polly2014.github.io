@@ -96,10 +96,15 @@
   // ═══ UI ═══
   function updateUI() {
     if (triggerBtn) {
-      triggerBtn.innerHTML = state === 'idle'
-        ? '<svg class="tts-icon" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen'
-        : '<svg class="tts-icon tts-icon-pulse" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Playing';
-      triggerBtn.title = state === 'idle' ? 'Read aloud' : 'Scroll to player';
+      var isCover = triggerBtn.classList.contains('tts-trigger-cover');
+      if (isCover) {
+        triggerBtn.innerHTML = state === 'playing' ? '⏸' : '▶';
+        triggerBtn.classList.toggle('tts-trigger-playing', state !== 'idle');
+      } else {
+        triggerBtn.innerHTML = state === 'idle'
+          ? '<svg class="tts-icon" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>朗读全文'
+          : '<svg class="tts-icon tts-icon-pulse" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>播放中';
+      }
     }
     if (playBtn) playBtn.textContent = state === 'playing' ? '⏸' : '▶';
     if (playerEl) {
@@ -136,17 +141,27 @@
       if (progressBar) progressBar.style.width = '100%';
     });
 
-    // Listen 按钮
+    // Listen 按钮 — 有封面图挂在封面图上，没有则独立行
+    var coverEl = document.querySelector('.cover-image');
     triggerBtn = document.createElement('button');
-    triggerBtn.className = 'tts-trigger';
-    triggerBtn.style.cssText = 'display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 16px 5px 12px;font-size:13px;border:1px solid #dee2e6;background:linear-gradient(135deg,#f8f9fa,#e9ecef);color:#555;cursor:pointer;font-weight:500';
-    triggerBtn.innerHTML = '<svg style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen';
-    triggerBtn.title = 'Read aloud';
+    triggerBtn.title = '朗读全文';
     triggerBtn.addEventListener('click', function () {
       if (state === 'idle') toggle();
       else if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
-    wrap.appendChild(triggerBtn);
+
+    if (coverEl) {
+      // 有封面图 → 圆形 ▶ 浮在右下角
+      triggerBtn.className = 'tts-trigger tts-trigger-cover';
+      triggerBtn.innerHTML = '▶';
+      coverEl.style.position = 'relative';
+      coverEl.appendChild(triggerBtn);
+    } else {
+      // 没封面图 → 独立行主色按钮
+      triggerBtn.className = 'tts-trigger tts-trigger-standalone';
+      triggerBtn.innerHTML = '<svg style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>朗读全文';
+      wrap.appendChild(triggerBtn);
+    }
 
     // 底部悬浮播放器
     playerEl = document.createElement('div');
