@@ -287,20 +287,21 @@
     meta.appendChild(container);
 
     // 探测 R2 上的 audio.mp3 是否存在
-    // URL 规则: /{slug}/ → https://audio.polly.wang/{slug}/audio.mp3
+    // 用 Audio 元素直接加载 metadata，避免 XHR 跨域 CORS 问题
     var slug = location.pathname.replace(/^\/|\/$/g, '');
     var audioUrl = 'https://audio.polly.wang/' + slug + '/audio.mp3';
-    var req = new XMLHttpRequest();
-    req.open('HEAD', audioUrl, true);
-    req.onload = function () {
-      if (req.status >= 200 && req.status < 300) {
-        initAudioMode(audioUrl);
-      } else {
-        fallbackToSpeech();
-      }
-    };
-    req.onerror = function () { fallbackToSpeech(); };
-    req.send();
+    var probe = new Audio();
+    probe.preload = 'metadata';
+    var probeTimeout = setTimeout(function () { fallbackToSpeech(); }, 5000);
+    probe.addEventListener('loadedmetadata', function () {
+      clearTimeout(probeTimeout);
+      initAudioMode(audioUrl);
+    });
+    probe.addEventListener('error', function () {
+      clearTimeout(probeTimeout);
+      fallbackToSpeech();
+    });
+    probe.src = audioUrl;
   }
 
   function fallbackToSpeech() {
