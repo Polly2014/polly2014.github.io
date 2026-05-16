@@ -112,9 +112,9 @@
   function updateUI() {
     if (triggerBtn) {
       triggerBtn.innerHTML = state === 'idle'
-        ? '<svg class="tts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>朗读'
-        : '<svg class="tts-icon tts-icon-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>播放中';
-      triggerBtn.title = state === 'idle' ? '朗读全文' : '点击跳转播放器';
+        ? '<svg class="tts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen'
+        : '<svg class="tts-icon tts-icon-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Playing';
+      triggerBtn.title = state === 'idle' ? 'Read aloud' : 'Scroll to player';
     }
     if (playBtn) {
       playBtn.textContent = state === 'playing' ? '⏸' : '▶';
@@ -133,8 +133,8 @@
     // 触发按钮
     triggerBtn = document.createElement('button');
     triggerBtn.className = 'tts-trigger';
-    triggerBtn.innerHTML = '<svg class="tts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>朗读';
-    triggerBtn.title = '朗读全文';
+    triggerBtn.innerHTML = '<svg class="tts-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen';
+    triggerBtn.title = 'Read aloud';
     triggerBtn.addEventListener('click', function () {
       if (state === 'idle') toggle();
       else if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
