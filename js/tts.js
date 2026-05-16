@@ -26,7 +26,7 @@
   function audioPause() { audio.pause(); state = 'paused'; updateUI(); }
   function audioStop() {
     audio.pause(); audio.currentTime = 0; state = 'idle'; updateUI();
-    clearHighlight(); lastHighlightIdx = -1;
+    clearHighlight(); removeTtsActive(); lastHighlightIdx = -1;
     if (progressBar) progressBar.style.width = '0%';
     if (timeDisplay) timeDisplay.textContent = '';
   }
@@ -65,6 +65,11 @@
 
   function highlightByCharOffset(charOffset) {
     if (!contentParagraphs || !contentParagraphs.length) return;
+    // 确保 content 有 tts-active class
+    var contentEl = document.querySelector('.blog-post .content');
+    if (contentEl && !contentEl.classList.contains('tts-active')) {
+      contentEl.classList.add('tts-active');
+    }
     var idx = 0;
     for (var i = 0; i < contentParagraphs.length; i++) {
       if (contentParagraphs[i].cumLen > charOffset) { idx = i; break; }
@@ -116,7 +121,7 @@
       }
     });
     audio.addEventListener('ended', function () {
-      state = 'idle'; updateUI(); clearHighlight(); lastHighlightIdx = -1;
+      state = 'idle'; updateUI(); clearHighlight(); removeTtsActive(); lastHighlightIdx = -1;
       if (progressBar) progressBar.style.width = '100%';
     });
   }
@@ -143,8 +148,9 @@
       r.push({el:el,text:t});
     }); return r;
   }
-  function highlight(el) { clearHighlight(); if(!el)return; el.classList.add('tts-reading'); currentHighlight=el; el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  function highlight(el) { clearHighlight(); if(!el)return; var c=document.querySelector('.blog-post .content'); if(c&&!c.classList.contains('tts-active'))c.classList.add('tts-active'); el.classList.add('tts-reading'); currentHighlight=el; el.scrollIntoView({behavior:'smooth',block:'center'}); }
   function clearHighlight() { if(currentHighlight){currentHighlight.classList.remove('tts-reading');currentHighlight=null;} }
+  function removeTtsActive() { var c = document.querySelector('.blog-post .content'); if(c) c.classList.remove('tts-active'); }
 
   function speakParagraph(idx) {
     if (idx >= paragraphs.length) { speechStop(); return; }
@@ -166,7 +172,7 @@
   function speechPlay() { paragraphs=collectParagraphs(); if(!paragraphs.length)return; synth.cancel(); state='playing'; updateUI(); startChromeWA(); speakParagraph(currentIdx); }
   function speechPause() { synth.pause(); state='paused'; updateUI(); stopChromeWA(); }
   function speechResume() { synth.resume(); state='playing'; updateUI(); startChromeWA(); }
-  function speechStop() { synth.cancel(); state='idle'; currentIdx=0; clearHighlight(); updateUI(); stopChromeWA(); if(progressBar)progressBar.style.width='0%'; }
+  function speechStop() { synth.cancel(); state='idle'; currentIdx=0; clearHighlight(); removeTtsActive(); updateUI(); stopChromeWA(); if(progressBar)progressBar.style.width='0%'; }
   function speechToggle() { if(state==='idle')speechPlay(); else if(state==='playing')speechPause(); else speechResume(); }
   function initSpeechMode() { mode='speech'; if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=pickVoices; pickVoices(); }
 
