@@ -1,52 +1,36 @@
 /**
- * Blog TTS — edge-tts 预生成音频 + Web Speech API fallback
+ * Blog TTS — 底部悬浮迷你播放器
  *
- * 优先级：
- *   1. 同目录下的 audio.mp3（由 scripts/generate-tts.py 生成）→ <audio> 播放
- *   2. 浏览器 Web Speech API → 逐段朗读（fallback）
+ * - post-meta 里放一个小 🔊 触发按钮
+ * - 播放时底部弹出磨砂玻璃播放器
+ * - 优先 R2 mp3，fallback Web Speech API
  */
 (function () {
   'use strict';
 
-  var state = 'idle';   // idle | playing | paused
-  var mode = null;       // 'audio' | 'speech'
-  var btn = null;
-  var stopBtnEl = null;
+  var state = 'idle';
+  var mode = null;
+  var triggerBtn = null;
+  var playerEl = null;
+  var playBtn = null;
   var progressBar = null;
+  var progressWrap = null;
   var timeDisplay = null;
+  var titleDisplay = null;
 
-  // ═══════════════════════════════════════════
-  //  Mode A: <audio> 播放预生成 mp3
-  // ═══════════════════════════════════════════
+  // ═══ Mode A: <audio> ═══
   var audio = null;
 
-  function audioPlay() {
-    audio.play();
-    state = 'playing';
-    updateButton();
-  }
-
-  function audioPause() {
-    audio.pause();
-    state = 'paused';
-    updateButton();
-  }
-
+  function audioPlay() { audio.play(); state = 'playing'; updateUI(); }
+  function audioPause() { audio.pause(); state = 'paused'; updateUI(); }
   function audioStop() {
-    audio.pause();
-    audio.currentTime = 0;
-    state = 'idle';
-    updateButton();
+    audio.pause(); audio.currentTime = 0; state = 'idle'; updateUI();
     if (progressBar) progressBar.style.width = '0%';
     if (timeDisplay) timeDisplay.textContent = '';
   }
-
   function audioToggle() {
-    switch (state) {
-      case 'idle':    audioPlay();  break;
-      case 'playing': audioPause(); break;
-      case 'paused':  audioPlay();  break;
-    }
+    if (state === 'idle' || state === 'paused') audioPlay();
+    else audioPause();
   }
 
   function formatTime(sec) {
@@ -59,270 +43,160 @@
     mode = 'audio';
     audio = new Audio(audioUrl);
     audio.preload = 'metadata';
-
     audio.addEventListener('timeupdate', function () {
       if (!audio.duration) return;
-      var pct = (audio.currentTime / audio.duration) * 100;
-      if (progressBar) progressBar.style.width = pct + '%';
-      if (timeDisplay) {
-        timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
-      }
+      if (progressBar) progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      if (timeDisplay) timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
     });
-
     audio.addEventListener('ended', function () {
-      state = 'idle';
-      updateButton();
+      state = 'idle'; updateUI();
       if (progressBar) progressBar.style.width = '100%';
     });
-
-    // 点击进度条跳转
-    var progressWrap = document.querySelector('.tts-progress-wrap');
-    if (progressWrap) {
-      progressWrap.style.cursor = 'pointer';
-      progressWrap.addEventListener('click', function (e) {
-        if (!audio.duration) return;
-        var rect = progressWrap.getBoundingClientRect();
-        var ratio = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = ratio * audio.duration;
-      });
-    }
   }
 
-  // ═══════════════════════════════════════════
-  //  Mode B: Web Speech API fallback
-  // ═══════════════════════════════════════════
+  // ═══ Mode B: Web Speech API ═══
   var synth = window.speechSynthesis;
-  var paragraphs = [];
-  var currentIdx = 0;
-  var currentHighlight = null;
-  var zhVoice = null;
-  var enVoice = null;
+  var paragraphs = [], currentIdx = 0, currentHighlight = null;
+  var zhVoice = null, enVoice = null;
 
   function pickVoices() {
-    var voices = synth.getVoices();
-    if (!voices.length) return;
-    var zh = voices.filter(function (v) { return /zh[-_]CN/i.test(v.lang); });
-    zhVoice = zh.find(function (v) { return /Tingting|Siri/i.test(v.name); }) || zh[0] || null;
-    var en = voices.filter(function (v) { return /en[-_]US/i.test(v.lang); });
-    enVoice = en.find(function (v) { return /Samantha|Daniel|Siri/i.test(v.name); }) || en[0] || null;
+    var v = synth.getVoices(); if (!v.length) return;
+    var zh = v.filter(function(x){return /zh[-_]CN/i.test(x.lang)});
+    zhVoice = zh.find(function(x){return /Tingting|Siri/i.test(x.name)}) || zh[0] || null;
+    var en = v.filter(function(x){return /en[-_]US/i.test(x.lang)});
+    enVoice = en.find(function(x){return /Samantha|Daniel|Siri/i.test(x.name)}) || en[0] || null;
   }
-
-  function isMostlyChinese(text) {
-    var cn = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-    return cn / (text.replace(/\s/g, '').length || 1) > 0.3;
-  }
+  function isCN(t) { return (t.match(/[\u4e00-\u9fff]/g)||[]).length / (t.replace(/\s/g,'').length||1) > 0.3; }
 
   function collectParagraphs() {
-    var content = document.querySelector('.blog-post .content');
-    if (!content) return [];
-    var nodes = content.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, blockquote');
-    var result = [];
-    nodes.forEach(function (el) {
-      if (el.closest('pre') || el.closest('.mermaid') || el.closest('code')) return;
-      var text = (el.innerText || el.textContent || '').trim();
-      if (text.length < 2) return;
-      result.push({ el: el, text: text });
-    });
-    return result;
+    var c = document.querySelector('.blog-post .content'); if (!c) return [];
+    var r = []; c.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(function(el){
+      if (el.closest('pre')||el.closest('.mermaid')||el.closest('code')) return;
+      var t = (el.innerText||el.textContent||'').trim(); if (t.length<2) return;
+      r.push({el:el,text:t});
+    }); return r;
   }
-
-  function highlight(el) {
-    clearHighlight();
-    if (!el) return;
-    el.classList.add('tts-reading');
-    currentHighlight = el;
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  function clearHighlight() {
-    if (currentHighlight) {
-      currentHighlight.classList.remove('tts-reading');
-      currentHighlight = null;
-    }
-  }
+  function highlight(el) { clearHighlight(); if(!el)return; el.classList.add('tts-reading'); currentHighlight=el; el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  function clearHighlight() { if(currentHighlight){currentHighlight.classList.remove('tts-reading');currentHighlight=null;} }
 
   function speakParagraph(idx) {
     if (idx >= paragraphs.length) { speechStop(); return; }
-    currentIdx = idx;
-    var p = paragraphs[idx];
-    var utter = new SpeechSynthesisUtterance(p.text);
-    if (isMostlyChinese(p.text)) {
-      if (zhVoice) utter.voice = zhVoice;
-      utter.lang = 'zh-CN'; utter.rate = 1.1;
-    } else {
-      if (enVoice) utter.voice = enVoice;
-      utter.lang = 'en-US'; utter.rate = 1.0;
-    }
+    currentIdx = idx; var p = paragraphs[idx];
+    var u = new SpeechSynthesisUtterance(p.text);
+    if (isCN(p.text)) { if(zhVoice)u.voice=zhVoice; u.lang='zh-CN'; u.rate=1.1; }
+    else { if(enVoice)u.voice=enVoice; u.lang='en-US'; u.rate=1.0; }
     highlight(p.el);
-    if (progressBar && paragraphs.length) {
-      progressBar.style.width = Math.round(((idx + 1) / paragraphs.length) * 100) + '%';
-    }
-    utter.onend = function () { if (state === 'playing') speakParagraph(idx + 1); };
-    utter.onerror = function () { if (state === 'playing') speakParagraph(idx + 1); };
-    synth.speak(utter);
+    if (progressBar&&paragraphs.length) progressBar.style.width = Math.round(((idx+1)/paragraphs.length)*100)+'%';
+    u.onend = function(){if(state==='playing')speakParagraph(idx+1);};
+    u.onerror = function(){if(state==='playing')speakParagraph(idx+1);};
+    synth.speak(u);
   }
 
-  // Chrome 15s workaround
   var chromeTimer = null;
-  function startChromeWA() {
-    if (chromeTimer) return;
-    if (!/Chrome/i.test(navigator.userAgent) || /Edg/i.test(navigator.userAgent)) return;
-    chromeTimer = setInterval(function () {
-      if (synth.speaking && !synth.paused) { synth.pause(); synth.resume(); }
-    }, 10000);
-  }
-  function stopChromeWA() { if (chromeTimer) { clearInterval(chromeTimer); chromeTimer = null; } }
+  function startChromeWA() { if(chromeTimer)return; if(!/Chrome/i.test(navigator.userAgent)||/Edg/i.test(navigator.userAgent))return; chromeTimer=setInterval(function(){if(synth.speaking&&!synth.paused){synth.pause();synth.resume();}},10000); }
+  function stopChromeWA() { if(chromeTimer){clearInterval(chromeTimer);chromeTimer=null;} }
 
-  function speechPlay() {
-    paragraphs = collectParagraphs();
-    if (!paragraphs.length) return;
-    synth.cancel();
-    state = 'playing';
-    updateButton();
-    startChromeWA();
-    speakParagraph(currentIdx);
-  }
+  function speechPlay() { paragraphs=collectParagraphs(); if(!paragraphs.length)return; synth.cancel(); state='playing'; updateUI(); startChromeWA(); speakParagraph(currentIdx); }
+  function speechPause() { synth.pause(); state='paused'; updateUI(); stopChromeWA(); }
+  function speechResume() { synth.resume(); state='playing'; updateUI(); startChromeWA(); }
+  function speechStop() { synth.cancel(); state='idle'; currentIdx=0; clearHighlight(); updateUI(); stopChromeWA(); if(progressBar)progressBar.style.width='0%'; }
+  function speechToggle() { if(state==='idle')speechPlay(); else if(state==='playing')speechPause(); else speechResume(); }
+  function initSpeechMode() { mode='speech'; if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=pickVoices; pickVoices(); }
 
-  function speechPause() {
-    synth.pause();
-    state = 'paused';
-    updateButton();
-    stopChromeWA();
-  }
+  // ═══ 统一接口 ═══
+  function toggle() { if(mode==='audio')audioToggle(); else speechToggle(); }
+  function stop() { if(mode==='audio')audioStop(); else speechStop(); }
 
-  function speechResume() {
-    synth.resume();
-    state = 'playing';
-    updateButton();
-    startChromeWA();
-  }
-
-  function speechStop() {
-    synth.cancel();
-    state = 'idle';
-    currentIdx = 0;
-    clearHighlight();
-    updateButton();
-    stopChromeWA();
-    if (progressBar) progressBar.style.width = '0%';
-  }
-
-  function speechToggle() {
-    switch (state) {
-      case 'idle':    speechPlay();   break;
-      case 'playing': speechPause();  break;
-      case 'paused':  speechResume(); break;
+  // ═══ UI 更新 ═══
+  function updateUI() {
+    if (triggerBtn) {
+      triggerBtn.innerHTML = state === 'idle' ? '🔊 朗读' : '🔊 播放中…';
+      triggerBtn.title = state === 'idle' ? '朗读全文' : '点击跳转播放器';
+    }
+    if (playBtn) {
+      playBtn.textContent = state === 'playing' ? '⏸' : '▶';
+    }
+    if (playerEl) {
+      if (state === 'idle') playerEl.classList.remove('tts-player-show');
+      else playerEl.classList.add('tts-player-show');
     }
   }
 
-  function initSpeechMode() {
-    mode = 'speech';
-    if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = pickVoices;
-    pickVoices();
-  }
-
-  // ═══════════════════════════════════════════
-  //  统一接口
-  // ═══════════════════════════════════════════
-  function toggle() {
-    if (mode === 'audio') audioToggle();
-    else speechToggle();
-  }
-
-  function stop() {
-    if (mode === 'audio') audioStop();
-    else speechStop();
-  }
-
-  function updateButton() {
-    if (!btn) return;
-    var labels = {
-      idle:    ['🔊 朗读', '朗读全文'],
-      playing: ['⏸ 暂停',  '暂停朗读'],
-      paused:  ['▶ 继续',  '继续朗读']
-    };
-    btn.innerHTML = labels[state][0];
-    btn.title = labels[state][1];
-    // 显示/隐藏停止按钮
-    if (stopBtnEl) stopBtnEl.style.display = (state === 'idle') ? 'none' : '';
-  }
-
-  // ═══════════════════════════════════════════
-  //  初始化
-  // ═══════════════════════════════════════════
-  function init() {
+  // ═══ 构建 UI ═══
+  function buildUI() {
     var meta = document.querySelector('.post-meta');
-    if (!meta) return;
+    if (!meta) return false;
 
-    // 构建 UI
-    var container = document.createElement('span');
-    container.className = 'tts-controls';
+    // 触发按钮
+    triggerBtn = document.createElement('button');
+    triggerBtn.className = 'tts-trigger';
+    triggerBtn.innerHTML = '🔊 朗读';
+    triggerBtn.title = '朗读全文';
+    triggerBtn.addEventListener('click', function () {
+      if (state === 'idle') toggle();
+    });
+    meta.appendChild(triggerBtn);
 
-    btn = document.createElement('button');
-    btn.className = 'tts-btn';
-    btn.innerHTML = '🔊 朗读';
-    btn.title = '朗读全文';
-    btn.addEventListener('click', toggle);
+    // 底部悬浮播放器
+    playerEl = document.createElement('div');
+    playerEl.className = 'tts-player';
+    playerEl.innerHTML =
+      '<div class="tts-player-inner">' +
+        '<button class="tts-p-btn tts-play" title="播放/暂停">▶</button>' +
+        '<div class="tts-p-progress">' +
+          '<div class="tts-p-bar"></div>' +
+        '</div>' +
+        '<span class="tts-p-time"></span>' +
+        '<span class="tts-p-title"></span>' +
+        '<button class="tts-p-btn tts-close" title="停止">✕</button>' +
+      '</div>';
+    document.body.appendChild(playerEl);
 
-    stopBtnEl = document.createElement('button');
-    stopBtnEl.className = 'tts-btn tts-stop';
-    stopBtnEl.innerHTML = '⏹';
-    stopBtnEl.title = '停止朗读';
-    stopBtnEl.style.display = 'none';
-    stopBtnEl.addEventListener('click', stop);
+    playBtn = playerEl.querySelector('.tts-play');
+    progressWrap = playerEl.querySelector('.tts-p-progress');
+    progressBar = playerEl.querySelector('.tts-p-bar');
+    timeDisplay = playerEl.querySelector('.tts-p-time');
+    titleDisplay = playerEl.querySelector('.tts-p-title');
+    var closeBtn = playerEl.querySelector('.tts-close');
 
-    var progressWrap = document.createElement('span');
-    progressWrap.className = 'tts-progress-wrap';
-    progressBar = document.createElement('span');
-    progressBar.className = 'tts-progress-bar';
-    progressWrap.appendChild(progressBar);
+    var h1 = document.querySelector('.blog-post h1');
+    if (titleDisplay && h1) titleDisplay.textContent = h1.textContent;
 
-    timeDisplay = document.createElement('span');
-    timeDisplay.className = 'tts-time';
+    playBtn.addEventListener('click', toggle);
+    closeBtn.addEventListener('click', stop);
+    progressWrap.addEventListener('click', function (e) {
+      if (mode !== 'audio' || !audio || !audio.duration) return;
+      var r = progressWrap.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+    });
 
-    container.appendChild(btn);
-    container.appendChild(stopBtnEl);
-    container.appendChild(progressWrap);
-    container.appendChild(timeDisplay);
-    meta.appendChild(container);
+    return true;
+  }
 
-    // 探测 R2 上的 audio.mp3 是否存在
-    // 用 Audio 元素直接加载 metadata，避免 XHR 跨域 CORS 问题
+  // ═══ 初始化 ═══
+  function init() {
+    if (!buildUI()) return;
     var slug = location.pathname.replace(/^\/|\/$/g, '');
     var audioUrl = 'https://audio.polly.wang/' + slug + '/audio.mp3';
     var probe = new Audio();
     probe.preload = 'metadata';
-    var probeTimeout = setTimeout(function () { fallbackToSpeech(); }, 5000);
-    probe.addEventListener('loadedmetadata', function () {
-      clearTimeout(probeTimeout);
-      initAudioMode(audioUrl);
-    });
-    probe.addEventListener('error', function () {
-      clearTimeout(probeTimeout);
-      fallbackToSpeech();
-    });
+    var t = setTimeout(function () { fallbackToSpeech(); }, 5000);
+    probe.addEventListener('loadedmetadata', function () { clearTimeout(t); initAudioMode(audioUrl); });
+    probe.addEventListener('error', function () { clearTimeout(t); fallbackToSpeech(); });
     probe.src = audioUrl;
   }
 
   function fallbackToSpeech() {
-    if (!('speechSynthesis' in window)) {
-      // 完全不支持 → 隐藏按钮
-      var c = document.querySelector('.tts-controls');
-      if (c) c.style.display = 'none';
-      return;
-    }
+    if (!('speechSynthesis' in window)) { if(triggerBtn)triggerBtn.style.display='none'; return; }
     initSpeechMode();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 
   window.addEventListener('beforeunload', function () {
-    if (audio) { audio.pause(); }
-    if (synth) { synth.cancel(); }
+    if (audio) audio.pause();
+    if (synth) synth.cancel();
     stopChromeWA();
   });
 })();
