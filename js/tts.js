@@ -184,8 +184,8 @@
   function updateUI() {
     if (triggerBtn) {
       triggerBtn.innerHTML = state === 'idle'
-        ? '<svg class="tts-icon" style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen'
-        : '<svg class="tts-icon tts-icon-pulse" style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Playing';
+        ? '<svg class="tts-icon" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen'
+        : '<svg class="tts-icon tts-icon-pulse" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Playing';
       triggerBtn.title = state === 'idle' ? 'Read aloud' : 'Scroll to player';
     }
     if (playBtn) {
@@ -199,20 +199,20 @@
 
   // ═══ 构建 UI ═══
   function buildUI() {
-    var meta = document.querySelector('.post-meta');
-    if (!meta) return false;
+    var wrap = document.getElementById('tts-trigger-wrap');
+    if (!wrap) return false;
 
-    // 触发按钮（关键样式内联，防止 FOUC）
+    // 触发按钮（独立行，居中，关键样式内联防止 FOUC）
     triggerBtn = document.createElement('button');
     triggerBtn.className = 'tts-trigger';
-    triggerBtn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 12px 3px 8px;font-size:12px;border:1px solid #dee2e6;background:linear-gradient(135deg,#f8f9fa,#e9ecef);color:#555;cursor:pointer';
-    triggerBtn.innerHTML = '<svg style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen';
+    triggerBtn.style.cssText = 'display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 16px 5px 12px;font-size:13px;border:1px solid #dee2e6;background:linear-gradient(135deg,#f8f9fa,#e9ecef);color:#555;cursor:pointer;font-weight:500';
+    triggerBtn.innerHTML = '<svg style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Listen';
     triggerBtn.title = 'Read aloud';
     triggerBtn.addEventListener('click', function () {
       if (state === 'idle') toggle();
       else if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
-    meta.appendChild(triggerBtn);
+    wrap.appendChild(triggerBtn);
 
     // 底部悬浮播放器
     playerEl = document.createElement('div');
