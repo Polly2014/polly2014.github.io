@@ -5,8 +5,54 @@
     <link href="https://polly.wang/tags/tts/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-01-30T00:00:00+00:00</updated>
+    <updated>2026-05-16T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/tts/atom.xml</id>
+    <entry xml:lang="en">
+        <title>audio.polly.wang</title>
+        <published>2026-05-16T00:00:00+00:00</published>
+        <updated>2026-05-16T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/blog-read-aloud-button/" type="text/html"/>
+        <id>https://polly.wang/blog-read-aloud-button/</id>
+        
+        <content type="html">&lt;p&gt;写了三年博客，两百六十篇文章，全是哑巴。&lt;&#x2F;p&gt;
+&lt;p&gt;文字躺在屏幕上，等人来读。没人来的时候，它们就安安静静地躺着。直到有一天我想：能不能让它们自己开口？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gai-yong-shi-yao-sheng-yin&quot;&gt;该用什么声音&lt;&#x2F;h2&gt;
+&lt;p&gt;浏览器有原生的 &lt;code&gt;speechSynthesis&lt;&#x2F;code&gt; API，十几行 JavaScript 就能让机器念文章。试了一下——冰冷、卡顿，中英混排时像两种语言在打架。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是加一个按钮的问题，是该用什么声音的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;摆出三条路：浏览器原生 TTS（免费但难听）、edge-tts 微软神经语音（免费且好听）、OpenAI&#x2F;ElevenLabs（好听但要钱）。本来想先用浏览器 TTS 上线验证需求，再升级。但看了一眼 edge-tts——免费、不需要 API key、质量远超原生——没什么好纠结的，直接用最好的那个。&lt;&#x2F;p&gt;
+&lt;p&gt;所谓渐进，有时候只是不敢相信最优解就在眼前。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-xiao&quot;&gt;晓晓&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;edge-tts --voice zh-CN-XiaoxiaoNeural&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;晓晓是微软的中文神经语音。说话带一点温柔的播音腔，中英混读时不会在两种语言之间硬切。&lt;&#x2F;p&gt;
+&lt;p&gt;写了一个脚本，从 Markdown 博文里提取纯文本——去掉代码块、图片、frontmatter、shortcode——喂给 edge-tts。第一篇试验品是《镜子里的我，与编辑里的我》，1937 个字，生成了一个 1.9MB 的音频文件。&lt;&#x2F;p&gt;
+&lt;p&gt;点下播放。&lt;&#x2F;p&gt;
+&lt;p&gt;晓晓的声音从笔记本扬声器里传出来，念着我写的句子。我承认有一瞬间的恍惚——自己的文字，被一个不存在的人用温柔的声音读出来，感觉比默读时更……正式。像是这些字突然有了重量。&lt;&#x2F;p&gt;
+&lt;p&gt;写作的时候你是作者，默读的时候你是读者，但有人把它念出来的时候——你变成了听众。听自己的文字，感觉比读它们更赤裸。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sheng-yin-fang-na-li&quot;&gt;声音放哪里&lt;&#x2F;h2&gt;
+&lt;p&gt;260 篇博文，按平均 2MB 算，~500MB 音频。放 Git 仓库会让 clone 慢到怀疑人生。Git LFS 免费额度只有 1GB 带宽&#x2F;月。&lt;&#x2F;p&gt;
+&lt;p&gt;答案是 Cloudflare R2：10GB 免费存储（只用 500MB），零出口流量费，博客本来就托管在 Cloudflare Pages 上。绑了个子域名 &lt;code&gt;audio.polly.wang&lt;&#x2F;code&gt;，上传测试文件，&lt;code&gt;200 OK&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jia-gou&quot;&gt;架构&lt;&#x2F;h2&gt;
+&lt;p&gt;最终长这样：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;博文 Markdown → generate-tts.py (edge-tts) → audio.mp3
+&lt;&#x2F;span&gt;&lt;span&gt;                       ↓ --upload
+&lt;&#x2F;span&gt;&lt;span&gt;           wrangler r2 put → Cloudflare R2
+&lt;&#x2F;span&gt;&lt;span&gt;                       ↓
+&lt;&#x2F;span&gt;&lt;span&gt;       https:&#x2F;&#x2F;audio.polly.wang&#x2F;{slug}&#x2F;audio.mp3
+&lt;&#x2F;span&gt;&lt;span&gt;                       ↓
+&lt;&#x2F;span&gt;&lt;span&gt;       tts.js 探测 → 有 mp3 就 &amp;lt;audio&amp;gt; 播放
+&lt;&#x2F;span&gt;&lt;span&gt;                   → 没有就 fallback Web Speech API
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;前端做了优雅降级：打开博文时，先 HEAD 请求检查 R2 上有没有对应的 mp3。有就用 &lt;code&gt;&amp;lt;audio&amp;gt;&lt;&#x2F;code&gt; 播放器——进度条、可跳转、显示时间；没有就退回浏览器原生 TTS，逐段朗读，当前段落高亮。&lt;&#x2F;p&gt;
+&lt;p&gt;总成本：&lt;strong&gt;$0&lt;&#x2F;strong&gt;。edge-tts 免费，R2 免费额度绰绰有余。&lt;&#x2F;p&gt;
+&lt;p&gt;从想法到能听，一个下午。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;你现在点文章顶部那个 🔊 按钮，晓晓会替我把这篇也读给你听。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🎤 从踩坑到恍然大悟：我做了一个没必要的 VS Code 语音插件</title>
         <published>2026-01-30T00:00:00+00:00</published>
