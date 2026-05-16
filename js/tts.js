@@ -159,18 +159,7 @@
       // 有封面图 → 圆形喇叭图标浮在右下角
       triggerBtn.className = 'tts-trigger tts-trigger-cover';
       triggerBtn.innerHTML = svgIcon;
-      // 用一个 wrapper 确保 position: relative 正确
-      var imgEl = coverEl.querySelector('img');
-      if (imgEl) {
-        var posWrap = document.createElement('div');
-        posWrap.style.cssText = 'position:relative;display:inline-block';
-        imgEl.parentNode.insertBefore(posWrap, imgEl);
-        posWrap.appendChild(imgEl);
-        posWrap.appendChild(triggerBtn);
-      } else {
-        coverEl.style.position = 'relative';
-        coverEl.appendChild(triggerBtn);
-      }
+      coverEl.appendChild(triggerBtn);
     } else {
       // 没封面图 → 独立行主色按钮
       triggerBtn.className = 'tts-trigger tts-trigger-standalone';
