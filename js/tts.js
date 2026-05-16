@@ -10,6 +10,7 @@
 
   var state = 'idle';
   var mode = null;
+  var playbackRate = 1;
   var triggerBtn = null;
   var playerEl = null;
   var playBtn = null;
@@ -83,8 +84,8 @@
     if (idx >= paragraphs.length) { speechStop(); return; }
     currentIdx = idx; var p = paragraphs[idx];
     var u = new SpeechSynthesisUtterance(p.text);
-    if (isCN(p.text)) { if(zhVoice)u.voice=zhVoice; u.lang='zh-CN'; u.rate=1.1; }
-    else { if(enVoice)u.voice=enVoice; u.lang='en-US'; u.rate=1.0; }
+    if (isCN(p.text)) { if(zhVoice)u.voice=zhVoice; u.lang='zh-CN'; u.rate=1.1 * playbackRate; }
+    else { if(enVoice)u.voice=enVoice; u.lang='en-US'; u.rate=1.0 * playbackRate; }
     highlight(p.el);
     if (progressBar&&paragraphs.length) progressBar.style.width = Math.round(((idx+1)/paragraphs.length)*100)+'%';
     u.onend = function(){if(state==='playing')speakParagraph(idx+1);};
@@ -167,9 +168,9 @@
     closeBtn.addEventListener('click', stop);
     speedBtn.addEventListener('click', function () {
       speedIdx = (speedIdx + 1) % speeds.length;
-      var rate = speeds[speedIdx];
-      speedBtn.textContent = rate + '×';
-      if (mode === 'audio' && audio) audio.playbackRate = rate;
+      playbackRate = speeds[speedIdx];
+      speedBtn.textContent = playbackRate + '×';
+      if (mode === 'audio' && audio) audio.playbackRate = playbackRate;
     });
     progressWrap.addEventListener('click', function (e) {
       if (mode !== 'audio' || !audio || !audio.duration) return;
