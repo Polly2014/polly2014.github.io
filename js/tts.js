@@ -1,58 +1,32 @@
 /**
- * Blog TTS — 底部悬浮迷你播放器
- *
- * - post-meta 里放一个小 🔊 触发按钮
- * - 播放时底部弹出磨砂玻璃播放器
- * - 优先 R2 mp3，fallback Web Speech API
+ * Blog TTS — edge-tts 预生成音频 + 底部悬浮播放器 + Spotify 式段落高亮
+ * 有 R2 mp3 → 显示 Listen 按钮；没有 → 不显示
  */
 (function () {
   'use strict';
 
   var state = 'idle';
-  var mode = null;
   var playbackRate = 1;
+  var audio = null;
   var triggerBtn = null;
   var playerEl = null;
   var playBtn = null;
   var progressBar = null;
   var progressWrap = null;
   var timeDisplay = null;
-  var titleDisplay = null;
 
-  // ═══ Mode A: <audio> ═══
-  var audio = null;
-
-  function audioPlay() { audio.play(); state = 'playing'; updateUI(); }
-  function audioPause() { audio.pause(); state = 'paused'; updateUI(); }
-  function audioStop() {
-    audio.pause(); audio.currentTime = 0; state = 'idle'; updateUI();
-    clearHighlight(); removeTtsActive(); lastHighlightIdx = -1;
-    if (progressBar) progressBar.style.width = '0%';
-    if (timeDisplay) timeDisplay.textContent = '';
-  }
-  function audioToggle() {
-    if (state === 'idle' || state === 'paused') audioPlay();
-    else audioPause();
-  }
-
-  function formatTime(sec) {
-    var m = Math.floor(sec / 60);
-    var s = Math.floor(sec % 60);
-    return m + ':' + (s < 10 ? '0' : '') + s;
-  }
-
-  // ═══ 段落高亮（audio 模式共用） ═══
-  var contentParagraphs = null; // [{el, textLen, cumLen}]
+  // ═══ 段落高亮 ═══
+  var contentParagraphs = null;
   var totalTextLen = 0;
-  var timingData = null; // WordBoundary JSON
+  var timingData = null;
   var lastHighlightIdx = -1;
+  var currentHighlight = null;
 
   function buildParagraphMap() {
     if (contentParagraphs) return;
     var content = document.querySelector('.blog-post .content');
     if (!content) return;
-    contentParagraphs = [];
-    var cum = 0;
+    contentParagraphs = []; var cum = 0;
     content.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(function(el) {
       if (el.closest('pre') || el.closest('.mermaid') || el.closest('code')) return;
       var t = (el.innerText || el.textContent || '').trim();
@@ -65,11 +39,8 @@
 
   function highlightByCharOffset(charOffset) {
     if (!contentParagraphs || !contentParagraphs.length) return;
-    // 确保 content 有 tts-active class
     var contentEl = document.querySelector('.blog-post .content');
-    if (contentEl && !contentEl.classList.contains('tts-active')) {
-      contentEl.classList.add('tts-active');
-    }
+    if (contentEl && !contentEl.classList.contains('tts-active')) contentEl.classList.add('tts-active');
     var idx = 0;
     for (var i = 0; i < contentParagraphs.length; i++) {
       if (contentParagraphs[i].cumLen > charOffset) { idx = i; break; }
@@ -84,103 +55,45 @@
     }
   }
 
-  function highlightByTime(currentTime) {
+  function highlightByTime(t) {
     if (!timingData || !timingData.length) return;
-    // 二分找当前 word offset
     var charOffset = 0;
     for (var i = 0; i < timingData.length; i++) {
-      if (timingData[i].offset > currentTime) break;
+      if (timingData[i].offset > t) break;
       charOffset += timingData[i].text.length;
     }
     highlightByCharOffset(charOffset);
   }
 
-  function initAudioMode(audioUrl) {
-    mode = 'audio';
-    audio = new Audio(audioUrl);
-    audio.preload = 'metadata';
-    buildParagraphMap();
-
-    // 尝试加载 timing JSON
-    var timingUrl = audioUrl.replace(/\.mp3$/, '.json');
-    fetch(timingUrl).then(function(r) {
-      if (r.ok) return r.json();
-      return null;
-    }).then(function(data) {
-      timingData = data;
-    }).catch(function() {});
-
-    audio.addEventListener('timeupdate', function () {
-      if (!audio.duration) return;
-      if (progressBar) progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
-      if (timeDisplay) timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
-      // 精准高亮
-      if (state === 'playing') {
-        if (timingData) highlightByTime(audio.currentTime);
-        else if (totalTextLen > 0) highlightByCharOffset(Math.floor(audio.currentTime / audio.duration * totalTextLen));
-      }
-    });
-    audio.addEventListener('ended', function () {
-      state = 'idle'; updateUI(); clearHighlight(); removeTtsActive(); lastHighlightIdx = -1;
-      if (progressBar) progressBar.style.width = '100%';
-    });
+  function clearHighlight() {
+    if (currentHighlight) { currentHighlight.classList.remove('tts-reading'); currentHighlight = null; }
   }
 
-  // ═══ Mode B: Web Speech API ═══
-  var synth = window.speechSynthesis;
-  var paragraphs = [], currentIdx = 0, currentHighlight = null;
-  var zhVoice = null, enVoice = null;
-
-  function pickVoices() {
-    var v = synth.getVoices(); if (!v.length) return;
-    var zh = v.filter(function(x){return /zh[-_]CN/i.test(x.lang)});
-    zhVoice = zh.find(function(x){return /Tingting|Siri/i.test(x.name)}) || zh[0] || null;
-    var en = v.filter(function(x){return /en[-_]US/i.test(x.lang)});
-    enVoice = en.find(function(x){return /Samantha|Daniel|Siri/i.test(x.name)}) || en[0] || null;
-  }
-  function isCN(t) { return (t.match(/[\u4e00-\u9fff]/g)||[]).length / (t.replace(/\s/g,'').length||1) > 0.3; }
-
-  function collectParagraphs() {
-    var c = document.querySelector('.blog-post .content'); if (!c) return [];
-    var r = []; c.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(function(el){
-      if (el.closest('pre')||el.closest('.mermaid')||el.closest('code')) return;
-      var t = (el.innerText||el.textContent||'').trim(); if (t.length<2) return;
-      r.push({el:el,text:t});
-    }); return r;
-  }
-  function highlight(el) { clearHighlight(); if(!el)return; var c=document.querySelector('.blog-post .content'); if(c&&!c.classList.contains('tts-active'))c.classList.add('tts-active'); el.classList.add('tts-reading'); currentHighlight=el; el.scrollIntoView({behavior:'smooth',block:'center'}); }
-  function clearHighlight() { if(currentHighlight){currentHighlight.classList.remove('tts-reading');currentHighlight=null;} }
-  function removeTtsActive() { var c = document.querySelector('.blog-post .content'); if(c) c.classList.remove('tts-active'); }
-
-  function speakParagraph(idx) {
-    if (idx >= paragraphs.length) { speechStop(); return; }
-    currentIdx = idx; var p = paragraphs[idx];
-    var u = new SpeechSynthesisUtterance(p.text);
-    if (isCN(p.text)) { if(zhVoice)u.voice=zhVoice; u.lang='zh-CN'; u.rate=1.1 * playbackRate; }
-    else { if(enVoice)u.voice=enVoice; u.lang='en-US'; u.rate=1.0 * playbackRate; }
-    highlight(p.el);
-    if (progressBar&&paragraphs.length) progressBar.style.width = Math.round(((idx+1)/paragraphs.length)*100)+'%';
-    u.onend = function(){if(state==='playing')speakParagraph(idx+1);};
-    u.onerror = function(){if(state==='playing')speakParagraph(idx+1);};
-    synth.speak(u);
+  function clearAll() {
+    clearHighlight(); lastHighlightIdx = -1;
+    var c = document.querySelector('.blog-post .content');
+    if (c) c.classList.remove('tts-active');
   }
 
-  var chromeTimer = null;
-  function startChromeWA() { if(chromeTimer)return; if(!/Chrome/i.test(navigator.userAgent)||/Edg/i.test(navigator.userAgent))return; chromeTimer=setInterval(function(){if(synth.speaking&&!synth.paused){synth.pause();synth.resume();}},10000); }
-  function stopChromeWA() { if(chromeTimer){clearInterval(chromeTimer);chromeTimer=null;} }
+  // ═══ 播放控制 ═══
+  function play() { audio.play(); state = 'playing'; updateUI(); }
+  function pause() { audio.pause(); state = 'paused'; updateUI(); }
+  function stop() {
+    audio.pause(); audio.currentTime = 0; state = 'idle'; updateUI(); clearAll();
+    if (progressBar) progressBar.style.width = '0%';
+    if (timeDisplay) timeDisplay.textContent = '';
+  }
+  function toggle() {
+    if (state === 'idle' || state === 'paused') play();
+    else pause();
+  }
 
-  function speechPlay() { paragraphs=collectParagraphs(); if(!paragraphs.length)return; synth.cancel(); state='playing'; updateUI(); startChromeWA(); speakParagraph(currentIdx); }
-  function speechPause() { synth.pause(); state='paused'; updateUI(); stopChromeWA(); }
-  function speechResume() { synth.resume(); state='playing'; updateUI(); startChromeWA(); }
-  function speechStop() { synth.cancel(); state='idle'; currentIdx=0; clearHighlight(); removeTtsActive(); updateUI(); stopChromeWA(); if(progressBar)progressBar.style.width='0%'; }
-  function speechToggle() { if(state==='idle')speechPlay(); else if(state==='playing')speechPause(); else speechResume(); }
-  function initSpeechMode() { mode='speech'; if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=pickVoices; pickVoices(); }
+  function formatTime(sec) {
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
 
-  // ═══ 统一接口 ═══
-  function toggle() { if(mode==='audio')audioToggle(); else speechToggle(); }
-  function stop() { if(mode==='audio')audioStop(); else speechStop(); }
-
-  // ═══ UI 更新 ═══
+  // ═══ UI ═══
   function updateUI() {
     if (triggerBtn) {
       triggerBtn.innerHTML = state === 'idle'
@@ -188,21 +101,42 @@
         : '<svg class="tts-icon tts-icon-pulse" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>Playing';
       triggerBtn.title = state === 'idle' ? 'Read aloud' : 'Scroll to player';
     }
-    if (playBtn) {
-      playBtn.textContent = state === 'playing' ? '⏸' : '▶';
-    }
+    if (playBtn) playBtn.textContent = state === 'playing' ? '⏸' : '▶';
     if (playerEl) {
       if (state === 'idle') playerEl.classList.remove('tts-player-show');
       else playerEl.classList.add('tts-player-show');
     }
   }
 
-  // ═══ 构建 UI ═══
-  function buildUI() {
+  function buildUI(audioUrl) {
     var wrap = document.getElementById('tts-trigger-wrap');
-    if (!wrap) return false;
+    if (!wrap) return;
 
-    // 触发按钮（独立行，居中，关键样式内联防止 FOUC）
+    // 初始化 audio
+    audio = new Audio(audioUrl);
+    audio.preload = 'metadata';
+    buildParagraphMap();
+
+    // 加载 timing JSON
+    fetch(audioUrl.replace(/\.mp3$/, '.json')).then(function(r) {
+      return r.ok ? r.json() : null;
+    }).then(function(d) { timingData = d; }).catch(function() {});
+
+    audio.addEventListener('timeupdate', function () {
+      if (!audio.duration) return;
+      if (progressBar) progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      if (timeDisplay) timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      if (state === 'playing') {
+        if (timingData) highlightByTime(audio.currentTime);
+        else if (totalTextLen > 0) highlightByCharOffset(Math.floor(audio.currentTime / audio.duration * totalTextLen));
+      }
+    });
+    audio.addEventListener('ended', function () {
+      state = 'idle'; updateUI(); clearAll();
+      if (progressBar) progressBar.style.width = '100%';
+    });
+
+    // Listen 按钮
     triggerBtn = document.createElement('button');
     triggerBtn.className = 'tts-trigger';
     triggerBtn.style.cssText = 'display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 16px 5px 12px;font-size:13px;border:1px solid #dee2e6;background:linear-gradient(135deg,#f8f9fa,#e9ecef);color:#555;cursor:pointer;font-weight:500';
@@ -219,13 +153,11 @@
     playerEl.className = 'tts-player';
     playerEl.innerHTML =
       '<div class="tts-player-inner">' +
-        '<button class="tts-p-btn tts-play" title="播放/暂停">▶</button>' +
-        '<div class="tts-p-progress">' +
-          '<div class="tts-p-bar"></div>' +
-        '</div>' +
+        '<button class="tts-p-btn tts-play" title="Play/Pause">▶</button>' +
+        '<div class="tts-p-progress"><div class="tts-p-bar"></div></div>' +
         '<span class="tts-p-time"></span>' +
-        '<button class="tts-p-btn tts-speed" title="播放速度">1×</button>' +
-        '<button class="tts-p-btn tts-close" title="停止">✕</button>' +
+        '<button class="tts-p-btn tts-speed" title="Speed">1×</button>' +
+        '<button class="tts-p-btn tts-close" title="Stop">✕</button>' +
       '</div>';
     document.body.appendChild(playerEl);
 
@@ -233,53 +165,50 @@
     progressWrap = playerEl.querySelector('.tts-p-progress');
     progressBar = playerEl.querySelector('.tts-p-bar');
     timeDisplay = playerEl.querySelector('.tts-p-time');
-    var closeBtn = playerEl.querySelector('.tts-close');
 
     var speedBtn = playerEl.querySelector('.tts-speed');
-    var speeds = [1, 1.25, 1.5, 2];
-    var speedIdx = 0;
+    var speeds = [1, 1.25, 1.5, 2], speedIdx = 0;
 
     playBtn.addEventListener('click', toggle);
-    closeBtn.addEventListener('click', stop);
+    playerEl.querySelector('.tts-close').addEventListener('click', stop);
     speedBtn.addEventListener('click', function () {
       speedIdx = (speedIdx + 1) % speeds.length;
       playbackRate = speeds[speedIdx];
       speedBtn.textContent = playbackRate + '×';
-      if (mode === 'audio' && audio) audio.playbackRate = playbackRate;
+      if (audio) audio.playbackRate = playbackRate;
     });
     progressWrap.addEventListener('click', function (e) {
-      if (mode !== 'audio' || !audio || !audio.duration) return;
+      if (!audio || !audio.duration) return;
       var r = progressWrap.getBoundingClientRect();
       audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
     });
-
-    return true;
   }
 
   // ═══ 初始化 ═══
   function init() {
-    if (!buildUI()) return;
+    var wrap = document.getElementById('tts-trigger-wrap');
+    if (!wrap) return;
+
     var slug = location.pathname.replace(/^\/|\/$/g, '');
     var audioUrl = 'https://audio.polly.wang/' + slug + '/audio.mp3';
+
+    // 探测 mp3 是否存在，有才显示按钮
     var probe = new Audio();
     probe.preload = 'metadata';
-    var t = setTimeout(function () { fallbackToSpeech(); }, 5000);
-    probe.addEventListener('loadedmetadata', function () { clearTimeout(t); initAudioMode(audioUrl); });
-    probe.addEventListener('error', function () { clearTimeout(t); fallbackToSpeech(); });
+    var t = setTimeout(function () { /* 超时不显示 */ }, 5000);
+    probe.addEventListener('loadedmetadata', function () {
+      clearTimeout(t);
+      buildUI(audioUrl);
+    });
+    probe.addEventListener('error', function () {
+      clearTimeout(t);
+      // 没有 mp3 → 不显示任何东西
+    });
     probe.src = audioUrl;
-  }
-
-  function fallbackToSpeech() {
-    if (!('speechSynthesis' in window)) { if(triggerBtn)triggerBtn.style.display='none'; return; }
-    initSpeechMode();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  window.addEventListener('beforeunload', function () {
-    if (audio) audio.pause();
-    if (synth) synth.cancel();
-    stopChromeWA();
-  });
+  window.addEventListener('beforeunload', function () { if (audio) audio.pause(); });
 })();
