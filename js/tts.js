@@ -98,7 +98,9 @@
     if (triggerBtn) {
       var isCover = triggerBtn.classList.contains('tts-trigger-cover');
       if (isCover) {
-        triggerBtn.innerHTML = state === 'playing' ? '⏸' : '▶';
+        triggerBtn.innerHTML = state === 'playing'
+          ? '<svg class="tts-icon-pulse" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>'
+          : '<svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>';
         triggerBtn.classList.toggle('tts-trigger-playing', state !== 'idle');
       } else {
         triggerBtn.innerHTML = state === 'idle'
@@ -143,6 +145,9 @@
 
     // Listen 按钮 — 有封面图挂在封面图上，没有则独立行
     var coverEl = document.querySelector('.cover-image');
+    var svgIcon = '<svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>';
+    var svgIconPulse = '<svg class="tts-icon-pulse" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>';
+
     triggerBtn = document.createElement('button');
     triggerBtn.title = '朗读全文';
     triggerBtn.addEventListener('click', function () {
@@ -151,11 +156,21 @@
     });
 
     if (coverEl) {
-      // 有封面图 → 圆形 ▶ 浮在右下角
+      // 有封面图 → 圆形喇叭图标浮在右下角
       triggerBtn.className = 'tts-trigger tts-trigger-cover';
-      triggerBtn.innerHTML = '▶';
-      coverEl.style.position = 'relative';
-      coverEl.appendChild(triggerBtn);
+      triggerBtn.innerHTML = svgIcon;
+      // 用一个 wrapper 确保 position: relative 正确
+      var imgEl = coverEl.querySelector('img');
+      if (imgEl) {
+        var posWrap = document.createElement('div');
+        posWrap.style.cssText = 'position:relative;display:inline-block';
+        imgEl.parentNode.insertBefore(posWrap, imgEl);
+        posWrap.appendChild(imgEl);
+        posWrap.appendChild(triggerBtn);
+      } else {
+        coverEl.style.position = 'relative';
+        coverEl.appendChild(triggerBtn);
+      }
     } else {
       // 没封面图 → 独立行主色按钮
       triggerBtn.className = 'tts-trigger tts-trigger-standalone';
