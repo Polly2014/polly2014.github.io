@@ -134,6 +134,7 @@
     triggerBtn.title = '朗读全文';
     triggerBtn.addEventListener('click', function () {
       if (state === 'idle') toggle();
+      else if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
     meta.appendChild(triggerBtn);
 
@@ -147,6 +148,7 @@
           '<div class="tts-p-bar"></div>' +
         '</div>' +
         '<span class="tts-p-time"></span>' +
+        '<button class="tts-p-btn tts-speed" title="播放速度">1×</button>' +
         '<span class="tts-p-title"></span>' +
         '<button class="tts-p-btn tts-close" title="停止">✕</button>' +
       '</div>';
@@ -159,11 +161,21 @@
     titleDisplay = playerEl.querySelector('.tts-p-title');
     var closeBtn = playerEl.querySelector('.tts-close');
 
+    var speedBtn = playerEl.querySelector('.tts-speed');
+    var speeds = [1, 1.25, 1.5, 2];
+    var speedIdx = 0;
+
     var h1 = document.querySelector('.blog-post h1');
     if (titleDisplay && h1) titleDisplay.textContent = h1.textContent;
 
     playBtn.addEventListener('click', toggle);
     closeBtn.addEventListener('click', stop);
+    speedBtn.addEventListener('click', function () {
+      speedIdx = (speedIdx + 1) % speeds.length;
+      var rate = speeds[speedIdx];
+      speedBtn.textContent = rate + '×';
+      if (mode === 'audio' && audio) audio.playbackRate = rate;
+    });
     progressWrap.addEventListener('click', function (e) {
       if (mode !== 'audio' || !audio || !audio.duration) return;
       var r = progressWrap.getBoundingClientRect();
