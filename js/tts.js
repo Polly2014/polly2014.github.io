@@ -184,6 +184,7 @@
 
     triggerBtn = document.createElement('button');
     triggerBtn.title = '朗读全文';
+    triggerBtn.setAttribute('aria-label', 'Listen to this article');
     triggerBtn.addEventListener('click', function () {
       if (state === 'idle') toggle();
       else if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
