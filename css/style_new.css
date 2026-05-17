@@ -4,6 +4,24 @@
     box-sizing: border-box;
 }
 
+/* SVG icon system (replaces Font Awesome) */
+.icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    fill: currentColor;
+    display: inline-block;
+    margin-right: 0.3em;
+    flex-shrink: 0;
+}
+.icon-spin {
+    animation: icon-spin 1s linear infinite;
+}
+@keyframes icon-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 body {
     font-family: Arial, sans-serif;
     color: #333;

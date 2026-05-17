@@ -300,7 +300,7 @@ class PollyChat {
             <div class="preview-wrapper" data-idx="${idx}">
                 <img src="${img.dataUrl}" alt="Preview ${idx + 1}" class="preview-image" />
                 <button class="preview-remove" title="Remove image" data-idx="${idx}">
-                    <i class="fas fa-times"></i>
+                    <svg class="icon"><use href="#i-times"/></svg>
                 </button>
             </div>
         `).join('');
@@ -524,7 +524,7 @@ class PollyChat {
                 <div class="chat-error-icon">${icon}</div>
                 <div class="chat-error-title">${title}</div>
                 <div class="chat-error-detail">${detail}</div>
-                ${showRetry ? '<button class="chat-error-retry" onclick="window.pollyChat.retryLast()"><i class="fas fa-redo-alt"></i> Retry</button>' : ''}
+                ${showRetry ? '<button class="chat-error-retry" onclick="window.pollyChat.retryLast()"><svg class="icon"><use href="#i-redo-alt"/></svg> Retry</button>' : ''}
             </div>
         `;
         // 错误时确保 bubble 可见（appendMessage 创建时 bubble 默认 display:none）

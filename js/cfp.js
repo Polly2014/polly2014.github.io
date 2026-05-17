@@ -427,24 +427,24 @@
                 </div>
                 
                 <div class="cfp-card-deadline">
-                    <i class="fas fa-clock"></i>
+                    <svg class="icon"><use href="#i-clock"/></svg>
                     ${formatDate(conf.deadlineDate)}
                     ${conf.timezone ? `<span class="timezone">(${conf.timezone})</span>` : ''}
                 </div>
                 
                 <div class="cfp-card-info">
-                    ${conf.date ? `<div class="cfp-card-date"><i class="fas fa-calendar"></i> ${conf.date}</div>` : ''}
-                    ${conf.place ? `<div class="cfp-card-place"><i class="fas fa-map-marker-alt"></i> ${conf.place}</div>` : ''}
+                    ${conf.date ? `<div class="cfp-card-date"><svg class="icon"><use href="#i-calendar"/></svg> ${conf.date}</div>` : ''}
+                    ${conf.place ? `<div class="cfp-card-place"><svg class="icon"><use href="#i-map-marker-alt"/></svg> ${conf.place}</div>` : ''}
                 </div>
                 
-                ${conf.note ? `<div class="cfp-card-note"><i class="fas fa-info-circle"></i> ${conf.note}</div>` : ''}
+                ${conf.note ? `<div class="cfp-card-note"><svg class="icon"><use href="#i-info-circle"/></svg> ${conf.note}</div>` : ''}
                 
                 <div class="cfp-card-actions">
                     <a href="${conf.link}" target="_blank" rel="noopener" class="cfp-card-link">
-                        <i class="fas fa-external-link-alt"></i> Website
+                        <svg class="icon"><use href="#i-external-link-alt"/></svg> Website
                     </a>
                     ${conf.dblp ? `<a href="https://dblp.org/db/conf/${conf.dblp}" target="_blank" rel="noopener" class="cfp-card-link cfp-card-link-secondary">
-                        <i class="fas fa-book"></i> DBLP
+                        <svg class="icon"><use href="#i-book"/></svg> DBLP
                     </a>` : ''}
                 </div>
             </div>
@@ -556,7 +556,7 @@
      */
     function updateStatus(text) {
         if (elements.loading) {
-            elements.loading.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+            elements.loading.innerHTML = `<svg class="icon icon-spin"><use href="#i-spinner"/></svg> ${text}`;
         }
     }
 
@@ -567,7 +567,7 @@
         if (elements.grid) {
             elements.grid.innerHTML = `
                 <div class="cfp-error">
-                    <i class="fas fa-exclamation-triangle"></i>
+                    <svg class="icon"><use href="#i-exclamation-triangle"/></svg>
                     <p>${message}</p>
                     <button onclick="location.reload()" class="cfp-retry-btn">Retry</button>
                 </div>
