@@ -142,7 +142,9 @@
           : '<svg class="tts-icon tts-icon-pulse" style="width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 7.5a5 5 0 010 9" opacity=".6"/><path d="M19.5 4.5a9 9 0 010 15" opacity=".3"/></svg>播放中';
       }
     }
-    if (playBtn) playBtn.textContent = state === 'playing' ? '⏸' : '▶';
+    if (playBtn) playBtn.innerHTML = state === 'playing'
+      ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
     if (playerEl) {
       if (state === 'idle') playerEl.classList.remove('tts-player-show');
       else playerEl.classList.add('tts-player-show');
@@ -203,15 +205,19 @@
     }
 
     // 底部悬浮播放器
+    var svgPlay = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    var svgPause = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    var svgClose = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+
     playerEl = document.createElement('div');
     playerEl.className = 'tts-player';
     playerEl.innerHTML =
       '<div class="tts-player-inner">' +
-        '<button class="tts-p-btn tts-play" title="Play/Pause">▶</button>' +
+        '<button class="tts-p-btn tts-play" title="Play/Pause">' + svgPlay + '</button>' +
         '<div class="tts-p-progress"><div class="tts-p-bar"></div></div>' +
         '<span class="tts-p-time"></span>' +
         '<button class="tts-p-btn tts-speed" title="Speed">1×</button>' +
-        '<button class="tts-p-btn tts-close" title="Stop">✕</button>' +
+        '<button class="tts-p-btn tts-close" title="Stop">' + svgClose + '</button>' +
       '</div>';
     document.body.appendChild(playerEl);
 

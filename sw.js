@@ -1,5 +1,5 @@
 // Polly's Blog — Service Worker (Cache-first for static, network-first for pages)
-const CACHE_NAME = 'polly-blog-v3';
+const CACHE_NAME = 'polly-blog-v4';
 const STATIC_ASSETS = [
   '/',
   '/css/style.css',
