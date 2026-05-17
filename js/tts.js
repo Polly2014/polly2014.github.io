@@ -247,18 +247,13 @@
     var audioUrl = 'https://audio.polly.wang/' + slug + '/audio.mp3';
 
     // 探测 mp3 是否存在，有才显示按钮
-    var probe = new Audio();
-    probe.preload = 'metadata';
-    var t = setTimeout(function () { /* 超时不显示 */ }, 5000);
-    probe.addEventListener('loadedmetadata', function () {
-      clearTimeout(t);
-      buildUI(audioUrl);
-    });
-    probe.addEventListener('error', function () {
-      clearTimeout(t);
-      // 没有 mp3 → 不显示任何东西
-    });
-    probe.src = audioUrl;
+    // 用 fetch HEAD 探测（R2 已配 CORS: polly.wang + GET/HEAD）
+    // 避免微信内置浏览器拦截非交互触发的 Audio preload
+    fetch(audioUrl, { method: 'HEAD', mode: 'cors' })
+      .then(function (res) {
+        if (res.ok) buildUI(audioUrl);
+      })
+      .catch(function () { /* 没有 mp3 或网络错误 → 不显示 */ });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
