@@ -255,9 +255,11 @@
     // 探测 mp3 是否存在，有才显示按钮
     // 用 fetch HEAD 探测（R2 已配 CORS: polly.wang + GET/HEAD）
     // 避免微信内置浏览器拦截非交互触发的 Audio preload
-    fetch(audioUrl, { method: 'HEAD', mode: 'cors' })
+    // 本地开发时 CORS 不通，fallback 到 no-cors 探测
+    var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    fetch(audioUrl, { method: 'HEAD', mode: isLocal ? 'no-cors' : 'cors' })
       .then(function (res) {
-        if (res.ok) buildUI(audioUrl);
+        if (res.ok || (isLocal && res.type === 'opaque')) buildUI(audioUrl);
       })
       .catch(function () { /* 没有 mp3 或网络错误 → 不显示 */ });
   }
