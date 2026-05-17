@@ -55,14 +55,48 @@
     }
   }
 
+  // 预建 timing 时间 → 段落索引映射
+  var timingToParagraph = null;
+
+  function buildTimingMap() {
+    if (!timingData || !contentParagraphs || timingToParagraph) return;
+    timingToParagraph = [];
+    // 把段落文本拼接起来做子串搜索
+    var paraTexts = contentParagraphs.map(function(p) { return p.el.innerText || p.el.textContent || ''; });
+    var timCum = 0;
+    for (var i = 0; i < timingData.length; i++) {
+      var sentence = timingData[i].text;
+      timCum += sentence.length;
+      // 找这个 sentence 属于哪个段落：用 cumLen 对比
+      var paraCum = 0, bestIdx = 0;
+      for (var j = 0; j < contentParagraphs.length; j++) {
+        paraCum += contentParagraphs[j].textLen;
+        if (paraCum >= timCum) { bestIdx = j; break; }
+        bestIdx = j;
+      }
+      timingToParagraph.push(bestIdx);
+    }
+  }
+
   function highlightByTime(t) {
     if (!timingData || !timingData.length) return;
-    var charOffset = 0;
+    if (!timingToParagraph) buildTimingMap();
+    // 找当前句子索引
+    var sentIdx = 0;
     for (var i = 0; i < timingData.length; i++) {
       if (timingData[i].offset > t) break;
-      charOffset += timingData[i].text.length;
+      sentIdx = i;
     }
-    highlightByCharOffset(charOffset);
+    var paraIdx = timingToParagraph ? timingToParagraph[sentIdx] : 0;
+    if (paraIdx !== lastHighlightIdx && contentParagraphs && contentParagraphs[paraIdx]) {
+      var contentEl = document.querySelector('.blog-post .content');
+      if (contentEl && !contentEl.classList.contains('tts-active')) contentEl.classList.add('tts-active');
+      clearHighlight();
+      contentParagraphs[paraIdx].el.classList.add('tts-reading');
+      currentHighlight = contentParagraphs[paraIdx].el;
+      lastHighlightIdx = paraIdx;
+      contentParagraphs[paraIdx].el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   function clearHighlight() {
