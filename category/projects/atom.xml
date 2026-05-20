@@ -5,8 +5,64 @@
     <link href="https://polly.wang/category/projects/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-28T00:00:00+00:00</updated>
+    <updated>2026-05-20T00:00:00+00:00</updated>
     <id>https://polly.wang/category/projects/atom.xml</id>
+    <entry xml:lang="en">
+        <title>小宝教会我的事：520 夜，一个流浪动物小程序的诞生</title>
+        <published>2026-05-20T00:00:00+00:00</published>
+        <updated>2026-05-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/straypaw-520-mvp/" type="text/html"/>
+        <id>https://polly.wang/straypaw-520-mvp/</id>
+        
+        <content type="html">&lt;p&gt;520，朋友圈被玫瑰和晚餐刷屏的夜晚。&lt;&#x2F;p&gt;
+&lt;p&gt;我在和一只猫的照片较劲。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-yi-zhi-mao-shuo-qi&quot;&gt;从一只猫说起&lt;&#x2F;h2&gt;
+&lt;p&gt;小宝是我毕业那年出生的。一只金渐层小奶猫，大眼睛圆脑袋，看谁都像在说&amp;quot;你能带我走吗&amp;quot;。两个月后我把她接回了家，从此多了一个每天蹲在门口等我下班的室友。&lt;&#x2F;p&gt;
+&lt;p&gt;养猫之前，路边的流浪猫狗对我来说只是背景。养猫之后，走在路上看到缩在车底的猫、趴在垃圾桶旁的狗，脚步就慢下来了。不是矫情，是小宝让我知道了一件事——每一只在外面淋雨的动物，都曾经可能有一个温暖的家。&lt;&#x2F;p&gt;
+&lt;p&gt;公司有个流浪动物关爱活动，每期我都参加。就是在那里，认识了一位比我还热心的同事，以前在公司做图书管理员，一直在张罗各种救助行动。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-xin-qun-li-de-yi-ju-hua&quot;&gt;微信群里的一句话&lt;&#x2F;h2&gt;
+&lt;p&gt;几个月前，她在群里发过一条消息：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;朋友们，咱们有愿意帮忙流浪动物救助团队做一个公众号平台的吗？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;紧接着补了一句：&amp;quot;小程序。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;说实话，我当时就想接。但手头总有别的项目在忙。翻译系统、VS Code 插件、论文实验……排期永远满的。&lt;&#x2F;p&gt;
+&lt;p&gt;今天是 520。窗外的城市很热闹，我的电脑前很安静。突然想起那条消息——不如现在就做。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-wan-shang-cong-ling-dao-ti-yan-ban&quot;&gt;一个晚上，从零到体验版&lt;&#x2F;h2&gt;
+&lt;p&gt;我决定用一种特别的方式做这个项目：&lt;strong&gt;AI 写代码，我和小龙虾负责 Review&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;工作流很简单：我提需求，AI 生成代码，小龙虾逐行审查，我拍板。三个角色配合得像一条小型流水线。&lt;&#x2F;p&gt;
+&lt;p&gt;第一轮出来的骨架就挺完整——4 个页面，2 个云函数，搜索筛选一应俱全。小龙虾给了 8 分，指出了 Mock 数据重复、状态竞争、缺防抖三个问题。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🦞 &amp;quot;submitAdopt 直接改 animal status 为 pending，多人同时申请同一只动物怎么办？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;好问题。改成允许多人申请，管理员审批时再统一处理。这个设计比&amp;quot;先到先得&amp;quot;更符合救助团队的实际工作流。&lt;&#x2F;p&gt;
+&lt;p&gt;修完再审，9 分。&lt;&#x2F;p&gt;
+&lt;p&gt;然后是有意思的部分——我让 AI 去看了&lt;a href=&quot;https:&#x2F;&#x2F;www.cawabj.cn&#x2F;animals&#x2F;info-cards&#x2F;&quot;&gt;首都爱护动物协会的网站&lt;&#x2F;a&gt;，对比分析后加了三个他们没有的功能：精确到月的生日计算、医疗日期透明化、性格标签。又借鉴了他们的&amp;quot;助养&amp;quot;概念，写进了 Phase 2 规划。&lt;&#x2F;p&gt;
+&lt;p&gt;图标是用 dream-painter 生成的——一个橙色渐变的爪印，掌心嵌着一颗红色爱心。小龙虾说&amp;quot;对味&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;最好玩的是占位图。没有真实的动物照片怎么办？我把小宝的照片裁了出来，大眼睛正对镜头，成了 MVP 里每一只&amp;quot;待领养动物&amp;quot;的脸。橘子、团团、雪球、大黄——全是小宝。&lt;&#x2F;p&gt;
+&lt;p&gt;某种意义上，她成了这个小程序的第一位模特。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;straypaw-520-mvp&#x2F;ScreenShot_Wechat_Mini_Program.png&quot; alt=&quot;微信开发者工具中的 StrayPaw 小程序&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zhi-shi-mock-shu-ju&quot;&gt;不只是 Mock 数据&lt;&#x2F;h2&gt;
+&lt;p&gt;虽然是一晚上做出来的 MVP，但该有的都有了：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;iOS 风格的分段筛选（全部&#x2F;猫咪&#x2F;狗狗&#x2F;其他）&lt;&#x2F;li&gt;
+&lt;li&gt;动物详情页：医疗信息卡片带绝育、疫苗、驱虫的具体日期&lt;&#x2F;li&gt;
+&lt;li&gt;领养申请表单：年龄、居住情况、宠物经验、家人是否同意——这些是救助团队真正关心的&lt;&#x2F;li&gt;
+&lt;li&gt;分享功能：&amp;quot;橘子在等一个家 🐾&amp;quot;——这条文案，我希望有一天能转发到真实的朋友圈&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;当前数据是 Mock 的，但架构为接入微信云开发做好了准备。取消几行注释，部署两个云函数，就是真的了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;520-zui-hao-de-li-wu&quot;&gt;520 最好的礼物&lt;&#x2F;h2&gt;
+&lt;p&gt;深夜，我又看了一眼小宝的照片。她现在应该蜷在沙发上打呼噜了。&lt;&#x2F;p&gt;
+&lt;p&gt;四年前她教会我看见路边的生命。今天，这份看见变成了 29 个文件、1959 行代码、一个可以在手机上滑动浏览的小程序。&lt;&#x2F;p&gt;
+&lt;p&gt;它叫 &lt;strong&gt;StrayPaw&lt;&#x2F;strong&gt; 🐾。&lt;&#x2F;p&gt;
+&lt;p&gt;520 最好的礼物，不一定是给人的。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步，对接真实的救助团队数据。到时候小宝就不用一猫饰四角了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>新火试新茶</title>
         <published>2026-04-28T00:00:00+00:00</published>
