@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - AI 开发</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/ai-kai-fa/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-05-22T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/ai-kai-fa/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从 Vibe Coding 到 BMAD：AI 全栈开发方法论全景图</title>
+        <published>2026-05-22T00:00:00+00:00</published>
+        <updated>2026-05-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/ai-fullstack-dev-methodology-landscape/" type="text/html"/>
+        <id>https://polly.wang/ai-fullstack-dev-methodology-landscape/</id>
+        
+        <content type="html">&lt;p&gt;一年前我写过一篇&lt;a href=&quot;&#x2F;ai-coding-tools-comparison&quot;&gt;《AI编程助手全面横评：七大工具功能与架构对比》&lt;&#x2F;a&gt;，逐一拆解了 Copilot、Cursor、Claude、Devin 们的功能差异。一年后回头看，工具层的差距正在急速收窄——Cursor 有的 Agent Mode，VS Code Copilot 也有了；Windsurf 有的 Memories，Claude Code 的 CLAUDE.md 也做到了。&lt;&#x2F;p&gt;
+&lt;p&gt;真正拉开项目交付质量的，不再是你用哪个 IDE，而是你用什么&lt;strong&gt;方法论&lt;&#x2F;strong&gt;驱动 AI。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇文章尝试画一张完整的地图：从最松散的 Vibe Coding 到最结构化的 BMAD Method，从一个 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt; 文件到 36 个 MCP tools 的任务管理系统——AI 全栈开发的方法论，在 2026 年中已经形成了清晰的光谱。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-vibe-coding-yi-qie-de-qi-dian&quot;&gt;一、Vibe Coding：一切的起点&lt;&#x2F;h2&gt;
+&lt;p&gt;2025 年 2 月，Andrej Karpathy 在一条推文里造了个词：&lt;strong&gt;Vibe Coding&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;You just see stuff, say stuff, run stuff, and copy paste stuff, and it mostly works.&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;不写代码，只描述意图；不调试，只让 AI 重来；不读源码，只看效果。这种&amp;quot;氛围编程&amp;quot;解放了大量非专业开发者，也让很多专业开发者在原型阶段的效率翻了几倍。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Vibe Coding 有一个天然的天花板：&lt;strong&gt;它没有记忆&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;每次新开对话，AI 忘了你的项目结构、忘了你的编码规范、忘了你上次踩过的坑。项目一旦超过几百行，Vibe Coding 就开始&amp;quot;振动式崩溃&amp;quot;——AI 改 A 文件的同时破坏了 B 文件，你贴回错误，它改 B 的时候又把 A 改回去。&lt;&#x2F;p&gt;
+&lt;p&gt;后续所有方法论的演化，本质上都在解决同一个问题：&lt;strong&gt;怎样给 AI 持久的上下文&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;er-cong-prompt-engineering-dao-context-engineering&quot;&gt;二、从 Prompt Engineering 到 Context Engineering&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;cursorrules-zui-zao-de-xiang-mu-ji-zhi-ling&quot;&gt;.cursorrules：最早的项目级指令&lt;&#x2F;h3&gt;
+&lt;p&gt;Cursor 在 2024 年底引入 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt;——一个放在项目根目录的文本文件，告诉 AI&amp;quot;这个项目的规矩&amp;quot;。内容可以是编码规范、技术栈偏好、甚至&amp;quot;不要用 class 组件&amp;quot;这样的禁令。&lt;&#x2F;p&gt;
+&lt;p&gt;这看起来只是一个配置文件，但它代表了一个范式转变：&lt;strong&gt;指令从对话框搬到了仓库里&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;几乎同时，不同生态各自发展出了自己的版本：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;文件&lt;&#x2F;th&gt;&lt;th&gt;生态&lt;&#x2F;th&gt;&lt;th&gt;定位&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;.cursorrules&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;rules&#x2F;*.mdc&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Cursor&lt;&#x2F;td&gt;&lt;td&gt;项目行为规则&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Claude Code (Anthropic)&lt;&#x2F;td&gt;&lt;td&gt;项目全景文档——结构、命令、约定&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;AGENTS.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;Agent 模式的指令文件&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;.windsurfrules&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Windsurf&lt;&#x2F;td&gt;&lt;td&gt;等价于 .cursorrules&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;copilot-instructions.md&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;VS Code Copilot&lt;&#x2F;td&gt;&lt;td&gt;全局&#x2F;项目级指令&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;memory-bank-kua-hui-hua-de-chi-jiu-ji-yi&quot;&gt;Memory Bank：跨会话的持久记忆&lt;&#x2F;h3&gt;
+&lt;p&gt;Cline&#x2F;Roo Code 社区走得更远。他们提出了 &lt;strong&gt;Memory Bank&lt;&#x2F;strong&gt; 模式：在项目中维护一组 Markdown 文件（&lt;code&gt;projectbrief.md&lt;&#x2F;code&gt;、&lt;code&gt;techContext.md&lt;&#x2F;code&gt;、&lt;code&gt;progress.md&lt;&#x2F;code&gt;、&lt;code&gt;activeContext.md&lt;&#x2F;code&gt;），要求 AI 在每次会话开始时先读取、在会话结束时回写。&lt;&#x2F;p&gt;
+&lt;p&gt;这解决了 Vibe Coding 最致命的问题——遗忘。但 Memory Bank 是被动的：你得记得让 AI 去读、去写。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;context-engineering-2026-nian-de-xin-gong-shi&quot;&gt;Context Engineering：2026 年的新共识&lt;&#x2F;h3&gt;
+&lt;p&gt;到 2026 年，业界逐渐形成一个共识：&lt;strong&gt;Prompt Engineering 正在被 Context Engineering 取代&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;区别在哪里？Prompt Engineering 优化的是&amp;quot;这一次对话怎么问&amp;quot;；Context Engineering 优化的是&amp;quot;AI 在开始工作之前，已经知道了什么&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;一个好的 Context Engineering 体系包含三层：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;静态上下文&lt;&#x2F;strong&gt; — 项目结构、编码规范、技术栈（&lt;code&gt;.cursorrules&lt;&#x2F;code&gt; &#x2F; &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;动态上下文&lt;&#x2F;strong&gt; — 当前任务状态、进度、依赖关系（Memory Bank &#x2F; Taskmaster）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工具上下文&lt;&#x2F;strong&gt; — AI 能调用哪些外部能力（MCP servers &#x2F; 浏览器 &#x2F; 数据库）&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;方法论之间的差异，本质上就是在这三层上做了不同深度的投入。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;san-spec-driven-development-prd-xian-xing-de-quan-lian-lu&quot;&gt;三、Spec-Driven Development：PRD 先行的全链路&lt;&#x2F;h2&gt;
+&lt;p&gt;如果 Context Engineering 是&amp;quot;给 AI 读什么&amp;quot;，Spec-Driven Development 就是&amp;quot;让 AI 按什么流程做事&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这一层的框架把软件工程的经典流程——需求 → 架构 → 任务拆解 → 编码 → 测试——用 AI 重新实现了一遍。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bmad-method-six-p-47-9k-stars&quot;&gt;BMAD Method（⭐ 47.9k Stars）&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Build More Architect Dreams&lt;&#x2F;strong&gt;，目前社区最大的 AI 敏捷开发框架。&lt;&#x2F;p&gt;
+&lt;p&gt;核心设计：12+ 个专业化 Agent（产品经理、架构师、开发者、UX 设计师、测试工程师……），通过 34+ 个预定义 Workflow 协作。你不是直接让 AI 写代码，而是先让 PM Agent 写 PRD，再让 Architect Agent 做技术方案，然后 Developer Agent 才开始编码。&lt;&#x2F;p&gt;
+&lt;p&gt;关键特性：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;规模自适应&lt;&#x2F;strong&gt; — 自动判断项目复杂度，小修小补走轻量流程，大型系统走完整架构评审&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Party Mode&lt;&#x2F;strong&gt; — 在一个会话里同时召唤多个 Agent 角色讨论方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;bmad-help&lt;&#x2F;code&gt; Skill&lt;&#x2F;strong&gt; — 随时问&amp;quot;我下一步该做什么&amp;quot;，框架自动导航&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;BMAD 的理念是：&lt;strong&gt;AI 不应该替你思考，而应该引导你思考得更好&lt;&#x2F;strong&gt;。它不是一个自动生成器，而是一个结构化的协作框架。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;taskmaster-hamster-six-p-27-2k-stars&quot;&gt;Taskmaster &#x2F; Hamster（⭐ 27.2k Stars）&lt;&#x2F;h3&gt;
+&lt;p&gt;更侧重&amp;quot;任务管理&amp;quot;而非&amp;quot;角色扮演&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;工作流：写一份 PRD（&lt;code&gt;.taskmaster&#x2F;docs&#x2F;prd.txt&lt;&#x2F;code&gt;）→ AI 解析生成任务树 → 按依赖关系逐个执行 → 每完成一个自动更新状态。&lt;&#x2F;p&gt;
+&lt;p&gt;它的杀手特性是 &lt;strong&gt;MCP 集成&lt;&#x2F;strong&gt;——36 个 MCP tools 直接暴露给 AI IDE，让你在 Cursor&#x2F;Claude Code 里说一句&amp;quot;解析我的 PRD&amp;quot;就能自动生成全部任务。配合 &lt;code&gt;research&lt;&#x2F;code&gt; 命令，AI 还能在实现前先搜索最佳实践。&lt;&#x2F;p&gt;
+&lt;p&gt;Taskmaster 的定位更务实：不搞角色扮演，就是一个&lt;strong&gt;让 AI 照着计划干活&lt;&#x2F;strong&gt;的任务调度器。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;plandex-six-p-15-4k-stars&quot;&gt;Plandex（⭐ 15.4k Stars）&lt;&#x2F;h3&gt;
+&lt;p&gt;终端派的选择。2M token 有效上下文窗口，用 tree-sitter 做项目索引，支持 30+ 语言。&lt;&#x2F;p&gt;
+&lt;p&gt;最大亮点是&lt;strong&gt;沙箱式 diff 审查&lt;&#x2F;strong&gt;——AI 生成的改动不直接写入文件，而是暂存在 Plandex 自己的版本控制里，你可以逐步审查、分支对比、回滚到任意状态。&lt;&#x2F;p&gt;
+&lt;p&gt;这三个框架的共同点：&lt;strong&gt;它们都认为&amp;quot;先规划再编码&amp;quot;比&amp;quot;边聊边写&amp;quot;产出更高质量的代码&lt;&#x2F;strong&gt;。差异在于规划的粒度和执行的自动化程度。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;si-rules-sheng-tai-yu-duo-agent-xie-diao&quot;&gt;四、Rules 生态与多 Agent 协调&lt;&#x2F;h2&gt;
+&lt;p&gt;当项目大到一定规模——多个模块、多个团队、甚至多个 AI Agent 同时工作——就需要更细粒度的规则管理。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;cursor-directory-open-plugins&quot;&gt;cursor.directory &#x2F; Open Plugins&lt;&#x2F;h3&gt;
+&lt;p&gt;Cursor 官方推出的插件市场，社区共享 rules &#x2F; skills &#x2F; agents &#x2F; MCP servers。它定义了一个标准目录结构：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;rules&#x2F;*.mdc          # 行为规则
+&lt;&#x2F;span&gt;&lt;span&gt;skills&#x2F;*&#x2F;SKILL.md    # 专业技能
+&lt;&#x2F;span&gt;&lt;span&gt;agents&#x2F;*.md          # Agent 角色
+&lt;&#x2F;span&gt;&lt;span&gt;hooks&#x2F;hooks.json     # 钩子脚本
+&lt;&#x2F;span&gt;&lt;span&gt;.mcp.json            # MCP 服务器配置
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个 &lt;strong&gt;Open Plugins&lt;&#x2F;strong&gt; 规范正在成为 AI IDE 生态的事实标准。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;agentic-cursorrules&quot;&gt;agentic-cursorrules&lt;&#x2F;h3&gt;
+&lt;p&gt;解决一个特定问题：&lt;strong&gt;大仓库里多个 Agent 互相踩脚&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它把代码库按目录分区，为每个区域生成独立的 Markdown 规则文件（如 &lt;code&gt;@agent_backend_api.md&lt;&#x2F;code&gt;）。每个 Agent 只能看到自己负责的文件树。像给赛马戴上眼罩——只往前跑，不左顾右盼。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;devin-cursorrules-six-p-6k-stars&quot;&gt;devin.cursorrules（⭐ 6k Stars）&lt;&#x2F;h3&gt;
+&lt;p&gt;一个巧妙的 hack：用 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt; + &lt;code&gt;scratchpad.md&lt;&#x2F;code&gt; + Python 脚本，让 Cursor 模拟 Devin 的行为——先写计划、按计划执行、遇到错误自动回溯、积累&amp;quot;教训&amp;quot;到规则文件里。&lt;&#x2F;p&gt;
+&lt;p&gt;它的核心概念是&lt;strong&gt;自我进化&lt;&#x2F;strong&gt;：每次你纠正 AI，它会把教训写回 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt;，下次不再犯同样的错误。这让 AI 从&amp;quot;每次都是新手&amp;quot;变成了&amp;quot;越用越懂你&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-mcp-lian-jie-fang-fa-lun-yu-gong-ju-de-xiao-shui-ceng&quot;&gt;五、MCP：连接方法论与工具的胶水层&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;Model Context Protocol&lt;&#x2F;strong&gt;（MCP），Anthropic 在 2024 年底提出的工具调用协议，到 2026 年已经成为 AI IDE 的通用标准。&lt;&#x2F;p&gt;
+&lt;p&gt;如果把前面的方法论比作&amp;quot;战略&amp;quot;，MCP 就是&amp;quot;后勤&amp;quot;——它决定了 AI 能调用什么外部能力。数据库查询、浏览器操作、文件系统、API 调用、甚至控制另一个 AI，都可以封装成 MCP server 暴露给 Agent。&lt;&#x2F;p&gt;
+&lt;p&gt;MCP 之所以重要，是因为它把方法论从&amp;quot;只能聊天&amp;quot;升级到了&amp;quot;能做事&amp;quot;。BMAD 的 Architect Agent 可以通过 MCP 读取数据库 schema 再做架构决策；Taskmaster 可以通过 MCP 直接在 IDE 里创建和管理任务。方法论 + MCP = 有执行力的方法论。&lt;&#x2F;p&gt;
+&lt;p&gt;目前主流 AI IDE 的 MCP 支持情况：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;IDE&lt;&#x2F;th&gt;&lt;th&gt;MCP 支持&lt;&#x2F;th&gt;&lt;th&gt;配置方式&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Cursor&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.cursor&#x2F;mcp.json&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;claude mcp add&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;VS Code Copilot&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;.vscode&#x2F;mcp.json&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Windsurf&lt;&#x2F;td&gt;&lt;td&gt;✅ 原生&lt;&#x2F;td&gt;&lt;td&gt;MCP 配置文件&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;trae&lt;&#x2F;td&gt;&lt;td&gt;⚠️ 部分&lt;&#x2F;td&gt;&lt;td&gt;内置工具为主&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;通义灵码&lt;&#x2F;td&gt;&lt;td&gt;⚠️ 部分&lt;&#x2F;td&gt;&lt;td&gt;企业定制为主&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;liu-gong-ju-ceng-vs-fang-fa-lun-ceng-yi-zhang-guan-xi-tu&quot;&gt;六、工具层 vs 方法论层：一张关系图&lt;&#x2F;h2&gt;
+&lt;p&gt;到这里，我们可以画一张清晰的分层图了：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;┌─────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│  第五层：理念（Vibe Coding &#x2F; Context Engineering）     │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  第四层：全链路框架（BMAD &#x2F; Taskmaster &#x2F; Plandex）     │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  第三层：规则与协调（.cursorrules &#x2F; Memory Bank &#x2F;       │
+&lt;&#x2F;span&gt;&lt;span&gt;│          Open Plugins &#x2F; agentic-cursorrules）         │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  第二层：工具协议（MCP &#x2F; CodeAct）                      │
+&lt;&#x2F;span&gt;&lt;span&gt;├─────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│  第一层：AI IDE（Cursor &#x2F; Claude Code &#x2F; VS Code &#x2F;      │
+&lt;&#x2F;span&gt;&lt;span&gt;│          Windsurf &#x2F; trae &#x2F; 通义灵码 &#x2F; Qoder）          │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;企业培训常说的&amp;quot;用 trae&#x2F;Qoder&#x2F;Lingma 做 AI 全栈开发&amp;quot;，实际上只覆盖了第一层。而真正决定开发效率的，是你在第三到第五层做了多少投入。&lt;&#x2F;p&gt;
+&lt;p&gt;一个用 Cursor + BMAD + Taskmaster 的团队，和一个只用 Cursor 写 Vibe Coding 的团队，用的是同一个 IDE，但产出可能差几倍。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;qi-quan-jing-dui-zhao-biao&quot;&gt;七、全景对照表&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方法论&#x2F;框架&lt;&#x2F;th&gt;&lt;th&gt;层级&lt;&#x2F;th&gt;&lt;th&gt;Stars&lt;&#x2F;th&gt;&lt;th&gt;核心机制&lt;&#x2F;th&gt;&lt;th&gt;适用场景&lt;&#x2F;th&gt;&lt;th&gt;学习曲线&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Vibe Coding&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;理念&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;自然语言描述 → AI 生成&lt;&#x2F;td&gt;&lt;td&gt;原型、小脚本、学习&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Context Engineering&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;理念&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;结构化上下文 → 高质量输出&lt;&#x2F;td&gt;&lt;td&gt;所有规模&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;BMAD Method&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全链路&lt;&#x2F;td&gt;&lt;td&gt;47.9k&lt;&#x2F;td&gt;&lt;td&gt;12+ Agent 角色 + 34 Workflows&lt;&#x2F;td&gt;&lt;td&gt;中大型项目、团队&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Taskmaster&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全链路&lt;&#x2F;td&gt;&lt;td&gt;27.2k&lt;&#x2F;td&gt;&lt;td&gt;PRD → 任务树 → 逐步执行&lt;&#x2F;td&gt;&lt;td&gt;中型项目、个人&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Plandex&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;全链路&lt;&#x2F;td&gt;&lt;td&gt;15.4k&lt;&#x2F;td&gt;&lt;td&gt;终端 + 沙箱 diff + 版本控制&lt;&#x2F;td&gt;&lt;td&gt;大型代码库&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;.cursorrules&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;规则&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;项目级行为约束&lt;&#x2F;td&gt;&lt;td&gt;通用&lt;&#x2F;td&gt;&lt;td&gt;⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;CLAUDE.md&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;规则&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;项目全景文档&lt;&#x2F;td&gt;&lt;td&gt;Claude Code 生态&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Memory Bank&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;规则&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;跨会话持久记忆&lt;&#x2F;td&gt;&lt;td&gt;Cline&#x2F;Roo 生态&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Open Plugins&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;生态&lt;&#x2F;td&gt;&lt;td&gt;3.9k&lt;&#x2F;td&gt;&lt;td&gt;rules&#x2F;skills&#x2F;agents 标准化&lt;&#x2F;td&gt;&lt;td&gt;Cursor 插件市场&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;devin.cursorrules&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;增强&lt;&#x2F;td&gt;&lt;td&gt;6k&lt;&#x2F;td&gt;&lt;td&gt;规划 + 自我进化&lt;&#x2F;td&gt;&lt;td&gt;个人开发者&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;agentic-cursorrules&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;协调&lt;&#x2F;td&gt;&lt;td&gt;649&lt;&#x2F;td&gt;&lt;td&gt;域分区 + Agent 隔离&lt;&#x2F;td&gt;&lt;td&gt;大型 monorepo&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;MCP&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;协议&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;工具调用标准协议&lt;&#x2F;td&gt;&lt;td&gt;基础设施&lt;&#x2F;td&gt;&lt;td&gt;⭐⭐&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;h3 id=&quot;xuan-xing-jian-yi&quot;&gt;选型建议&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;刚入门 AI 编程&lt;&#x2F;strong&gt; → 从 Vibe Coding 开始，写几个小项目找感觉，同时给项目加一个 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt; 或 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;个人开发者做中型项目&lt;&#x2F;strong&gt; → Taskmaster 管理任务 + CLAUDE.md&#x2F;cursorrules 管理规范，够用&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;团队协作&lt;&#x2F;strong&gt; → BMAD Method 全流程，配合 agentic-cursorrules 做域隔离&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;重度终端用户&lt;&#x2F;strong&gt; → Plandex 的沙箱 diff 审查是独有优势&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;想要&amp;quot;越用越聪明&amp;quot;的 AI&lt;&#x2F;strong&gt; → devin.cursorrules 的自我进化机制&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些框架之间不互斥。BMAD 可以和 Taskmaster 搭配使用（BMAD 管方法论，Taskmaster 管执行）；MCP 是底层协议，跟上面每一个都兼容；&lt;code&gt;.cursorrules&lt;&#x2F;code&gt; 和 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt; 是最低成本的起点，5 分钟就能给项目加上。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;ba-shou-shu&quot;&gt;八、收束&lt;&#x2F;h2&gt;
+&lt;p&gt;回到开头的那个观察：工具在趋同。&lt;&#x2F;p&gt;
+&lt;p&gt;2025 年初，选 Cursor 还是 Copilot 是一个重大决策；2026 年中，它们的功能差异已经小到可以忽略。Agent Mode、MCP 支持、多文件编辑、上下文窗口——你有的我都有了。&lt;&#x2F;p&gt;
+&lt;p&gt;但方法论不会趋同。BMAD 的 12 Agent 全链路和 Taskmaster 的 PRD → Task 单链路，服务的是截然不同的团队和场景。&lt;code&gt;.cursorrules&lt;&#x2F;code&gt; 的轻量约束和 Memory Bank 的持久记忆，解决的是不同阶段的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;工具是交通工具，方法论是路线图。同样一辆车，有人在城市里乱转，有人沿着导航到达目的地。区别不在车，在图。&lt;&#x2F;p&gt;
+&lt;p&gt;如果你现在还停留在&amp;quot;打开 IDE，开始聊天&amp;quot;的阶段，不妨从最简单的一步开始：在项目根目录创建一个 &lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;（或 &lt;code&gt;.cursorrules&lt;&#x2F;code&gt;），写下你的项目结构、技术栈、编码规范。就这一个文件，就能让 AI 的输出质量产生可感知的提升。&lt;&#x2F;p&gt;
+&lt;p&gt;然后你会自然地想要更多：任务管理、角色分工、持久记忆、工具集成……&lt;&#x2F;p&gt;
+&lt;p&gt;方法论的路，是一步一步走出来的。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
