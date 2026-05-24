@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 域名</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/yu-ming/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-05-25T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/yu-ming/atom.xml</id>
+    <entry xml:lang="en">
+        <title>三块积木搭一个邮局：baoli.wang 邮件系统从零到收发</title>
+        <published>2026-05-25T00:00:00+00:00</published>
+        <updated>2026-05-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/three-blocks-build-a-post-office/" type="text/html"/>
+        <id>https://polly.wang/three-blocks-build-a-post-office/</id>
+        
+        <content type="html">&lt;p&gt;polly.wang 是我的主力博客域名，跑了一年多，稳得像老黄牛。baoli.wang 呢？买下来之后一直空着，像一间租好了但没搬进去的房子。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚决定让它活起来。不是建站——polly.wang 已经够用了。我要的是：&lt;strong&gt;访问 baoli.wang 自动跳转到 polly.wang，同时拥有一个能收能发的 &lt;code&gt;me@baoli.wang&lt;&#x2F;code&gt; 邮箱。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;整个过程用了三个免费服务，零服务器，零年费。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-kuai-ji-mu-dns-ban-jia-dao-cloudflare&quot;&gt;第一块积木：DNS 搬家到 Cloudflare&lt;&#x2F;h2&gt;
+&lt;p&gt;baoli.wang 原来在腾讯云做的 DNS 解析。要用 Cloudflare 的 Email Routing 和 Redirect Rules，DNS 必须先迁过去。&lt;&#x2F;p&gt;
+&lt;p&gt;步骤很简单：Cloudflare 添加站点 → 拿到两个 NS 地址 → 去腾讯云把 DNS 服务器从默认改成 Cloudflare 的。&lt;code&gt;dig NS baoli.wang +short&lt;&#x2F;code&gt; 确认生效，几乎是秒切。&lt;&#x2F;p&gt;
+&lt;p&gt;DNS 接管之后，加一条 &lt;strong&gt;Redirect Rule&lt;&#x2F;strong&gt;：所有 &lt;code&gt;baoli.wang&#x2F;*&lt;&#x2F;code&gt; 的请求 301 重定向到 &lt;code&gt;polly.wang&lt;&#x2F;code&gt;，保留路径和查询参数。&lt;&#x2F;p&gt;
+&lt;p&gt;这里有个小坑：&lt;strong&gt;Redirect Rule 只对经过 Cloudflare 代理的流量生效。&lt;&#x2F;strong&gt; 也就是说，域名必须有一条 Proxied 状态的记录。baoli.wang 本身不指向任何服务器，怎么办？加一条 &lt;strong&gt;dummy A 记录&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Type&lt;&#x2F;th&gt;&lt;th&gt;Name&lt;&#x2F;th&gt;&lt;th&gt;Content&lt;&#x2F;th&gt;&lt;th&gt;Proxy&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;A&lt;&#x2F;td&gt;&lt;td&gt;baoli.wang&lt;&#x2F;td&gt;&lt;td&gt;192.0.2.1&lt;&#x2F;td&gt;&lt;td&gt;Proxied ☁️&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&lt;code&gt;192.0.2.1&lt;&#x2F;code&gt; 是 RFC 5737 规定的文档用地址，不会指向任何真实服务器。流量到达 Cloudflare 边缘后，Redirect Rule 在回源之前就把它 301 走了，根本不会碰到这个 IP。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-kuai-ji-mu-cloudflare-email-routing-shou-xin&quot;&gt;第二块积木：Cloudflare Email Routing 收信&lt;&#x2F;h2&gt;
+&lt;p&gt;Cloudflare Email Routing 是我见过最省心的邮件转发服务。零配置，免费，即时生效。&lt;&#x2F;p&gt;
+&lt;p&gt;在 Cloudflare 面板里添加 4 个转发规则：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;收件地址&lt;&#x2F;th&gt;&lt;th&gt;转发到&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;hi@baoli.wang&lt;&#x2F;td&gt;&lt;td&gt;QQ 邮箱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;me@baoli.wang&lt;&#x2F;td&gt;&lt;td&gt;QQ 邮箱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;im@baoli.wang&lt;&#x2F;td&gt;&lt;td&gt;QQ 邮箱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;i@baoli.wang&lt;&#x2F;td&gt;&lt;td&gt;QQ 邮箱&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Cloudflare 自动配好 MX 记录（&lt;code&gt;route1&#x2F;2&#x2F;3.mx.cloudflare.net&lt;&#x2F;code&gt;）和 SPF。从添加到收到第一封测试邮件，不到一分钟。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里，&lt;strong&gt;收信&lt;&#x2F;strong&gt;已经搞定了。别人发邮件到 &lt;code&gt;me@baoli.wang&lt;&#x2F;code&gt;，我在 QQ 邮箱里就能看到。&lt;&#x2F;p&gt;
+&lt;p&gt;但只能收不能发，像一个只有信箱没有邮戳的邮局。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-kuai-ji-mu-resend-smtp-fa-xin&quot;&gt;第三块积木：Resend SMTP 发信&lt;&#x2F;h2&gt;
+&lt;p&gt;为什么收发要分开两个服务？因为 Cloudflare Email Routing 只做转发，不提供 SMTP 发送能力。而 Resend 是专业的邮件发送服务，免费额度 100 封&#x2F;天，对个人邮箱绰绰有余。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;收信用 Cloudflare 的管道，发信用 Resend 的引擎。&lt;&#x2F;strong&gt; 这其实是业界常见的拆分模式——很多公司的 inbound 和 outbound 邮件走的就是不同的基础设施。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;dns-ji-lu-pei-zhi&quot;&gt;DNS 记录配置&lt;&#x2F;h3&gt;
+&lt;p&gt;在 Resend 注册、添加 baoli.wang 域名后，需要在 Cloudflare DNS 里加 4 条记录：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Type&lt;&#x2F;th&gt;&lt;th&gt;Name&lt;&#x2F;th&gt;&lt;th&gt;用途&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;TXT&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;resend._domainkey&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;DKIM 签名——证明邮件确实来自 baoli.wang&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;MX&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;send&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Resend 的发送专用子域&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;TXT&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;send&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;SPF 记录——授权 Resend 代发&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;TXT&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;_dmarc&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;DMARC 策略——告诉收件方如何处理验证失败的邮件&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;加完后回 Resend 点验证，8 分钟内三步全绿：Domain added → DNS verified → Domain verified。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;apple-mail-de-send-only-xiao-keng&quot;&gt;Apple Mail 的 send-only 小坑&lt;&#x2F;h3&gt;
+&lt;p&gt;Resend 的 SMTP 配置很标准：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;服务器&lt;&#x2F;strong&gt;: &lt;code&gt;smtp.resend.com&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;端口&lt;&#x2F;strong&gt;: 465 (SSL)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;用户名&lt;&#x2F;strong&gt;: &lt;code&gt;resend&lt;&#x2F;code&gt;（对，就是这个单词本身）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;密码&lt;&#x2F;strong&gt;: API Key&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;但 Apple Mail 添加账户时，强制要求同时填收件和发件服务器。收件服务器填 &lt;code&gt;imap.qq.com&lt;&#x2F;code&gt;，用户名和密码当然对不上——Apple Mail 会报&amp;quot;无法验证账户名或密码&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;别慌，直接点&amp;quot;下一步&amp;quot;。Apple Mail 会放过这个错误，只启用发件功能。账户状态会显示&amp;quot;离线&amp;quot;，但不影响发信。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-feng-you-jian&quot;&gt;第一封邮件&lt;&#x2F;h2&gt;
+&lt;p&gt;在 Apple Mail 里新建邮件，发件人选 &lt;code&gt;Baoli Wang &amp;lt;me@baoli.wang&amp;gt;&lt;&#x2F;code&gt;，发给自己的 QQ 邮箱。&lt;&#x2F;p&gt;
+&lt;p&gt;几秒后，QQ 邮箱收到了。发件人显示 &lt;code&gt;Baoli Wang &amp;lt;me@baoli.wang&amp;gt;&lt;&#x2F;code&gt;，没进垃圾箱，DKIM 和 SPF 都通过了。&lt;&#x2F;p&gt;
+&lt;p&gt;唯一的&amp;quot;瑕疵&amp;quot;是 QQ 邮箱会显示一行小字：&amp;quot;由 xxx@send.baoli.wang 代发&amp;quot;。这是所有第三方 SMTP 中继的通病——信封发件人（Return-Path）和显示发件人（From）的域名不完全一致。Gmail 里会显示为 &amp;quot;via send.baoli.wang&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;要去掉它？只有自建邮件服务器（Postfix 之类）。对个人邮箱来说，这个标签完全可以接受——它不影响送达率，只是一个透明度指示器。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-kuai-ji-mu-yi-ge-you-ju&quot;&gt;三块积木，一个邮局&lt;&#x2F;h2&gt;
+&lt;p&gt;回看整个过程，三个服务各司其职：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;📮 &lt;strong&gt;收信&lt;&#x2F;strong&gt; · Cloudflare Email Routing · me&#x2F;hi&#x2F;im&#x2F;i@baoli.wang → QQ 邮箱&lt;&#x2F;p&gt;
+&lt;p&gt;✉️ &lt;strong&gt;发信&lt;&#x2F;strong&gt; · Resend SMTP · Apple Mail → smtp.resend.com → 收件方&lt;&#x2F;p&gt;
+&lt;p&gt;🌐 &lt;strong&gt;重定向&lt;&#x2F;strong&gt; · Cloudflare Redirect Rule · baoli.wang&#x2F;* → polly.wang（301，保留路径）&lt;&#x2F;p&gt;
+&lt;p&gt;💰 &lt;strong&gt;总成本&lt;&#x2F;strong&gt; · ¥0&#x2F;年&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;每一块都免费，每一块都不需要维护服务器。Cloudflare 负责 DNS、收信和重定向，Resend 负责发信。拼在一起，就是一个完整的邮局。&lt;&#x2F;p&gt;
+&lt;p&gt;那间空了一年多的房子，终于有了自己的门牌号和邮筒。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
