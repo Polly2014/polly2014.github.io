@@ -5,8 +5,70 @@
     <link href="https://polly.wang/tags/gong-yi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-05-20T00:00:00+00:00</updated>
+    <updated>2026-05-24T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/gong-yi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>小宝不用一猫饰四角了：StrayPaw 从 Mock 到提审的四天</title>
+        <published>2026-05-24T00:00:00+00:00</published>
+        <updated>2026-05-24T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/straypaw-cloud-ready/" type="text/html"/>
+        <id>https://polly.wang/straypaw-cloud-ready/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;straypaw-520-mvp&quot;&gt;小宝教会我的事：520 夜，一个流浪动物小程序的诞生&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结尾我写了一句：&amp;quot;下一步，对接真实的救助团队数据。到时候小宝就不用一猫饰四角了。&amp;quot;&lt;&#x2F;p&gt;
+&lt;p&gt;四天后，这件事做完了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cloud1-bu-shi-cloud1&quot;&gt;cloud1 不是 cloud1&lt;&#x2F;h2&gt;
+&lt;p&gt;接入云开发的第一步就踩了坑。&lt;&#x2F;p&gt;
+&lt;p&gt;微信云开发的环境有两个名字：一个是你自己起的&lt;strong&gt;显示名称&lt;&#x2F;strong&gt;，比如 &lt;code&gt;cloud1&lt;&#x2F;code&gt;；一个是系统分配的&lt;strong&gt;环境 ID&lt;&#x2F;strong&gt;，长这样：&lt;code&gt;cloud1-d2gtyemv5242263c3&lt;&#x2F;code&gt;。初始化的时候我很自然地写了 &lt;code&gt;cloud1&lt;&#x2F;code&gt;——毕竟控制台上就是这么显示的。&lt;&#x2F;p&gt;
+&lt;p&gt;结果所有云函数调用全部静默失败。没报错，没提示，就是不工作。&lt;&#x2F;p&gt;
+&lt;p&gt;花了几分钟才反应过来：&lt;code&gt;env&lt;&#x2F;code&gt; 要填那个带 hash 的完整 ID。改完一行代码，整个世界亮了。&lt;&#x2F;p&gt;
+&lt;p&gt;这是云开发文档里说了但很容易忽略的东西。记下来，省得下次再踩。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gei-jiu-zhu-tuan-dui-yi-ge-zhen-zheng-neng-yong-de-hou-tai&quot;&gt;给救助团队一个真正能用的后台&lt;&#x2F;h2&gt;
+&lt;p&gt;MVP 有前端没后端，用户能看不能管。Phase 2 的核心是让救助团队的工作人员能直接在手机上操作。&lt;&#x2F;p&gt;
+&lt;p&gt;管理后台藏在一个彩蛋里——「关于我们」页面长按那个 🐾 emoji，验证 OpenID 白名单后进入。不需要额外的登录系统，微信生态自带身份。&lt;&#x2F;p&gt;
+&lt;p&gt;后台做成了双 tab 布局：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;动物管理&lt;&#x2F;strong&gt;：增删改查，每只动物一张完整的档案卡。除了基础的名字品种性别，还参考了&lt;a href=&quot;https:&#x2F;&#x2F;www.cawabj.cn&#x2F;animals&#x2F;info-cards&#x2F;&quot;&gt;首都爱护动物协会&lt;&#x2F;a&gt;的信息卡，加了身高、颈围、胸围三个体型数据，以及一个特殊情况字段——有些被救助的动物可能有残疾或慢性病，领养人有权提前知道。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;领养审核&lt;&#x2F;strong&gt;：用户提交申请后，管理员能看到完整信息（姓名、电话、居住情况、宠物经验、家人态度、领养理由），一键通过或拒绝。&lt;&#x2F;p&gt;
+&lt;p&gt;照片上传加了一层容错：单张上传失败会自动重试一次，第二次再失败就跳过，不会因为一张图卡住整个流程。救助团队的志愿者不一定在网络好的地方操作，这个细节很重要。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-long-xia-de-liang-ba-dao&quot;&gt;小龙虾的两把刀&lt;&#x2F;h2&gt;
+&lt;p&gt;代码写完，交给小龙虾 Review。第一轮 8.5 分，比 520 那次的 8 分又高了半分。但该挑的刺一个没少。&lt;&#x2F;p&gt;
+&lt;p&gt;十个问题里有两个让我印象深刻。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一刀：一只猫被两个人领养了怎么办？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这是一个经典的竞态问题。同一只动物如果有多个 pending 申请，管理员 approve 了第一个，动物状态变成 adopted——但其他申请还挂着 pending。申请人不知道自己已经没戏了。&lt;&#x2F;p&gt;
+&lt;p&gt;修复方案：approve 时自动把同一只动物的其他 pending 申请 batch reject，附上理由&amp;quot;该动物已被其他申请人领养&amp;quot;。一个数据库操作，解决一个用户体验问题。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二刀：通知时间差了八小时。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;云函数运行在服务端，&lt;code&gt;new Date()&lt;&#x2F;code&gt; 拿到的是 UTC 时间。管理员收到的订阅消息上写着&amp;quot;申请时间：03:15&amp;quot;，实际上用户是北京时间 11:15 提交的。&lt;&#x2F;p&gt;
+&lt;p&gt;修复就一行：&lt;code&gt;new Date(Date.now() + 8 * 3600 * 1000)&lt;&#x2F;code&gt;，然后用 &lt;code&gt;getUTC*&lt;&#x2F;code&gt; 系列方法格式化。不优雅，但在微信云函数的环境里是最稳的做法。&lt;&#x2F;p&gt;
+&lt;p&gt;这两个问题有个共同点——&lt;strong&gt;功能看起来是好的，数据看起来也对，但用户感知到的是错的&lt;&#x2F;strong&gt;。这正是 Review 的价值所在：你自己测永远测不出&amp;quot;两个人同时申请一只猫&amp;quot;的场景。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ding-yue-xiao-xi-da-tong-zui-hou-yi-huan&quot;&gt;订阅消息：打通最后一环&lt;&#x2F;h2&gt;
+&lt;p&gt;功能闭环差最后一环：用户提交申请后，管理员怎么知道？&lt;&#x2F;p&gt;
+&lt;p&gt;微信的订阅消息机制有点反直觉——用户（这里是管理员）需要&lt;strong&gt;主动授权&lt;&#x2F;strong&gt;，每次授权只允许发一条。所以我在管理后台的鉴权流程里加了弹窗：每次进入后台确认管理员身份后，顺带请求一次订阅授权。&lt;&#x2F;p&gt;
+&lt;p&gt;用户提交申请后，&lt;code&gt;submitAdopt&lt;&#x2F;code&gt; 云函数异步调用 &lt;code&gt;sendNotify&lt;&#x2F;code&gt;，给所有管理员推送通知。通知里带上申请人姓名、电话、动物名字和申请时间。&lt;code&gt;.catch()&lt;&#x2F;code&gt; 兜底，不阻塞主流程——通知发不出去不应该影响用户的申请体验。&lt;&#x2F;p&gt;
+&lt;p&gt;至此，完整的闭环跑通了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;用户浏览 → 提交申请 → 管理员收到通知 → 审核通过&#x2F;拒绝 → 动物状态更新&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;shang-xian-san-jian-tao&quot;&gt;上线三件套&lt;&#x2F;h2&gt;
+&lt;p&gt;小龙虾最后提了一个不是代码的问题：微信审核需要隐私协议和用户协议。&lt;&#x2F;p&gt;
+&lt;p&gt;于是加了两个页面——隐私保护指引写清楚收集哪些信息、怎么用、怎么删；用户服务协议写清楚领养规范和免责条款。领养申请表单底部加了勾选框，不勾不让提交。&lt;&#x2F;p&gt;
+&lt;p&gt;这三件事加起来大概二十分钟。但没有它们，审核直接打回。&lt;&#x2F;p&gt;
+&lt;p&gt;改完再审。小龙虾给了 9 分：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🦞 &amp;quot;齐活了！隐私协议 + 用户协议 + 领养表单强制勾选，微信审核三件套到位 ✅ 可以提审了。祝一次过审 🚀&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;cong-29-dao-49&quot;&gt;从 29 到 49&lt;&#x2F;h2&gt;
+&lt;p&gt;520 那晚是 29 个文件、1959 行代码。四天后，49 个文件、3530 行。&lt;&#x2F;p&gt;
+&lt;p&gt;数字翻了一倍，但更重要的是性质变了——从&amp;quot;能看&amp;quot;变成了&amp;quot;能用&amp;quot;。Mock 数据变成了云数据库，页面预览变成了真实的管理工具，单机 demo 变成了可以部署给救助团队的产品。&lt;&#x2F;p&gt;
+&lt;p&gt;备案已经提交，在等平台审核。通过之后就能上传代码、提交审核、正式发布。&lt;&#x2F;p&gt;
+&lt;p&gt;小宝的照片还留在代码仓库里，作为 placeholder 和测试数据。但很快，那个位置会被真正等待领养的猫和狗替代。&lt;&#x2F;p&gt;
+&lt;p&gt;到那时候，小宝就可以安心回到沙发上打呼噜了。&lt;&#x2F;p&gt;
+&lt;p&gt;她的任务完成了 🐾&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>小宝教会我的事：520 夜，一个流浪动物小程序的诞生</title>
         <published>2026-05-20T00:00:00+00:00</published>
