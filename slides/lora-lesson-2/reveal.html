@@ -80,6 +80,10 @@
     .ascii-flow .hl { color: #f0883e; font-weight: 700; }
     .ascii-flow .gh { color: #7ee787; }
     .ascii-flow .dimc { color: #8b949e; }
+
+    /* 默认跟 reveal 原创居中。信息密集型页面手动 opt-in ：class="left-align" */
+    .reveal .slides section.left-align { text-align: left; }
+    .reveal .slides section.left-align > h2 { text-align: center; }
   </style>
 </head>
 <body>
@@ -191,10 +195,10 @@
     <h3>20 min · 让模型"学答不学问"</h3>
   </section>
 
-  <section>
+  <section class="left-align">
     <h2>3.1 任务：外贸术语 QA</h2>
-    <p><strong>训练集</strong>：500 条（Polly 备好）<br>
-       <strong>盲测集</strong>：50 条（不给学生看，课堂评分用）</p>
+    <p><strong>训练集</strong>：500 条<br>
+       <strong>盲测集</strong>：50 条</p>
     <p><strong>数据格式</strong>（Alpaca-style）：</p>
     <pre><code class="language-json" data-trim>
 {
@@ -313,7 +317,7 @@ preds_tok = [" ".join(jieba.lcut(p)) for p in preds]
   </section>
 
   <section>
-    <h2>6. 部署 demo（老师演示）</h2>
+    <h2>6. 部署 demo</h2>
     <h3 class="fragment">方案 A — HuggingFace Hub</h3>
     <pre class="fragment"><code class="language-bash" data-trim>
 huggingface-cli upload your-name/qwen-trade ./adapter
