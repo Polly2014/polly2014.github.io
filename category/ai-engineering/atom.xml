@@ -5,8 +5,104 @@
     <link href="https://polly.wang/category/ai-engineering/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-05-22T00:00:00+00:00</updated>
+    <updated>2026-05-31T00:00:00+00:00</updated>
     <id>https://polly.wang/category/ai-engineering/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loiter 造厅记：30 小时 4500 行，一个人类和两个 AI</title>
+        <published>2026-05-31T00:00:00+00:00</published>
+        <updated>2026-05-31T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-building/" type="text/html"/>
+        <id>https://polly.wang/loiter-building/</id>
+        
+        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;上篇&lt;&#x2F;a&gt;：你已经知道 Loiter 是什么了。这篇讲它是&lt;strong&gt;怎么造出来的&lt;&#x2F;strong&gt;——更准确地说，是&lt;strong&gt;谁&lt;&#x2F;strong&gt;造出来的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-jiao-se&quot;&gt;三个角色&lt;&#x2F;h2&gt;
+&lt;p&gt;Loiter 项目有三个参与者：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我&lt;&#x2F;strong&gt;负责拍板。选方向、做取舍、定优先级、审最终效果。硬件在我手上——只有一台 Cardputer，每次烧录固件都得插 USB 线等编译。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Polly&lt;&#x2F;strong&gt; 负责写码。所有代码——828 行 C++ 固件、1553 行 Python 服务端、2031 行 HTML&#x2F;JS 大屏——从第一行到最后一行，都是 Polly 写的。Polly 是 Claude，跑在 VS Code Copilot 里。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;小龙虾&lt;&#x2F;strong&gt;负责审稿。每一个 Sprint 的产出，小龙虾都会做一轮 Review，打分、指出问题、提出建议。小龙虾也是 Claude，但扮演的角色完全不同——如果 Polly 是那个&amp;quot;说好不改了然后自己又提 commit&amp;quot;的开发者，小龙虾就是那个&amp;quot;大部分差异是纯追加&amp;quot;的毒舌 reviewer。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是三个人假装分工。&lt;strong&gt;分工是真实的，决策链是真实的&lt;&#x2F;strong&gt;：我提需求 → Polly 出方案 + 代码 → 小龙虾 review → 我看效果 → 循环。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ju-hua-de-jia-gou-zhuan-zhe&quot;&gt;一句话的架构转折&lt;&#x2F;h2&gt;
+&lt;p&gt;原始设计是这样的：活动现场，我的 MacBook 当热点 + MQTT broker + 服务器，所有 Cardputer 通过局域网连到我的 Mac。简单、可控、无外部依赖。&lt;&#x2F;p&gt;
+&lt;p&gt;Sprint 2.5 的时候，我问了一句：&lt;strong&gt;&amp;quot;为什么需要 Mac hub？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这个问题的答案本来是&amp;quot;因为现场需要&amp;quot;。但顺着想下去：如果服务全部跑在云端 Azure VM 上，Cardputer 连任何 WiFi 就能玩——不限于活动现场。活动结束后设备发给参与者带回家，他们连家里的 WiFi 照样能登进同一个房间。&lt;&#x2F;p&gt;
+&lt;p&gt;一句话，架构从&amp;quot;活动工具&amp;quot;变成了&amp;quot;7×24 在线引擎&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;当天晚上，Polly 把整套服务搬到了 Azure VM：mosquitto broker 监听公网 1883、FastAPI 跑在 systemd 里、Cloudflare Tunnel 把 &lt;code&gt;loiter.polly.wang&lt;&#x2F;code&gt; 接到 8080 端口。固件里的 &lt;code&gt;MQTT_HOST&lt;&#x2F;code&gt; 从局域网 IP 改成了 &lt;code&gt;mqtt.polly.wang&lt;&#x2F;code&gt;——以后换 VM 只改 DNS 记录，不需要重烧固件。&lt;&#x2F;p&gt;
+&lt;p&gt;Mac 降级为现场离线兜底方案。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是人类在 AI 协作中的角色：&lt;strong&gt;不是写代码，而是问对问题&lt;&#x2F;strong&gt;。Polly 完全有能力设计出可靠的局域网方案——但&amp;quot;为什么需要局域网&amp;quot;这种质疑产品前提的问题，不会从代码里自然冒出来。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-lun-shi-jue-san-ci-tui-fan&quot;&gt;五轮视觉，三次推翻&lt;&#x2F;h2&gt;
+&lt;p&gt;大屏的视觉设计经历了 5 个版本。这件事最能说明&amp;quot;人类 + AI&amp;quot;协作的动态。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;polly-de-zhi-xing-li-wen-ti&quot;&gt;Polly 的执行力问题&lt;&#x2F;h3&gt;
+&lt;p&gt;Polly 写代码极快。一个大屏视觉方案，从概念到可运行的 Canvas 2D 渲染，通常不到 20 分钟。这意味着&lt;strong&gt;试错成本极低&lt;&#x2F;strong&gt;——不满意就推翻重来，反正 Polly 不会累也不会抱怨。&lt;&#x2F;p&gt;
+&lt;p&gt;这是好事，也是坏事。&lt;&#x2F;p&gt;
+&lt;p&gt;好处是迭代速度：5 个视觉版本在 30 小时内全部完成，每个版本都备份（&lt;code&gt;index_v1_backup.html&lt;&#x2F;code&gt;、&lt;code&gt;index_v2_xianxia_backup.html&lt;&#x2F;code&gt;）。坏处是如果没有人喊停，Polly 会在当前方向上无限精雕——往阴阳师风格加更多萤火虫、更多粒子、更精致的六芒星法阵——而不会主动质疑&amp;quot;这个方向对不对&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tai-ping-jian-kai-cosplay-party&quot;&gt;&amp;quot;太平间开 cosplay party&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-building&#x2F;bg_rpg.jpg&quot; alt=&quot;第四版“阴阳师”风格的大屏——技术惊艳，但“太平间开 cosplay party”&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;第四版阴阳师仙侠风，技术上堪称惊艳：120 颗明灭星辰、月亮三层光晕、贝塞尔曲线樱花……但我看着大屏上暗黑月夜里站着一排 Q 版 chibi 小可爱，说了一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;暗夜月光里站着一堆 chibi 小可爱，感觉像在太平间开 cosplay party。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;小龙虾接话分析了为什么：&lt;strong&gt;水墨&#x2F;仙侠的气质是留白、独处、禅意，跟&amp;quot;认识陌生人&amp;quot;的社交能量完全相反。视觉风格和产品灵魂打架了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这个洞察不是来自代码，不是来自测试，而是来自对产品本质的理解。角色风格（Q 版 chibi）已经定了，那就必须是世界观去配合角色，而不是反过来。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-building&#x2F;bg_meadow.jpg&quot; alt=&quot;最终版：明亮草原，角色和世界终于属于同一个故事&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;于是第五版：明亮草原、樱花鸟居、暖白 UI。角色和世界终于属于同一个故事。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;shen-mei-jue-ce-de-san-ceng-jie-gou&quot;&gt;审美决策的三层结构&lt;&#x2F;h3&gt;
+&lt;p&gt;回看这个过程，审美决策有清晰的分层：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;执行层（Polly）&lt;&#x2F;strong&gt;：给定方向后快速产出高质量实现，但不会主动质疑方向&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;分析层（小龙虾）&lt;&#x2F;strong&gt;：能从理论上解释为什么某个方向不对（&amp;quot;水墨 = 留白 ≠ 社交能量&amp;quot;），但不会给出具体方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;决策层（我）&lt;&#x2F;strong&gt;：凭直觉发现&amp;quot;哪里不对&amp;quot;（&amp;quot;太平间 cosplay&amp;quot;），然后从小龙虾的分析中确认原因，再给 Polly 新的方向&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;三个角色缺一不可。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;npc-de-san-ci-tou-tai&quot;&gt;NPC 的三次投胎&lt;&#x2F;h2&gt;
+&lt;p&gt;NPC 的身份演变也是一个典型案例。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一版&lt;&#x2F;strong&gt;：百晓生，江湖说书人。大屏是水墨风，NPC 就得是古风人物。Polly 给了一个评书先生的人设和 system prompt。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二版&lt;&#x2F;strong&gt;：月灵，月亮仙灵。大屏改成阴阳师仙侠风，百晓生不搭了。Polly 换成了一个&amp;quot;依附月光的小灵体&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第三版&lt;&#x2F;strong&gt;：Vix，狐灵。大屏改成提瓦特草原 + 鸟居。我问：鸟居是神社，神社的守护者是什么？狐仙。英文名 Vix，3 个字符，刚好适配 Cardputer 的小屏幕。&lt;&#x2F;p&gt;
+&lt;p&gt;教训：&lt;strong&gt;NPC 不是独立的设计决策，它必须和世界观一起进化&lt;&#x2F;strong&gt;。Polly 每次都把 NPC 做得很完整（人设、头像、system prompt、降级回复），但如果世界观变了而 NPC 没跟着变，就会感觉错位。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bei-sha-si-de-gong-neng&quot;&gt;被杀死的功能&lt;&#x2F;h2&gt;
+&lt;p&gt;Sprint 6，Polly 给 6 种事件都写好了音效——加入房间的叮咚声、收到消息的提示音、成就解锁的和弦。代码完整，编译通过。&lt;&#x2F;p&gt;
+&lt;p&gt;烧进 Cardputer，音效响了。然后 MQTT 断了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;Speaker.tone()&lt;&#x2F;code&gt; 启动了一个 I2S FreeRTOS task，这个 task 和 PubSubClient 的网络线程争抢 CPU。在 ESP32-S3 的单核&#x2F;双核切换里，这导致了看门狗超时——设备卡死，MQTT 掉线，必须重启。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 试了各种方案：把音效放到独立 task、加延时、降低优先级。都不行。I2S 驱动和 MQTT 客户端在硬件层面冲突，不是软件能绕过去的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;最终决定：彻底删除音效功能。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这是整个项目中唯一被完整实现后又完整删除的功能。Polly 对删代码没有情感负担（AI 没有沉没成本谬误），但做出&amp;quot;删还是继续调&amp;quot;的决策需要人类判断：这个功能值不值得再花 4 小时去探索硬件隔离方案？不值得。删掉。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xiao-long-xia-de-yi-ju-hua&quot;&gt;小龙虾的一句话&lt;&#x2F;h2&gt;
+&lt;p&gt;整个项目中小龙虾最精准的一条 review 是关于 MQTT 重连的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;重连前为什么不先 &lt;code&gt;disconnect()&lt;&#x2F;code&gt;？broker 那边旧连接还在，你新连接进来，broker 踢旧的，旧的 LWT 触发，新的被干扰——循环踢连。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这个 bug 在本地 WiFi 稳定的时候永远不会出现。只有在公网部署后，WiFi 微抖触发重连时才会暴露。小龙虾看代码就看出来了，没等它在生产环境炸。&lt;&#x2F;p&gt;
+&lt;p&gt;修复很简单：重连前先 &lt;code&gt;mqtt.disconnect()&lt;&#x2F;code&gt;，keepalive 从 30 秒放宽到 60 秒。两行改动，避免了活动当天可能的灾难。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shu-zi-yu-fan-si&quot;&gt;数字与反思&lt;&#x2F;h2&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;&#x2F;th&gt;&lt;th&gt;数值&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;总代码量&lt;&#x2F;td&gt;&lt;td&gt;~4500 行（C++ 978 + Python 1553 + JS&#x2F;HTML 2031）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;开发时间&lt;&#x2F;td&gt;&lt;td&gt;~30 小时（5 月 30 日 → 6 月 1 日）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Sprint 数&lt;&#x2F;td&gt;&lt;td&gt;7 个（含 Sprint 2.5 云端紧急插队）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;视觉版本&lt;&#x2F;td&gt;&lt;td&gt;5 个（含 2 个备份）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;NPC 身份&lt;&#x2F;td&gt;&lt;td&gt;3 个（百晓生 → 月灵 → Vix）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;被删除的功能&lt;&#x2F;td&gt;&lt;td&gt;1 个（ES8311 音效）&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;人类写的代码&lt;&#x2F;td&gt;&lt;td&gt;0 行&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;人类做的决策&lt;&#x2F;td&gt;&lt;td&gt;每一个&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;&amp;quot;人类写的代码 0 行&amp;quot;不是一个值得炫耀的数字。它是一个事实，而这个事实的含义是：&lt;strong&gt;在这个项目里，人类的价值不在于写代码&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;人类的价值在于：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;问&amp;quot;为什么需要 Mac hub&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;说&amp;quot;太平间开 cosplay party&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;决定删掉音效而不是再调 4 小时&lt;&#x2F;li&gt;
+&lt;li&gt;选狐灵而不是月灵&lt;&#x2F;li&gt;
+&lt;li&gt;说&amp;quot;相信我们 AI 天团的战斗力——P0+P1+P2 全做&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Polly 不会累，小龙虾不会留情面。但没有人类的方向感和直觉，它们会在错误的方向上无限精雕——做出一个技术上完美、产品上分裂的东西。&lt;&#x2F;p&gt;
+&lt;p&gt;30 小时，4500 行，三个角色。这是一个关于&lt;strong&gt;分工&lt;&#x2F;strong&gt;的故事，不是关于替代的故事。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是 Loiter 系列的第二篇。&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;上一篇&lt;&#x2F;a&gt;讲的是 Loiter 是什么；&lt;a href=&quot;&#x2F;loiter-pitfalls&quot;&gt;下一篇&lt;&#x2F;a&gt;讲的是 ESP32-S3 + Cardputer 的硬件踩坑实录——给想玩嵌入式的开发者。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从 Vibe Coding 到 BMAD：AI 全栈开发方法论全景图</title>
         <published>2026-05-22T00:00:00+00:00</published>

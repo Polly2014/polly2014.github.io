@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - MQTT</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/mqtt/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-06-01T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/mqtt/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loiter 踩坑记：Cardputer 生存指南</title>
+        <published>2026-06-01T00:00:00+00:00</published>
+        <updated>2026-06-01T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-pitfalls/" type="text/html"/>
+        <id>https://polly.wang/loiter-pitfalls/</id>
+        
+        <content type="html">&lt;p&gt;接&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;上篇&lt;&#x2F;a&gt;：你已经知道 Loiter 的 AI 协作故事了。这篇是纯技术踩坑——写给那些也在玩 ESP32 &#x2F; Cardputer &#x2F; IoT 的开发者。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;huan-jing-da-jian-platformio-de-liang-ge-da-keng&quot;&gt;环境搭建：PlatformIO 的两个大坑&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;keng-1-bao-xia-zai-man-100-bei&quot;&gt;坑 1：包下载慢 100 倍&lt;&#x2F;h3&gt;
+&lt;p&gt;首次 &lt;code&gt;pio run&lt;&#x2F;code&gt; 要拉 ESP32-S3 的 framework（235MB）、toolchain、esptoolpy 等包。用 PlatformIO 默认的单连接下载：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方式&lt;&#x2F;th&gt;&lt;th&gt;速度&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;代理单线程&lt;&#x2F;td&gt;&lt;td&gt;~33 KB&#x2F;s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;直连单线程&lt;&#x2F;td&gt;&lt;td&gt;~19 KB&#x2F;s&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;aria2 -x16 直连&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;1.6–2.1 MB&#x2F;s&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;上游镜像限速单连接，开不开代理都没用。&lt;strong&gt;多线程并发才是解药&lt;&#x2F;strong&gt;，而且要关掉代理（代理反而更慢）。&lt;&#x2F;p&gt;
+&lt;p&gt;手动下包套路：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 1. 查 download_url + sha256
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;curl -s &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;api.registry.platformio.org&#x2F;v3&#x2F;packages&#x2F;platformio&#x2F;tool&#x2F;&amp;lt;包名&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; \
+&lt;&#x2F;span&gt;&lt;span&gt;  | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;python3 -c &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;import sys,json;d=json.load(sys.stdin);v=d[&amp;#39;version&amp;#39;];f=v[&amp;#39;files&amp;#39;][0];print(f[&amp;#39;download_url&amp;#39;]);print(f[&amp;#39;checksum&amp;#39;][&amp;#39;sha256&amp;#39;])&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 2. aria2 多线程（务必 unset 代理）
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;.platformio&#x2F;.cache&#x2F;downloads
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env -u&lt;&#x2F;span&gt;&lt;span&gt; https_proxy&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span&gt; http_proxy&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -u&lt;&#x2F;span&gt;&lt;span&gt; all_proxy \
+&lt;&#x2F;span&gt;&lt;span&gt;  aria2c&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -x16 -s16 -k1M -o&lt;&#x2F;span&gt;&lt;span&gt; pkg.tar.gz &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;download_url&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 3. 校验 + 解压到 packages&#x2F; + 手写 .piopm
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;sha256&amp;gt;  pkg.tar.gz&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;shasum -a&lt;&#x2F;span&gt;&lt;span&gt; 256&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -c&lt;&#x2F;span&gt;&lt;span&gt; -
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;解压后需要在包目录下放一个 &lt;code&gt;.piopm&lt;&#x2F;code&gt; JSON 文件，格式参考已装包，让 PlatformIO 认为已安装并跳过重下。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;keng-2-no-module-named-pip&quot;&gt;坑 2：&lt;code&gt;No module named pip&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;uv tool install platformio&lt;&#x2F;code&gt; 装出来的 pio，其内嵌 Python &lt;strong&gt;没有 pip&lt;&#x2F;strong&gt;。当 esptoolpy 尝试安装 &lt;code&gt;cryptography&lt;&#x2F;code&gt;、&lt;code&gt;ecdsa&lt;&#x2F;code&gt; 等依赖时直接炸。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PIOPY&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;.local&#x2F;share&#x2F;uv&#x2F;tools&#x2F;platformio&#x2F;bin&#x2F;python
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PIOPY&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -m&lt;&#x2F;span&gt;&lt;span&gt; ensurepip&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --upgrade    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 补 pip
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;PIP_INDEX_URL&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple &lt;&#x2F;span&gt;&lt;span&gt;\
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;env -u&lt;&#x2F;span&gt;&lt;span&gt; https_proxy pio run       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# PyPI 走清华镜像
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;pubsubclient-de-256-zi-jie-xian-jing&quot;&gt;PubSubClient 的 256 字节陷阱&lt;&#x2F;h2&gt;
+&lt;p&gt;PubSubClient 是 Arduino 上最常用的 MQTT 客户端库，但它有一个默认值会在生产中炸：&lt;strong&gt;单包最大 256 字节&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Loiter 的 avatar bitmap JSON 约 200 字节，加上 topic 和 MQTT header 就超限了。消息直接被 PubSubClient 静默丢弃，没有任何报错。&lt;&#x2F;p&gt;
+&lt;p&gt;修复：在引入头文件之前 define。&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#define &lt;&#x2F;span&gt;&lt;span&gt;MQTT_MAX_PACKET_SIZE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1024
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;PubSubClient.h&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;一定是&lt;strong&gt;之前&lt;&#x2F;strong&gt;。如果放在 &lt;code&gt;#include&lt;&#x2F;code&gt; 后面，宏不生效，PubSubClient 内部已经用 256 编译了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mqtt-zhong-lian-de-xun-huan-ti-lian&quot;&gt;MQTT 重连的循环踢连&lt;&#x2F;h2&gt;
+&lt;p&gt;WiFi 微抖 → &lt;code&gt;mqtt.connected()&lt;&#x2F;code&gt; 返回 false → 立刻 &lt;code&gt;mqtt.connect()&lt;&#x2F;code&gt; → broker 认为旧连接还活着 → 踢旧连接 → 旧连接的 LWT（Last Will and Testament）触发 → 新连接被干扰 → 又断了 → 循环。&lt;&#x2F;p&gt;
+&lt;p&gt;这个 bug 在稳定的局域网里永远不会出现，只有上了公网才暴露。&lt;&#x2F;p&gt;
+&lt;p&gt;修复三板斧：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 1. 重连前先断旧连接
+&lt;&#x2F;span&gt;&lt;span&gt;mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;disconnect&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;delay&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;100&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;connect&lt;&#x2F;span&gt;&lt;span&gt;(uid, MQTT_USER, MQTT_PASS, willTopic, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;, willPayload);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 2. keepalive 放宽
+&lt;&#x2F;span&gt;&lt;span&gt;mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;setKeepAlive&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;60&lt;&#x2F;span&gt;&lt;span&gt;);  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 默认 15 太激进，公网抖动容易误判
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 3. 重连间隔拉长
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastReconnect &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5000&lt;&#x2F;span&gt;&lt;span&gt;) { ... }  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 5s 而不是 1s
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;speaker-tone-hui-sha-si-mqtt&quot;&gt;Speaker.tone() 会杀死 MQTT&lt;&#x2F;h2&gt;
+&lt;p&gt;这是整个项目最痛的坑。&lt;&#x2F;p&gt;
+&lt;p&gt;Cardputer-Adv 搭载 ES8311 音频芯片，通过 I2S 总线驱动。调用 &lt;code&gt;M5Cardputer.Speaker.tone(freq, duration)&lt;&#x2F;code&gt; 会启动一个 FreeRTOS I2S task 来输出音频。&lt;&#x2F;p&gt;
+&lt;p&gt;问题是：&lt;strong&gt;这个 I2S task 和 PubSubClient 的网络处理争抢 CPU&lt;&#x2F;strong&gt;。在 ESP32-S3 上，如果 I2S task 持有总线的时间过长，&lt;code&gt;loop()&lt;&#x2F;code&gt; 里的 &lt;code&gt;mqtt.loop()&lt;&#x2F;code&gt; 就来不及处理心跳和消息，看门狗超时，设备卡死或 MQTT 掉线。&lt;&#x2F;p&gt;
+&lt;p&gt;试过的方案：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;把音效放到独立 task 的队列里异步播放 → 还是卡&lt;&#x2F;li&gt;
+&lt;li&gt;降低 I2S task 优先级 → 音频断断续续，MQTT 仍偶发掉线&lt;&#x2F;li&gt;
+&lt;li&gt;缩短 tone duration 到 50ms → 不够稳定&lt;&#x2F;li&gt;
+&lt;li&gt;在 &lt;code&gt;mqtt.loop()&lt;&#x2F;code&gt; 前后加保护 → 无效&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;根因是 I2S DMA 和 WiFi 的 RF 模块在硬件层面有资源竞争，软件层面绕不过去。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;最终决策：彻底删除音效功能。&lt;&#x2F;strong&gt; 6 种精心设计的事件音效全部移除。等未来有精力做硬件隔离测试再考虑。&lt;&#x2F;p&gt;
+&lt;p&gt;教训：&lt;strong&gt;在资源受限的嵌入式平台上，任何外设的初始化都要先和网络栈做兼容性测试&lt;&#x2F;strong&gt;，确认不冲突再集成到主循环里。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bmi270-jia-su-du-ji-cong-yuan-shi-shu-ju-dao-ti-gan-cao-kong&quot;&gt;BMI270 加速度计：从原始数据到体感操控&lt;&#x2F;h2&gt;
+&lt;p&gt;Cardputer-Adv 内置 BMI270 六轴 IMU。我们用它做了两件事：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ti-gan-yi-dong&quot;&gt;体感移动&lt;&#x2F;h3&gt;
+&lt;p&gt;500ms 采样一次加速度计，把倾斜角映射为大屏上角色的移动方向：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt; ax, ay, az;
+&lt;&#x2F;span&gt;&lt;span&gt;M5Cardputer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Imu&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;getAccelData&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;ax, &amp;amp;ay, &amp;amp;az);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 死区 0.15g：平放时微小抖动不触发移动
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt; dx = (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;fabsf&lt;&#x2F;span&gt;&lt;span&gt;(ax) &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.15&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;constrain&lt;&#x2F;span&gt;&lt;span&gt;(-ax, -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt; dy = (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;fabsf&lt;&#x2F;span&gt;&lt;span&gt;(ay) &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.15&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;constrain&lt;&#x2F;span&gt;&lt;span&gt;(ay, -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) : &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 量化步进 0.05：避免微小变化频繁发包
+&lt;&#x2F;span&gt;&lt;span&gt;dx = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;roundf&lt;&#x2F;span&gt;&lt;span&gt;(dx &#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.05&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.05&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;dy = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;roundf&lt;&#x2F;span&gt;&lt;span&gt;(dy &#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.05&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;) * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.05&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Cardputer 横屏、键盘朝自己时：左倾 = ax 正 → 角色左移，前倾 = ay 负 → 角色上移。服务端对 move 消息做 250ms 限流中继，大屏以 2px&#x2F;帧平滑插值。&lt;&#x2F;p&gt;
+&lt;p&gt;关键参数调了好几轮：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;死区太小（0.05g）→ 平放桌上角色也在抖&lt;&#x2F;li&gt;
+&lt;li&gt;死区太大（0.3g）→ 明显倾斜才有反应，手感迟钝&lt;&#x2F;li&gt;
+&lt;li&gt;量化步进太细（0.01）→ MQTT 发包太频繁&lt;&#x2F;li&gt;
+&lt;li&gt;量化步进太粗（0.1）→ 移动不流畅&lt;&#x2F;li&gt;
+&lt;li&gt;0.15g 死区 + 0.05 步进是实测最舒服的手感&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;yao-yi-yao-hong-fa-emote&quot;&gt;摇一摇触发 emote&lt;&#x2F;h3&gt;
+&lt;p&gt;检测加速度矢量模：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;float&lt;&#x2F;span&gt;&lt;span&gt; mag = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;sqrtf&lt;&#x2F;span&gt;&lt;span&gt;(ax * ax + ay * ay + az * az);
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(mag &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2.5&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;f &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastShake &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3000&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; idx = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;esp_random&lt;&#x2F;span&gt;&lt;span&gt;() % &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 发送随机 emote
+&lt;&#x2F;span&gt;&lt;span&gt;    lastShake = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;2.5g 阈值是&amp;quot;明确在摇&amp;quot;和&amp;quot;走路时手晃&amp;quot;之间的分界线。3 秒冷却和服务端的 rate-limit 对齐。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;240x135-shang-de-zhong-duan-ui&quot;&gt;240×135 上的终端 UI&lt;&#x2F;h2&gt;
+&lt;p&gt;在 Cardputer 的 240×135 像素屏幕上，&lt;code&gt;textSize(1)&lt;&#x2F;code&gt; 下每个字符约 6×8 像素，能放下 &lt;strong&gt;40 列 × 16 行&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;屏幕被分成三段：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;区域&lt;&#x2F;th&gt;&lt;th&gt;高度&lt;&#x2F;th&gt;&lt;th&gt;内容&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;状态栏&lt;&#x2F;td&gt;&lt;td&gt;12px&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;nick@channel&lt;&#x2F;code&gt; + 连接灯（绿&#x2F;红圆点）+ 在线人数&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;消息区&lt;&#x2F;td&gt;&lt;td&gt;13 行 × 8px&lt;&#x2F;td&gt;&lt;td&gt;环形缓冲 &lt;code&gt;LogRow[13]&lt;&#x2F;code&gt;，每行截断到 40 列&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;输入行&lt;&#x2F;td&gt;&lt;td&gt;8px&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&amp;gt; &lt;&#x2F;code&gt; + 光标 + 当前输入，前景色跟随频道&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;6 种颜色区分不同来源的消息：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;颜色&lt;&#x2F;th&gt;&lt;th&gt;来源&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;黄色&lt;&#x2F;td&gt;&lt;td&gt;自己发的消息&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;暖金 &lt;code&gt;0xC560&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;#main 频道&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;青绿 &lt;code&gt;0x0EC6&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;#fishing 频道&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;紫色 &lt;code&gt;0x7A5F&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;#help 频道&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;琥珀 &lt;code&gt;0xFDA0&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;Vix 狐灵回复&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;浅灰 &lt;code&gt;0x7BEF&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;匿名告白&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;颜色用的是 RGB565（16-bit），不是常见的 RGB888。这是 TFT LCD 驱动的原生格式。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fei-zu-sai-shi-sheng-ming-xian&quot;&gt;非阻塞是生命线&lt;&#x2F;h2&gt;
+&lt;p&gt;ESP32 的 &lt;code&gt;loop()&lt;&#x2F;code&gt; 必须无阻塞——任何 &lt;code&gt;delay()&lt;&#x2F;code&gt; 或 &lt;code&gt;while(等待)&lt;&#x2F;code&gt; 都会导致 MQTT 心跳超时。&lt;&#x2F;p&gt;
+&lt;p&gt;所有需要&amp;quot;等一会儿再做&amp;quot;的事情，都用 &lt;code&gt;millis()&lt;&#x2F;code&gt; 节流：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;loop&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;    M5Cardputer.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;update&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; MQTT loop —— 必须每次都调，不能被任何东西挡住
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;connected&lt;&#x2F;span&gt;&lt;span&gt;()) mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;loop&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; WiFi 重连 —— 5s 节流
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(!WiFi.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;isConnected&lt;&#x2F;span&gt;&lt;span&gt;() &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastWifiRetry &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5000&lt;&#x2F;span&gt;&lt;span&gt;) { ... }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; MQTT 重连 —— 5s 节流
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(!mqtt.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;connected&lt;&#x2F;span&gt;&lt;span&gt;() &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastMqttRetry &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;5000&lt;&#x2F;span&gt;&lt;span&gt;) { ... }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; IMU 采样 —— 500ms 节流
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastImu &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;500&lt;&#x2F;span&gt;&lt;span&gt;) { ... }
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; 状态栏刷新 —— 1s 节流
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;millis&lt;&#x2F;span&gt;&lt;span&gt;() - lastStatusRedraw &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;) { ... }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;整个 &lt;code&gt;loop()&lt;&#x2F;code&gt; 里没有一个 &lt;code&gt;delay()&lt;&#x2F;code&gt;，没有一个阻塞等待。WiFi 断了？记一下时间，下次再试。MQTT 断了？同理。输入处理、屏幕刷新、IMU 采样，全靠 &lt;code&gt;millis()&lt;&#x2F;code&gt; 差值驱动。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wifi-pei-wang-zai-240x135-shang-zuo-jiao-hu&quot;&gt;WiFi 配网：在 240×135 上做交互&lt;&#x2F;h2&gt;
+&lt;p&gt;Cardputer 固件硬编码了一个默认 WiFi SSID。但带去公司或活动现场，那个 SSID 不存在——而且 ESP32-S3 只支持 2.4GHz，iPhone 默认开的 5GHz 热点根本搜不到。&lt;&#x2F;p&gt;
+&lt;p&gt;于是做了 &lt;code&gt;&#x2F;wifi&lt;&#x2F;code&gt; 设备端配网：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;WiFi.scanNetworks()&lt;&#x2F;code&gt; 扫描附近 SSID&lt;&#x2F;li&gt;
+&lt;li&gt;在 240×135 的屏幕上渲染列表，Tab&#x2F;Backspace 上下选择&lt;&#x2F;li&gt;
+&lt;li&gt;选中后进入密码输入界面（QWERTY 键盘直接打）&lt;&#x2F;li&gt;
+&lt;li&gt;8 秒超时连接&lt;&#x2F;li&gt;
+&lt;li&gt;成功后 &lt;code&gt;Preferences&lt;&#x2F;code&gt; NVS 持久化——下次开机自动用这个 WiFi&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;启动时 5 秒连不上默认 WiFi，自动弹出配网界面。随时输入 &lt;code&gt;&#x2F;wifi&lt;&#x2F;code&gt; 也能重新配。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;32-zi-jie-tou-xiang-de-wan-zheng-lian-lu&quot;&gt;32 字节头像的完整链路&lt;&#x2F;h2&gt;
+&lt;p&gt;AI 头像从生成到显示在 Cardputer 上，经过这条路径：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;用户输入 &lt;code&gt;&#x2F;face cat warrior&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;固件发 MQTT：&lt;code&gt;loiter&#x2F;hall&#x2F;avatar&#x2F;request&lt;&#x2F;code&gt; → &lt;code&gt;{uid, keywords:[&amp;quot;cat&amp;quot;,&amp;quot;warrior&amp;quot;]}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;服务端 &lt;code&gt;avatar.py&lt;&#x2F;code&gt; 拼 prompt → 调 Azure gpt-image-1.5 → 拿回 1024×1024 PNG&lt;&#x2F;li&gt;
+&lt;li&gt;Pillow 缩到 16×16 灰度 → Floyd-Steinberg 抖动 → 1-bit 位图 → 32 字节 base64&lt;&#x2F;li&gt;
+&lt;li&gt;服务端发 MQTT QoS1：&lt;code&gt;loiter&#x2F;hall&#x2F;avatar&#x2F;&amp;lt;uid&amp;gt;&lt;&#x2F;code&gt; → &lt;code&gt;{bitmap_b64: &amp;quot;...&amp;quot;}&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;固件 &lt;code&gt;base64_decode&lt;&#x2F;code&gt; → 按 bit 遍历 → &lt;code&gt;M5Cardputer.Display.fillRect()&lt;&#x2F;code&gt; 逐像素绘制&lt;&#x2F;li&gt;
+&lt;li&gt;放大 4 倍显示为 64×64&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;QoS1 确保头像不丢。线程池确保 AI 生成不阻塞 MQTT 线程。32 字节是 MQTT 单包 1024 限制下的舒适区间。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gei-tong-lu-ren-de-qing-dan&quot;&gt;给同路人的清单&lt;&#x2F;h2&gt;
+&lt;p&gt;如果你也打算用 Cardputer 做项目：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;PlatformIO 下包用 aria2&lt;&#x2F;strong&gt;，不要傻等单线程&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;MQTT_MAX_PACKET_SIZE&lt;&#x2F;code&gt; 放在 &lt;code&gt;#include&lt;&#x2F;code&gt; 前面&lt;&#x2F;strong&gt;，否则不生效&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不要在 MQTT 回调里调 &lt;code&gt;Speaker.tone()&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;，I2S 会杀死网络栈&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;loop()&lt;&#x2F;code&gt; 里零 &lt;code&gt;delay()&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;，用 &lt;code&gt;millis()&lt;&#x2F;code&gt; 节流一切&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;BMI270 死区 0.15g&lt;&#x2F;strong&gt;，低了桌上会抖，高了手感迟钝&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;WiFi 只支持 2.4GHz&lt;&#x2F;strong&gt;，iPhone 热点记得关 5GHz&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;重连前先 &lt;code&gt;disconnect()&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt;，否则 broker 循环踢连&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;NVS (&lt;code&gt;Preferences&lt;&#x2F;code&gt;) 存 WiFi 凭据&lt;&#x2F;strong&gt;，别让用户每次开机重配&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;RGB565 不是 RGB888&lt;&#x2F;strong&gt;，颜色转换公式别搞反&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些都不难。但每一条都是一个下午的调试。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是 Loiter 系列的第三篇。&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;第一篇&lt;&#x2F;a&gt;讲 Loiter 是什么，&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;第二篇&lt;&#x2F;a&gt;讲 AI 协作故事。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Loiter 开厅记：240×135 像素的社交宇宙</title>
+        <published>2026-05-30T00:00:00+00:00</published>
+        <updated>2026-05-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-opening/" type="text/html"/>
+        <id>https://polly.wang/loiter-opening/</id>
+        
+        <content type="html">&lt;p&gt;那台设备到手的时候，我的第一反应是：这也太小了。&lt;&#x2F;p&gt;
+&lt;p&gt;M5Stack Cardputer——比信用卡大不了多少，240×135 像素的 LCD 屏，56 个挤在一起的微型按键，一块 1750mAh 的电池。它跑的是 ESP32-S3，一颗主要给洗衣机和电灯泡用的芯片。&lt;&#x2F;p&gt;
+&lt;p&gt;我要在上面造一个社交厅。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-bei-lun&quot;&gt;一个悖论&lt;&#x2F;h2&gt;
+&lt;p&gt;事情的起因很简单：公司组织线下活动，采购了一批 Cardputer，问我能不能做点什么让大家玩起来。&lt;&#x2F;p&gt;
+&lt;p&gt;但这里有一个根本性的悖论——&lt;strong&gt;现场的人本来就站在一起&lt;&#x2F;strong&gt;。他们能面对面说话，能拍肩膀，能递名片。在一个物理社交已经在发生的空间里，做一个数字社交工具，这不是多此一举吗？&lt;&#x2F;p&gt;
+&lt;p&gt;如果只是做个聊天室，那确实多此一举。&lt;&#x2F;p&gt;
+&lt;p&gt;但如果你把它想成一层&lt;strong&gt;游戏&lt;&#x2F;strong&gt;——&lt;&#x2F;p&gt;
+&lt;p&gt;想象一个安静的开发者，他不擅长主动搭话，但他能在 240×135 的屏幕上打出一行字，那行字会实时飘到投影大屏上，所有人都看得见。想象一个活泼的产品经理，她发现自己的虚拟形象因为聊天太多，头顶冒出了金色的旋转光芒——SSR 稀有度。想象一个路过的实习生，对着 Cardputer 的小屏幕摇一摇，大屏上他的角色脚下突然爆开一圈樱花。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Loiter 不是取代社交，而是在物理空间之上叠加一层游戏化交互层&lt;&#x2F;strong&gt;——让安静的人有出口，让活泼的人有舞台，让所有人有共同的话题。&lt;&#x2F;p&gt;
+&lt;p&gt;名字 &lt;strong&gt;Loiter&lt;&#x2F;strong&gt;（闲逛 &#x2F; 游荡）精准命名了这个动作：&lt;em&gt;在一个空间里无所事事地晃悠、撞见人、随便聊两句&lt;&#x2F;em&gt;。这不是某个功能，这是社交厅的本质。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;kou-dai-li-de-zhong-duan&quot;&gt;口袋里的终端&lt;&#x2F;h2&gt;
+&lt;p&gt;打开 Cardputer，1.5 秒的金色 LOITER logo 闪过，然后你看到的是一个复古终端界面——绿底黑字，上方状态栏显示你的昵称和当前频道，中间是消息流，底部是输入行。&lt;&#x2F;p&gt;
+&lt;p&gt;用 QWERTY 键盘打字，按回车发送。消息通过 MQTT 协议飞到云端服务器，再扇形广播给同一个房间里所有的 Cardputer。延迟几乎感觉不到。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是 MVP。但有意思的东西在后面。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;san-ge-pin-dao&quot;&gt;三个频道&lt;&#x2F;h3&gt;
+&lt;p&gt;按 Tab 键切换频道：&lt;strong&gt;#main&lt;&#x2F;strong&gt;（主厅）、&lt;strong&gt;#fishing&lt;&#x2F;strong&gt;（摸鱼区）、&lt;strong&gt;#help&lt;&#x2F;strong&gt;（求助区）。每个频道在 Cardputer 上用不同颜色区分——暖金、青绿、紫色。大屏上，每个人头像外圈的光环颜色也跟着变。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;face-32-zi-jie-de-ling-hun&quot;&gt;&lt;code&gt;&#x2F;face&lt;&#x2F;code&gt; —— 32 字节的灵魂&lt;&#x2F;h3&gt;
+&lt;p&gt;输入 &lt;code&gt;&#x2F;face cat warrior&lt;&#x2F;code&gt;，你的头像就开始生成了。&lt;&#x2F;p&gt;
+&lt;p&gt;服务端调用 Azure gpt-image-1.5，生成一张 1024×1024 的 Q 版国风 chibi 角色——猫耳武士，汉服飘飘。这张图会出现在大屏上，256 像素的精美彩图。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Cardputer 的屏幕只有 240×135，MQTT 单包上限 1024 字节。怎么把一张 AI 生成的精美头像塞进去？&lt;&#x2F;p&gt;
+&lt;p&gt;答案是 &lt;strong&gt;Floyd-Steinberg 抖动&lt;&#x2F;strong&gt;。服务端用 Pillow 把 1024px 的彩图缩到 16×16，转灰度，再用误差扩散算法抖动成纯黑白 1-bit 位图。最终结果：&lt;strong&gt;32 字节&lt;&#x2F;strong&gt;。就是这 32 字节，在 Cardputer 上放大 4 倍显示成 64×64 的像素头像。抖动后的黑白点阵竟然保留了角色的轮廓和神态——猫耳、铠甲的轮廓清晰可辨。&lt;&#x2F;p&gt;
+&lt;p&gt;一个 AI 生成的灵魂，压缩到 32 字节，穿越 MQTT 到达一块比信用卡还小的屏幕。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;e-spark-yao-yi-yao-yu-wu-chong-zhan-fang&quot;&gt;&lt;code&gt;&#x2F;e spark&lt;&#x2F;code&gt; —— 摇一摇与五种绽放&lt;&#x2F;h3&gt;
+&lt;p&gt;Loiter 有 5 种表情特效（emote），每一种都是独立的粒子系统：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;🌸 &lt;strong&gt;bloom&lt;&#x2F;strong&gt;：28 粒樱花花瓣旋涡爆发，贝塞尔曲线勾勒花瓣形状&lt;&#x2F;li&gt;
+&lt;li&gt;✨ &lt;strong&gt;spark&lt;&#x2F;strong&gt;：先发射火箭上升减速，到达顶点后 36 粒全色相粒子炸开，拖着余焰尾迹&lt;&#x2F;li&gt;
+&lt;li&gt;🍃 &lt;strong&gt;wind&lt;&#x2F;strong&gt;：20 片树叶横扫而过，正弦波上下摆动&lt;&#x2F;li&gt;
+&lt;li&gt;🦊 &lt;strong&gt;fox&lt;&#x2F;strong&gt;：3 团×8 粒橘黄鬼火，轨道旋转散开&lt;&#x2F;li&gt;
+&lt;li&gt;🌈 &lt;strong&gt;rain&lt;&#x2F;strong&gt;：7 色彩虹弧从角色头顶渐显，配合 12 颗彩色五角星散射&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不想打字？&lt;strong&gt;摇一摇 Cardputer&lt;&#x2F;strong&gt;。机身内置的 BMI270 加速度计检测到超过 2.5g 的晃动，就随机触发一个 emote。3 秒冷却，防止疯狂摇。&lt;&#x2F;p&gt;
+&lt;p&gt;大屏上看到有人的角色突然绽放樱花或者炸出烟花，全场会心一笑——但你不知道是谁在摇。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ask-niao-ju-pang-de-hu-ling&quot;&gt;&lt;code&gt;&#x2F;ask&lt;&#x2F;code&gt; —— 鸟居旁的狐灵&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-opening&#x2F;npc_vix.jpg&quot; alt=&quot;Vix 狐灵——鸟居旁的守护者&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;大屏的草原背景右侧有一座鸟居（日式神社门），鸟居旁漂浮着一个小小的光球——那是 &lt;strong&gt;Vix&lt;&#x2F;strong&gt;，一只 Q 版金毛狐灵。&lt;&#x2F;p&gt;
+&lt;p&gt;在 Cardputer 上输入 &lt;code&gt;&#x2F;ask what&#x27;s the meaning of loitering?&lt;&#x2F;code&gt;，Vix 会用俏皮的小狐仙语气回答——她的灵魂是 Claude，但你不会感觉到 AI 的机械感，只会觉得这只狐灵有点话多，有点欠揍，偶尔还挺暖的。&lt;&#x2F;p&gt;
+&lt;p&gt;Vix 的名字来自一个设计决策链：大屏背景有鸟居 → 鸟居是神社 → 神社的守护者是狐仙 → 英文名 Vix，3 个字符，刚好适配 Cardputer 的小屏幕。在此之前，她叫过&amp;quot;百晓生&amp;quot;（江湖说书人）和&amp;quot;月灵&amp;quot;（月亮仙灵），但都跟最终的草原画风不搭。NPC 的身份必须和世界观一起进化。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;anon-ni-ming-gao-bai-qiang&quot;&gt;&lt;code&gt;&#x2F;anon&lt;&#x2F;code&gt; —— 匿名告白墙&lt;&#x2F;h3&gt;
+&lt;p&gt;输入 &lt;code&gt;&#x2F;anon you look great today&lt;&#x2F;code&gt;，这条消息会被服务端剥掉发送者身份，以 &lt;code&gt;???&lt;&#x2F;code&gt; 的名字广播出去。大屏上出现一个半透明粉紫渐变的气泡，边框 3 秒一次呼吸般明灭，4 秒后悬浮漂远消散。&lt;&#x2F;p&gt;
+&lt;p&gt;没有人知道是谁说的。在一个大家刚认识的线下活动里，这个功能微妙地降低了表达门槛。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;quiz-qiang-da-sai&quot;&gt;&lt;code&gt;&#x2F;quiz&lt;&#x2F;code&gt; —— 抢答赛&lt;&#x2F;h3&gt;
+&lt;p&gt;输入 &lt;code&gt;&#x2F;quiz&lt;&#x2F;code&gt; 发起一场 Vix 问答赛。狐灵 AI 出题，5 轮，每轮 20 秒抢答。大屏右侧弹出计分板面板，实时排行。答对了，你的角色自动触发 ✨ spark 烟花特效。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;task-po-bing-ren-wu&quot;&gt;&lt;code&gt;&#x2F;task&lt;&#x2F;code&gt; —— 破冰任务&lt;&#x2F;h3&gt;
+&lt;p&gt;输入 &lt;code&gt;&#x2F;task&lt;&#x2F;code&gt; 领取一张随机任务卡。12 种任务池覆盖了 Loiter 的所有功能：去 #fishing 频道发条消息、摇一摇触发 emote、问 Vix 一个问题、给自己生成一个 AI 头像……完成后自动检测，大屏上卷轴展开 + 燃尽动画。&lt;&#x2F;p&gt;
+&lt;p&gt;这是破冰设计的核心：&lt;strong&gt;不告诉你&amp;quot;去和旁边的人聊天&amp;quot;，而是给你一个游戏任务，让社交自然发生&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-ci-zhong-sheng&quot;&gt;五次重生&lt;&#x2F;h2&gt;
+&lt;p&gt;大屏经历了 5 个完全不同的视觉版本，每一次都是推翻重来。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v0：终端黑绿&lt;&#x2F;strong&gt;。纯黑背景，CRT 扫描线滤镜，绿色像素字体。很酷，但太冷，像是在监控室里社交。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v1：暖色治愈&lt;&#x2F;strong&gt;。换成 Ghibli 风水彩夕阳底，Patrick Hand 手绘字体。温暖了，但也太 soft——没有记忆点。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v2：RPG 深紫&lt;&#x2F;strong&gt;。歧路旅人风格，鸟居场景，Cinzel 衬线字体。帅，但&amp;quot;阴阳师&amp;quot;方向走偏了——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v3：月夜仙侠&lt;&#x2F;strong&gt;。全程序化渲染：深靛夜空 + 120 颗明灭星辰 + 月亮三层光晕 + 三层远山剪影 + 22 只脉动萤火虫 + 贝塞尔曲线樱花花瓣。漆木横梁顶栏，竹简底栏，毛笔书法写着&amp;quot;闲逛堂&amp;quot;。技术上极其惊艳。&lt;&#x2F;p&gt;
+&lt;p&gt;但问题来了：&lt;strong&gt;暗夜月光里站着一堆 Q 版 chibi 小可爱，感觉像在太平间开 cosplay party。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;暗黑仙侠的气质是留白、独处、禅意——这跟&amp;quot;认识陌生人&amp;quot;的社交能量完全相反。视觉风格和产品灵魂打架了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-opening&#x2F;bg_meadow.jpg&quot; alt=&quot;大屏最终版：提瓦特草原风&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v4：提瓦特草原&lt;&#x2F;strong&gt;。AI 生成一张明亮的宽幅背景——樱花、鸟居、石灯笼、远山、草地。Canvas 在上面叠加程序化的花粉、云缕、樱花瓣动效。顶栏换成暖白奶油底，气泡换成奶白色。整个画面一下子打开了。&lt;&#x2F;p&gt;
+&lt;p&gt;Q 版角色站在明亮草原上，脚下有椭圆阴影，头顶有稀有度光环——这才对。角色和世界终于属于同一个故事了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yin-qing-bu-shi-chan-pin&quot;&gt;引擎，不是产品&lt;&#x2F;h2&gt;
+&lt;p&gt;Loiter 不是一个&amp;quot;活动用完就扔&amp;quot;的 demo。它是一个&lt;strong&gt;引擎&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;云端服务器 7×24 在线，Cardputer 带回家连上任何 WiFi 就能继续玩——账号绑设备芯片 ID，头像和成就存在服务器上，永不丢失。未来任何线下活动——hackathon、年会、读书会——都可以复用同一个引擎，只换房间名和成就集。&lt;&#x2F;p&gt;
+&lt;p&gt;这次的实例叫 &lt;strong&gt;GLEAM Hall&lt;&#x2F;strong&gt;。下一个房间，也许叫别的名字。&lt;&#x2F;p&gt;
+&lt;p&gt;但引擎永远叫 &lt;strong&gt;Loiter&lt;&#x2F;strong&gt;。闲逛。游荡。在一个空间里无所事事地晃悠，撞见人，随便聊两句。&lt;&#x2F;p&gt;
+&lt;p&gt;240×135 像素，够装一个社交宇宙了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是 Loiter 系列的第一篇。&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;下一篇&lt;&#x2F;a&gt;讲的是幕后的 AI 协作故事——一个人类拍板、一个 AI 写码、一个 AI 审稿，30 小时 4500 行代码是怎么出来的。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
