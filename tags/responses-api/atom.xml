@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Responses API</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/responses-api/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-06-05T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/responses-api/atom.xml</id>
+    <entry xml:lang="en">
+        <title>让 Codex 用上自家代理：一次 SSE 空行引发的血案</title>
+        <published>2026-06-05T00:00:00+00:00</published>
+        <updated>2026-06-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/codex-meets-copilotx/" type="text/html"/>
+        <id>https://polly.wang/codex-meets-copilotx/</id>
+        
+        <content type="html">&lt;p&gt;最近 Codex 的 Computer Use 能力刷屏了——让模型直接看屏幕、点窗口、读截图，俨然一个住在桌面里的 Agent。我也想一探究竟，于是把 Codex 桌面端接到了自家的 CopilotX 代理上。&lt;&#x2F;p&gt;
+&lt;p&gt;刚跑通的时候是真的爽：我让它&amp;quot;只描述当前可见窗口、不要操作&amp;quot;，它老老实实用 Computer Use 看了一眼桌面，连接层崩了还会自己恢复重试，最后准确报出了 VS Code、Edge、Chrome、Teams 一堆窗口。体验拉满。&lt;&#x2F;p&gt;
+&lt;p&gt;但在这之前，我先掉进了一个坑里——一个藏在&lt;strong&gt;一行 &lt;code&gt;if line:&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; 后面的坑。这篇就记录我怎么把它揪出来的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bei-jing-copilotx-shi-shi-yao&quot;&gt;背景：CopilotX 是什么&lt;&#x2F;h2&gt;
+&lt;p&gt;CopilotX 是我自己写的一个 FastAPI 代理，把 GitHub Copilot 的后端能力转译成标准 API：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt; —— OpenAI 格式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; —— Anthropic（Claude）格式&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;responses&lt;&#x2F;code&gt; —— OpenAI Responses API（&lt;strong&gt;Codex 和 gpt-5.5 走的就是这条&lt;&#x2F;strong&gt;）&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;平时 Claude Code、各种小工具都接它，跑得很稳。这次轮到 Codex，配置也很简单——在 &lt;code&gt;~&#x2F;.codex&#x2F;config.toml&lt;&#x2F;code&gt; 里加个自定义 provider：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[model_providers.copilotx]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CopilotX&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;base_url &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;&amp;lt;your-proxy-host&amp;gt;&#x2F;v1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;wire_api &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;responses&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;experimental_bearer_token &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;your-token&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;model = &amp;quot;gpt-5.5&amp;quot;&lt;&#x2F;code&gt;，reasoning effort 调到 medium。看起来天衣无缝。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fan-che-stream-closed-before-response-completed&quot;&gt;翻车：stream closed before response.completed&lt;&#x2F;h2&gt;
+&lt;p&gt;结果一发请求就翻车：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;stream closed before response.completed
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Codex 还很执着地&lt;strong&gt;重连了 5 次&lt;&#x2F;strong&gt;，每次都是同样的结局。更诡异的是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;简单一句 &amp;quot;hi&amp;quot; &lt;strong&gt;有时&lt;&#x2F;strong&gt;能成功&lt;&#x2F;li&gt;
+&lt;li&gt;稍微复杂、带 reasoning 的请求&lt;strong&gt;必然&lt;&#x2F;strong&gt;失败&lt;&#x2F;li&gt;
+&lt;li&gt;失败时统计显示：消费 &lt;strong&gt;0 个事件、0 个 token&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最让我挠头的是——我用 Python 的 &lt;code&gt;httpx&lt;&#x2F;code&gt; 手动打同一个流式接口，&lt;strong&gt;一切正常&lt;&#x2F;strong&gt;，事件、token 全都在。那到底是谁的问题？&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ding-wei-raw-byte-tan-zhen&quot;&gt;定位：raw byte 探针&lt;&#x2F;h2&gt;
+&lt;p&gt;既然高层客户端都说&amp;quot;没问题&amp;quot;，那就降到最底层，&lt;strong&gt;数原始字节&lt;&#x2F;strong&gt;。我写了个探针，直接抓 &lt;code&gt;&#x2F;v1&#x2F;responses&lt;&#x2F;code&gt; 的裸流，统计两个数字：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;event:&lt;&#x2F;code&gt; 行有多少个（事件总数）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;\n\n&lt;&#x2F;code&gt;（空行分隔符）有多少个&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;结果触目惊心：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;events:      54
+&lt;&#x2F;span&gt;&lt;span&gt;delimiters:   1
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;54 个事件，只有 1 个分隔符。&lt;&#x2F;strong&gt; 真相大白了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhen-xiong-bei-tun-diao-de-sse-kong-xing&quot;&gt;真凶：被吞掉的 SSE 空行&lt;&#x2F;h2&gt;
+&lt;p&gt;这里要补一个 SSE（Server-Sent Events）的协议常识：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;SSE 规定，&lt;strong&gt;每个事件块之间必须用一个空行（&lt;code&gt;\n\n&lt;&#x2F;code&gt;）分隔&lt;&#x2F;strong&gt;。空行不是可有可无的排版，它是事件的&lt;strong&gt;结束信号&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;问题就出在 CopilotX 转发流的两个函数里。我用 httpx 的 &lt;code&gt;aiter_lines()&lt;&#x2F;code&gt; 逐行读上游的流，然后转发。罪魁祸首长这样：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async for &lt;&#x2F;span&gt;&lt;span&gt;line &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;resp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;aiter_lines&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;line:                      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ← 凶手在这
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;yield &lt;&#x2F;span&gt;&lt;span&gt;(line + &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encode&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;aiter_lines()&lt;&#x2F;code&gt; 在遇到空行分隔符时，会吐出一个&lt;strong&gt;空字符串&lt;&#x2F;strong&gt; &lt;code&gt;&amp;quot;&amp;quot;&lt;&#x2F;code&gt;。而这句 &lt;code&gt;if line:&lt;&#x2F;code&gt; 直接把它当成&amp;quot;无用的空行&amp;quot;过滤掉了——于是所有事件被&lt;strong&gt;焊死成了一整块&lt;&#x2F;strong&gt;，中间一个分隔符都不剩。&lt;&#x2F;p&gt;
+&lt;p&gt;那为什么 httpx 手测又没事？因为 &lt;strong&gt;httpx 的 SSE 解析很宽容&lt;&#x2F;strong&gt;，没有严格分隔符它也能连蒙带猜地把事件切出来。而 Codex 的客户端是 &lt;strong&gt;Rust + reqwest 写的严格解析器&lt;&#x2F;strong&gt;——没有空行分隔符，它一个事件都不肯派发，干等到流结束，最后只能抛出 &lt;code&gt;stream closed before response.completed&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一句话教训：&lt;strong&gt;宽容的客户端会掩盖协议 bug，严格的客户端会把它原形毕露。&lt;&#x2F;strong&gt; 永远不要因为&amp;quot;我本地测过没问题&amp;quot;就下结论，换个更严格的消费者再验一遍。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;xiu-fu-ba-kong-xing-huan-hui-qu&quot;&gt;修复：把空行还回去&lt;&#x2F;h2&gt;
+&lt;p&gt;修法非常简单——&lt;strong&gt;别把空行吞了，原样发回去&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;async for &lt;&#x2F;span&gt;&lt;span&gt;line &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;resp.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;aiter_lines&lt;&#x2F;span&gt;&lt;span&gt;():
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 保留空行：它是 SSE 事件分隔符，必须原样转发
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;yield &lt;&#x2F;span&gt;&lt;span&gt;(line + &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;encode&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;utf-8&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;另一个做 ID 同步的包装函数 &lt;code&gt;fix_responses_stream&lt;&#x2F;code&gt; 里有同样的毛病，顺手一起修了：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;not line:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;yield b&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# 之前是 continue，把分隔符丢了
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;continue
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;有意思的是，处理 &lt;code&gt;&#x2F;v1&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt; 的那个函数&lt;strong&gt;早就是对的&lt;&#x2F;strong&gt;，注释里白纸黑字写着&amp;quot;空行是 SSE 分隔符，必须保留&amp;quot;。这次的修复，本质上只是让 Responses 这条路&lt;strong&gt;对齐&lt;&#x2F;strong&gt;了 Chat 那条早就正确的实现。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yan-zheng-cong-1-dao-75&quot;&gt;验证：从 1 到 75&lt;&#x2F;h2&gt;
+&lt;p&gt;部署到线上（&lt;code&gt;git pull&lt;&#x2F;code&gt; + &lt;code&gt;systemctl restart&lt;&#x2F;code&gt;）后，同一个探针再打一遍：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;events:      75
+&lt;&#x2F;span&gt;&lt;span&gt;delimiters:  75
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;75 个事件，75 个分隔符，完美一一对应。&lt;&#x2F;strong&gt; 紧接着 Codex CLI 端到端跑通，返回了真实答案，消费 296 个 token。再回到桌面端测 Computer Use——就是开头那段丝滑体验：&lt;&#x2F;p&gt;
+&lt;figure style=&quot;text-align: center; margin: 24px auto; max-width: 680px;&quot;&gt;
+  &lt;img src=&quot;Screenshot-Codex.png&quot; alt=&quot;Codex 用 Computer Use 能力描述当前可见窗口，全程只观察、不点击、不输入&quot; style=&quot;width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.12);&quot; &#x2F;&gt;
+  &lt;figcaption style=&quot;font-size: 0.85em; color: #888; margin-top: 8px;&quot;&gt;Codex 用 Computer Use 能力描述当前可见窗口，全程只观察、不点击、不输入&lt;&#x2F;figcaption&gt;
+&lt;&#x2F;figure&gt;
+&lt;h2 id=&quot;cai-dan-shun-shou-gei-codex-shang-ge-gong-pai&quot;&gt;彩蛋：顺手给 Codex 上个工牌&lt;&#x2F;h2&gt;
+&lt;p&gt;修通之后，我想在 CopilotX 的统计里把 Codex 的流量单独标出来。好消息是 CopilotX 的 metrics 中间件&lt;strong&gt;早就支持&lt;&#x2F;strong&gt;按 &lt;code&gt;X-Client-Id&lt;&#x2F;code&gt; 请求头区分客户端（我其它几个客户端早就这么用了），所以&lt;strong&gt;服务端一行代码都不用改&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;只要在 Codex 的 provider 配置里加一个静态请求头：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[model_providers.copilotx]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# ...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;http_headers &lt;&#x2F;span&gt;&lt;span&gt;= { &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;X-Client-Id&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; = &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;codex&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;从此 Codex 的每一笔请求都会自报家门，&lt;code&gt;request_log.client_id&lt;&#x2F;code&gt; 里清清楚楚记成 &lt;code&gt;codex&lt;&#x2F;code&gt;。统计面板上它终于有了自己的名字。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fan-si&quot;&gt;反思&lt;&#x2F;h2&gt;
+&lt;p&gt;这次踩坑给我留下三条结论：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;协议细节是魔鬼。&lt;&#x2F;strong&gt; 一个空行，足以让整条流式链路从&amp;quot;看起来能跑&amp;quot;变成&amp;quot;严格客户端一个字都收不到&amp;quot;。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;测试要用最挑剔的消费者。&lt;&#x2F;strong&gt; httpx 的宽容差点让我把 bug 放过去。如果不是 Codex 的 Rust 解析器这么&amp;quot;较真&amp;quot;，这个隐患可能要潜伏很久。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;好的架构让扩展几乎零成本。&lt;&#x2F;strong&gt; 加 &lt;code&gt;X-Client-Id&lt;&#x2F;code&gt; 统计这件事，服务端不用动，全靠当初把&amp;quot;客户端识别&amp;quot;做成了通用机制。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;现在 Codex + Computer Use + CopilotX 这条链路彻底打通了。那个住在我桌面里的 Agent，终于可以放心地睁眼看世界了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
