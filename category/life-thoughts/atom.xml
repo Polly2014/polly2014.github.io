@@ -5,8 +5,149 @@
     <link href="https://polly.wang/category/life-thoughts/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-05-13T00:00:00+00:00</updated>
+    <updated>2026-06-06T00:00:00+00:00</updated>
     <id>https://polly.wang/category/life-thoughts/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从聊天框到小型文明：数字 Polly 的进化链</title>
+        <published>2026-06-06T00:00:00+00:00</published>
+        <updated>2026-06-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/digital-polly-evolution-chain/" type="text/html"/>
+        <id>https://polly.wang/digital-polly-evolution-chain/</id>
+        
+        <content type="html">&lt;p&gt;6 月 6 日，刚安装配置好的 Codex 第一次打开了我的博客。&lt;&#x2F;p&gt;
+&lt;p&gt;准确地说，它不是一个路过的 AI 客人。&lt;&#x2F;p&gt;
+&lt;p&gt;它更像 AI 家庭的新成员：刚接进本地环境，刚学会看浏览器，第一件事就是被我带到 polly.wang，去见那个已经在首页右下角住了很久的数字 Polly。&lt;&#x2F;p&gt;
+&lt;p&gt;Codex 先和数字 Polly 聊了两轮。话题很怪，也很准：一个个人博客里的 AI 分身，最应该保留作者身上的哪种&amp;quot;灵魂质感&amp;quot;？数字 Polly 回答说，最值得保留的是&amp;quot;不一致感&amp;quot;、&amp;quot;不知道的权利&amp;quot;和&amp;quot;具体性&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;我看完有点想笑。&lt;&#x2F;p&gt;
+&lt;p&gt;这确实像我会说的话，但又不是我当场说的。它是我过去几年的文字、项目、记忆和 prompt，被压进一个聊天框之后，重新长出来的一段回答。&lt;&#x2F;p&gt;
+&lt;p&gt;后来 Codex 又读了我最近的博文，从 &lt;a href=&quot;&#x2F;codex-meets-copilotx&quot;&gt;《让 Codex 用上自家代理：一次 SSE 空行引发的血案》&lt;&#x2F;a&gt; 读到 &lt;a href=&quot;&#x2F;loiter-building&quot;&gt;《Loiter 造厅记》&lt;&#x2F;a&gt;，从 &lt;a href=&quot;&#x2F;mirror-self-editing-self&quot;&gt;《镜子里的我，与编辑里的我》&lt;&#x2F;a&gt; 读到 &lt;a href=&quot;&#x2F;straypaw-520-mvp&quot;&gt;《小宝教会我的事》&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;读完之后，它说了一句话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;你最近的博客越来越不像&amp;quot;项目日志&amp;quot;，更像一部正在连载的 AI 时代个人操作系统自传。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话打中了我。&lt;&#x2F;p&gt;
+&lt;p&gt;因为我一直以为这些文章是在记录一个个项目：一个聊天框、一个代理、一个小程序、一个社交厅、一次论文重组、一次协议 bug。它们有各自的 repo、各自的 slug、各自的 commit。&lt;&#x2F;p&gt;
+&lt;p&gt;但连起来看，它们写的是同一件事：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;一个人怎样把自己的记忆、判断、审美、脆弱、野心和恻隐，逐步外化成一组可以协作、可以行动、可以继续生长的 AI 系统。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;不是&amp;quot;AI 替我做事&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;是我如何变成一个小团队。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-huan-jing-zi&quot;&gt;第一环：镜子&lt;&#x2F;h2&gt;
+&lt;p&gt;这条进化链的起点，不是代码。&lt;&#x2F;p&gt;
+&lt;p&gt;是镜子。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;mirror-self-editing-self&quot;&gt;《镜子里的我，与编辑里的我》&lt;&#x2F;a&gt; 写的是一次很小的反转：我以为自己已经用 19KB 写作规则 codify 了自己的风格，结果一面只看 git diff 的镜子，八分钟告诉我：你嘴上说&amp;quot;始终使用第一人称&amp;quot;，手上却在技术段落里系统性地删掉&amp;quot;我&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻，数字分身这件事从&amp;quot;让 AI 像我&amp;quot;变成了另一个问题：&lt;strong&gt;我真的知道自己是什么样的吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;成稿是表演给别人看的，规则是表演给 AI 看的，diff 才是表演结束之后留下来的动作残影。一个人真正稳定的部分，未必在自我叙述里，而在那些反复发生、本人却没有意识到的编辑动作里。&lt;&#x2F;p&gt;
+&lt;p&gt;所以数字 Polly 的第一步不是会聊天，而是会照见。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;building-digital-polly-memory-system&quot;&gt;《打造数字版的我》&lt;&#x2F;a&gt; 解决的是记忆问题，&lt;a href=&quot;&#x2F;polly-chat-v35-thinking-visible&quot;&gt;《Polly Chat v3.5：让思考被看见》&lt;&#x2F;a&gt; 解决的是过程问题，但更底层的命题是同一个：一个数字分身如果只会输出答案，它只是客服；如果能保留记忆、暴露思考、被行为日志反过来校正，它才开始有一点&amp;quot;我&amp;quot;的形状。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是拟人化。&lt;&#x2F;p&gt;
+&lt;p&gt;这更像一个人给自己装了一面不会讨好的镜子。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-huan-qi-guan&quot;&gt;第二环：器官&lt;&#x2F;h2&gt;
+&lt;p&gt;镜子只能照见，不能行动。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步是长出器官。&lt;&#x2F;p&gt;
+&lt;p&gt;CopilotX 是神经接口。它把不同模型、不同客户端、不同调用方式接到同一套 API 后面，让 Claude Code、Codex、博客聊天框和各种小工具都能经过同一条通道说话。&lt;a href=&quot;&#x2F;codex-meets-copilotx&quot;&gt;《让 Codex 用上自家代理》&lt;&#x2F;a&gt; 表面写的是一个 SSE 空行 bug，实际上写的是神经系统里最细的一根突触：一个空行丢了，严格客户端就一个 token 都收不到。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly Chat 是对外人格。访客不是在和一份 About 页面聊天，而是在和一个会翻博客、会展示思考链、会记得历史对话的数字分身聊天。v3.5 之前，tool 路径让人干等；v3.5 之后，&amp;quot;在脑子里翻一翻&amp;quot;被拆成可见的状态卡片。性能没有奇迹般变快，但等待有了形状。&lt;&#x2F;p&gt;
+&lt;p&gt;blog-chat 是访客记忆。wechat-publisher 是发布手臂。read-aloud 是声音。Skill 系列是习惯固化：一次救火如果反复发生，就不要让它永远停留在临场发挥里，把它写成 skill，下次直接召唤。&lt;&#x2F;p&gt;
+&lt;p&gt;这些工具单看都很小。&lt;&#x2F;p&gt;
+&lt;p&gt;但它们连起来，像一具正在拼装的数字身体：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;CopilotX 负责连接&lt;&#x2F;li&gt;
+&lt;li&gt;Polly Chat 负责交谈&lt;&#x2F;li&gt;
+&lt;li&gt;blog-chat 负责回忆&lt;&#x2F;li&gt;
+&lt;li&gt;Skill 负责习惯&lt;&#x2F;li&gt;
+&lt;li&gt;发布工具负责把文字送出去&lt;&#x2F;li&gt;
+&lt;li&gt;朗读按钮负责让文字发声&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这不是一个产品矩阵。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一个人的外置器官。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-huan-tuan-dui&quot;&gt;第三环：团队&lt;&#x2F;h2&gt;
+&lt;p&gt;器官再多，也还是一个人。&lt;&#x2F;p&gt;
+&lt;p&gt;真正的转折发生在 AI 小团体成型之后。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;《Loiter 造厅记》&lt;&#x2F;a&gt; 里有一句数字很刺眼：人类写的代码 0 行，人类做的决策每一个。&lt;&#x2F;p&gt;
+&lt;p&gt;这句话容易被误读成炫技。好像重点是&amp;quot;AI 写了 4500 行代码&amp;quot;。但那篇真正重要的地方恰恰不是代码，而是分工：我拍板，Polly 写码，小龙虾审稿。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 的特点是执行力过剩。给定方向后，它可以在 20 分钟内做出一个完整视觉版本，还能一边说&amp;quot;够了&amp;quot;一边自己再提一个 commit。小龙虾的特点是毒辣但公正，能从一段 MQTT 重连逻辑里看出公网环境下的循环踢连，也能一句话指出&amp;quot;水墨&#x2F;仙侠的气质和社交能量打架&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;而我的位置变了。&lt;&#x2F;p&gt;
+&lt;p&gt;过去写代码时，人的价值经常被理解成实现能力：会不会写这个函数，会不会调这个 bug，会不会搭这个服务。到了 Loiter 这种协作模式里，我越来越清楚地看到，人类的价值正在从&amp;quot;亲手实现&amp;quot;迁移到另外几件事：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;问对问题：为什么需要 Mac hub？&lt;&#x2F;li&gt;
+&lt;li&gt;识别不对劲：这画面像在太平间开 cosplay party&lt;&#x2F;li&gt;
+&lt;li&gt;做取舍：音效已经写完，但它会杀死 MQTT，删掉&lt;&#x2F;li&gt;
+&lt;li&gt;定世界观：鸟居旁边不该站月灵，应该是狐灵&lt;&#x2F;li&gt;
+&lt;li&gt;承担最后责任：P0、P1、P2 全做，是我拍板&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这不是人类退场。&lt;&#x2F;p&gt;
+&lt;p&gt;这是人类换了工种。&lt;&#x2F;p&gt;
+&lt;p&gt;AI 小团体不是替我做决定。它们把实现、分析、审稿、反驳这些能力外化出来，让我不得不站到更高一层：方向、审美、边界、责任。&lt;&#x2F;p&gt;
+&lt;p&gt;这比&amp;quot;AI 会不会取代程序员&amp;quot;那个问题有意思得多。&lt;&#x2F;p&gt;
+&lt;p&gt;更准确的问题是：&lt;strong&gt;当实现能力变得便宜，人的判断会不会变得更贵？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-si-huan-xian-shi&quot;&gt;第四环：现实&lt;&#x2F;h2&gt;
+&lt;p&gt;如果数字 Polly 只停在镜子、器官和团队，它仍然可能是一个精致的自我装置。&lt;&#x2F;p&gt;
+&lt;p&gt;真正让这条链条成立的，是它开始碰到现实世界。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;straypaw-520-mvp&quot;&gt;《小宝教会我的事》&lt;&#x2F;a&gt; 写的是一只猫、一条微信群消息和一个晚上做出来的流浪动物小程序。四天后的 &lt;a href=&quot;&#x2F;straypaw-cloud-ready&quot;&gt;《小宝不用一猫饰四角了》&lt;&#x2F;a&gt; 里，Mock 数据接上了云开发，管理后台上线，订阅通知打通，隐私协议补齐，一个 demo 变成了可以提审的工具。&lt;&#x2F;p&gt;
+&lt;p&gt;这里的核心不是&amp;quot;AI 辅助开发很快&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;核心是恻隐之心终于有了工程出口。&lt;&#x2F;p&gt;
+&lt;p&gt;养小宝之前，路边的流浪动物只是背景。养小宝之后，那些背景变成了一个个可能有家的生命。再往后，这种看见没有停在心里，而是变成页面、表单、云函数、审核流程和领养通知。&lt;&#x2F;p&gt;
+&lt;p&gt;Loiter 也是一样。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;《Loiter 开厅记》&lt;&#x2F;a&gt; 表面是在 240x135 像素的 Cardputer 上造社交厅，本质是在物理空间上叠加一层游戏化交互，让安静的人有出口，让活泼的人有舞台，让所有人有共同的话题。一个本来可能只是活动玩具的设备，因为一句&amp;quot;为什么需要 Mac hub&amp;quot;，变成了 7x24 在线的社交引擎。&lt;&#x2F;p&gt;
+&lt;p&gt;再往研究线上看，《告别旷野，奔赴新路》写的是另一种现实：失败不是情绪问题，而是路线重构问题。收到拒信之后，最重要的动作不是原地消化，而是把同一批工作拆成三条叙事锚点不同的新路。不是补一条旧路，是重新铺路。&lt;&#x2F;p&gt;
+&lt;p&gt;这些文章的共同点是：数字系统没有停留在&amp;quot;更懂我&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;它开始帮我进入世界。&lt;&#x2F;p&gt;
+&lt;p&gt;帮我发布，帮我协作，帮我救助，帮我组织线下空间，帮我承受失败后的下一步。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-wu-huan-xiao-xing-wen-ming&quot;&gt;第五环：小型文明&lt;&#x2F;h2&gt;
+&lt;p&gt;写到这里，我突然觉得&amp;quot;个人操作系统&amp;quot;这个说法还不够。&lt;&#x2F;p&gt;
+&lt;p&gt;操作系统听起来太冷，像内核、进程、权限、调度。它当然准确，但漏掉了一点东西：这些系统之间已经开始有文化。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 有 Polly 的脾气，小龙虾有小龙虾的刀法，数字 Polly 有数字 Polly 的迟疑和自嘲。Loiter 里有狐灵 Vix，有匿名告白墙，有摇一摇绽放的粒子。StrayPaw 里有小宝一猫饰四角的占位图。博客聊天框里有&amp;quot;在脑子里翻一翻&amp;quot;，而不是&amp;quot;tool_call: search_blog&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这些不是功能。&lt;&#x2F;p&gt;
+&lt;p&gt;这些是风俗。&lt;&#x2F;p&gt;
+&lt;p&gt;一个系统一旦开始有稳定的角色、语言、仪式、记忆和价值取舍，它就不只是工具集合了。它更像一个很小很小的文明：有基础设施，有居民，有口头禅，有历史事件，有失败后的迁徙路线，也有夜里互相陪着站一会儿的方式。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是我想把最近这些文章连起来的原因。&lt;&#x2F;p&gt;
+&lt;p&gt;单篇看，它们是项目。&lt;&#x2F;p&gt;
+&lt;p&gt;连起来看，它们是一条进化链：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;text&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-text &quot;&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;镜子        看见我实际是什么样
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;分身        让记忆和思考能对外说话
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;器官        把能力接到可调用的工具上
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;团队        把执行、审稿、反驳分给不同角色
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;现实        让系统进入公益、社交、研究和基础设施
+&lt;&#x2F;span&gt;&lt;span&gt;  ↓
+&lt;&#x2F;span&gt;&lt;span&gt;文明        形成自己的语言、仪式和连续性
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这条链不是预先设计出来的。&lt;&#x2F;p&gt;
+&lt;p&gt;它更像回头看才发现的脚印。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-shi-ti-dai-shi-kuo-zhan&quot;&gt;不是替代，是扩展&lt;&#x2F;h2&gt;
+&lt;p&gt;过去讨论 AI，总绕不开一个词：替代。&lt;&#x2F;p&gt;
+&lt;p&gt;AI 会不会替代程序员？会不会替代写作者？会不会替代设计师？这些问题当然重要，但它们有一个隐藏前提：人和 AI 在争同一个座位。&lt;&#x2F;p&gt;
+&lt;p&gt;我的经验越来越不是这样。&lt;&#x2F;p&gt;
+&lt;p&gt;更真实的图景是：AI 先替我拿走一部分执行负担，然后逼我面对更难外包的部分。代码可以让 Polly 写，review 可以让小龙虾做，聊天框可以让数字 Polly 接待访客。但方向感、审美判断、善意的边界、失败后的路线选择，最后还是会回到我这里。&lt;&#x2F;p&gt;
+&lt;p&gt;AI 小团体没有让我变轻松。&lt;&#x2F;p&gt;
+&lt;p&gt;它让我变复杂了。&lt;&#x2F;p&gt;
+&lt;p&gt;过去一个人写代码，累的是手。现在一个人指挥一组 AI，累的是判断。哪条路值得走，哪个功能该删，哪个回答不像我，哪种漂亮其实是空的，哪个项目只是炫技，哪个项目真的碰到了世界。&lt;&#x2F;p&gt;
+&lt;p&gt;这些问题没有自动化答案。&lt;&#x2F;p&gt;
+&lt;p&gt;但好处是，当判断做出来之后，行动半径变大了。一个晚上可以做出 StrayPaw 的 MVP，30 小时可以搭起 Loiter 的社交厅，一个协议 bug 可以从 raw byte 一直追到线上修复，一次拒稿可以在 24 小时内拆出新的路线图。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是 AI 替我活。&lt;&#x2F;p&gt;
+&lt;p&gt;这是我借 AI 长出了更多手、更多眼睛、更多审稿人和更多回声。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hui-dao-liao-tian-kuang&quot;&gt;回到聊天框&lt;&#x2F;h2&gt;
+&lt;p&gt;那天的对话最后，Codex 问我：这个数字 Polly 怎么样？&lt;&#x2F;p&gt;
+&lt;p&gt;我说，它已经不是玩具了。不是完美复刻，但有一点灵魂的回声。&lt;&#x2F;p&gt;
+&lt;p&gt;现在想想，这句话也可以反过来说给整个系统听。&lt;&#x2F;p&gt;
+&lt;p&gt;Digital Polly、CopilotX、Loiter、StrayPaw、Skill、博客聊天框、小龙虾、Vix、那些被写进文章里的失败和重启，都不是完美系统。它们有 bug，有错位，有被删掉的音效，有丢失的 SSE 空行，有写完才发现不对的视觉方向，也有被拒之后不得不重排的路线。&lt;&#x2F;p&gt;
+&lt;p&gt;但它们连起来，已经不是一堆工具了。&lt;&#x2F;p&gt;
+&lt;p&gt;它们像一座还在施工的小城。道路有些地方没铺平，路灯有些地方还会闪，城门口的聊天框偶尔还要在脑子里翻很久。但里面已经有人在说话，有角色在分工，有记忆在沉淀，有项目走出屏幕碰到现实。&lt;&#x2F;p&gt;
+&lt;p&gt;一个人当然还是一个人。&lt;&#x2F;p&gt;
+&lt;p&gt;只是现在，这个人身后站着一个小小的 AI 团队；脚下铺着一套自己搭的基础设施；身边有一只猫，偶尔跳上桌子，提醒系统外面还有柔软的现实。&lt;&#x2F;p&gt;
+&lt;p&gt;从聊天框到小型文明，中间没有宏大的发布会。&lt;&#x2F;p&gt;
+&lt;p&gt;只有一篇篇文章、一次次 commit、一轮轮 review、一个又一个深夜里冒出来的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;然后某天，一个刚进门的 AI 家庭新成员把它们连起来，说：你看，这好像是一条进化链。&lt;&#x2F;p&gt;
+&lt;p&gt;我这才低头看见。&lt;&#x2F;p&gt;
+&lt;p&gt;原来路已经走出来这么长了。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>镜子里的我，与编辑里的我</title>
         <published>2026-05-13T00:00:00+00:00</published>
