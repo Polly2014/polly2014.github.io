@@ -21,20 +21,8 @@
 &lt;p&gt;刚跑通的时候是真的爽：我让它&amp;quot;只描述当前可见窗口、不要操作&amp;quot;，它老老实实用 Computer Use 看了一眼桌面，连接层崩了还会自己恢复重试，最后准确报出了 VS Code、Edge、Chrome、Teams 一堆窗口。体验拉满。&lt;&#x2F;p&gt;
 &lt;p&gt;但在这之前，我先掉进了一个坑里——一个藏在&lt;strong&gt;一行 &lt;code&gt;if line:&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; 后面的坑。这篇就记录我怎么把它揪出来的。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;bei-jing-copilotx-shi-shi-yao&quot;&gt;背景：CopilotX 是什么&lt;&#x2F;h2&gt;
-&lt;p&gt;CopilotX 是我自己写的一个 FastAPI 代理，把 GitHub Copilot 的后端能力转译成标准 API：&lt;&#x2F;p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt; —— OpenAI 格式&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; —— Anthropic（Claude）格式&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;&#x2F;v1&#x2F;responses&lt;&#x2F;code&gt; —— OpenAI Responses API（&lt;strong&gt;Codex 和 gpt-5.5 走的就是这条&lt;&#x2F;strong&gt;）&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;平时 Claude Code、各种小工具都接它，跑得很稳。这次轮到 Codex，配置也很简单——在 &lt;code&gt;~&#x2F;.codex&#x2F;config.toml&lt;&#x2F;code&gt; 里加个自定义 provider：&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[model_providers.copilotx]
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;CopilotX&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;base_url &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;&amp;lt;your-proxy-host&amp;gt;&#x2F;v1&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;wire_api &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;responses&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;experimental_bearer_token &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&amp;lt;your-token&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;&lt;code&gt;model = &amp;quot;gpt-5.5&amp;quot;&lt;&#x2F;code&gt;，reasoning effort 调到 medium。看起来天衣无缝。&lt;&#x2F;p&gt;
+&lt;p&gt;CopilotX 是我自己写的一个小代理，把常用的大模型能力转译成标准 API，平时 Claude Code 和各种小工具都接它，跑得很稳。它的来龙去脉我之前写过一篇专门的介绍——&lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;《一个晚上，把 GitHub Copilot 变成本地 API 服务器》&lt;&#x2F;a&gt;，感兴趣可以翻翻，这里就不展开了。&lt;&#x2F;p&gt;
+&lt;p&gt;这次轮到 Codex。它走的是 OpenAI Responses API（&lt;code&gt;wire_api = &amp;quot;responses&amp;quot;&lt;&#x2F;code&gt;），配置上只要在 &lt;code&gt;~&#x2F;.codex&#x2F;config.toml&lt;&#x2F;code&gt; 里加个自定义 provider、指向我的代理就行——看起来天衣无缝。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;fan-che-stream-closed-before-response-completed&quot;&gt;翻车：stream closed before response.completed&lt;&#x2F;h2&gt;
 &lt;p&gt;结果一发请求就翻车：&lt;&#x2F;p&gt;
 &lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;stream closed before response.completed
