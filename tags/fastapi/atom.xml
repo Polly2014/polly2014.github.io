@@ -5,8 +5,88 @@
     <link href="https://polly.wang/tags/fastapi/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-05T00:00:00+00:00</updated>
+    <updated>2026-06-12T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/fastapi/atom.xml</id>
+    <entry xml:lang="en">
+        <title>CopilotX 换锁记：当我把钥匙哈希之后</title>
+        <published>2026-06-12T00:00:00+00:00</published>
+        <updated>2026-06-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/copilotx-key-rotation/" type="text/html"/>
+        <id>https://polly.wang/copilotx-key-rotation/</id>
+        
+        <content type="html">&lt;p&gt;今天 CopilotX 一口气从 v2.6.0 跳到了 v2.7.0，八个 commit 落在同一天。但真正值得记下来的，不是这个数字——是藏在这串提交里的一条&lt;strong&gt;因果链&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我为了安全，把用户的 API 钥匙哈希了；可一旦哈希，钥匙就再也拿不回来。于是我不得不再造一把&amp;quot;换锁&amp;quot;的能力。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;安全决策催生了它自己的需求。这篇就讲这件事。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-dian-zhong-yu-neng-ba-yao-chi-jiao-chu-qu-liao&quot;&gt;起点：终于能把钥匙交出去了&lt;&#x2F;h2&gt;
+&lt;p&gt;故事得从几周前的多用户系统说起。CopilotX 本来是个自用代理——一个 &lt;code&gt;COPILOTX_API_KEY&lt;&#x2F;code&gt; 走天下。但用的人多了，朋友想接、自己的几个小服务也想各自记账，单 key 模式就不够看了。&lt;&#x2F;p&gt;
+&lt;p&gt;于是有了用户管理面板：admin 在 Dashboard 上点一下，就能给某个人生成一把专属钥匙、设好每日配额、分配角色（admin &#x2F; user &#x2F; viewer）。看起来很美——直到我决定认真过一遍这套东西能不能&lt;strong&gt;真的把钥匙交给别人&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;把能力开放给第三方，和自己一个人用，是两件完全不同的事。前者意味着：每一个信任假设都得写死在代码里，而不是靠&amp;quot;我知道我不会乱来&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-yi-yao-chi-shi-ming-wen-tang-zai-shu-ju-ku-li-de&quot;&gt;转折一：钥匙是明文躺在数据库里的&lt;&#x2F;h2&gt;
+&lt;p&gt;第一刀是小龙虾（我的 AI 审稿搭子）切下来的。它盯着建表语句看了一眼，问了一句很难回答的话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;你这个 key，是明文存在 SQLite 里的吧？那数据库文件一旦泄露，是不是所有人的钥匙就全裸了？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;是的。当时的设计，钥匙就那么原样躺在 &lt;code&gt;users&lt;&#x2F;code&gt; 表里。这在单人自用时无所谓——反正只有我自己。但一旦要发给别人，这就成了&lt;strong&gt;单点全裸&lt;&#x2F;strong&gt;：备份泄露、误传、甚至我自己手滑 &lt;code&gt;cat&lt;&#x2F;code&gt; 一下日志，都可能把所有人的钥匙一起赔进去。&lt;&#x2F;p&gt;
+&lt;p&gt;修法是教科书级的：&lt;strong&gt;别存钥匙，存它的指纹&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我把存储改成只保留钥匙的 SHA-256 哈希。验证时，把来访的钥匙现算一次哈希、跟库里比对——对得上就放行。数据库里再也没有任何一把能直接用的钥匙，只有一串谁也还原不回去的指纹。列表展示时也只露出钥匙开头的几个字符（&lt;code&gt;cpx-a1b2…&lt;&#x2F;code&gt;），够你认出&amp;quot;这是哪一把&amp;quot;，但不够任何人拿去用。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里，安全是补上了。但补上的同时，我亲手挖了一个新坑。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-er-ha-xi-zhi-hou-yao-chi-zai-ye-na-bu-hui-lai-liao&quot;&gt;转折二：哈希之后，钥匙再也拿不回来了&lt;&#x2F;h2&gt;
+&lt;p&gt;哈希是单向的。这正是它安全的原因——也正是它的麻烦所在。&lt;&#x2F;p&gt;
+&lt;p&gt;钥匙生成的那一刻，是它&lt;strong&gt;唯一一次&lt;&#x2F;strong&gt;以明文形式存在的时刻。我把它显示给 admin，让对方赶紧复制走，然后转头就把它碾成哈希存进库里。从此世界上再没有任何地方存着这把钥匙的原文。&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着一个很现实的问题：&lt;strong&gt;用户把钥匙弄丢了怎么办？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;旧设计里这根本不是问题——大不了去库里再 &lt;code&gt;SELECT&lt;&#x2F;code&gt; 一次抄给他。现在不行了。库里只有指纹，我自己也变不出原文。唯一的答案是：&lt;strong&gt;给他换一把新的，让旧的作废&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这就是&amp;quot;换锁&amp;quot;（key rotation）的来由。它不是我列在路线图上的功能，而是&lt;strong&gt;哈希这个安全决策亲手逼出来的解药&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;换锁要做的事，说穿了很朴素——只换钥匙，别动别的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;换锁四不动&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;角色不动（admin 还是 admin）&lt;&#x2F;li&gt;
+&lt;li&gt;配额不动（每天 500 次还是 500 次）&lt;&#x2F;li&gt;
+&lt;li&gt;历史不动（过往用量统计完整保留）&lt;&#x2F;li&gt;
+&lt;li&gt;只有钥匙换了——旧的瞬间失效，新的当场生效&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我特意选了&lt;strong&gt;旧钥匙立即作废&lt;&#x2F;strong&gt;，而不是给一段&amp;quot;新旧并存的过渡期&amp;quot;。过渡期听起来体贴，但对单人&#x2F;小团队场景是过度设计：它意味着泄露的旧钥匙还能再活几小时。换锁的全部意义就是&amp;quot;我怀疑这把钥匙不安全了&amp;quot;——既然如此，让它多活一秒都是错的。&lt;&#x2F;p&gt;
+&lt;p&gt;落到操作上，admin 现在有三个入口换锁：Dashboard 上每个用户那行多了个 &amp;quot;Rotate key&amp;quot; 按钮、命令行一句 &lt;code&gt;copilotx user rotate-key alice&lt;&#x2F;code&gt;、或者直接打那个 REST 接口。无论走哪条路，新钥匙都只在屏幕上闪现一次，复制走，然后它也变成一串指纹。&lt;&#x2F;p&gt;
+&lt;p&gt;至于前端那个&amp;quot;只显示一次&amp;quot;的弹窗——我一行新代码都没写。生成新用户时早就有这么个弹窗了，换锁直接复用它，连标题都只是从 &amp;quot;User created&amp;quot; 换成了 &amp;quot;Key rotated&amp;quot;。好的基础设施就该这样：新需求来了，发现自己想要的零件早就躺在那儿了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yu-zhen-shen-cha-jiu-chu-de-liang-ge-xin-ren-bug&quot;&gt;余震：审查揪出的两个&amp;quot;信任 bug&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;把钥匙交给别人这件事，逼着我用一种更偏执的眼光重看每一条访问路径。这一看，揪出两个本身不是功能缺陷、却是&lt;strong&gt;信任缺陷&lt;&#x2F;strong&gt;的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一个是&amp;quot;默认放行&amp;quot;。&lt;&#x2F;strong&gt; 统计接口原本的逻辑是&amp;quot;如果你不是普通用户，就给你看全部数据&amp;quot;。问题在于——一个&lt;strong&gt;没带角色信息&lt;&#x2F;strong&gt;的请求，也会落进这个&amp;quot;不是普通用户&amp;quot;的分支，于是稀里糊涂看到了全量数据。正确的姿势是反过来：&lt;strong&gt;默认拒绝&lt;&#x2F;strong&gt;，只有明确证明&amp;quot;你是 admin&amp;quot;才放行全量，其余一律降级到只看自己。信任的默认值必须是&amp;quot;不信&amp;quot;，而不是&amp;quot;先信着再说&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二个是&amp;quot;半提交&amp;quot;。&lt;&#x2F;strong&gt; 改用户信息时可以同时改配额和角色。原来的写法是先写配额、再写角色——如果角色填了个非法值被拒，配额那一半却已经悄悄落库了。用户以为整个操作失败了，实际配额已经被改掉。修法是把两个字段塞进&lt;strong&gt;同一个事务&lt;&#x2F;strong&gt;：要么一起成功，要么一起回滚，绝不留下&amp;quot;改了一半&amp;quot;的中间状态。&lt;&#x2F;p&gt;
+&lt;p&gt;这两个都不是会报错的 bug，而是会&lt;strong&gt;悄悄背叛你信任假设&lt;&#x2F;strong&gt;的 bug——危险得多。&lt;&#x2F;p&gt;
+&lt;p&gt;还有一桩&amp;quot;换锁前先清场&amp;quot;：在确认这套发钥匙的流程能见人之前，我先去生产库里查了一圈，确认没有早期测试时代留下的&lt;strong&gt;废钥匙残留&lt;&#x2F;strong&gt;。结果很干净——&lt;code&gt;users&lt;&#x2F;code&gt; 表是空的，一把测试钥匙都没漏在外面。发新锁之前，先确认旧锁没有一把还插在门上，这是基本的卫生。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-bu-zhi-shi-copilotx-de-gong-ke&quot;&gt;这不只是 CopilotX 的功课&lt;&#x2F;h2&gt;
+&lt;p&gt;写到这儿我意识到，今天做的事，本质上和&amp;quot;CopilotX 多了个换锁按钮&amp;quot;没多大关系。它是任何一个&lt;strong&gt;要把能力交给第三方&lt;&#x2F;strong&gt;的系统都绕不开的三道关：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;密钥哈希存储&lt;&#x2F;strong&gt;——别存能直接用的凭证，存它不可逆的指纹；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;默认拒绝&lt;&#x2F;strong&gt;——信任的默认值是&amp;quot;不&amp;quot;，权限要明确授予而非默认继承；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;可轮换&lt;&#x2F;strong&gt;——凭证一定会泄露、会丢失，所以&amp;quot;换锁&amp;quot;必须是一等公民，而不是出事后才手忙脚乱去补的能力。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;无论你做的是 API 网关、是给用户发 token 的 SaaS、还是只是给朋友开个账号——只要&amp;quot;钥匙&amp;quot;会离开你自己的手，这三关就一关都少不了。CopilotX 只是今天恰好替我把这堂课上了一遍。&lt;&#x2F;p&gt;
+&lt;p&gt;而这三关里，&lt;strong&gt;可轮换&lt;&#x2F;strong&gt;是最容易被忽略的一个。我们总在设计如何&amp;quot;发出&amp;quot;一把好钥匙，却很少在第一天就想清楚&amp;quot;这把钥匙坏了怎么收回&amp;quot;。今天这条因果链给我的提醒恰恰是：当你真的把安全做到位（哈希），你会发现自己&lt;strong&gt;被迫&lt;&#x2F;strong&gt;补上轮换——因为安全的钥匙，注定是拿不回来的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;一天八个 commit，从 v2.6.0 到 v2.7.0。但如果只让我留一句话，那就是关于钥匙的这一句：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;一把钥匙的价值，不在于它能打开什么，而在于——当它丢了的时候，你换得起。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;今天，CopilotX 终于换得起了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;CopilotX 版本线：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;博文&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;9&lt;&#x2F;td&gt;&lt;td&gt;v1.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;把 Copilot 变成本地 API&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;9&lt;&#x2F;td&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v2-remote-deployment&quot;&gt;从本地工具到远程服务&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;13&lt;&#x2F;td&gt;&lt;td&gt;v2.3.0-2.3.1&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v23-tools-support-journey&quot;&gt;让 OpenClaw 终于能动手了&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;20&lt;&#x2F;td&gt;&lt;td&gt;v2.3.3&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v233-sse-streaming-fix&quot;&gt;一个空行引发的「血案」&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&#x2F;6&lt;&#x2F;td&gt;&lt;td&gt;v2.4.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-dashboard-first-eyes&quot;&gt;Dashboard 初见&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;6&#x2F;5&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;codex-meets-copilotx&quot;&gt;让 Codex 用上自家代理&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;6&#x2F;12&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;v2.7.0&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;换锁记：当我把钥匙哈希之后&lt;&#x2F;strong&gt; ← 本文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>让 Codex 用上自家代理：一次 SSE 空行引发的血案</title>
         <published>2026-06-05T00:00:00+00:00</published>
