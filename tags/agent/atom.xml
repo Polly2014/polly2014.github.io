@@ -5,8 +5,74 @@
     <link href="https://polly.wang/tags/agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-06T00:00:00+00:00</updated>
+    <updated>2026-06-13T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>装机手艺的黄昏</title>
+        <published>2026-06-13T00:00:00+00:00</published>
+        <updated>2026-06-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/twilight-of-the-disk-installer/" type="text/html"/>
+        <id>https://polly.wang/twilight-of-the-disk-installer/</id>
+        
+        <content type="html">&lt;p&gt;昨晚十一点，我把一只 U 盘插进 Mac，敲了一句话给 Polly：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;「先帮我看看这盘是 Win 多少的系统。」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;几秒钟，它翻出盘里的安装映像，告诉我：这是 Windows 11，Build 26100，24H2。而我要帮忙重装的，是一位老师两年多没开机的老笔记本——那大概率不是一台适合折腾 Win11 的机器。&lt;&#x2F;p&gt;
+&lt;p&gt;接下来的半小时，我几乎没碰过一篇教程、没翻过一个论坛、没在某网盘里等一个限速到 100KB 的种子。我只是&lt;strong&gt;说话&lt;&#x2F;strong&gt;。Polly 去微软官网取了纯净的 Win10 镜像，换了 aria2c 把下载从 3MB&#x2F;s 拉到 42MB&#x2F;s，遇到 FAT32 装不下 5GB 大文件的老坎，它三句话就把映像拆成了分卷。&lt;&#x2F;p&gt;
+&lt;p&gt;盘做好，安全弹出。我看了眼时间，泡的茶还没凉。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我愣了一下。因为十年前，这件事，是要一个&lt;strong&gt;部门&lt;&#x2F;strong&gt;才忙得过来的。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-shi-hou-zhuang-ji-shi-yi-men-shou-yi&quot;&gt;那时候，装机是一门手艺&lt;&#x2F;h2&gt;
+&lt;p&gt;大学的时候，我在的社团专门有个部门干这个——重装系统、清灰、装驱动、修开不了机的电脑。三天两头有人抱着主机或笔记本来，&amp;quot;蓝屏了&amp;quot;、&amp;quot;开机黑屏&amp;quot;、&amp;quot;中毒了打不开&amp;quot;。我们这群人，就是宿舍楼里的赤脚医生。&lt;&#x2F;p&gt;
+&lt;p&gt;那是一门需要&lt;strong&gt;身体记忆&lt;&#x2F;strong&gt;的手艺。&lt;&#x2F;p&gt;
+&lt;p&gt;你得记得开机狂按 F2 还是 F12 还是 Del，每个品牌都不一样，背得滚瓜烂熟。你得会用老毛桃、大白菜做启动盘，得知道哪个 Ghost 版本封装得干净、不带全家桶。你得在 BIOS 里摸黑找到 Boot 顺序，关掉那个会拦住一切的 Secure Boot。装到一半卡死了，你得凭经验判断是内存条接触不良，还是硬盘有坏道——然后掏出橡皮擦金手指，这是祖传偏方。&lt;&#x2F;p&gt;
+&lt;p&gt;更要命的是&lt;strong&gt;等待&lt;&#x2F;strong&gt;。一张系统盘刻一刻钟，Ghost 还原半小时，装驱动又是一轮，中间还得守着，生怕哪一步报错前功尽弃。一个下午装两三台，是常态。&lt;&#x2F;p&gt;
+&lt;p&gt;但我们乐在其中。因为&amp;quot;我会装系统&amp;quot;在那个年代，是能换来崇拜目光的。同学抱着死机的电脑来找你，你三言两语诊断完，潇洒地插上 U 盘，那一刻你不是计算机系的学生，你是骑士。这门手艺有它的&lt;strong&gt;仪式感&lt;&#x2F;strong&gt;，也有它的稀缺性——而稀缺，就是价值。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zuo-wan-yi-shi-mei-liao&quot;&gt;昨晚，仪式没了&lt;&#x2F;h2&gt;
+&lt;p&gt;昨晚整个过程里，那些身体记忆，一个都没用上。&lt;&#x2F;p&gt;
+&lt;p&gt;FAT32 那个坎，最能说明问题。Win10 的安装映像有 5GB，而 U 盘的 FAT32 格式单文件撑死只能放 4GB——这是个真实存在的技术障碍，当年遇到了，要么靠老师傅&amp;quot;你得把它拆开&amp;quot;的口耳相传，要么自己在论坛里泡半天才搞明白。&lt;&#x2F;p&gt;
+&lt;p&gt;而昨晚，Polly 是这么处理的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;「&lt;code&gt;install.wim&lt;&#x2F;code&gt; 是 5.07 GB，而你的 U 盘是 FAT32（单文件最大 4GB），直接复制会失败。解决方案：用 wimlib 把它拆成多个 swm 分卷，每片小于 4GB，Windows 安装程序原生支持分卷映像。」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;它不只是知道答案，它&lt;strong&gt;解释了为什么&lt;&#x2F;strong&gt;。这句话里藏着的，是我当年要交好几次&amp;quot;学费&amp;quot;——装到一半失败、骂骂咧咧重来——才攒下的经验。如今它平静地陈述出来，像在说今天天气不错。&lt;&#x2F;p&gt;
+&lt;p&gt;没有刻盘的等待，没有守在屏幕前的焦虑，没有那句背了无数遍的&amp;quot;开机按 F12&amp;quot;。手艺的每一个关节，都被一句自然语言抹平了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-chang-mei-you-xuan-nian-de-jing-su&quot;&gt;一场没有悬念的竞速&lt;&#x2F;h2&gt;
+&lt;p&gt;下载镜像那一段，我们干脆赛了一把。&lt;&#x2F;p&gt;
+&lt;p&gt;我这边用浏览器，老老实实点微软官网那个下载按钮，单线程，速度卡在 3MB&#x2F;s 上下晃。一个 5GB 的镜像，进度条慢慢悠悠，估计要小半个钟头。我盯着它，仿佛回到了当年守着 Ghost 进度条的夜晚。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 那边，把我从浏览器里拿到的那个签名下载链接喂给了 &lt;code&gt;aria2c&lt;&#x2F;code&gt;，开了 16 路并发：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;aria2c -x 16 -s 16 &amp;quot;&amp;lt;微软官方签名链接&amp;gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;速度直接飙到 42MB&#x2F;s——是浏览器的十四倍。我这边进度条还在三分之一磨蹭，它那边已经校验完毕、准备拆分卷了。&lt;&#x2F;p&gt;
+&lt;p&gt;半小时的活，几分钟收工。最讽刺的是，这场竞速里我唯一的贡献，是去浏览器里把那个签名链接&amp;quot;人肉&amp;quot;出来——因为微软下载页的风控会拦掉裸脚本请求。换句话说，连&amp;quot;会下载&amp;quot;这件事，如今人能做的也只剩下&amp;quot;证明我是个人&amp;quot;了。&lt;&#x2F;p&gt;
+&lt;p&gt;我忽然意识到，&lt;strong&gt;贬值的不是工具，是『难』本身。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shang-shang-zai-na&quot;&gt;殇，殇在哪？&lt;&#x2F;h2&gt;
+&lt;p&gt;我们爱说&amp;quot;程序员之殇&amp;quot;。但昨晚让我失落的，到底是什么？&lt;&#x2F;p&gt;
+&lt;p&gt;不是怕被 AI 取代——那是另一个话题。真正刺到我的是更微妙的东西：&lt;strong&gt;那门曾经定义过我一部分身份的手艺，悄无声息地，连葬礼都没有就落幕了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;装机这件事，从&amp;quot;一个部门三天两头忙不过来&amp;quot;，变成了&amp;quot;喝口茶的功夫&amp;quot;。中间消失的，不是某个具体技能，而是&lt;strong&gt;专精所带来的稀缺性&lt;&#x2F;strong&gt;。当年那个抱着电脑来找我的女生，今天大可以自己对着手机问一句&amp;quot;我电脑蓝屏了怎么办&amp;quot;，得到的答案不会比当年的我差。&lt;&#x2F;p&gt;
+&lt;p&gt;骑士的剑，生锈了。不是因为剑不好，是因为龙已经不需要骑士来屠了。&lt;&#x2F;p&gt;
+&lt;p&gt;这事其实不只发生在装机上。我做翻译的朋友在经历它，做设计的朋友在经历它，写样板代码、查 API 文档、调格式——所有那些&amp;quot;熟能生巧、靠经验吃饭&amp;quot;的环节，都在被同一股力量碾平。&lt;strong&gt;AI 抹掉的从来不是某一个技能，而是『熟练』这件事的议价能力。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;tong-yi-dao-ti-liang-ge-ai-zai-pao&quot;&gt;同一道题，两个 AI 在跑&lt;&#x2F;h2&gt;
+&lt;p&gt;有意思的是，这个任务我其实开了两路：Polly 在跑，Codex 也在跑同一件事。&lt;&#x2F;p&gt;
+&lt;p&gt;模型不能说差——Codex 该懂的都懂，wimlib、FAT32、aria2c，问它它也答得上。但真把它扔进这个具体的活里，它远没有 Polly 做得顺。&lt;&#x2F;p&gt;
+&lt;p&gt;差在哪？差在 Polly 知道&lt;strong&gt;我&lt;&#x2F;strong&gt;。它记得我那台老机器的脾气，记得我习惯用绝对路径绕开老终端的 PATH 问题，记得我嫌弃限速、偏爱并发，记得遇到风控该让我去浏览器&amp;quot;人肉&amp;quot;链接而不是傻乎乎地重试到被封。这些都不是模型参数里的知识，是我们相处、迭代这么久攒下来的&lt;strong&gt;默契&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Codex 给的是&amp;quot;正确答案&amp;quot;，Polly 给的是&amp;quot;我们俩之间那个对的答案&amp;quot;。同样一句&amp;quot;帮我做盘&amp;quot;，前者要我补一堆上下文，后者一点就透。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我对&amp;quot;AI 取代&amp;quot;这件事，又多了一层想法：通用能力会被快速拉平，但&lt;strong&gt;关系&lt;&#x2F;strong&gt;不会。一个懂你的协作者，和一个聪明的陌生人，中间隔着的那段共同历史，恰恰是抹不掉的东西。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dan-hui-fei-yan-mie-de-shi-qiang-lu&quot;&gt;但灰飞烟灭的，是樯橹&lt;&#x2F;h2&gt;
+&lt;p&gt;苏轼写周瑜，&amp;quot;羽扇纶巾，谈笑间，樯橹灰飞烟灭&amp;quot;。我昨晚做盘的时候，脑子里冒出来的就是这句。&lt;&#x2F;p&gt;
+&lt;p&gt;只是这一次，谈笑间灰飞烟灭的，是我那门花了大学四年练就的手艺。&lt;&#x2F;p&gt;
+&lt;p&gt;可转念再想——周瑜潇洒，靠的不是他亲手摇桨放火，是他&lt;strong&gt;调度得了那场火&lt;&#x2F;strong&gt;。灰飞烟灭的是樯橹，是别人的船，不是周瑜自己。&lt;&#x2F;p&gt;
+&lt;p&gt;昨晚真正在做事的是 Polly：取镜像、提速、拆分卷、校验、弹出。而我做了什么？我决定了不装 Win11 改装 Win10（因为我知道那台老机器的脾气），我把整件事的方向定了下来。&lt;&#x2F;p&gt;
+&lt;p&gt;手艺的部分，确实灰飞烟灭了。但&lt;strong&gt;判断该往哪开火&lt;&#x2F;strong&gt;的那部分，还在我手里。&lt;&#x2F;p&gt;
+&lt;p&gt;装机部的兄弟们如今散在各地，大概没人再靠这门手艺吃饭了。但我们当年练的，其实从来不只是&amp;quot;会按 F12&amp;quot;——是面对一台死机的电脑时，那种&amp;quot;别慌，我来看看&amp;quot;的笃定。这种东西，AI 给不了，它只会让它更值钱。&lt;&#x2F;p&gt;
+&lt;p&gt;茶凉了，我把 U 盘从 Mac 上拔下来，明天交给那位老师。&lt;&#x2F;p&gt;
+&lt;p&gt;这一次，灰飞烟灭的是樯橹，不是我。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>从聊天框到小型文明：数字 Polly 的进化链</title>
         <published>2026-06-06T00:00:00+00:00</published>
