@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - 心跳</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/xin-tiao/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-06-15T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/xin-tiao/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loiter 招魂记：当大屏上的小人集体蒸发</title>
+        <published>2026-06-15T00:00:00+00:00</published>
+        <updated>2026-06-15T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-summoning/" type="text/html"/>
+        <id>https://polly.wang/loiter-summoning/</id>
+        
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;loiter-pitfalls&quot;&gt;Loiter 踩坑记：Cardputer 生存指南&lt;&#x2F;a&gt;。前三篇讲的是怎么把这个卡片机社交厅从零搭起来；这一篇讲的是它上线之后，怎么差点把一屋子人的&amp;quot;分身&amp;quot;弄丢。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;那天下午，我盯着 &lt;code&gt;loiter.polly.wang&lt;&#x2F;code&gt; 的大屏，随手按了下刷新。&lt;&#x2F;p&gt;
+&lt;p&gt;页面回来了，海洋还在荡，六座彩色岛屿还在，可属于我的那个小人——没了。&lt;&#x2F;p&gt;
+&lt;p&gt;不是它走开了，是整张地图上空空如也，像散场后的剧院。而就在一分钟前，它还好端端地站在自己的岛上。&lt;&#x2F;p&gt;
+&lt;p&gt;我没动设备，没断网，什么都没碰。只是刷新了一下网页。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;an-fa-xian-chang-wo-men-gang-gang-zuo-liao-shi-yao&quot;&gt;案发现场：我们刚刚做了什么&lt;&#x2F;h2&gt;
+&lt;p&gt;要解释小人为什么消失，得先说我们当时在忙什么。&lt;&#x2F;p&gt;
+&lt;p&gt;那会儿正在给大屏加一个&amp;quot;导播台&amp;quot;功能——主持人可以在一个隐藏页面上点几个按钮，让全场大屏一起暗下、一起亮出地图、一起进入合影模式。技术上不复杂：按钮调一个带鉴权的服务端接口，服务端通过 WebSocket 把指令广播给所有打开的大屏。&lt;&#x2F;p&gt;
+&lt;p&gt;为了让线上立刻生效，部署过程里 Polly 重启了两次后端服务。&lt;&#x2F;p&gt;
+&lt;p&gt;就是这两次重启，埋了雷。&lt;&#x2F;p&gt;
+&lt;p&gt;诊断只花了几分钟，但结论有点反直觉。我让 Polly 去服务器上抓了 8 秒的设备上行数据——&lt;strong&gt;一片死寂，没有任何一台设备在说话&lt;&#x2F;strong&gt;。可设备明明都还连着、屏幕都亮着。&lt;&#x2F;p&gt;
+&lt;p&gt;把因果链拼起来，是这样一条：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;后端是纯内存态的&lt;&#x2F;strong&gt;——所有人在哪座岛、收集了哪些颜色，全存在内存里，没落数据库。重启 = 这张&amp;quot;花名册&amp;quot;被清空。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;但消息中转站（MQTT broker）没有重启&lt;&#x2F;strong&gt;——所以每台设备的长连接还活着。在设备眼里，&amp;quot;我一直在线啊，没掉过线&amp;quot;，于是它&lt;strong&gt;不会重连，也就不会重新上报自己的存在&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;结果：服务器把所有人忘得一干二净，而设备一个个都觉得&amp;quot;我早报到过了，不用再说一遍&amp;quot;。两边都没错，但谁也不肯先开口。大屏从内存里捞花名册，捞到的是空的。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是分布式系统里一个很经典的坑，有个挺传神的名字叫&lt;strong&gt;幽灵在线&lt;&#x2F;strong&gt;（ghost connection）：连接还在，但连接两端对&amp;quot;现在是什么状态&amp;quot;的认知已经对不上了。&lt;&#x2F;p&gt;
+&lt;p&gt;最扎心的一点是：&lt;strong&gt;这些幽灵设备不会自愈&lt;&#x2F;strong&gt;。平时没人操作，它们就静静地待着，一个字节都不往外发。你不去重启每一台设备，它们永远不会重新报到。一屋子人的分身，就这么集体蒸发，而且不会自己回来。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhao-hun-rang-zheng-fa-de-xiao-ren-zi-ji-zou-hui-lai&quot;&gt;招魂：让蒸发的小人自己走回来&lt;&#x2F;h2&gt;
+&lt;p&gt;修法其实只有一句话：&lt;strong&gt;既然设备不肯主动重连后报到，那就让它定期主动报一次。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我们给固件加了一段心跳——每 25 秒，设备主动把&amp;quot;我是谁、我在哪座岛&amp;quot;重新喊一遍。对一台活着的服务器来说，这句重复的&amp;quot;我还在&amp;quot;基本是废话，它听过就算；可一旦服务器刚重启、花名册是空的，这句话就成了招魂的引子——服务器照着设备喊的信息，把这个人原封不动重新建出来：同样的岛，同样的本命色。&lt;&#x2F;p&gt;
+&lt;p&gt;最漂亮的是，这套&amp;quot;喊话&amp;quot;用的全是项目里早就有的通道。设备本来就会在登岛时上报一次,我们只是让它定期再报。&lt;strong&gt;零新协议，零新接口&lt;&#x2F;strong&gt;,加一个定时器而已。&lt;&#x2F;p&gt;
+&lt;p&gt;听起来三行代码搞定，对吧？我也是这么以为的。然后我把它丢给两个 AI 审稿人,故事才真正开始。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhuan-zhe-liang-ge-shen-gao-ren-gei-liao-wo-xiang-fan-de-da-an&quot;&gt;转折：两个审稿人,给了我相反的答案&lt;&#x2F;h2&gt;
+&lt;p&gt;Loiter 的开发是个固定的三角:我拍板、Polly 写码,然后&lt;strong&gt;两个 AI 各自独立审稿&lt;&#x2F;strong&gt;——小龙虾 🦞 盯架构和边界,Codex 盯协议和一致性。他们在各自的环境里看代码,互相不通气,我最后把两份意见拼起来。&lt;&#x2F;p&gt;
+&lt;p&gt;这次,他们第一次给了我&lt;strong&gt;方向相反&lt;&#x2F;strong&gt;的结论。&lt;&#x2F;p&gt;
+&lt;p&gt;小龙虾打了 9.5 分,APPROVE。它的理由很顺:心跳只伺候那些&amp;quot;已经登岛、在大屏上有坐标&amp;quot;的设备就够了——还没选完岛的人,大屏上本来就没有他的小人,蒸发了也不用救。&lt;&#x2F;p&gt;
+&lt;p&gt;逻辑严丝合缝。如果只看这一份,我就合并了。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Codex 在同一段代码上按了暂停,标了个 P1(最高优先级)问题:**门控条件错了。**它说,&amp;quot;还没登岛&amp;quot;不等于&amp;quot;大屏上不可见&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;两个结论对着干。一个说&amp;quot;没登岛=不可见=不用救&amp;quot;,一个说&amp;quot;没登岛≠不可见&amp;quot;。这种时候,谁的语气都不算数——&lt;strong&gt;得去代码里看真相&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我让 Polly 翻出大屏渲染小人的那段源码,一行行读。真相站在 Codex 这边:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;大屏在收到一个&amp;quot;我来了&amp;quot;的报到时,&lt;strong&gt;哪怕这人还没选岛,也会先给他生成一个小人,临时丢在地图正中央&lt;&#x2F;strong&gt;,等选完岛再挪到对应岛屿。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;也就是说,一个刚输完名字、正在做性格测试的人,&lt;strong&gt;他的小人此刻就站在大屏中央,清清楚楚&lt;&#x2F;strong&gt;。如果按小龙虾的方案,只救已登岛的人,那这些&amp;quot;中央待命&amp;quot;的小人在服务器重启后就回不来了——而他们恰恰是最显眼的一批。&lt;&#x2F;p&gt;
+&lt;p&gt;🦞 漏了,Codex 抓住了。我们把门控从&amp;quot;已登岛&amp;quot;放宽到&amp;quot;已报到&amp;quot;,problem solved。&lt;&#x2F;p&gt;
+&lt;p&gt;这里有个我后来一直在回味的点:&lt;strong&gt;APPROVE 不是免检章&lt;&#x2F;strong&gt;。如果我因为小龙虾给了 9.5 就跳过 Codex,或者反过来因为两人打架就和稀泥选个折中,都会埋下这个 bug。最后定胜负的不是哪个 AI 更权威、分数更高,而是&lt;strong&gt;去源码里翻出那段&amp;quot;还没登岛也会渲染&amp;quot;的逻辑&lt;&#x2F;strong&gt;。代码不会投票,但代码不说谎。&lt;&#x2F;p&gt;
+&lt;p&gt;顺带一提,Codex 还揪出了第二个小问题:既然每台设备每 25 秒喊一次&amp;quot;我还在&amp;quot;,活着的服务器会不会被这些重复的报到刷屏?会。16 台设备,差不多每分钟 38 条假惺惺的&amp;quot;新人到达&amp;quot;日志。修法是让服务器学会分辨:&lt;strong&gt;第一次报到才当新人欢迎,之后的重复报到只悄悄点个卯&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-bu-zhi-shi-yi-ge-qia-pian-ji-de-mao-bing&quot;&gt;这不只是一个卡片机的毛病&lt;&#x2F;h2&gt;
+&lt;p&gt;修完我才意识到,&amp;quot;幽灵在线&amp;quot;这件事,跟卡片机、跟 ESP32、跟这个具体项目几乎没关系。&lt;&#x2F;p&gt;
+&lt;p&gt;只要你的系统满足两个条件,它就会找上门:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;服务端把状态放在容易丢的地方&lt;&#x2F;strong&gt;(内存、缓存、会随重启清空的任何东西);&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;客户端通过一条长连接维持在线&lt;&#x2F;strong&gt;(WebSocket、MQTT、长轮询、游戏服务器的 TCP 会话)。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;聊天室服务重启后,在线列表空了,但用户的 WebSocket 还连着,不刷新就一直显示离线;游戏服务器热更新后,玩家角色从世界里消失,但客户端以为自己还在副本里;物联网平台重启,设备状态全灰,可设备从没断过 MQTT。&lt;strong&gt;全是同一个故事的不同皮肤。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;解法也大同小异——要么让服务端把状态持久化(重启能自己捞回来),要么让客户端定期&amp;quot;报平安&amp;quot;,用一个最小的心跳把对不上的认知重新对齐。我们选了后者,因为它改动最小、不引入数据库。&lt;&#x2F;p&gt;
+&lt;p&gt;代价当然有,而且我们没藏着:心跳只能还原&amp;quot;你是谁、在哪座岛&amp;quot;这种核心身份,你在过程中临时收集到的东西,服务器崩了就真没了。但对一个几十人、一个多小时的现场来说,这个代价可以接受——真正要守的铁律不是&amp;quot;崩了能恢复&amp;quot;,而是&lt;strong&gt;活动当天,绝不主动重启服务器&lt;&#x2F;strong&gt;。心跳是后悔药,不是免死金牌。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;那天下午让我心头一紧的,是大屏上那片突如其来的空荡。&lt;&#x2F;p&gt;
+&lt;p&gt;现在再去点刷新,小人还在那儿——就算我手贱再重启一次服务器,最多 25 秒,它会自己慢慢走回岛上,像什么都没发生过。&lt;&#x2F;p&gt;
+&lt;p&gt;我们没给它写复活逻辑,只是教会了每台设备一件事:&lt;strong&gt;隔一会儿,就大声说一句&amp;quot;我还在&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;招魂这种事,说到底,靠的不是法术,是有人记得定时喊一嗓子。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
