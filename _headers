@@ -1,5 +1,8 @@
+# NOTE: This file only works on Cloudflare Pages deployments.
+# Currently the site is on GitHub Pages + CF proxy, so these headers
+# are set via the CF dashboard instead. Kept here for reference.
 /*
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
