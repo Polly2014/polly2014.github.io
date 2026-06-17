@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Pride</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/pride/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-06-17T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/pride/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loiter 造岛记：48 小时，六座彩虹岛</title>
+        <published>2026-06-17T00:00:00+00:00</published>
+        <updated>2026-06-17T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-islands/" type="text/html"/>
+        <id>https://polly.wang/loiter-islands/</id>
+        
+        <content type="html">&lt;blockquote&gt;
+&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;loiter-summoning&quot;&gt;Loiter 招魂记：当大屏上的小人集体蒸发&lt;&#x2F;a&gt;。前四篇讲的是怎么从零搭一个卡片机社交厅；这一篇讲的是怎么把它变成另一个东西——同一副骨架，换一整套灵魂。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;6 月 14 日早上，&lt;code&gt;loiter.polly.wang&lt;&#x2F;code&gt; 的大屏上还是水墨山水。狐灵 NPC 飘在草原上等你搭话，两个人碰面要走&amp;quot;配对→接头暗号→技能比拼&amp;quot;的仙侠流程，地图配色是墨绿和金。&lt;&#x2F;p&gt;
+&lt;p&gt;48 小时后，同一个域名、同一台 Azure VM、同一块 240×135 的 Cardputer 屏幕——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-islands&#x2F;islands_map.jpg&quot; alt=&quot;六座彩虹岛屿的大屏地图，两个小人分别站在不同颜色的岛上，一道彩虹弧连接它们&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;水墨变成了海洋，六座岛屿各自一种 Pride 色，两个人碰面只需要键入对方的名字然后按回车。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;qi-guan-yi-zhi-bu-shi-tui-dao-zhong-jian&quot;&gt;器官移植，不是推倒重建&lt;&#x2F;h2&gt;
+&lt;p&gt;事情的起因是一个 Pride Month workshop 的需求：75 分钟，约 16 个人，每人一台 M5 Cardputer，走一段从&amp;quot;你是谁&amp;quot;到&amp;quot;你遇到谁&amp;quot;到&amp;quot;你成了谁&amp;quot;的故事弧。六座彩虹岛屿，各自对应一种颜色——红橙黄绿蓝紫。三道 quiz 题决定你属于哪座岛。之后是跨岛握手：你去找别人说 HI，对方接受了，你们各自收集到对方的岛色。终场时，AI 根据你的岛屿、收集的颜色、回答过的问题，给你写一首九行短诗。&lt;&#x2F;p&gt;
+&lt;p&gt;这个流程和 v1 仙侠社交厅的&amp;quot;配对→比武→收技能&amp;quot;几乎毫无重合。但底下那根管子——WiFi 配网、MQTT 传输、WebSocket 大屏、OTA 空中升级、服务端权威状态机——完全一样。&lt;&#x2F;p&gt;
+&lt;p&gt;所以我们做了一件类似器官移植的事：&lt;strong&gt;血管不断，心脏换了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;具体来说，保留的是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Azure VM 上 mosquitto + uvicorn + cloudflared 三个 systemd 服务，一行配置都没改&lt;&#x2F;li&gt;
+&lt;li&gt;固件里 WiFi STA 连接 + NVS 配网 + MQTT PubSubClient + 非阻塞重连 + OTA 双分区升级，一行也没动&lt;&#x2F;li&gt;
+&lt;li&gt;WebSocket 传输层的 snapshot&#x2F;join&#x2F;leave&#x2F;move&#x2F;ping，连心跳间隔都没换&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;删掉的是全部 v1 玩法层：配对引擎、技能系统、成就树、NPC 对话、任务链。十几个 Python 模块归档到 &lt;code&gt;_v1_archive&#x2F;&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;新建的是 Islands of Color 的玩法核心：岛屿分配（quiz 映射 6 种色）、光谱收集（5 格 Pride 色）、HI 握手（跨岛换色 + 同岛共鸣）、AI reading（双语短诗）。&lt;&#x2F;p&gt;
+&lt;p&gt;8000 多行代码，6 套测试，48 小时。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-duan-gu-shi-hu&quot;&gt;三段故事弧&lt;&#x2F;h2&gt;
+&lt;p&gt;Pride 隐喻在这个产品里不是标签，是结构。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 1：你是谁？&lt;&#x2F;strong&gt; 给自己起名、换装、回答三道性格问题。quiz 的答案决定你属于哪座岛——EMBER（红）、HEARTH（橙）、SPARK（黄）、GROVE（绿）、TIDE（蓝）、MIST（紫）。登岛的瞬间，你的光谱第一格自动填上本色。这一步叫&lt;strong&gt;自我认领&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 2：你遇到谁？&lt;&#x2F;strong&gt; 键入别人的名字按回车，对方设备弹出邀请，按 Enter 接受、按 DEL 拒绝。如果你们在不同岛，各自收集到对方的颜色，大屏上飞出一道跨海彩虹弧。如果你们在同一座岛——颜色不加，但动画不同：那叫&amp;quot;共鸣&amp;quot;。你还可以倾斜设备在地图上走动、猛摇设备触发集体跳跃、用匿名频道往大屏发消息。这一段叫&lt;strong&gt;接触多元&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Phase 3：你成了谁？&lt;&#x2F;strong&gt; 大屏暗下来，设备进入 loading 界面。云端的 Claude 根据你的岛屿、收集到的颜色、握手次数和 quiz 原始选择，写出一首双语短诗——九行英文，九行中文，附一个身份标签。&amp;quot;EMBER KEEPER &#x2F; 守火者&amp;quot;。大屏上的小人脚下亮起五格光谱，hover 上去能读到完整的诗。这一段叫&lt;strong&gt;多元共在&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-islands&#x2F;device_welcome.jpg&quot; alt=&quot;M5 Cardputer 显示 ISLANDS OF COLOR 欢迎屏，彩虹条纹横跨 240×135 像素&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-liang-xian-de-bug&quot;&gt;最惊险的 bug&lt;&#x2F;h2&gt;
+&lt;p&gt;说&amp;quot;48 小时&amp;quot;，听起来像流水线。真相是最后 8 小时几乎全耗在一个 bug 上。&lt;&#x2F;p&gt;
+&lt;p&gt;Phase 3 的进度条满了，但屏幕定格不跳。设备能收到数据——我在 serial 里看到了 &lt;code&gt;[RD] RX len=719&lt;&#x2F;code&gt; 和 &lt;code&gt;on_reading SET ready=1&lt;&#x2F;code&gt;，状态变量切到了 P3-02，goto 也执行了，&lt;code&gt;screen=15&lt;&#x2F;code&gt; 白纸黑字——&lt;strong&gt;但屏幕纹丝不动&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这个症状有两个独立的根因，任何一个单独修掉另一个都会继续作祟。&lt;&#x2F;p&gt;
+&lt;p&gt;第一个是&lt;strong&gt;中文字符膨胀&lt;&#x2F;strong&gt;。&lt;code&gt;json.dumps&lt;&#x2F;code&gt; 默认 &lt;code&gt;ensure_ascii=True&lt;&#x2F;code&gt;，每个汉字变成 &lt;code&gt;\uXXXX&lt;&#x2F;code&gt;——6 个字节替代 UTF-8 的 3 个。9 行英文 + 9 行中文的 reading payload 从 690 字节膨胀到 966 字节，超过了设备 MQTT 库的 1024 字节缓冲区。超限的包被&lt;strong&gt;静默丢弃&lt;&#x2F;strong&gt;，没有任何报错。&lt;&#x2F;p&gt;
+&lt;p&gt;诊断神器是一行 shell：&lt;code&gt;mosquitto_sub -t &#x27;reading&#x2F;#&#x27; -C 1 -v | wc -c&lt;&#x2F;code&gt;。看到 966 的瞬间就明白了。修复：服务端 &lt;code&gt;ensure_ascii=False&lt;&#x2F;code&gt;，设备缓冲区从 1024 扩到 2048。&lt;&#x2F;p&gt;
+&lt;p&gt;但改完之后，进度条&lt;strong&gt;依然卡住&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;第二个是&lt;strong&gt;dirty flag 被同帧吃掉&lt;&#x2F;strong&gt;——一个状态机经典 bug。loop 里原来的写法是：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;if (g_dirty) {
+&lt;&#x2F;span&gt;&lt;span&gt;    dispatch_redraw();   &#x2F;&#x2F; 画屏，内部可能 goto_screen → 设 g_dirty=true
+&lt;&#x2F;span&gt;&lt;span&gt;    g_dirty = false;     &#x2F;&#x2F; 紧跟着就清掉了
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;draw_p3_01&lt;&#x2F;code&gt; 发现 reading 到了，调用 &lt;code&gt;goto_screen(P3_02)&lt;&#x2F;code&gt; 设 &lt;code&gt;g_dirty=true&lt;&#x2F;code&gt;。但下一行立刻 &lt;code&gt;g_dirty=false&lt;&#x2F;code&gt;。下一帧 &lt;code&gt;g_screen&lt;&#x2F;code&gt; 已经是 P3-02 了，dirty 却是 false，而 P3-02 不在需要逐帧重绘的列表里——&lt;strong&gt;永远不会再画，定格在进度条最后一帧。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;修复只有两个字符的差距：&lt;strong&gt;先清后画&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;if (g_dirty) {
+&lt;&#x2F;span&gt;&lt;span&gt;    g_dirty = false;     &#x2F;&#x2F; 先清
+&lt;&#x2F;span&gt;&lt;span&gt;    dispatch_redraw();   &#x2F;&#x2F; 再画——draw 内部 goto 重设的 dirty 不会被吃
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个教训适用于所有状态机：凡是 &lt;code&gt;draw()&lt;&#x2F;code&gt; 内部能改 dirty flag，清 dirty 就必须在 draw 之前。否则转场信号会被同帧的清理吞掉。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ai-xie-de-shi&quot;&gt;AI 写的诗&lt;&#x2F;h2&gt;
+&lt;p&gt;Phase 3 每个人看到的诗都不一样。服务端把你的岛屿、光谱、握手次数和 quiz 选择打包成 prompt，交给同一台 VM 上跑的 CopilotX（Copilot API 代理）去调 Claude 生成。9 行英文叙事诗 + 9 行中文逐行对应，再加一个英文身份标签和中文翻译。&lt;&#x2F;p&gt;
+&lt;p&gt;设备上看到的效果是这样的：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-islands&#x2F;device_reading.jpg&quot; alt=&quot;M5 Cardputer 显示 AI 生成的 reading——EMBER KEEPER &#x2F; 守火者，五格光谱色块，中文短诗&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&amp;quot;EMBER KEEPER &#x2F; 守火者&amp;quot;。五格光谱里两格有色，三格还空着——这个人只跟两个不同岛的人打过招呼。&lt;&#x2F;p&gt;
+&lt;p&gt;如果 AI 超时了怎么办？每座岛有一套手写的 fallback 诗，调性和 AI 一致。设备端 30 秒没收到回复就用本地兜底，体验不崩。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-tiao-bu-bian-de-guan-zi&quot;&gt;那条不变的管子&lt;&#x2F;h2&gt;
+&lt;p&gt;写到这里回头看，最有意思的反而不是新功能，而是那些&lt;strong&gt;什么都没改的部分&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;WiFi 配网的代码是 v1 写的，NVS 存储凭据、扫描网络、画配网页面——一行没动。MQTT 的重连逻辑、LWT 遗言机制、OTA 双分区升级——一行没动。大屏的 WebSocket 重连、指数退避、快照恢复——一行没动。甚至&lt;a href=&quot;&#x2F;loiter-summoning&quot;&gt;上一篇&lt;&#x2F;a&gt;里刚加的心跳自愈，也直接在 v2 里生效了。&lt;&#x2F;p&gt;
+&lt;p&gt;这些&amp;quot;无聊的管道&amp;quot;在 v1 的真机测试里反复被打磨过——音频冲突卡死、PubSubClient 缓冲区溢出、cloudflared 杀空闲连接、OTA semver 字典序排序 bug——踩过的坑全在 &lt;code&gt;CLAUDE_v1_lab.md&lt;&#x2F;code&gt; 里躺着，v2 一个都没再踩。&lt;&#x2F;p&gt;
+&lt;p&gt;这大概是做 v2 最省心的部分：不用从零证明&amp;quot;这根管子是通的&amp;quot;。你只需要证明&amp;quot;换了心脏之后它还通&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;同一块比信用卡大不了多少的屏幕。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;第一篇&lt;&#x2F;a&gt;里，它显示的是墨绿色的草原、一只名叫 Vix 的狐灵、和一个问你&amp;quot;你喜欢哪种食物&amp;quot;的 NPC 对话框。&lt;&#x2F;p&gt;
+&lt;p&gt;现在它显示的是六色彩虹、一个叫 ISLANDS OF COLOR 的标题、和一句 &lt;em&gt;welcome to your color&lt;&#x2F;em&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;变的是皮肤。不变的是从 240×135 像素到 Azure 云端再到大屏的那条链路——以及凌晨两点还在 Review 里挑毛病的两个 AI。&lt;&#x2F;p&gt;
+&lt;p&gt;下一步是真正面对 16 个人的现场。dry run 过了两台，但两台和十六台是两个物种。&lt;&#x2F;p&gt;
+&lt;p&gt;不过那是下一篇的事了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;这是 Loiter 系列的第五篇。&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;第一篇&lt;&#x2F;a&gt;讲 Loiter 是什么，&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;第二篇&lt;&#x2F;a&gt;讲 AI 协作故事，&lt;a href=&quot;&#x2F;loiter-pitfalls&quot;&gt;第三篇&lt;&#x2F;a&gt;讲硬件踩坑，&lt;a href=&quot;&#x2F;loiter-summoning&quot;&gt;第四篇&lt;&#x2F;a&gt;讲心跳自愈。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
