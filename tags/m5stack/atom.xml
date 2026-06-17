@@ -42,7 +42,7 @@
 &lt;p&gt;&lt;strong&gt;Phase 1：你是谁？&lt;&#x2F;strong&gt; 给自己起名、换装、回答三道性格问题。quiz 的答案决定你属于哪座岛——EMBER（红）、HEARTH（橙）、SPARK（黄）、GROVE（绿）、TIDE（蓝）、MIST（紫）。登岛的瞬间，你的光谱第一格自动填上本色。这一步叫&lt;strong&gt;自我认领&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Phase 2：你遇到谁？&lt;&#x2F;strong&gt; 键入别人的名字按回车，对方设备弹出邀请，按 Enter 接受、按 DEL 拒绝。如果你们在不同岛，各自收集到对方的颜色，大屏上飞出一道跨海彩虹弧。如果你们在同一座岛——颜色不加，但动画不同：那叫&amp;quot;共鸣&amp;quot;。你还可以倾斜设备在地图上走动、猛摇设备触发集体跳跃、用匿名频道往大屏发消息。这一段叫&lt;strong&gt;接触多元&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;strong&gt;Phase 3：你成了谁？&lt;&#x2F;strong&gt; 大屏暗下来，设备进入 loading 界面。云端的 Claude 根据你的岛屿、收集到的颜色、握手次数和 quiz 原始选择，写出一首双语短诗——九行英文，九行中文，附一个身份标签。&amp;quot;EMBER KEEPER &#x2F; 守火者&amp;quot;。大屏上的小人脚下亮起五格光谱，hover 上去能读到完整的诗。这一段叫&lt;strong&gt;多元共在&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-islands&#x2F;device_welcome.jpg&quot; alt=&quot;M5 Cardputer 显示 ISLANDS OF COLOR 欢迎屏，彩虹条纹横跨 240×135 像素&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;device_welcome.jpg&quot; alt=&quot;M5 Cardputer 显示 ISLANDS OF COLOR 欢迎屏，彩虹条纹横跨 240×135 像素&quot; style=&quot;max-width:60%;border-radius:8px&quot;&gt;&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;zui-liang-xian-de-bug&quot;&gt;最惊险的 bug&lt;&#x2F;h2&gt;
 &lt;p&gt;说&amp;quot;48 小时&amp;quot;，听起来像流水线。真相是最后 8 小时几乎全耗在一个 bug 上。&lt;&#x2F;p&gt;
 &lt;p&gt;Phase 3 的进度条满了，但屏幕定格不跳。设备能收到数据——我在 serial 里看到了 &lt;code&gt;[RD] RX len=719&lt;&#x2F;code&gt; 和 &lt;code&gt;on_reading SET ready=1&lt;&#x2F;code&gt;，状态变量切到了 P3-02，goto 也执行了，&lt;code&gt;screen=15&lt;&#x2F;code&gt; 白纸黑字——&lt;strong&gt;但屏幕纹丝不动&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
@@ -67,7 +67,7 @@
 &lt;h2 id=&quot;ai-xie-de-shi&quot;&gt;AI 写的诗&lt;&#x2F;h2&gt;
 &lt;p&gt;Phase 3 每个人看到的诗都不一样。服务端把你的岛屿、光谱、握手次数和 quiz 选择打包成 prompt，交给同一台 VM 上跑的 CopilotX（Copilot API 代理）去调 Claude 生成。9 行英文叙事诗 + 9 行中文逐行对应，再加一个英文身份标签和中文翻译。&lt;&#x2F;p&gt;
 &lt;p&gt;设备上看到的效果是这样的：&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-islands&#x2F;device_reading.jpg&quot; alt=&quot;M5 Cardputer 显示 AI 生成的 reading——EMBER KEEPER &#x2F; 守火者，五格光谱色块，中文短诗&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;device_reading.jpg&quot; alt=&quot;M5 Cardputer 显示 AI 生成的 reading——EMBER KEEPER &#x2F; 守火者，五格光谱色块，中文短诗&quot; style=&quot;max-width:60%;border-radius:8px&quot;&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;&amp;quot;EMBER KEEPER &#x2F; 守火者&amp;quot;。五格光谱里两格有色，三格还空着——这个人只跟两个不同岛的人打过招呼。&lt;&#x2F;p&gt;
 &lt;p&gt;如果 AI 超时了怎么办？每座岛有一套手写的 fallback 诗，调性和 AI 一致。设备端 30 秒没收到回复就用本地兜底，体验不崩。&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;na-tiao-bu-bian-de-guan-zi&quot;&gt;那条不变的管子&lt;&#x2F;h2&gt;
