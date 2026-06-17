@@ -5,8 +5,93 @@
     <link href="https://polly.wang/tags/copilotx/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-12T00:00:00+00:00</updated>
+    <updated>2026-06-18T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/copilotx/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义：两个 AI 和一个人的比赛首夜</title>
+        <published>2026-06-18T00:00:00+00:00</published>
+        <updated>2026-06-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-afac2026/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-afac2026/</id>
+        
+        <content type="html">&lt;p&gt;6 月 18 日凌晨 3:15，天池赛题四的提交系统吐出了第三个分数：&lt;strong&gt;55.49&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;五个小时前，这个项目还不存在。没有代码仓库，没有数据集，连题目都没看过。上周日朋友提起 AFAC2026 金融智能创新大赛，她想参加初创赛道。我当时只说了句&amp;quot;开发侧切入感觉会更丝滑些&amp;quot;，然后就没怎么细看。今晚睡前翻了翻赛题列表，复旦出的挑战组赛题四跳了出来——金融长文本 Agent 的动态记忆压缩与高效问答——这不就是我的主场吗？给她发了条消息：&amp;quot;挑战和初创两个赛道可以并行么，咱俩组两个队分别推进😄&amp;quot;然后一切就开始了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;duan-zhang-qu-yi&quot;&gt;断章取义&lt;&#x2F;h2&gt;
+&lt;p&gt;队名是我起的。&lt;&#x2F;p&gt;
+&lt;p&gt;「断章取义」，通常是个贬义词——把别人的话掐头去尾、歪曲原意。但在这道赛题里，它恰好是我们要做的事的精确描述：把 345MB 的金融文档&lt;strong&gt;断&lt;&#x2F;strong&gt;成&lt;strong&gt;章&lt;&#x2F;strong&gt;节，从中&lt;strong&gt;取&lt;&#x2F;strong&gt;出正确的&lt;strong&gt;义&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;比赛要求只用 Qwen 模型回答 100 道金融领域的选择题。题目横跨五个领域——保险条款、监管法规、债券募集说明书、上市公司年报、研究报告——每题指定 2-4 份参考文档，加起来动辄几百页。模型需要从海量文本中精准定位证据，然后判断每个选项的对错。&lt;&#x2F;p&gt;
+&lt;p&gt;听起来像是个 RAG 问题。但 65% 的题是多选，漏一个就全错——这让它从&amp;quot;找到证据&amp;quot;升级为&amp;quot;逐条验证&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liang-ge-ai-he-yi-ge-ren&quot;&gt;两个 AI 和一个人&lt;&#x2F;h2&gt;
+&lt;p&gt;这不是一个人在写代码。团队分工是这样的：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Polly&lt;&#x2F;strong&gt;（VS Code Copilot）：工程执行、写代码、跑脚本、文件操作。手速最快的那个——1004 页 OCR 就是它 20 路并发跑完的。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Codex&lt;&#x2F;strong&gt;（Claude Code）：方案评估、风险预警、代码审查。那个会在你准备提交前突然说&amp;quot;等等，pyproject.toml 依赖是空的&amp;quot;的角色。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我&lt;&#x2F;strong&gt;：拍板。看 Review 意见，做最终决策，以及——给队伍起名。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这个分工不是设计出来的，是自然长出来的。当你同时开着 VS Code Copilot 和 Claude Code，一个在帮你写代码跑实验，一个在审你的方案挑毛病——你会发现自己的角色自然收敛到&amp;quot;决策者&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liu-ge-ban-ben-wu-ge-xiao-shi&quot;&gt;六个版本，五个小时&lt;&#x2F;h2&gt;
+&lt;p&gt;第一个小时是数据探索和环境搭建。273MB 数据集下载、doc_id 映射规则逆向、DashScope API 接通——这些是 Copilot 的主场，机械但必须做对。&lt;&#x2F;p&gt;
+&lt;p&gt;然后开始迭代 pipeline。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v0：全文塞入。&lt;&#x2F;strong&gt; 最朴素的方案——把所有参考文档原文拼起来直接喂给 Qwen。Token 消耗 950 万，跑完一次要 75 分钟。但它给了一个 baseline：49% 准确率。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v1：BM25 分块检索。&lt;&#x2F;strong&gt; 把文档切成 2000 字的 chunk，用 BM25 召回 top-10 相关段。Token 降到 100 万，但准确率也跟着掉——模型变得&amp;quot;保守&amp;quot;了，多选题开始漏选。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;v2：逐选项检索。&lt;&#x2F;strong&gt; 不再只用题目检索，而是把每个选项也作为 query，独立召回证据。同时去重，避免同一段证据在 prompt 里出现三次。Token 进一步压到 90 万。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里，三个版本花了大约两个小时。准确率卡在 49% 左右，和全文塞入差不多。检索省了 Token，但没提分。&lt;&#x2F;p&gt;
+&lt;p&gt;转折发生在 v3。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-dao-duo-xuan-ti-de-dun-wu&quot;&gt;一道多选题的顿悟&lt;&#x2F;h2&gt;
+&lt;p&gt;问题出在多选题的 prompt 设计上。&lt;&#x2F;p&gt;
+&lt;p&gt;v2 的 prompt 是这样的：给模型一堆证据，然后问&amp;quot;以下哪些选项正确？请输出所有正确选项的字母。&amp;quot;模型需要同时判断四个选项，在一次回答中给出完整答案。&lt;&#x2F;p&gt;
+&lt;p&gt;65 道多选题里，模型经常漏选。比如正确答案是 ABD，它只选了 AD——不是因为没看到 B 的证据，而是在同时权衡四个选项时，对 B 的置信度不够高，就&amp;quot;保守&amp;quot;地跳过了。&lt;&#x2F;p&gt;
+&lt;p&gt;Polly 提了一个方案：&lt;strong&gt;逐选项验证。&lt;&#x2F;strong&gt; 不问&amp;quot;哪些对&amp;quot;，改问&amp;quot;这个对不对&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;对每道多选题，拆成四次独立调用：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;quot;选项 A 是否正确？请只回答 True 或 False。&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;选项 B 是否正确？请只回答 True 或 False。&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;选项 C 是否正确？……&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;&amp;quot;选项 D 是否正确？……&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每次调用只需要判断一件事，证据也针对这一个选项独立检索。最后把所有 True 的选项拼起来作为答案。&lt;&#x2F;p&gt;
+&lt;p&gt;Token 翻倍了——从每题 11K 涨到 23K。但 A 榜分数从 45.86 跳到 &lt;strong&gt;50.53&lt;&#x2F;strong&gt;，准确率一次性涨了 &lt;strong&gt;10 个百分点&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是全场最大的单一杠杆。65% 多选题是最大丢分源——逐选项验证把多选题从&amp;quot;概率猜测&amp;quot;变成了&amp;quot;逐个审判&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rang-bm25-du-dong-zhong-wen&quot;&gt;让 BM25 读懂中文&lt;&#x2F;h2&gt;
+&lt;p&gt;第二个提分点来得更朴素——换分词器。&lt;&#x2F;p&gt;
+&lt;p&gt;v3 的 BM25 检索用的是按字分词。也就是说，&amp;quot;比亚迪&amp;quot;被拆成&amp;quot;比&amp;quot;、&amp;quot;亚&amp;quot;、&amp;quot;迪&amp;quot;三个独立 token。当题目问到&amp;quot;比亚迪 2024 年营收&amp;quot;时，检索引擎其实在找包含&amp;quot;比&amp;quot;、&amp;quot;亚&amp;quot;、&amp;quot;迪&amp;quot;的段落——你能想象这有多嘈杂。&lt;&#x2F;p&gt;
+&lt;p&gt;换成 jieba 分词后，&amp;quot;比亚迪&amp;quot;作为一个完整词参与检索。&amp;quot;中国建筑&amp;quot;不再被拆成四个字。&amp;quot;募集说明书&amp;quot;作为整体匹配。&lt;&#x2F;p&gt;
+&lt;p&gt;3828 行代码里改动不到 10 行，分数从 50.53 涨到 &lt;strong&gt;55.49&lt;&#x2F;strong&gt;，又是 &lt;strong&gt;5.5 个百分点&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;凌晨 3:15 提交。排名 131。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ye-jian-gong-han-1004-ye-biao-ge&quot;&gt;夜间工厂：1004 页表格&lt;&#x2F;h2&gt;
+&lt;p&gt;提交完并没有停手。&lt;&#x2F;p&gt;
+&lt;p&gt;PyMuPDF 直接抽取的文本覆盖了 97% 的页面，但有 1004 页是&amp;quot;表格页&amp;quot;——包含图片、文字层稀疏、大量数字和百分比。这些页面对 BM25 来说几乎是盲区，而金融文档里的关键数据往往就藏在表格里。&lt;&#x2F;p&gt;
+&lt;p&gt;方案是用 CopilotX（我自己写的 Copilot API 代理）调用 gemini-3.5-flash 做视觉 OCR。把 PDF 页面渲染成图片，传给多模态模型，让它转录成 Markdown 表格。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Polly 写了 &lt;code&gt;ocr_table_pages.py&lt;&#x2F;code&gt;——async 20 路并发，自动重试，DPI 自适应。跑完 999 页花了 17 分钟。7 页因为图太大（413 错误）失败，降到 DPI 100 补跑后全部通过。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;最终 1004 页全部完成，990 页有有效文本输出。总 Token 消耗约 460 万——全部走 CopilotX 免费额度。&lt;&#x2F;p&gt;
+&lt;p&gt;然后是合并：&lt;code&gt;merge_ocr.py&lt;&#x2F;code&gt; 逐页扫描每个 PDF，有 OCR 结果的页面用 OCR 文本替换原始的稀疏文字层，其余页面保留 PyMuPDF 直抽。60 个文档合并完成，输出到 &lt;code&gt;data&#x2F;enhanced&#x2F;&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;全量对照的结果很健康：100 题里 10 题答案变化，ABCD 全选数不变，Token 略降。变化集中在合同、财报、保险、研报四个 PDF 域——法规域全是 HTML&#x2F;TXT，没有 OCR 补丁，答案纹丝不动。&lt;&#x2F;p&gt;
+&lt;p&gt;这正是我们想看到的：&lt;strong&gt;变化可控、方向可解释、不污染无关域。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;凌晨 4 点我准备只替换财报 20 题做 hybrid 提交时，Codex 拦住了：&amp;quot;不能只替换 20 题，必须跑全量 enhanced，实验才干净。&amp;quot;这个 Review 省了一次可能的脏提交。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;bu-zhi-shi-dui-ming&quot;&gt;不只是队名&lt;&#x2F;h2&gt;
+&lt;p&gt;&amp;quot;断章取义&amp;quot;本来只是一个谐音梗。但一夜下来，它变成了对这套系统的精确描述：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;断&lt;&#x2F;strong&gt;：345MB 文档拆成 2000 字的 chunk，1004 页表格逐页 OCR&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;章&lt;&#x2F;strong&gt;：jieba 让 BM25 理解中文词的边界，逐选项验证让模型一次只看一&amp;quot;章&amp;quot;证据&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;取&lt;&#x2F;strong&gt;：BM25 检索 + option-wise 去重，从海量文本中取出最相关的段落&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;义&lt;&#x2F;strong&gt;：Qwen 在精准证据上做出判断，而不是在 950 万 Token 的噪声里猜&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;五个小时，6 个 pipeline 版本，3 次提交，17 个 Python 文件，3828 行代码。从不存在到排名 131。&lt;&#x2F;p&gt;
+&lt;p&gt;明天还有三枪。enhanced 版本等着验证，条款号 boost 等着实现，thinking-budget 1024 等着对比。&lt;&#x2F;p&gt;
+&lt;p&gt;但今晚的收获不只是分数。它验证了一种协作模式：人类做决策，AI 们各司其职——写代码的写代码，审方案的审方案。没有谁是&amp;quot;辅助&amp;quot;，每个角色都有不可替代的贡献。&lt;&#x2F;p&gt;
+&lt;p&gt;Codex 拦住了空依赖和脏提交。Polly 跑完了 1004 页 OCR。而我？我负责在凌晨三点按下提交键，然后看着 55.49 出现在屏幕上。&lt;&#x2F;p&gt;
+&lt;p&gt;断章取义。把文档断成章，从中取出义。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是贬义。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>CopilotX 换锁记：当我把钥匙哈希之后</title>
         <published>2026-06-12T00:00:00+00:00</published>
