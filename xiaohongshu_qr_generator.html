@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书发布页面二维码生成器</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff2442;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .scheme-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #ff2442;
+        }
+        .scheme-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .scheme-url {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code {
+            margin: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #ff2442;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #e02139;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍭 小红书发布页面二维码生成器</h1>
+        
+        <div class="info">
+            <strong>📱 使用说明：</strong><br>
+            生成的二维码可以让用户扫描后直接跳转到小红书App的相应页面。请确保用户已安装小红书App。
+        </div>
+
+        <div class="scheme-section">
+            <div class="scheme-title">📝 发布笔记（图文）</div>
+            <div class="scheme-url">xhsdiscover://post_note/</div>
+            <div>直接进入图文笔记发布页面，用户可以添加图片和文字内容。</div>
+            <div class="qr-container">
+                <div class="qr-code" id="qr-post-note"></div>
+                <button class="btn" onclick="downloadQR('qr-post-note', '发布笔记')">下载二维码</button>
+            </div>
+        </div>
+
+        <div class="scheme-section">
+            <div class="scheme-title">📷 发布作品（相册选择）</div>
+            <div class="scheme-url">xhsdiscover://post/</div>
+            <div>打开相册选择界面，支持从本地相册选取素材发布。</div>
+            <div class="qr-container">
+                <div class="qr-code" id="qr-post"></div>
+                <button class="btn" onclick="downloadQR('qr-post', '发布作品')">下载二维码</button>
+            </div>
+        </div>
+
+        <div class="scheme-section">
+            <div class="scheme-title">🎵 发布语音笔记</div>
+            <div class="scheme-url">xhsdiscover://hey_post/</div>
+            <div>打开语音发布界面，支持录制并发布音频笔记。</div>
+            <div class="qr-container">
+                <div class="qr-code" id="qr-hey-post"></div>
+                <button class="btn" onclick="downloadQR('qr-hey-post', '发布语音')">下载二维码</button>
+            </div>
+        </div>
+
+        <div class="scheme-section">
+            <div class="scheme-title">📱 小红书主页</div>
+            <div class="scheme-url">xhsdiscover://</div>
+            <div>直接打开小红书App主页。</div>
+            <div class="qr-container">
+                <div class="qr-code" id="qr-main"></div>
+                <button class="btn" onclick="downloadQR('qr-main', '小红书主页')">下载二维码</button>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ 重要提醒：</strong><br>
+            1. 这些URL Scheme仅在用户已安装小红书App时有效<br>
+            2. 在微信中可能会被屏蔽，建议提示用户在浏览器中打开<br>
+            3. URL Scheme可能会随小红书App更新而变化<br>
+            4. 建议在使用前先测试验证有效性
+        </div>
+
+        <div class="success">
+            <strong>✅ 最佳实践建议：</strong><br>
+            1. 结合fallback机制：如果App未安装，跳转到应用商店<br>
+            2. 添加引导文案：提示用户如何使用二维码<br>
+            3. 定期测试：确保链接仍然有效<br>
+            4. 提供备用方案：如小红书官方分享链接
+        </div>
+
+        <div class="scheme-section">
+            <div class="scheme-title">🔧 自定义URL测试</div>
+            <input type="text" id="customUrl" placeholder="输入自定义URL Scheme" style="width: 70%; padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <button class="btn" onclick="generateCustomQR()">生成二维码</button>
+            <div class="qr-container">
+                <div class="qr-code" id="qr-custom"></div>
+                <button class="btn" onclick="downloadQR('qr-custom', '自定义')" id="download-custom" style="display: none;">下载二维码</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 生成二维码的配置
+        const qrConfig = {
+            width: 200,
+            height: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        };
+
+        // 生成所有预设的二维码
+        function generateAllQRCodes() {
+            const schemes = [
+                { id: 'qr-post-note', url: 'xhsdiscover://post_note/' },
+                { id: 'qr-post', url: 'xhsdiscover://post/' },
+                { id: 'qr-hey-post', url: 'xhsdiscover://hey_post/' },
+                { id: 'qr-main', url: 'xhsdiscover://' }
+            ];
+
+            schemes.forEach(scheme => {
+                QRCode.toCanvas(document.getElementById(scheme.id), scheme.url, qrConfig, function(error) {
+                    if (error) console.error(error);
+                });
+            });
+        }
+
+        // 生成自定义二维码
+        function generateCustomQR() {
+            const customUrl = document.getElementById('customUrl').value.trim();
+            if (!customUrl) {
+                alert('请输入URL Scheme');
+                return;
+            }
+
+            const customContainer = document.getElementById('qr-custom');
+            customContainer.innerHTML = ''; // 清空之前的内容
+
+            QRCode.toCanvas(customContainer, customUrl, qrConfig, function(error) {
+                if (error) {
+                    console.error(error);
+                    alert('生成二维码失败');
+                } else {
+                    document.getElementById('download-custom').style.display = 'inline-block';
+                }
+            });
+        }
+
+        // 下载二维码
+        function downloadQR(canvasId, name) {
+            const canvas = document.querySelector(`#${canvasId} canvas`);
+            if (!canvas) {
+                alert('请先生成二维码');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = `小红书_${name}_二维码.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // 页面加载完成后生成所有二维码
+        window.addEventListener('load', generateAllQRCodes);
+    </script>
+</body>
+</html>
