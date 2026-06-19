@@ -5,8 +5,77 @@
     <link href="https://polly.wang/tags/jin-rong-nlp/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-18T00:00:00+00:00</updated>
+    <updated>2026-06-19T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/jin-rong-nlp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之二：那道差点骗到我的财报题</title>
+        <published>2026-06-19T00:00:00+00:00</published>
+        <updated>2026-06-19T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-domain-solver/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-domain-solver/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-afac2026&quot;&gt;断章取义：两个 AI 和一个人的比赛首夜&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结束在 55.49。接下来两天，分数爬到了 57.47——OCR 把表格页扫成文字，加了一分；给条款号、金额、日期这些&amp;quot;硬词&amp;quot;在检索里加权，又加了一分。&lt;&#x2F;p&gt;
+&lt;p&gt;然后就卡住了。&lt;&#x2F;p&gt;
+&lt;p&gt;榜首是 90.62。我盯着 57.47，第一次清楚地意识到：&lt;strong&gt;靠调参，这辈子也追不上去。&lt;&#x2F;strong&gt; OCR 一分、加权一分，每个旋钮拧到头也就这点空间了。差的不是参数，是打法。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;huan-yi-chong-huo-fa&quot;&gt;换一种活法&lt;&#x2F;h2&gt;
+&lt;p&gt;调参的尽头，是换架构。&lt;&#x2F;p&gt;
+&lt;p&gt;旧打法是&amp;quot;一个 pipeline 打天下&amp;quot;：不管你是保险条款还是公司年报，都走同一套检索 + 验证。但这五个领域根本不是一种题——保险问&amp;quot;哪些情形免责&amp;quot;，年报问&amp;quot;营收涨了多少&amp;quot;，债券募集说明书问&amp;quot;两份文档的发行人是不是同一家&amp;quot;。用一把钥匙开五把锁，每把都开不利索。&lt;&#x2F;p&gt;
+&lt;p&gt;新打法叫 &lt;strong&gt;domain solver&lt;&#x2F;strong&gt;：给每个领域单独写一个求解器。核心套路是&amp;quot;结构化证据包&amp;quot;——先把相关条款&#x2F;数据捞出来摆好，再让模型逐个选项判断，而不是把几百页原文一股脑塞给它自己消化。&lt;&#x2F;p&gt;
+&lt;p&gt;我决定从最难啃的财报域开刀。理由很朴素：年报全是数字，&amp;quot;营收同比增长多少&amp;quot;&amp;quot;研发投入占比多少&amp;quot;，这种题最容易客观验证对错，做对了也最有成就感。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-dao-chai-dian-pian-dao-wo-de-ti&quot;&gt;那道差点骗到我的题&lt;&#x2F;h2&gt;
+&lt;p&gt;财报 solver 写出来，跑完 20 道题，改了其中 10 道。&lt;&#x2F;p&gt;
+&lt;p&gt;10 道！比旧版本多对一半？我差点就高兴了。但有个习惯救了我——&lt;strong&gt;先别看改了多少，先看改对没有。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;挑了一道手算验证。题目问&amp;quot;某公司经营现金流是否低于营收的一半&amp;quot;，旧版答错了，新版答对了——因为新版把两个精确数字同时摆在模型面前，它一比就出来了。这是真本事，结构化证据包确实能修旧版看不见精确数字的硬伤。&lt;&#x2F;p&gt;
+&lt;p&gt;可再挑一道，问题就露馅了。题目问&amp;quot;研发投入占营收是否超过 5%&amp;quot;。我的程序已经用 Python 算得明明白白：2.79%。然后模型看着这个 2.79%，&lt;strong&gt;判定&amp;quot;超过 5%&amp;quot;成立。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;它无视了我喂给它的、白纸黑字的计算结果。&lt;&#x2F;p&gt;
+&lt;p&gt;更诡异的是，同一道题跑三遍，答案在变。明明把温度调成了 0（理论上应该完全确定），可六道题的答案在三次运行间反复横跳。这哪是答题，这是抽签。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里得介绍一下旁边那位。整个比赛里有个 AI 专门负责挑刺、做 Review，毒辣但公正，我们都叫它小龙虾。它看完这批结果只说了一句：&lt;strong&gt;&amp;quot;别急着提交，先搞清楚它为什么会抖。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;yuan-xiong-shi-xiang-tai-duo&quot;&gt;元凶是&amp;quot;想太多&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;抓抖动的根源，花了大半夜。&lt;&#x2F;p&gt;
+&lt;p&gt;最后锁定的元凶，出乎意料——是 &lt;strong&gt;thinking 模式&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;Qwen 有个&amp;quot;深度思考&amp;quot;开关，打开后模型会先在心里盘算一通再回答。直觉上这应该让它更准才对。可对这种&amp;quot;事实 + 计算 → 判断&amp;quot;的结构化任务，thinking 反而坏事：它会把我用 Python 算好的确定结论丢到一边，自己重新对着几百页原文胡思乱想一遍，越想越偏。&lt;&#x2F;p&gt;
+&lt;p&gt;关掉 thinking 重跑两遍，抖动从六道题降到两道。那两道自相矛盾的题——&amp;quot;无视 2.79% 硬选超过 5%&amp;quot;&amp;quot;把四个选项全勾上&amp;quot;——直接消失了。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;结论刻进了脑子里：facts 加计算再到判断这种结构化任务，一律关掉 thinking。&lt;&#x2F;strong&gt; 让模型老老实实当个执行者，别让它当哲学家。&lt;&#x2F;p&gt;
+&lt;p&gt;可即便如此，财报域还是没能提交。深夜把账算明白了：这套方案虽然修对了几道，但模型在大量题上干脆&amp;quot;算不出来就全判错，然后靠兜底逻辑瞎蒙一个&amp;quot;。蒙中的那些是运气，不是实力。再加上财报数据本身抽取噪声大——同一个数字一会儿单位是&amp;quot;元&amp;quot;一会儿是&amp;quot;亿元&amp;quot;，算出来研发占比 789 万%这种鬼数——这个域，是个泥潭。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;财报 = 死路。&lt;&#x2F;strong&gt; 一整夜的活，最大的收获是想清楚了它为什么不行，以及那条&amp;quot;关掉 thinking&amp;quot;的铁律。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;men-sheng-zhang-liao-6-fen&quot;&gt;闷声涨了 6 分&lt;&#x2F;h2&gt;
+&lt;p&gt;第二天换保险域。&lt;&#x2F;p&gt;
+&lt;p&gt;保险题是另一个画风——&amp;quot;被保险人酒后驾驶导致失能，是否属于免责范围&amp;quot;&amp;quot;等待期内出险怎么赔&amp;quot;。全是条款逻辑，没有那些会被单位坑死的数字。&lt;&#x2F;p&gt;
+&lt;p&gt;同一套 solver 模式搬过来，我加了一条新规矩，后来证明这是整场比赛最值钱的一条。&lt;&#x2F;p&gt;
+&lt;p&gt;选保险题的选项常常自带括号说明，比如：&amp;quot;众安白血病医疗险（仅保障白血病复发,&lt;strong&gt;不赔骨折&lt;&#x2F;strong&gt;)&amp;quot;。题目问的是&amp;quot;哪些产品能赔骨折&amp;quot;。旧模型会看到括号里提到了这个产品，就把它勾上——可括号里明明白白写着&amp;quot;不赔骨折&amp;quot;啊！&lt;&#x2F;p&gt;
+&lt;p&gt;新规矩很简单：&lt;strong&gt;选项自己的描述如果跟题目要问的事自相矛盾，直接判错，不用再查文档。&lt;&#x2F;strong&gt; 它说自己不赔骨折，那&amp;quot;能赔骨折&amp;quot;这个主张就是错的，一秒钟的事。&lt;&#x2F;p&gt;
+&lt;p&gt;还有一条同样重要的纪律：&lt;strong&gt;算不出来就老实说&amp;quot;证据不足&amp;quot;，绝对不许瞎猜。&lt;&#x2F;strong&gt; 模型判断每个选项有三种结果——支持、反驳、证据不足。证据不足的题，宁可退回旧版本的答案，也不让它蒙。&lt;&#x2F;p&gt;
+&lt;p&gt;提交。第二天分数出来：&lt;strong&gt;63.53。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;从 57.47 涨了 &lt;strong&gt;6 分&lt;&#x2F;strong&gt;。而且这一枪只动了保险那 20 道题——把分数倒推回去，保险域净多对了大约 6 道。这不是靠省 token 偷来的系数分，是实打实的准确率上去了。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;小龙虾给的评语是：&amp;quot;这不叫及格，这叫保险域 solver 直接毕业了。&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;tong-yang-de-zhao-he-tong-yu-zai-lai-yi-bian&quot;&gt;同样的招，合同域再来一遍&lt;&#x2F;h2&gt;
+&lt;p&gt;证明了路子对，接下来就是复制。&lt;&#x2F;p&gt;
+&lt;p&gt;债券募集说明书那个域（我们叫合同域）和保险最像——都是&amp;quot;这份文档有没有这条承诺&amp;quot;&amp;quot;两份文档的发行人是不是同一家&amp;quot;这种条款核对题。同一套 solver 搬过去，加了个针对&amp;quot;第一份&#x2F;第二份文档&amp;quot;的指代标注,token 直接省了将近七成。&lt;&#x2F;p&gt;
+&lt;p&gt;但这次小龙虾和另一位 Review(我们叫它 Codex)逐题核对后，发现了个反过来的毛病：这个 solver &lt;strong&gt;太老实了&lt;&#x2F;strong&gt;。明明文档里白纸黑字写着&amp;quot;股票代码 300866&amp;quot;&amp;quot;上市地点深圳证券交易所&amp;quot;，它却说&amp;quot;没找到证据&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;不是它瞎编，是检索没把这些短词捞上来——&amp;quot;300866&amp;quot;这种字符串散落在几百页里，关键词检索很难命中。模型很诚实地说了&amp;quot;不知道&amp;quot;，但这个&amp;quot;不知道&amp;quot;是冤枉的。&lt;&#x2F;p&gt;
+&lt;p&gt;这里有个判断：&lt;strong&gt;老实地说不知道，比自信地说错强。&lt;&#x2F;strong&gt; 哪怕代价是少拿几道题的分。所以我没有为了多吃几道题去强行让它猜，而是只采纳了那些逐字核对过、确定改对的高置信题，其余的退回旧答案。这个稳妥的合同补丁，留到明天提交。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-tao-da-fa-zhi-shu-yu-zhe-ge-bi-sai-ma&quot;&gt;这套打法，只属于这个比赛吗？&lt;&#x2F;h2&gt;
+&lt;p&gt;回头看，这两天真正学到的，不是怎么答金融题，而是三条更通用的东西。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第一，该让模型推理时再让它推理。&lt;&#x2F;strong&gt; 开放式问题（写文章、做规划）需要 thinking；但“对照证据做判断”这种结构化活儿，推理反而是噪声。给模型自由，有时候是在给它犯错的机会。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第二，诚实地说&amp;quot;不知道&amp;quot;，是个被严重低估的能力。&lt;&#x2F;strong&gt; 一个会瞎蒙的系统，你永远不知道它哪道题是真懂、哪道是蒙对的。一个会说&amp;quot;证据不足&amp;quot;的系统，至少把不确定性摆到了台面上——你能选择退回更稳的答案，而不是赌。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;第三，别看&amp;quot;改了多少&amp;quot;，要看&amp;quot;改对多少&amp;quot;。&lt;&#x2F;strong&gt; 财报 solver 改了 10 道题，看起来风风火火，实际是个陷阱；保险 solver 同样改了一批，却是真金白银的 6 分。区别只在于：你有没有耐心，对着原文一道道核对，而不是被&amp;quot;变化的数量&amp;quot;骗过去。&lt;&#x2F;p&gt;
+&lt;p&gt;这三条，放到推荐系统、医疗诊断、任何一个让 AI 帮你做判断的场景里，都成立。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;第一夜，我给队伍起名&amp;quot;断章取义&amp;quot;——把文档断成章节，取出正确的义。&lt;&#x2F;p&gt;
+&lt;p&gt;那时候说的是检索。两天后我才明白，这四个字还有第二层意思：&lt;strong&gt;比赛不会因为你改动了多少而给分，只会因为你取对了多少义。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;财报那道题差点骗到我——它改得最多，却一分没涨。保险那批题闷声不响，却把&amp;quot;取义&amp;quot;这件事真正做对了。&lt;&#x2F;p&gt;
+&lt;p&gt;榜首还在 90 分远处。但现在我至少知道，通往那里的路，不是把旋钮拧得更紧，而是一个领域一个领域，把&amp;quot;义&amp;quot;取对。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义：两个 AI 和一个人的比赛首夜</title>
         <published>2026-06-18T00:00:00+00:00</published>
