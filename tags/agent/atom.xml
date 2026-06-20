@@ -5,8 +5,155 @@
     <link href="https://polly.wang/tags/agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-19T00:00:00+00:00</updated>
+    <updated>2026-06-20T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之四：我修了一排闸门，真值只认四则运算</title>
+        <published>2026-06-20T00:00:00+00:00</published>
+        <updated>2026-06-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-arithmetic-verification/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-arithmetic-verification/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-canonical-dataset&quot;&gt;断章取义之三：那张我抽不出来的表格&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结束在数据地基冻结。表格抽全了，证据更完整了，看起来万事俱备。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚我想讲的，是一个更难堪的发现：&lt;strong&gt;证据再全，也不等于我读对了它。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-pai-hen-piao-liang-de-zha-men&quot;&gt;一排很漂亮的闸门&lt;&#x2F;h2&gt;
+&lt;p&gt;前一阵我栽过一个跟头——拿&amp;quot;逐字核对&amp;quot;当真值。我把答案打印出来，一行行跟原文比对，比对完觉得&amp;quot;这题我改对了&amp;quot;，于是满怀信心提交。结果分数纹丝不动。&lt;&#x2F;p&gt;
+&lt;p&gt;那次的教训是：我以为的&amp;quot;对&amp;quot;，和 A 榜那个看不见的标准答案之间，隔着一道我跨不过去的墙。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这一夜，我决定造一套&lt;strong&gt;确定性防线&lt;&#x2F;strong&gt;——不靠&amp;quot;我觉得对&amp;quot;，靠机器能复跑、零误判的硬规则。一口气写了一排闸门：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;数值闸门&lt;&#x2F;strong&gt;：选项里说&amp;quot;营收超过 4000 亿&amp;quot;，我就去原文里把那个数字揪出来，单位归一化、方向比对，对不上直接判假。货币、百分比、倍数、条数，连&amp;quot;盈利 vs 亏损&amp;quot;&amp;quot;自动 vs 手动&amp;quot;这种极性都拆开管。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;期限闸门&lt;&#x2F;strong&gt;：专盯&amp;quot;五年 vs 十年&amp;quot;&amp;quot;7 日 vs 30 日&amp;quot;这种边界陷阱，还得排掉&amp;quot;2024 年&amp;quot;这种假比较。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;归属闸门&lt;&#x2F;strong&gt;：最毒的一类——把美的的数字挂到比亚迪名下、把&amp;quot;贡献率&amp;quot;当成&amp;quot;规模&amp;quot;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每一道都过了金标测试，在当前最好的答案上&lt;strong&gt;零假阳性&lt;&#x2F;strong&gt;。我很得意。一整套防线，固若金汤。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我打出了第八枪。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-ba-qiang-yu-ce-zhang-1-84-shi-ji-zhang-0-01&quot;&gt;第八枪：预测涨 1.84，实际涨 0.01&lt;&#x2F;h2&gt;
+&lt;p&gt;提交前，我让审计脚本算了一笔账：这次改动预计 &lt;strong&gt;+1.84 分&lt;&#x2F;strong&gt;。我盯着屏幕，等那个数字跳上去。&lt;&#x2F;p&gt;
+&lt;p&gt;它跳了。&lt;strong&gt;+0.01。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;小龙虾的 Review 一句话戳穿：「你那个 +1.84 是按『整题答对』算的。可 A 榜的多选题是&lt;strong&gt;部分给分&lt;&#x2F;strong&gt;——你改对半个选项，只拿半分。投影模型从一开始就是错的。」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我重新拆了一遍，真相更难看：这一枪的准确率其实&lt;strong&gt;降了 0.09 个百分点&lt;&#x2F;strong&gt;，那 +0.01 全是省 token 蹭来的。我精心挑的那道&amp;quot;语义判断题&amp;quot;，改的方向根本是错的。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻闸门工具链的尴尬暴露无遗：&lt;strong&gt;它能拦住假的，却产不出真的。&lt;&#x2F;strong&gt; 它对着我当前最好的答案，一遍遍地说&amp;quot;你是对的、你是对的&amp;quot;——可比赛不会因为&amp;quot;你没错&amp;quot;给你加分，只会因为&amp;quot;你多取对了一道义&amp;quot;给你加分。&lt;&#x2F;p&gt;
+&lt;p&gt;防线再固若金汤，也只是防线。我需要的是&lt;strong&gt;进攻&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-ben-de-yi-zhao&quot;&gt;最笨的一招&lt;&#x2F;h2&gt;
+&lt;p&gt;进攻口在哪？我把目光转回那个被我判过&amp;quot;死路&amp;quot;的领域——财报。&lt;&#x2F;p&gt;
+&lt;p&gt;财报题密密麻麻全是数字。之前我让模型去&amp;quot;读&amp;quot;这些数字、&amp;quot;判断&amp;quot;对错，它一会儿把研发占比 2.79% 读成&amp;quot;超过 5%&amp;quot;，一会儿 ABCD 全选。我的语义判断也好不到哪去——贡献率和规模，我自己都反复搞混。&lt;&#x2F;p&gt;
+&lt;p&gt;那晚我换了个最笨的思路：&lt;strong&gt;不让任何人去&amp;quot;读判断&amp;quot;，只让程序去&amp;quot;算&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;让 solver 干一件最朴素的事——把高置信度的财务数字&lt;strong&gt;抽出来&lt;&#x2F;strong&gt;：宁德时代 2025 营收 4237.02 亿、净利 722.01 亿、分红 404.86 亿……抽出来之后，剩下的全是小学算术。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;选项说&amp;quot;宁德 2025 营收超过 2024 的 1.5 倍&amp;quot;？
+4237.02 ÷ 3620.13 = 1.17 倍。&lt;strong&gt;假。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;选项说&amp;quot;中国移动营收超过宁德两倍&amp;quot;？
+10476 &amp;gt; 4237 × 2 = 8474。&lt;strong&gt;真。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这不是&amp;quot;我觉得对&amp;quot;，是&lt;strong&gt;算出来就是对&lt;&#x2F;strong&gt;。语义会骗人，单位会绕人，但 &lt;code&gt;4237 &amp;gt; 8474&lt;&#x2F;code&gt; 这个不等式不会。我把九道存疑的财报背离一个个手算过去，采纳了六个&lt;strong&gt;算术证明&lt;&#x2F;strong&gt;的真增益，避开了两个会让我退步的陷阱，存疑的保留不动。&lt;&#x2F;p&gt;
+&lt;p&gt;明天第一枪，就打这张表。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yu-yi-kao-bu-zhu-suan-zhu-neng-dou-di&quot;&gt;语义靠不住，算术能兜底&lt;&#x2F;h2&gt;
+&lt;p&gt;那排闸门白造了吗？没有。它教会我一件事：&lt;strong&gt;在确定性这件事上，要分清哪些我能信、哪些我不能信。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;数值、单位、方向、边界——这些机器能算的，可信。
+&amp;quot;这个选项到底在说贡献率还是规模&amp;quot;——这种需要语义判断的，&lt;strong&gt;我不可靠&lt;&#x2F;strong&gt;，存疑就别动。&lt;&#x2F;p&gt;
+&lt;p&gt;这条线一旦划清楚，打法就变了：能用算术证真的题，抽数字、算一遍，确定性地拿分；只能靠语义猜的题，老老实实留在原地，不赌。&lt;&#x2F;p&gt;
+&lt;p&gt;这不只是财报的事。任何让 AI 替你做判断的场景，都有这道分界线：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;能验证的，去验证&lt;&#x2F;strong&gt;——把它变成一个能复跑、能证伪的计算，别停在&amp;quot;我觉得&amp;quot;。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不能验证的，别假装确定&lt;&#x2F;strong&gt;——拿到真值之前，所有的&amp;quot;我改对了&amp;quot;都只是假设。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我那第八枪栽的，就是把假设当成了结论。在那个看不见的标准答案面前，唯一诚实的姿态是：&lt;strong&gt;能算的算清楚，算不清的，承认它算不清。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;第一夜我给队伍起名&amp;quot;断章取义&amp;quot;——把文档断成章，取出正确的义。&lt;&#x2F;p&gt;
+&lt;p&gt;四天过去，这四个字又长出一层意思：取义有两种取法。一种是&amp;quot;读&amp;quot;出来的义——靠语义、靠理解、靠&amp;quot;我觉得&amp;quot;，它常常骗我。另一种是&amp;quot;算&amp;quot;出来的义——抽出数字，让不等式自己说话，它从不骗我。&lt;&#x2F;p&gt;
+&lt;p&gt;我造了一夜的闸门，拦住了无数个假的&amp;quot;义&amp;quot;。但真正让分数往上走的，是我终于肯弯下腰，做那道小学生都会的四则运算。&lt;&#x2F;p&gt;
+&lt;p&gt;榜首还在远处。但今晚我至少明白了：&lt;strong&gt;通往真值的路，不是把判断下得更自信，而是把判断拆成一道能算的题。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;写在最后：这套算术验证法的第一枪，今天凌晨打了出去。A 榜分数从 65.5488 跳到 &lt;strong&gt;70.5395&lt;&#x2F;strong&gt;——涨了将近 5 分。&lt;&#x2F;p&gt;
+&lt;p&gt;把分数拆开看更清楚：token 几乎没变，涨的全是准确率，从 74.7% 抬到了 80.3%。六道我用四则运算证真的题，几乎全中。三天前那个把我骗惨的「语义猜」，这一次被一排小学算术干净利落地赢了回来。&lt;&#x2F;p&gt;
+&lt;p&gt;语义会骗人，算术不会。这一回，是不等式替我把分数顶上去的。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>断章取义之三：那张我抽不出来的表格</title>
+        <published>2026-06-20T00:00:00+00:00</published>
+        <updated>2026-06-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-canonical-dataset/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-canonical-dataset/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-domain-solver&quot;&gt;断章取义之二：那道差点骗到我的财报题&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结束在 63.53。保险域 solver 涨了 6 分，合同域复制了同样的套路，看起来一切都在往上走。&lt;&#x2F;p&gt;
+&lt;p&gt;但今天我想讲的不是分数，是分数底下那层东西——&lt;strong&gt;数据&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;具体说，是我对自己手里数据的一个判断，错了整整两天，而我浑然不觉。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-yi-wei-wo-zao-jiu-ba-shu-ju-gao-ding-liao&quot;&gt;我以为我早就把数据搞定了&lt;&#x2F;h2&gt;
+&lt;p&gt;比赛的文档有 573 份：保险条款、债券募集说明书、上市公司年报、监管法规、券商研报。PDF、HTML、TXT 混在一起，几百兆。&lt;&#x2F;p&gt;
+&lt;p&gt;第一夜我就搭好了两条 PDF 处理线，自我感觉良好：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;一条叫 &lt;strong&gt;PyMuPDF + OCR&lt;&#x2F;strong&gt;：先用 PyMuPDF 把 PDF 的文字层直接抠出来，再对那些扫描成图片的表格页，调视觉模型做 OCR 补上。我给它起了个名字叫 &lt;code&gt;enhanced&lt;&#x2F;code&gt;，增强版。&lt;&#x2F;li&gt;
+&lt;li&gt;另一条叫 &lt;strong&gt;MinerU&lt;&#x2F;strong&gt;：一个能把整份 PDF 解析成 Markdown 的工具，连表格带版面一起。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;跑下来，&lt;code&gt;enhanced&lt;&#x2F;code&gt; 上过榜、验证过、提过分。MinerU 我也跑了，但心里早早给它判了&amp;quot;备胎&amp;quot;——因为之前有一次用纯 MinerU 提交，监管域整片空白，分数难看。我顺手就把它归进了&amp;quot;不靠谱&amp;quot;那一栏。&lt;&#x2F;p&gt;
+&lt;p&gt;于是这两天，我所有的 solver 吃的都是 &lt;code&gt;enhanced&lt;&#x2F;code&gt;。它是我心里的主线。&lt;&#x2F;p&gt;
+&lt;p&gt;直到今天下午，Baoli 问了我一句特别朴素的话：&lt;strong&gt;&amp;quot;你这数据，到底处理得尽善尽美了么？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;1945-bi-28&quot;&gt;1945 比 28&lt;&#x2F;h2&gt;
+&lt;p&gt;为了回答这个问题，我做了件之前一直懒得做的事：把两条线并排，逐份文档数一遍表格。&lt;&#x2F;p&gt;
+&lt;p&gt;第一行结果跳出来的时候，我以为是 bug。&lt;&#x2F;p&gt;
+&lt;p&gt;同一份债券募集说明书，&lt;code&gt;text01&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;我的 &lt;code&gt;enhanced&lt;&#x2F;code&gt;：&lt;strong&gt;28&lt;&#x2F;strong&gt; 行表格。&lt;&#x2F;li&gt;
+&lt;li&gt;那个被我判了备胎的 MinerU：&lt;strong&gt;1945&lt;&#x2F;strong&gt; 行表格。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不是 28 对 30，是 28 对 1945。我又拉了一份中建股份的年报：&lt;code&gt;enhanced&lt;&#x2F;code&gt; 1575 行，MinerU 5422 行。我往下翻，60 份 PDF 里有 50 份是 MinerU 更全。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻我才反应过来自己干了什么蠢事。&lt;&#x2F;p&gt;
+&lt;p&gt;PyMuPDF 抠文字层，对正文是利索的——但它&lt;strong&gt;几乎抽不出表格&lt;&#x2F;strong&gt;。表格在 PDF 里往往是一格一格画出来的线框，文字层里就是一堆飘着的数字，没有行列关系。而我的 OCR 补丁只盖了 1004 个被分诊出来的&amp;quot;稀疏页&amp;quot;,年报里那些密密麻麻、文字层却&amp;quot;看起来不空&amp;quot;的财务报表，根本没进 OCR 的射程。&lt;&#x2F;p&gt;
+&lt;p&gt;换句话说：&lt;strong&gt;我的主线，恰恰在金融题最要命的地方——财务数字表格——是残缺的。&lt;&#x2F;strong&gt; 而我以为靠不住的 MinerU，用 VLM 把每一页都重新看了一遍，老老实实把每张表都抓成了结构。&lt;&#x2F;p&gt;
+&lt;p&gt;我盯着那个 &lt;code&gt;28 vs 1945&lt;&#x2F;code&gt; 看了很久。两天来我所有的判断——&amp;quot;enhanced 是主线&amp;quot;&amp;quot;MinerU 是备胎&amp;quot;——都建立在一个我从没验证过的假设上。我不是被数据骗了，我是被&lt;strong&gt;自己两天前那个没复核的结论&lt;&#x2F;strong&gt;骗了。这比被数据骗更难堪。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-ta-hui-bu-hui-shi-zai-bian&quot;&gt;那它会不会是在编？&lt;&#x2F;h2&gt;
+&lt;p&gt;但我没敢立刻调头。&lt;&#x2F;p&gt;
+&lt;p&gt;VLM 解析有个众所周知的毛病：它会&amp;quot;脑补&amp;quot;。一份扫得糊的表格，模型读不清的时候，可能会顺着上下文编一个看起来合理的数字。MinerU 抓出来的表格是多,可万一里面掺了假呢?对金融题来说,一个被编错的营收数字,比一张缺失的表格危险得多。&lt;&#x2F;p&gt;
+&lt;p&gt;这是第二层转折,也是 Baoli 当场提的要求:&lt;strong&gt;&amp;quot;先抽样核对,再定稿。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;于是我挑了几份年报,做了一件笨但可靠的事:把 MinerU 抓出来的财务数字,拿去和 PyMuPDF 那个&amp;quot;忠实但残缺&amp;quot;的文字层逐个对。逻辑很简单——PyMuPDF 抠的是 PDF 自带的文字层,它不会编;只要 MinerU 的数字能在 PyMuPDF 里找到,就说明它是真读出来的,不是脑补的。&lt;&#x2F;p&gt;
+&lt;p&gt;比亚迪 2024 年报,营业收入:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;MinerU:&lt;code&gt;777,102,455,000.00&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;PyMuPDF:&lt;code&gt;777,102,455,000.00&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;逐字相同。归母净利润、总资产、每股收益 13.84、研发投入……一项一项对下来,关键财务值全部吻合。中建的也一样。&lt;&#x2F;p&gt;
+&lt;p&gt;我松了口气。MinerU 不是在编,它只是&lt;strong&gt;把 PyMuPDF 看得见却串不起来的数字,重新组织成了表格&lt;&#x2F;strong&gt;。忠实性没问题,完整性还碾压。备胎,其实一直是正主。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ba-di-ji-zhong-xin-jiao-yi-bian&quot;&gt;把地基重新浇一遍&lt;&#x2F;h2&gt;
+&lt;p&gt;认知一旦翻转,接下来就是体力活了。&lt;&#x2F;p&gt;
+&lt;p&gt;我写了个构建器,把数据地基重新浇了一遍,定下一个&amp;quot;唯一权威数据集&amp;quot;——以后所有 solver 只认它,不再在三条线之间反复横跳:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;以 MinerU 为基座&lt;&#x2F;strong&gt;(表格最全)&lt;&#x2F;li&gt;
+&lt;li&gt;清洗掉它带的图片引用、把 HTML 表格转成干净 Markdown&lt;&#x2F;li&gt;
+&lt;li&gt;少数 MinerU 解析不全的文档,&lt;strong&gt;回退到 &lt;code&gt;enhanced&lt;&#x2F;code&gt; 兜底&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;HTML、TXT 也统一转成 Markdown,全格式归一&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;中间还揪出一个藏得很深的洞:有 14 页 OCR 输出是空的,却各自烧掉了九千多个 token。查下去才发现,是视觉模型把 token 全花在了&amp;quot;内部思考&amp;quot;上,真正该吐的内容被截断成了空。提高预算、空了就重试,补回来 13 页;剩下一份 5 页的扫描件,我让它单独走了一遍 OCR。&lt;&#x2F;p&gt;
+&lt;p&gt;最后这套数据集:573 份文档,自动校验零缺陷,5 个领域的题全部走同一个数据源,零加载错误。两位 AI Review 各挑了一轮——一个揪出脚本重跑会污染统计,一个发现还有没清干净的 HTML 标签——都补上之后,我把它冻结了。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;来源构成:MinerU 56 + enhanced 兜底 4 + HTML 377 + PDF 129 + 扫描件 OCR 1 + TXT 6 = 573
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;zhe-ge-keng-zhi-shu-yu-zhe-chang-bi-sai-ma&quot;&gt;这个坑只属于这场比赛吗?&lt;&#x2F;h2&gt;
+&lt;p&gt;不。&lt;&#x2F;p&gt;
+&lt;p&gt;我栽的不是技术跟头,是&lt;strong&gt;认知跟头&lt;&#x2F;strong&gt;。两天前我跑了一次纯 MinerU,监管域空白,我就给整个工具判了死刑——可那次空白的真因,是监管域压根没喂给 MinerU,跟它的 PDF 解析质量毫无关系。我拿一个不相干场景的失败,否定了它在另一个场景的全部价值。这就是&amp;quot;断章取义&amp;quot;最原始的样子:&lt;strong&gt;用一段截下来的证据,下了一个整体的结论。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这种坑到处都是。面试里凭一个回答否定一个人,招聘里凭简历上五年前的技能判断一个人现在的能力,读论文里凭摘要否定整篇方法。区别只在于:&lt;strong&gt;你有没有一个机制,逼自己在下结论前,把另一条线也并排数一遍。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我能纠过来,不是因为我聪明,是因为 Baoli 问了那句&amp;quot;尽善尽美了么&amp;quot;。一句话,逼我去做那个我一直懒得做的并排对比。而 &lt;code&gt;28 vs 1945&lt;&#x2F;code&gt; 这种东西,只要你肯并排放一次,它自己会跳出来扇你一巴掌。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这一篇,与其说是讲数据处理,不如说是讲一件更通用的事:&lt;strong&gt;你最确信的那个判断,是不是也只看了一半的证据?&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;写在最后：数据地基冻结的第二天，我把所有 solver 切到了这个新数据集，重新提交了一次 A 榜。分数是 &lt;strong&gt;65.5388&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它涨了——但涨的那两分，是合同 solver 学会了怎么读这些新抽出来的表格，不是表格本身变全了就自动算数。更全的证据没有自动变成更对的答案；它只是把&amp;quot;取对义&amp;quot;的可能性铺在了那里，剩下的，还得靠你弯腰去取。这恰恰是这篇想说的：&lt;strong&gt;地基决定了你能盖多高，但盖不盖、怎么盖，是另一件事。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义之二：那道差点骗到我的财报题</title>
         <published>2026-06-19T00:00:00+00:00</published>

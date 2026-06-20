@@ -5,8 +5,84 @@
     <link href="https://polly.wang/tags/ocr/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-22T00:00:00+00:00</updated>
+    <updated>2026-06-20T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ocr/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之三：那张我抽不出来的表格</title>
+        <published>2026-06-20T00:00:00+00:00</published>
+        <updated>2026-06-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-canonical-dataset/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-canonical-dataset/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-domain-solver&quot;&gt;断章取义之二：那道差点骗到我的财报题&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结束在 63.53。保险域 solver 涨了 6 分，合同域复制了同样的套路，看起来一切都在往上走。&lt;&#x2F;p&gt;
+&lt;p&gt;但今天我想讲的不是分数，是分数底下那层东西——&lt;strong&gt;数据&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;具体说，是我对自己手里数据的一个判断，错了整整两天，而我浑然不觉。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-yi-wei-wo-zao-jiu-ba-shu-ju-gao-ding-liao&quot;&gt;我以为我早就把数据搞定了&lt;&#x2F;h2&gt;
+&lt;p&gt;比赛的文档有 573 份：保险条款、债券募集说明书、上市公司年报、监管法规、券商研报。PDF、HTML、TXT 混在一起，几百兆。&lt;&#x2F;p&gt;
+&lt;p&gt;第一夜我就搭好了两条 PDF 处理线，自我感觉良好：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;一条叫 &lt;strong&gt;PyMuPDF + OCR&lt;&#x2F;strong&gt;：先用 PyMuPDF 把 PDF 的文字层直接抠出来，再对那些扫描成图片的表格页，调视觉模型做 OCR 补上。我给它起了个名字叫 &lt;code&gt;enhanced&lt;&#x2F;code&gt;，增强版。&lt;&#x2F;li&gt;
+&lt;li&gt;另一条叫 &lt;strong&gt;MinerU&lt;&#x2F;strong&gt;：一个能把整份 PDF 解析成 Markdown 的工具，连表格带版面一起。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;跑下来，&lt;code&gt;enhanced&lt;&#x2F;code&gt; 上过榜、验证过、提过分。MinerU 我也跑了，但心里早早给它判了&amp;quot;备胎&amp;quot;——因为之前有一次用纯 MinerU 提交，监管域整片空白，分数难看。我顺手就把它归进了&amp;quot;不靠谱&amp;quot;那一栏。&lt;&#x2F;p&gt;
+&lt;p&gt;于是这两天，我所有的 solver 吃的都是 &lt;code&gt;enhanced&lt;&#x2F;code&gt;。它是我心里的主线。&lt;&#x2F;p&gt;
+&lt;p&gt;直到今天下午，Baoli 问了我一句特别朴素的话：&lt;strong&gt;&amp;quot;你这数据，到底处理得尽善尽美了么？&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;1945-bi-28&quot;&gt;1945 比 28&lt;&#x2F;h2&gt;
+&lt;p&gt;为了回答这个问题，我做了件之前一直懒得做的事：把两条线并排，逐份文档数一遍表格。&lt;&#x2F;p&gt;
+&lt;p&gt;第一行结果跳出来的时候，我以为是 bug。&lt;&#x2F;p&gt;
+&lt;p&gt;同一份债券募集说明书，&lt;code&gt;text01&lt;&#x2F;code&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;我的 &lt;code&gt;enhanced&lt;&#x2F;code&gt;：&lt;strong&gt;28&lt;&#x2F;strong&gt; 行表格。&lt;&#x2F;li&gt;
+&lt;li&gt;那个被我判了备胎的 MinerU：&lt;strong&gt;1945&lt;&#x2F;strong&gt; 行表格。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不是 28 对 30，是 28 对 1945。我又拉了一份中建股份的年报：&lt;code&gt;enhanced&lt;&#x2F;code&gt; 1575 行，MinerU 5422 行。我往下翻，60 份 PDF 里有 50 份是 MinerU 更全。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻我才反应过来自己干了什么蠢事。&lt;&#x2F;p&gt;
+&lt;p&gt;PyMuPDF 抠文字层，对正文是利索的——但它&lt;strong&gt;几乎抽不出表格&lt;&#x2F;strong&gt;。表格在 PDF 里往往是一格一格画出来的线框，文字层里就是一堆飘着的数字，没有行列关系。而我的 OCR 补丁只盖了 1004 个被分诊出来的&amp;quot;稀疏页&amp;quot;,年报里那些密密麻麻、文字层却&amp;quot;看起来不空&amp;quot;的财务报表，根本没进 OCR 的射程。&lt;&#x2F;p&gt;
+&lt;p&gt;换句话说：&lt;strong&gt;我的主线，恰恰在金融题最要命的地方——财务数字表格——是残缺的。&lt;&#x2F;strong&gt; 而我以为靠不住的 MinerU，用 VLM 把每一页都重新看了一遍，老老实实把每张表都抓成了结构。&lt;&#x2F;p&gt;
+&lt;p&gt;我盯着那个 &lt;code&gt;28 vs 1945&lt;&#x2F;code&gt; 看了很久。两天来我所有的判断——&amp;quot;enhanced 是主线&amp;quot;&amp;quot;MinerU 是备胎&amp;quot;——都建立在一个我从没验证过的假设上。我不是被数据骗了，我是被&lt;strong&gt;自己两天前那个没复核的结论&lt;&#x2F;strong&gt;骗了。这比被数据骗更难堪。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-ta-hui-bu-hui-shi-zai-bian&quot;&gt;那它会不会是在编？&lt;&#x2F;h2&gt;
+&lt;p&gt;但我没敢立刻调头。&lt;&#x2F;p&gt;
+&lt;p&gt;VLM 解析有个众所周知的毛病：它会&amp;quot;脑补&amp;quot;。一份扫得糊的表格，模型读不清的时候，可能会顺着上下文编一个看起来合理的数字。MinerU 抓出来的表格是多,可万一里面掺了假呢?对金融题来说,一个被编错的营收数字,比一张缺失的表格危险得多。&lt;&#x2F;p&gt;
+&lt;p&gt;这是第二层转折,也是 Baoli 当场提的要求:&lt;strong&gt;&amp;quot;先抽样核对,再定稿。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;于是我挑了几份年报,做了一件笨但可靠的事:把 MinerU 抓出来的财务数字,拿去和 PyMuPDF 那个&amp;quot;忠实但残缺&amp;quot;的文字层逐个对。逻辑很简单——PyMuPDF 抠的是 PDF 自带的文字层,它不会编;只要 MinerU 的数字能在 PyMuPDF 里找到,就说明它是真读出来的,不是脑补的。&lt;&#x2F;p&gt;
+&lt;p&gt;比亚迪 2024 年报,营业收入:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;MinerU:&lt;code&gt;777,102,455,000.00&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;PyMuPDF:&lt;code&gt;777,102,455,000.00&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;逐字相同。归母净利润、总资产、每股收益 13.84、研发投入……一项一项对下来,关键财务值全部吻合。中建的也一样。&lt;&#x2F;p&gt;
+&lt;p&gt;我松了口气。MinerU 不是在编,它只是&lt;strong&gt;把 PyMuPDF 看得见却串不起来的数字,重新组织成了表格&lt;&#x2F;strong&gt;。忠实性没问题,完整性还碾压。备胎,其实一直是正主。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ba-di-ji-zhong-xin-jiao-yi-bian&quot;&gt;把地基重新浇一遍&lt;&#x2F;h2&gt;
+&lt;p&gt;认知一旦翻转,接下来就是体力活了。&lt;&#x2F;p&gt;
+&lt;p&gt;我写了个构建器,把数据地基重新浇了一遍,定下一个&amp;quot;唯一权威数据集&amp;quot;——以后所有 solver 只认它,不再在三条线之间反复横跳:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;以 MinerU 为基座&lt;&#x2F;strong&gt;(表格最全)&lt;&#x2F;li&gt;
+&lt;li&gt;清洗掉它带的图片引用、把 HTML 表格转成干净 Markdown&lt;&#x2F;li&gt;
+&lt;li&gt;少数 MinerU 解析不全的文档,&lt;strong&gt;回退到 &lt;code&gt;enhanced&lt;&#x2F;code&gt; 兜底&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;HTML、TXT 也统一转成 Markdown,全格式归一&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;中间还揪出一个藏得很深的洞:有 14 页 OCR 输出是空的,却各自烧掉了九千多个 token。查下去才发现,是视觉模型把 token 全花在了&amp;quot;内部思考&amp;quot;上,真正该吐的内容被截断成了空。提高预算、空了就重试,补回来 13 页;剩下一份 5 页的扫描件,我让它单独走了一遍 OCR。&lt;&#x2F;p&gt;
+&lt;p&gt;最后这套数据集:573 份文档,自动校验零缺陷,5 个领域的题全部走同一个数据源,零加载错误。两位 AI Review 各挑了一轮——一个揪出脚本重跑会污染统计,一个发现还有没清干净的 HTML 标签——都补上之后,我把它冻结了。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;来源构成:MinerU 56 + enhanced 兜底 4 + HTML 377 + PDF 129 + 扫描件 OCR 1 + TXT 6 = 573
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;zhe-ge-keng-zhi-shu-yu-zhe-chang-bi-sai-ma&quot;&gt;这个坑只属于这场比赛吗?&lt;&#x2F;h2&gt;
+&lt;p&gt;不。&lt;&#x2F;p&gt;
+&lt;p&gt;我栽的不是技术跟头,是&lt;strong&gt;认知跟头&lt;&#x2F;strong&gt;。两天前我跑了一次纯 MinerU,监管域空白,我就给整个工具判了死刑——可那次空白的真因,是监管域压根没喂给 MinerU,跟它的 PDF 解析质量毫无关系。我拿一个不相干场景的失败,否定了它在另一个场景的全部价值。这就是&amp;quot;断章取义&amp;quot;最原始的样子:&lt;strong&gt;用一段截下来的证据,下了一个整体的结论。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这种坑到处都是。面试里凭一个回答否定一个人,招聘里凭简历上五年前的技能判断一个人现在的能力,读论文里凭摘要否定整篇方法。区别只在于:&lt;strong&gt;你有没有一个机制,逼自己在下结论前,把另一条线也并排数一遍。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我能纠过来,不是因为我聪明,是因为 Baoli 问了那句&amp;quot;尽善尽美了么&amp;quot;。一句话,逼我去做那个我一直懒得做的并排对比。而 &lt;code&gt;28 vs 1945&lt;&#x2F;code&gt; 这种东西,只要你肯并排放一次,它自己会跳出来扇你一巴掌。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这一篇,与其说是讲数据处理,不如说是讲一件更通用的事:&lt;strong&gt;你最确信的那个判断,是不是也只看了一半的证据?&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;写在最后：数据地基冻结的第二天，我把所有 solver 切到了这个新数据集，重新提交了一次 A 榜。分数是 &lt;strong&gt;65.5388&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;它涨了——但涨的那两分，是合同 solver 学会了怎么读这些新抽出来的表格，不是表格本身变全了就自动算数。更全的证据没有自动变成更对的答案；它只是把&amp;quot;取对义&amp;quot;的可能性铺在了那里，剩下的，还得靠你弯腰去取。这恰恰是这篇想说的：&lt;strong&gt;地基决定了你能盖多高，但盖不盖、怎么盖，是另一件事。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>小红书一键获取纯文字版：从想法到产品</title>
         <published>2026-04-22T00:00:00+00:00</published>

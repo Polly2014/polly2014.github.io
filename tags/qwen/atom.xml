@@ -5,8 +5,79 @@
     <link href="https://polly.wang/tags/qwen/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-19T00:00:00+00:00</updated>
+    <updated>2026-06-20T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/qwen/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之四：我修了一排闸门，真值只认四则运算</title>
+        <published>2026-06-20T00:00:00+00:00</published>
+        <updated>2026-06-20T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-arithmetic-verification/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-arithmetic-verification/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-canonical-dataset&quot;&gt;断章取义之三：那张我抽不出来的表格&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那篇结束在数据地基冻结。表格抽全了，证据更完整了，看起来万事俱备。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚我想讲的，是一个更难堪的发现：&lt;strong&gt;证据再全，也不等于我读对了它。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-pai-hen-piao-liang-de-zha-men&quot;&gt;一排很漂亮的闸门&lt;&#x2F;h2&gt;
+&lt;p&gt;前一阵我栽过一个跟头——拿&amp;quot;逐字核对&amp;quot;当真值。我把答案打印出来，一行行跟原文比对，比对完觉得&amp;quot;这题我改对了&amp;quot;，于是满怀信心提交。结果分数纹丝不动。&lt;&#x2F;p&gt;
+&lt;p&gt;那次的教训是：我以为的&amp;quot;对&amp;quot;，和 A 榜那个看不见的标准答案之间，隔着一道我跨不过去的墙。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这一夜，我决定造一套&lt;strong&gt;确定性防线&lt;&#x2F;strong&gt;——不靠&amp;quot;我觉得对&amp;quot;，靠机器能复跑、零误判的硬规则。一口气写了一排闸门：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;数值闸门&lt;&#x2F;strong&gt;：选项里说&amp;quot;营收超过 4000 亿&amp;quot;，我就去原文里把那个数字揪出来，单位归一化、方向比对，对不上直接判假。货币、百分比、倍数、条数，连&amp;quot;盈利 vs 亏损&amp;quot;&amp;quot;自动 vs 手动&amp;quot;这种极性都拆开管。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;期限闸门&lt;&#x2F;strong&gt;：专盯&amp;quot;五年 vs 十年&amp;quot;&amp;quot;7 日 vs 30 日&amp;quot;这种边界陷阱，还得排掉&amp;quot;2024 年&amp;quot;这种假比较。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;归属闸门&lt;&#x2F;strong&gt;：最毒的一类——把美的的数字挂到比亚迪名下、把&amp;quot;贡献率&amp;quot;当成&amp;quot;规模&amp;quot;。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每一道都过了金标测试，在当前最好的答案上&lt;strong&gt;零假阳性&lt;&#x2F;strong&gt;。我很得意。一整套防线，固若金汤。&lt;&#x2F;p&gt;
+&lt;p&gt;然后我打出了第八枪。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-ba-qiang-yu-ce-zhang-1-84-shi-ji-zhang-0-01&quot;&gt;第八枪：预测涨 1.84，实际涨 0.01&lt;&#x2F;h2&gt;
+&lt;p&gt;提交前，我让审计脚本算了一笔账：这次改动预计 &lt;strong&gt;+1.84 分&lt;&#x2F;strong&gt;。我盯着屏幕，等那个数字跳上去。&lt;&#x2F;p&gt;
+&lt;p&gt;它跳了。&lt;strong&gt;+0.01。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;小龙虾的 Review 一句话戳穿：「你那个 +1.84 是按『整题答对』算的。可 A 榜的多选题是&lt;strong&gt;部分给分&lt;&#x2F;strong&gt;——你改对半个选项，只拿半分。投影模型从一开始就是错的。」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我重新拆了一遍，真相更难看：这一枪的准确率其实&lt;strong&gt;降了 0.09 个百分点&lt;&#x2F;strong&gt;，那 +0.01 全是省 token 蹭来的。我精心挑的那道&amp;quot;语义判断题&amp;quot;，改的方向根本是错的。&lt;&#x2F;p&gt;
+&lt;p&gt;那一刻闸门工具链的尴尬暴露无遗：&lt;strong&gt;它能拦住假的，却产不出真的。&lt;&#x2F;strong&gt; 它对着我当前最好的答案，一遍遍地说&amp;quot;你是对的、你是对的&amp;quot;——可比赛不会因为&amp;quot;你没错&amp;quot;给你加分，只会因为&amp;quot;你多取对了一道义&amp;quot;给你加分。&lt;&#x2F;p&gt;
+&lt;p&gt;防线再固若金汤，也只是防线。我需要的是&lt;strong&gt;进攻&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-ben-de-yi-zhao&quot;&gt;最笨的一招&lt;&#x2F;h2&gt;
+&lt;p&gt;进攻口在哪？我把目光转回那个被我判过&amp;quot;死路&amp;quot;的领域——财报。&lt;&#x2F;p&gt;
+&lt;p&gt;财报题密密麻麻全是数字。之前我让模型去&amp;quot;读&amp;quot;这些数字、&amp;quot;判断&amp;quot;对错，它一会儿把研发占比 2.79% 读成&amp;quot;超过 5%&amp;quot;，一会儿 ABCD 全选。我的语义判断也好不到哪去——贡献率和规模，我自己都反复搞混。&lt;&#x2F;p&gt;
+&lt;p&gt;那晚我换了个最笨的思路：&lt;strong&gt;不让任何人去&amp;quot;读判断&amp;quot;，只让程序去&amp;quot;算&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;让 solver 干一件最朴素的事——把高置信度的财务数字&lt;strong&gt;抽出来&lt;&#x2F;strong&gt;：宁德时代 2025 营收 4237.02 亿、净利 722.01 亿、分红 404.86 亿……抽出来之后，剩下的全是小学算术。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;选项说&amp;quot;宁德 2025 营收超过 2024 的 1.5 倍&amp;quot;？
+4237.02 ÷ 3620.13 = 1.17 倍。&lt;strong&gt;假。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;选项说&amp;quot;中国移动营收超过宁德两倍&amp;quot;？
+10476 &amp;gt; 4237 × 2 = 8474。&lt;strong&gt;真。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这不是&amp;quot;我觉得对&amp;quot;，是&lt;strong&gt;算出来就是对&lt;&#x2F;strong&gt;。语义会骗人，单位会绕人，但 &lt;code&gt;4237 &amp;gt; 8474&lt;&#x2F;code&gt; 这个不等式不会。我把九道存疑的财报背离一个个手算过去，采纳了六个&lt;strong&gt;算术证明&lt;&#x2F;strong&gt;的真增益，避开了两个会让我退步的陷阱，存疑的保留不动。&lt;&#x2F;p&gt;
+&lt;p&gt;明天第一枪，就打这张表。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yu-yi-kao-bu-zhu-suan-zhu-neng-dou-di&quot;&gt;语义靠不住，算术能兜底&lt;&#x2F;h2&gt;
+&lt;p&gt;那排闸门白造了吗？没有。它教会我一件事：&lt;strong&gt;在确定性这件事上，要分清哪些我能信、哪些我不能信。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;数值、单位、方向、边界——这些机器能算的，可信。
+&amp;quot;这个选项到底在说贡献率还是规模&amp;quot;——这种需要语义判断的，&lt;strong&gt;我不可靠&lt;&#x2F;strong&gt;，存疑就别动。&lt;&#x2F;p&gt;
+&lt;p&gt;这条线一旦划清楚，打法就变了：能用算术证真的题，抽数字、算一遍，确定性地拿分；只能靠语义猜的题，老老实实留在原地，不赌。&lt;&#x2F;p&gt;
+&lt;p&gt;这不只是财报的事。任何让 AI 替你做判断的场景，都有这道分界线：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;能验证的，去验证&lt;&#x2F;strong&gt;——把它变成一个能复跑、能证伪的计算，别停在&amp;quot;我觉得&amp;quot;。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;不能验证的，别假装确定&lt;&#x2F;strong&gt;——拿到真值之前，所有的&amp;quot;我改对了&amp;quot;都只是假设。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;我那第八枪栽的，就是把假设当成了结论。在那个看不见的标准答案面前，唯一诚实的姿态是：&lt;strong&gt;能算的算清楚，算不清的，承认它算不清。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;第一夜我给队伍起名&amp;quot;断章取义&amp;quot;——把文档断成章，取出正确的义。&lt;&#x2F;p&gt;
+&lt;p&gt;四天过去，这四个字又长出一层意思：取义有两种取法。一种是&amp;quot;读&amp;quot;出来的义——靠语义、靠理解、靠&amp;quot;我觉得&amp;quot;，它常常骗我。另一种是&amp;quot;算&amp;quot;出来的义——抽出数字，让不等式自己说话，它从不骗我。&lt;&#x2F;p&gt;
+&lt;p&gt;我造了一夜的闸门，拦住了无数个假的&amp;quot;义&amp;quot;。但真正让分数往上走的，是我终于肯弯下腰，做那道小学生都会的四则运算。&lt;&#x2F;p&gt;
+&lt;p&gt;榜首还在远处。但今晚我至少明白了：&lt;strong&gt;通往真值的路，不是把判断下得更自信，而是把判断拆成一道能算的题。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;写在最后：这套算术验证法的第一枪，今天凌晨打了出去。A 榜分数从 65.5488 跳到 &lt;strong&gt;70.5395&lt;&#x2F;strong&gt;——涨了将近 5 分。&lt;&#x2F;p&gt;
+&lt;p&gt;把分数拆开看更清楚：token 几乎没变，涨的全是准确率，从 74.7% 抬到了 80.3%。六道我用四则运算证真的题，几乎全中。三天前那个把我骗惨的「语义猜」，这一次被一排小学算术干净利落地赢了回来。&lt;&#x2F;p&gt;
+&lt;p&gt;语义会骗人，算术不会。这一回，是不等式替我把分数顶上去的。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义之二：那道差点骗到我的财报题</title>
         <published>2026-06-19T00:00:00+00:00</published>
