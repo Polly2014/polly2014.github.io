@@ -81,7 +81,6 @@
 &lt;h2 id=&quot;diao-dao-tou-liao-gai-huan-tiao-he&quot;&gt;钓到头了，该换条河&lt;&#x2F;h2&gt;
 &lt;p&gt;逐字核对这条路，我把它走到了尽头。&lt;&#x2F;p&gt;
 &lt;p&gt;6 条鱼之后，全域的&amp;quot;比较型多选题&amp;quot;被我筛了个底朝天，只剩这最后一条。我反推了一下当前的准确率：&lt;strong&gt;87%。&lt;&#x2F;strong&gt; 而逐字核对的天花板，就在这附近——它只能修&amp;quot;差一点点&amp;quot;的题（漏一个真项、多一个错项），救不了那些模型从根上就理解错了方向的题。&lt;&#x2F;p&gt;
-&lt;p&gt;榜首在 90 分以上，对应约 88–90% 的准确率。那 3 个百分点的差距，逐字核对再勤快也够不着了。&lt;strong&gt;唯一的主路，是让模型从源头上少犯错。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;而这一夜的 6 条鱼 + 1 条假鱼，恰好帮我把&amp;quot;模型到底在哪些地方犯错&amp;quot;列得清清楚楚——四类病症：&lt;&#x2F;p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;漏二阶比较&lt;&#x2F;strong&gt;：擅长抽数字，不会主动去比大小、算增长率。&lt;&#x2F;li&gt;
@@ -89,8 +88,24 @@
 &lt;li&gt;&lt;strong&gt;限定词吞字&lt;&#x2F;strong&gt;：就是那条假鱼，&amp;quot;除&amp;quot;字一丢，指标全变。&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;strong&gt;数值归属翻转&lt;&#x2F;strong&gt;：把第一份文档的数字，安到第二份头上。&lt;&#x2F;li&gt;
 &lt;&#x2F;ol&gt;
-&lt;p&gt;下一阶段要造的 Agent 架构，自检步要解决的，就是这四件事。施工图我已经画好了——问题分类 → 每份文档强制覆盖检索 → 逐选项真值表 → 比较型专用推理链 → 限定词自检 → 保守作答。验收标准也现成：拿这 6 条真鱼 + 那 1 条假鱼当回归测试集，新架构必须把 6 条都钓对、把假鱼判假，才算自检步合格。&lt;&#x2F;p&gt;
-&lt;p&gt;钓鱼的季节结束了。接下来要学的，是怎么不让鱼跑掉。&lt;&#x2F;p&gt;
+&lt;p&gt;本以为把这四类错从源头治住、准确率从 87% 推到 92%，就能冲 90 了。直到我去算了一笔账。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-tiao-yi-zhi-mei-bei-kan-jian-de-an-he&quot;&gt;那条一直没被看见的暗河&lt;&#x2F;h2&gt;
+&lt;p&gt;比赛的分数不是准确率，是这么算的：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;FinalScore = 100 × 准确率 × 系数（系数只在 0.7 到 1.0 之间，越省 token 越高）
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;那个&amp;quot;系数&amp;quot;，我一直当它是个无关痛痒的小尾巴。直到这一天才发现：我现在每道题要烧揉揉 2 万 token，总共 200 万——这让那个系数被死死压在 &lt;strong&gt;0.878&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;换句话说：&lt;strong&gt;即使我把准确率做到 100%，FinalScore 的天花板也只有 87.84——永远够不到 90。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我盯着这个数字看了很久。原来这两天我一直在错的河里钓鱼。我以为距离榜首的差距是&amp;quot;准确率不够&amp;quot;，其实榜首 93.94 那些队伍不只是更准，他们的 token 只有我的一半甚至更少。这场比赛的名字本来就叫「动态记忆&lt;strong&gt;压缩&lt;&#x2F;strong&gt;与高效问答」——省 token 本就是题目的一半，只是我一直没听进去。&lt;&#x2F;p&gt;
+&lt;p&gt;Codex 把这件事说得很透：下一阶段的核心，&lt;strong&gt;不是&amp;quot;读更多证据&amp;quot;，而是&amp;quot;每题只读必要证据&amp;quot;&lt;&#x2F;strong&gt;。比较题把增长率、金额、代码抽成结构化的几行 facts，用代码去比，不让模型读整段；条款题只留命中的那几句；同一份文档被多道题引用时，关键信息只抽一次。既更准，又更省。&lt;&#x2F;p&gt;
+&lt;p&gt;所以如果要用一句话总结这两天：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这两天捕鱼记的故事，本质是&lt;strong&gt;用逐字核把准确率从源头推到了 87%&lt;&#x2F;strong&gt;；而真正的山顶是——&lt;strong&gt;不是&amp;quot;读更多证据&amp;quot;，而是&amp;quot;每题只读必要证据&amp;quot;&lt;&#x2F;strong&gt;。金鱼是真分，红鱼是假分，而 token 是那条一直没被看见的暗河。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这也是为什么「换条河」这个比喻比我一开始以为的更贴切——不只是换一片水域探鱼，是连水下那条暗河（token）一起治。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xia-yi-jie-duan-shuang-mu-biao&quot;&gt;下一阶段：双目标&lt;&#x2F;h2&gt;
+&lt;p&gt;于是下一阶段的 Agent 架构，目标从&amp;quot;提准确率&amp;quot;变成了两条并行的验收线：&lt;strong&gt;准确率不掉、最好继续涨；token 从 200 万压到 100 万以下。&lt;&#x2F;strong&gt; 两者缺一不可。&lt;&#x2F;p&gt;
+&lt;p&gt;自检步要解决的，还是那四类病症（漏二阶比较 &#x2F; 检索漏召回 &#x2F; 限定词吞字 &#x2F; 数值归属翻转）。施工图我已经画好了——问题分类 → 每份文档强制覆盖检索（但只抽命中段）→ 逐选项真值表 → 比较型专用推理链（抽 facts 用代码算）→ 限定词自检 → 模型只看压缩态作答。验收集也现成：拿这 6 条真鱼 + 那 1 条假鱼当回归测试集，新架构必须把 6 条都钓对、把假鱼判假、还得比现在省 token。&lt;&#x2F;p&gt;
+&lt;p&gt;钓鱼的季节结束了。接下来要学的，不只是怎么不让鱼跑掉，还有怎么用更少的饵料、钓到更肥的鱼。&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
 &lt;p&gt;&lt;em&gt;《断章取义》是我在 AFAC2026 金融长文本 Agent 比赛里的连载手记。这是第五篇。从 49 分到 76.50 分，每一分背后都是一个具体的坑、一条具体的规律，或者——一条差点上钩的假鱼。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
 </content>
