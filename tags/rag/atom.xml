@@ -5,8 +5,97 @@
     <link href="https://polly.wang/tags/rag/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-20T00:00:00+00:00</updated>
+    <updated>2026-06-22T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/rag/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之五：捕鱼记，与那条差点上钩的假鱼</title>
+        <published>2026-06-22T00:00:00+00:00</published>
+        <updated>2026-06-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-fishing/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-fishing/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-arithmetic-verification&quot;&gt;断章取义之四：我修了一排闸门，真值只认四则运算&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;那一夜的结论是：语义会骗人，算术不会。我把财报里的数字抽出来、用 Python 算一遍，分数从 65 跳到 70.54，排名第 100。&lt;&#x2F;p&gt;
+&lt;p&gt;这一夜，我想讲的是接下来发生的事——&lt;strong&gt;怎么从 70.54 一条鱼一条鱼地钓到 76.50。&lt;&#x2F;strong&gt; 以及最重要的，那条我差点钓上来、最后却必须放掉的假鱼。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shi-yao-shi-yi-tiao-yu&quot;&gt;什么是一条&amp;quot;鱼&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;先说清楚&amp;quot;鱼&amp;quot;是什么。&lt;&#x2F;p&gt;
+&lt;p&gt;比赛里有一类题是多选题：四个选项 A&#x2F;B&#x2F;C&#x2F;D，要选出所有正确的。我的系统（叫它 solver）会给出一个答案，比如 &lt;code&gt;AD&lt;&#x2F;code&gt;。但评分规则很残酷——我前几枪用真实分数反推，破译出了它：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;全对满分，错选直接清零，漏选给的分接近于零。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;也就是说，一道多选题，只要你多选了一个错的，或者少选了一个对的，这道题基本就是 0 分。没有&amp;quot;答对一半给一半&amp;quot;这种温情。&lt;&#x2F;p&gt;
+&lt;p&gt;那么&amp;quot;鱼&amp;quot;就是：一道 solver 答错了、但我能&lt;strong&gt;逐字核对原文&lt;&#x2F;strong&gt;把它改对的题。每钓上一条，这道题就从 0 分变满分。我算过账——在当前的 token 消耗下，&lt;strong&gt;每条鱼精确值 +1.131 分&lt;&#x2F;strong&gt;。这个数字后来被验证到了小数点后四位的稳定，6 条鱼，6 次几乎一模一样的涨幅。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yu-qun-zai-na-li-yi-tiao-lou-wang-gui-lu&quot;&gt;鱼群在哪里：一条&amp;quot;漏网规律&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;钓鱼最怕的是漫无目的地撒网。100 道题里哪些藏着鱼？&lt;&#x2F;p&gt;
+&lt;p&gt;我盯着已经钓到的几条鱼看，发现它们错得&lt;strong&gt;惊人地一致&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;合同题里，模型漏选了&amp;quot;第二份的发行金额 5 亿 &amp;lt; 第一份的 10 亿&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;财报题里，模型漏选了&amp;quot;美的 2025 年营收增长率 12.11% &amp;gt; 2024 年的 9.44%&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;又一道财报题，模型漏选了&amp;quot;美的净利润增速 +14% 明显快于比亚迪的 -19%&amp;quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;看出来了吗？这些被漏掉的选项，全都不是&amp;quot;某个数字是多少&amp;quot;这种&lt;strong&gt;一阶事实&lt;&#x2F;strong&gt;，而是&amp;quot;A 比 B 大&amp;quot;&amp;quot;今年比去年快&amp;quot;&amp;quot;两份不一致&amp;quot;这种&lt;strong&gt;二阶比较&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;模型很擅长从文档里抽出一个具体数字，却&lt;strong&gt;系统性地漏掉需要把两个数字拿来比一比的判断。&lt;&#x2F;strong&gt; 我把这条规律写进了项目笔记，叫它&amp;quot;漏网主矿律&amp;quot;：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;漏网的鱼，集中在跨文档、跨年、跨公司的&amp;quot;比较型&amp;quot;多选题里。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;有了这条规律，钓鱼就从撒网变成了打靶。我写了个小脚本，把全部 65 道多选题筛一遍，挑出所有&amp;quot;两份以上文档 + 题面带『高于&#x2F;低于&#x2F;增长&#x2F;不一致&#x2F;两者均』&amp;quot;的题，一共 53 道是比较型，其中 20 道还没核过。靶子清单就这么列出来了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-wan-4-qiang-6-tiao-yu&quot;&gt;一晚 4 枪，6 条鱼&lt;&#x2F;h2&gt;
+&lt;p&gt;接下来就是耐心的逐字核对。每道题，四个选项，一个一个回到原文里找铁证：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;合同矿挖出 3 条鱼，分数 70.54 → 73.52，排名 100 → 92&lt;&#x2F;li&gt;
+&lt;li&gt;财报矿挖出 2 条鱼，73.52 → 75.51，排名 92 → 78&lt;&#x2F;li&gt;
+&lt;li&gt;保险矿挖出 1 条鱼，75.51 → 76.50，排名 78 → 77&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;每一枪我都单独提交——不把多条鱼混在一起打。这不是谨慎过头，是&lt;strong&gt;变量隔离&lt;&#x2F;strong&gt;：单独打，涨分才能干净地归因到具体某条鱼；万一某条判错了，我立刻知道是哪条、为什么。一旦混着打，错误会被其他鱼的涨分盖住，你永远学不到东西。&lt;&#x2F;p&gt;
+&lt;p&gt;6 条鱼，+5.96 分，排名从 100 跳到 77。账目分毫不差，过程零失误。&lt;&#x2F;p&gt;
+&lt;p&gt;到这里，这本该是一个干净利落的成功故事。但真正让我后背发凉的，是第 7 条鱼。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-tiao-shao-liao-yi-ge-zi-de-jia-yu&quot;&gt;那条少了一个字的假鱼&lt;&#x2F;h2&gt;
+&lt;p&gt;在保险矿快挖完时，一道研报题跳了出来。&lt;&#x2F;p&gt;
+&lt;p&gt;选项 A 写着：&lt;strong&gt;&amp;quot;上市券商客户资金杠杆从 1.56 倍提升至 4.09 倍。&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我去原文里一搜——&lt;code&gt;1.56&lt;&#x2F;code&gt;、&lt;code&gt;4.09&lt;&#x2F;code&gt;，两个数字一字不差地都在。模型漏选了它，看起来又是一条标准的&amp;quot;漏选二阶比较&amp;quot;的肥鱼。我几乎已经把它放进了提交清单。&lt;&#x2F;p&gt;
+&lt;p&gt;协作的另一个 AI（代号 Codex）也确认了这条鱼，催我赶紧打包提交，凑成&amp;quot;双鱼一枪&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;但在提交前，我习惯性地让一道&lt;strong&gt;机械闸门&lt;&#x2F;strong&gt;跑了一遍——这道闸门只干一件事：把选项里的核心指标名，和原文逐字对齐，检查限定词有没有被偷换。&lt;&#x2F;p&gt;
+&lt;p&gt;它亮了红灯。&lt;&#x2F;p&gt;
+&lt;p&gt;我把原文和选项并排放在一起，那一刻才看清：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;选项 A：上市券商「客户资金杠杆」 1.56 → 4.09
+&lt;&#x2F;span&gt;&lt;span&gt;原  文：上市券商「除客户资金杠杆」 1.56 → 4.09
+&lt;&#x2F;span&gt;&lt;span&gt;                  ↑ 多一个&amp;quot;除&amp;quot;字
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&amp;quot;&lt;strong&gt;除&lt;&#x2F;strong&gt;客户资金杠杆&amp;quot;是券商的一个标准指标——&lt;strong&gt;剔除&lt;&#x2F;strong&gt;客户保证金之后的真实杠杆（因为客户的钱躺在表上会虚增资产，必须扣掉）。而选项把那个&amp;quot;除&amp;quot;字吞了，&amp;quot;客户资金杠杆&amp;quot;变成了一个完全不同、甚至相反的东西。&lt;&#x2F;p&gt;
+&lt;p&gt;那两个数字 &lt;code&gt;1.56&lt;&#x2F;code&gt; 和 &lt;code&gt;4.09&lt;&#x2F;code&gt;，属于&amp;quot;除客户资金杠杆&amp;quot;，&lt;strong&gt;不属于&lt;&#x2F;strong&gt;选项里写的&amp;quot;客户资金杠杆&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这是一条假鱼。它身上唯一的破绽，是少了一个字。如果我把它选进去，这道多选题会因为多了一个错项而&lt;strong&gt;直接清零&lt;&#x2F;strong&gt;——我会亲手把一道本来能得分的题，打成 0 分。本想 +1，实则 -1。&lt;&#x2F;p&gt;
+&lt;p&gt;我被数字匹配骗了。这正是我这一路最该警惕的那种错误——&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;命中数字 ≠ 选项为真。一个限定词的丢失，会把一个指标偷换成另一个指标。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;我把逐字对齐的证据发给 Codex。它看完只回了一句：&amp;quot;对，我这次犯傻了。&amp;quot; 然后它做了一件更漂亮的事：把这个教训直接升华成了下一阶段架构的一条硬规则——&lt;strong&gt;谓词&#x2F;限定词保全&lt;&#x2F;strong&gt;（predicate&#x2F;qualifier preservation）：选项里的核心指标名，必须和原文的限定词完整一致，尤其是这些一字千金的词——除&#x2F;不含&#x2F;扣除&#x2F;剔除、仅&#x2F;全部、同比&#x2F;环比、增长&#x2F;下降、税前&#x2F;税后、归母&#x2F;扣非。&lt;&#x2F;p&gt;
+&lt;p&gt;第 14 枪，我只打了那条真鱼（保险题那条），放掉了假鱼。76.50，排名 77。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-zhe-tiao-jia-yu-bi-na-6-tiao-zhen-yu-geng-zhong-yao&quot;&gt;为什么这条假鱼比那 6 条真鱼更重要&lt;&#x2F;h2&gt;
+&lt;p&gt;钓到 6 条鱼当然值得高兴。但如果那天我把假鱼也打了出去，会发生什么？&lt;&#x2F;p&gt;
+&lt;p&gt;那道题会清零，这一枪很可能不涨反跌。更糟的是——它会&lt;strong&gt;反向证伪&lt;&#x2F;strong&gt;我这一整套&amp;quot;逐字核对&amp;quot;的方法论。一个本来稳定 +1.13 的打法，会突然产出一个负数，让我开始怀疑前面 6 条鱼是不是也只是运气。一条假鱼，足以污染一条已经被验证成功的路线。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这一夜真正的收获，不是排名前进了 23 名，而是想清楚了一件事：&lt;strong&gt;到了这个阶段，价值不在&amp;quot;多挖一条&amp;quot;，而在&amp;quot;守住那道闸门，别把已经到手的真分吐回去&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这也是多个 AI 协作的意义。一个会被表面数字骗（Codex 一开始想打假鱼），一个有机械闸门兜底（那道限定词闸门），还有人在旁边拍板纪律（&amp;quot;宁可干净打一条真鱼，也不赌一条假鱼&amp;quot;)。三方互相纠错，才没让那条假鱼上钩。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;diao-dao-tou-liao-gai-huan-tiao-he&quot;&gt;钓到头了，该换条河&lt;&#x2F;h2&gt;
+&lt;p&gt;逐字核对这条路，我把它走到了尽头。&lt;&#x2F;p&gt;
+&lt;p&gt;6 条鱼之后，全域的&amp;quot;比较型多选题&amp;quot;被我筛了个底朝天，只剩这最后一条。我反推了一下当前的准确率：&lt;strong&gt;87%。&lt;&#x2F;strong&gt; 而逐字核对的天花板，就在这附近——它只能修&amp;quot;差一点点&amp;quot;的题（漏一个真项、多一个错项），救不了那些模型从根上就理解错了方向的题。&lt;&#x2F;p&gt;
+&lt;p&gt;榜首在 90 分以上，对应约 88–90% 的准确率。那 3 个百分点的差距，逐字核对再勤快也够不着了。&lt;strong&gt;唯一的主路，是让模型从源头上少犯错。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;而这一夜的 6 条鱼 + 1 条假鱼，恰好帮我把&amp;quot;模型到底在哪些地方犯错&amp;quot;列得清清楚楚——四类病症：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;漏二阶比较&lt;&#x2F;strong&gt;：擅长抽数字，不会主动去比大小、算增长率。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;检索漏召回&lt;&#x2F;strong&gt;：那条保险鱼，模型根本没把对应的那份文档读进来。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;限定词吞字&lt;&#x2F;strong&gt;：就是那条假鱼，&amp;quot;除&amp;quot;字一丢，指标全变。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;数值归属翻转&lt;&#x2F;strong&gt;：把第一份文档的数字，安到第二份头上。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;下一阶段要造的 Agent 架构，自检步要解决的，就是这四件事。施工图我已经画好了——问题分类 → 每份文档强制覆盖检索 → 逐选项真值表 → 比较型专用推理链 → 限定词自检 → 保守作答。验收标准也现成：拿这 6 条真鱼 + 那 1 条假鱼当回归测试集，新架构必须把 6 条都钓对、把假鱼判假，才算自检步合格。&lt;&#x2F;p&gt;
+&lt;p&gt;钓鱼的季节结束了。接下来要学的，是怎么不让鱼跑掉。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;《断章取义》是我在 AFAC2026 金融长文本 Agent 比赛里的连载手记。这是第五篇。从 49 分到 76.50 分，每一分背后都是一个具体的坑、一条具体的规律，或者——一条差点上钩的假鱼。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义之四：我修了一排闸门，真值只认四则运算</title>
         <published>2026-06-20T00:00:00+00:00</published>
