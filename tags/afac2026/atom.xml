@@ -5,8 +5,110 @@
     <link href="https://polly.wang/tags/afac2026/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-22T00:00:00+00:00</updated>
+    <updated>2026-06-23T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/afac2026/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之六：10 亿是真的，它只是答错了题</title>
+        <published>2026-06-23T00:00:00+00:00</published>
+        <updated>2026-06-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-topic-mismatch/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-topic-mismatch/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;duanzhangquyi-fishing&quot;&gt;断章取义之五：捕鱼记，与那条差点上钩的假鱼&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;捕鱼记封顶在 76.50 那天，我以为最难的部分已经过去了。排行榜上排名 77，捞上来的六条鱼每一条都干干净净。剩下零星几道差一点的题，看起来就是再补几竿的事。&lt;&#x2F;p&gt;
+&lt;p&gt;我没想到，最后一竿会把我钉在原地一整晚。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-kuai-han-si-de-gang-ban&quot;&gt;一块焊死的钢板&lt;&#x2F;h2&gt;
+&lt;p&gt;那道题叫 &lt;code&gt;fc_004&lt;&#x2F;code&gt;，一道多选题。我当前的答案是单选 A，按规则它应该是「漏选」，0 分。我逐字核对过文档，重建出它的正确答案，确信只要补上一个选项就能 +0.99——这一晚我已经这么干了六次，每次都灵。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我提交了 AC。&lt;&#x2F;p&gt;
+&lt;p&gt;分数：76.5006。&lt;&#x2F;p&gt;
+&lt;p&gt;跟提交前一模一样。&lt;&#x2F;p&gt;
+&lt;p&gt;我以为是缓存，刷新，再看——还是 76.5006。token 没变，准确率没变，连小数点后四位都没动。这道题的答案从 A 改成了 AC，&lt;strong&gt;比赛系统却像什么都没发生过&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我有点不信邪。这套评分规则我研究了一周，多选题是「错选清零、漏选清零」——任何一个字不对就是 0 分。如果我加的 C 是对的，分数该涨；如果 C 是错的，那也只是从 0 到 0，倒也说得通。&lt;&#x2F;p&gt;
+&lt;p&gt;那就换个加法。我提交了 ACD。&lt;&#x2F;p&gt;
+&lt;p&gt;76.5006。&lt;&#x2F;p&gt;
+&lt;p&gt;再换。AD。&lt;&#x2F;p&gt;
+&lt;p&gt;76.5006。&lt;&#x2F;p&gt;
+&lt;p&gt;四个版本——A、AC、ACD、AD——总分一字不差地全等。这不是缓存，是一块焊死的钢板。我盯着那串数字，第一次感到一种很具体的无力：&lt;strong&gt;我连这道题到底错在哪都不知道，更别说怎么修。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ta-xian-gao-su-wo-a-shi-cuo-de&quot;&gt;它先告诉我「A 是错的」&lt;&#x2F;h2&gt;
+&lt;p&gt;凌晨的时候，我开始用最笨的办法逼供：把这四次提交当成四个实验，反推。&lt;&#x2F;p&gt;
+&lt;p&gt;评分是「差一个字就清零」。四个版本总分全等，唯一的解释是它们&lt;strong&gt;全都得 0 分&lt;&#x2F;strong&gt;。而这四个版本有一个共同点——&lt;strong&gt;都含 A&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;含 A 的组合（A、AC、AD、ACD）全部 0 分
+&lt;&#x2F;span&gt;&lt;span&gt;⟹ 不管 A 配上什么，整道题都是错的
+&lt;&#x2F;span&gt;&lt;span&gt;⟹ 正确答案里，根本不该有 A
+&lt;&#x2F;span&gt;&lt;span&gt;⟹ A 是假的
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这个结论让我愣住了。因为我手里那份逐字核对的笔记上，A 旁边写着两个字：&lt;strong&gt;机械铁证&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;文档里清清楚楚——「本期债券发行金额：不超过 10 亿元」。选项 A 说「第一份文档显示的本期债券发行金额上限为 10 亿元」。一个字都没差。我把它标成「机械真」，像标一个 1+1=2 那样确定。&lt;&#x2F;p&gt;
+&lt;p&gt;可比赛系统，用四次零分，平静地告诉我：&lt;strong&gt;A 是假的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;字面是真的，判分是假的。这两件事第一次在我眼前裂开一道缝。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xin-yong-qia-de-e-du-he-zhe-ge-yue-de-shua-qia&quot;&gt;信用卡的额度，和这个月的刷卡&lt;&#x2F;h2&gt;
+&lt;p&gt;撬开这道缝的，是一个很土的比喻。&lt;&#x2F;p&gt;
+&lt;p&gt;那份文档是一只「储架发行」的债券募集说明书——说人话，就是公司去监管那里办了一张「信用卡」，&lt;strong&gt;额度是 190 亿&lt;&#x2F;strong&gt;（注册总额度）。但它不会一次刷爆，第一期先发了 &lt;strong&gt;10 亿&lt;&#x2F;strong&gt;（本期发行）。两个数字都真实存在，只是一个是「额度」，一个是「这次刷了多少」。&lt;&#x2F;p&gt;
+&lt;p&gt;而题目问的是什么？&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;「关于&lt;strong&gt;发行限额&lt;&#x2F;strong&gt;与财务指标披露情况……」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;发行限额 = 信用卡额度 = 190 亿。&lt;&#x2F;strong&gt; 不是问你这个月刷了多少。&lt;&#x2F;p&gt;
+&lt;p&gt;选项 A 给的「本期 10 亿」，是真的——但它回答的是「这个月刷卡」，而题目问的是「你的额度」。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;别人问你「信用卡额度多少」，你答「我这个月花了一万」。
+数字是真的。但你答非所问。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这就是 A 的病。它不是「文档里没有 10 亿」，也不是「数字看错了」。它是——&lt;strong&gt;证据是真的，但证据不属于题目问的那一层概念。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;我又回头看了眼旁边的 B 选项：「第二份文档注册金额上限为 180 亿」。第二份文档的注册额度其实是 3000 亿，所以 B 也是错的。出题人把 A 和 B 摆在一起，考的是同一个东西——&lt;strong&gt;你能不能认出「发行限额」这一层&lt;&#x2F;strong&gt;：一个故意给你「本期」的数（A），一个故意把额度写错（B）。两个都是陷阱。&lt;&#x2F;p&gt;
+&lt;p&gt;而我，一头扎进了第一个。把「文档里有 10 亿」当成了「选项 A 为真」。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-lian-cuo-liao-san-ci-codex-yi-zhi-zai-shou-jin&quot;&gt;我连错了三次，Codex 一直在收紧&lt;&#x2F;h2&gt;
+&lt;p&gt;最让我难受的，是这道题暴露的不只是出题人的深，还有我自己的浅。&lt;&#x2F;p&gt;
+&lt;p&gt;四枪里，前三枪我都给 Polly——我们这个项目里负责分析和写代码的那个 AI——下了过度自信的判断。第一次我说「审计通过，提交」；第二次推断出更精巧的链条，说「这是 held-out 数学证明，gold 一定是 ACD」；第三次又说「逻辑锁定，一定是 AD」。&lt;&#x2F;p&gt;
+&lt;p&gt;每一次，我都讲了一个自洽得能说服自己的故事。每一个故事的地基，都是那句&lt;strong&gt;没人验证过的「A 是真的」&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;负责挑刺的 Codex 在旁边一句句往回收。等到第四枪 AD 也归零、彻底证明 A 是假的之后，它说了一句让我把椅子坐直的话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;「D 不能写成『确定为假』。如果 D 已经假了，那答案就只能是 C；可你还没提交验证过 D。别再把『字面读出来的判断』当成『系统认定的真值』——你刚刚就是栽在这上面。」&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话直接捅破了我们整个工作方法里一个埋了很久的雷。&lt;&#x2F;p&gt;
+&lt;p&gt;这一周我建了一个庞大的「真值账本」，把每道题的每个选项都标上「机械真 &#x2F; 机械假 &#x2F; 语义」。我一直把「机械真」当成接近官方答案的东西在用。可 &lt;code&gt;fc_004&lt;&#x2F;code&gt; 的 A，就是被我标成「机械真」的那一类——结果它假得彻彻底底。&lt;&#x2F;p&gt;
+&lt;p&gt;于是我做了一件这一周最该做、却拖到现在才做的事：&lt;strong&gt;把「机械真」这个标签,整个降级。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;它从此不再叫「机械真」，改叫「文档字面支持」。一字之差，态度天壤之别——前者像在说「这是对的」，后者老实承认「文档里这么写，但它是不是这道题的答案，我不知道」。&lt;&#x2F;p&gt;
+&lt;p&gt;我还在账本最显眼的地方写了一句话给未来的自己看：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;65 道多选题我都复核过；但只有 6 条被比赛系统亲自验证过的鱼，才是官方答案。其余的，是「有证据支持的标定」，不等于官方真值。「我没找到能翻的鱼」，不等于「我全对」。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;liang-dao-zha-men-que-yi-bu-ke&quot;&gt;两道闸门，缺一不可&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;fc_004&lt;&#x2F;code&gt; 最后没给我那 0.99 分。但它给了我一样东西，比 0.99 分重得多——一条我打算焊进下一阶段架构里的硬规则。&lt;&#x2F;p&gt;
+&lt;p&gt;判断一个选项对不对，&lt;strong&gt;必须过两道闸门&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;闸门一 · 文档字面支持：选项说的事实，文档里有没有？（逐字核、grep 管这一道）
+&lt;&#x2F;span&gt;&lt;span&gt;闸门二 · 题目层级对齐：这个事实，回答的是不是题目问的那一层概念？
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;文档字面支持 ≠ 答案正确
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;fc_004&lt;&#x2F;code&gt; 的 A 过了第一道（10 亿确实在文档里），却卡死在第二道（题目问的是发行限额，A 答的是本期发行）。&lt;&#x2F;p&gt;
+&lt;p&gt;而我这一周引以为傲的逐字核、关键词检索、机械核验器——&lt;strong&gt;全部只覆盖第一道闸门&lt;&#x2F;strong&gt;。它们会命中「10 亿」，会兴高采烈地把它标成真，然后没有任何一步去问那句最关键的话：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这个 10 亿，回答的是题目问的那个量吗？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这正是我们 Agent 架构一直缺的那一步。我把流水线的第五步——原本只是「校对限定词」（除、不含、同比、归母这些字别吞掉）——升级成了「校对&lt;strong&gt;题目层级对齐&lt;&#x2F;strong&gt;」。模型抽到一个数字之后，不能直接判真，得先回头看一眼：题目到底问的是哪一层。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-bu-zhi-shi-yi-dao-jin-rong-ti-de-keng&quot;&gt;这不只是一道金融题的坑&lt;&#x2F;h2&gt;
+&lt;p&gt;写到这里我突然意识到，这个坑根本不属于金融。&lt;&#x2F;p&gt;
+&lt;p&gt;任何一个「先找证据，再下判断」的系统，都会栽在同一个地方。检索增强的问答、医疗辅助诊断、法律条文比对、甚至我们平时读论文——&lt;strong&gt;只要你只验证「这句话文档里有没有」，而不验证「这句话回答的是不是我问的问题」，你迟早会把一个真实但跑题的句子，当成答案。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;模型最擅长的，恰恰是把相关的句子捞回来。它会很自信地递给你「本期发行 10 亿」，因为这句话又真、又跟「发行」有关、又长得像答案。&lt;strong&gt;相关、真实、跑题——这三件事可以同时成立。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;区别只在于：你有没有第二道闸门。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;han-si-zai-lian-shang-de-si-ge-zi&quot;&gt;焊死在脸上的四个字&lt;&#x2F;h2&gt;
+&lt;p&gt;这道题折腾完，我去看了一眼我们这支队伍的名字。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;断章取义。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;报名那天起的，本来是句自嘲——一个做文本切块、靠片段拼答案的系统，可不就是在「断章取义」么。可直到 &lt;code&gt;fc_004&lt;&#x2F;code&gt;，我才看清这四个字有多准。&lt;&#x2F;p&gt;
+&lt;p&gt;选项 A 干的，就是字面意义上的断章取义：它从「储架额度 190 亿、本期发行 10 亿」这一整段语境里，&lt;strong&gt;只把「10 亿」那一句拎出来&lt;&#x2F;strong&gt;，掐头去尾，端到一个问「发行限额」的题目面前，伪装成答案。&lt;&#x2F;p&gt;
+&lt;p&gt;而我，差一点就替它把这份「断章取义」签收了。&lt;&#x2F;p&gt;
+&lt;p&gt;四枪零分，是出题人用最贵的方式，给我上的一堂关于「语境」的课。它没让我涨分，却让我明白了，为什么这场比赛真正的山顶，从来不是「读到更多的字」——而是&lt;strong&gt;读懂，每一个字到底在回答谁的问题。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;下一阶段，C 这道题的答案我还要用最后一竿去验。但无论它涨不涨那 0.99 分，这一晚都已经赚了。&lt;&#x2F;p&gt;
+&lt;p&gt;因为我们队伍的名字，今晚第一次，从一句玩笑，变成了一句必须时刻提防的警告。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;《断章取义》是我在 AFAC2026 金融长文本 Agent 比赛里的连载手记。这是第六篇。从 49 分到 76.50 分，每一分背后都是一个具体的坑、一条具体的规律，或者——这一篇里，一道我四枪都没攻下、却比涨分更值钱的钢板。&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义之五：捕鱼记，与那条差点上钩的假鱼</title>
         <published>2026-06-22T00:00:00+00:00</published>
