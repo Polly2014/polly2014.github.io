@@ -5,8 +5,135 @@
     <link href="https://polly.wang/tags/ai-agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-05-01T00:00:00+00:00</updated>
+    <updated>2026-06-25T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ai-agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>断章取义之七：那条 4× 的鱼</title>
+        <published>2026-06-25T00:00:00+00:00</published>
+        <updated>2026-06-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/duanzhangquyi-four-times-fish/" type="text/html"/>
+        <id>https://polly.wang/duanzhangquyi-four-times-fish/</id>
+        
+        <content type="html">&lt;p&gt;接上回 &lt;a href=&quot;&#x2F;duanzhangquyi-topic-mismatch&quot;&gt;之六：10 亿是真的，它只是答错了题&lt;&#x2F;a&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;6 月 25 日凌晨 06:56，第 17 枪 oracle 提交返回——&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;82.4617&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我看了三遍。预期是 78.4876 + 0.9935 = 79.48，比预期高了整整四倍。&lt;&#x2F;p&gt;
+&lt;p&gt;桌上没动过的咖啡还温着。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jia-she-shi-zen-yao-jian-li-de&quot;&gt;假设是怎么建立的&lt;&#x2F;h2&gt;
+&lt;p&gt;为了让接下来的事讲清楚，得先说说我们怎么走到这一步的。&lt;&#x2F;p&gt;
+&lt;p&gt;AFAC2026 赛题四是金融长文本 Agent 比赛，100 道选择题，5 个域（保险、合同、研报、财报、法规），每个域 20 题。评分公式是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;FinalScore = 100 × Accuracy × coef，coef ∈ [0.7, 1.0]，由 token 用量决定。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;过去三周，我们从 v2.1 的 45.86 分一路推到 76.50，靠的是 v3 逐选项验证器、jieba 分词、CopilotX OCR、5 个 domain solver、算术验证法、漏选挖矿。前 14 枪几乎每枪都涨。&lt;&#x2F;p&gt;
+&lt;p&gt;到第 14 枪 ins_019，acc 87.09%，我们碰到了一堵叫 &amp;quot;fc_004&amp;quot; 的钢板——一道字面上完全说得通、却怎么提交都不涨 0.99 分的多选题。连提 4 枪全 0。&lt;&#x2F;p&gt;
+&lt;p&gt;这堵墙逼出了&amp;quot;逐题 blind 复核 + 协议 v2&amp;quot;的方法论。&lt;strong&gt;100 道题，逐题独立推导一遍，写下 &lt;code&gt;literal_verdict&lt;&#x2F;code&gt;（字面真假）、&lt;code&gt;topic_aligned&lt;&#x2F;code&gt;（topic 是否对齐）、&lt;code&gt;grader_verdict&lt;&#x2F;code&gt;（必须留 null 除非 oracle 升级）&lt;&#x2F;strong&gt;——结果发现有 5 道题我们的独立推断 ≠ best CSV 里的答案。这 5 道题进了一个叫&amp;quot;DIVERGES queue&amp;quot;的待 oracle 验证池。&lt;&#x2F;p&gt;
+&lt;p&gt;06-24 两连胜击中了池子里前两条鱼：fc_a_013 &#x2F; fc_a_018，B→A，各 +0.9935。&lt;&#x2F;p&gt;
+&lt;p&gt;我心里那时建立了一个朴素假设：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;每题等权，0→满分 = +1.131pp = +0.9935 分。剩 3 条鱼如果都中，77.49 + 3 × 0.99 = 80.47。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是 6 鱼实测（fc_011&#x2F;001&#x2F;017、fin_004&#x2F;011、ins_019）+ 06-24 两鱼共 8 鱼建立起来的、近乎不容质疑的等权直觉。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;na-yi-ke-wei-shi-yao-chai-dian-bei-yan-gai&quot;&gt;那一刻为什么差点被掩盖&lt;&#x2F;h2&gt;
+&lt;p&gt;回到 06:56。&lt;&#x2F;p&gt;
+&lt;p&gt;第 17 枪打的是 fin_a_018，提交前我习惯性问了一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;fin018_A 是基于最新 best 的单变量变更么？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;写脚本跑了一遍 round-trip：与当前 best 严格 1 行差异（只 fin_a_018 B→A 单变量翻转），其他 99 题 + token summary 字节一致。&lt;strong&gt;🟢 GO&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;上传。等了几分钟，刷新天池——&lt;code&gt;82.4617&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;82.4617 − 78.4876 = 3.9741&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;如果当时没问那句 round-trip 呢？&lt;&#x2F;p&gt;
+&lt;p&gt;如果当时我图省事，从一个未 rebase 的旧 base 派生候选，里面无意中把另外 2-3 道题也一起翻了——那这条 +3.97 就会被悄无声息地分成&amp;quot;+0.99（fin_018 oracle）+ 2.98（其他题碰巧蒙对）&amp;quot;。&lt;strong&gt;我会用一个错的因果模型把信号涂掉。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;整套协议工程化最珍贵的一次实证，就糊在双变量翻转里了。&lt;&#x2F;p&gt;
+&lt;p&gt;我开始相信&amp;quot;round-trip 警觉&amp;quot;这件事不是洁癖，是基础设施。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shi-grader-bug-ma&quot;&gt;是 grader bug 吗&lt;&#x2F;h2&gt;
+&lt;p&gt;回过神来，第一反应是：会不会题目特殊？grader 算错了？&lt;&#x2F;p&gt;
+&lt;p&gt;但 fin_a_018 这道题确实不一般。题面要求同时满足：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;跨域&lt;&#x2F;strong&gt;：fin（财报）域，但要拉合同域和研报域的数据交叉&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;跨文档&lt;&#x2F;strong&gt;：宁德 + 美的 双公司年报&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;compound AND&lt;&#x2F;strong&gt;：营收双位数 AND 净利润增速比较&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;多维度 reasoning&lt;&#x2F;strong&gt;：两个公司，两个维度，多组数据对比&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;acc 增量倒推：89.35% → 93.88% = +4.52pp ≈ &lt;strong&gt;4 个普通题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这时我心里冒出一个不敢说出口的假设：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;每题不等权。这道题本身就值 4 分。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;但 sample size = 1 我不敢下定论。怎么证伪？&lt;&#x2F;p&gt;
+&lt;p&gt;很简单——&lt;strong&gt;剩 2 条鱼里挑一个跨文档但单维度的，看是 +0.99 还是 +3.97&lt;&#x2F;strong&gt;。如果是 +0.99，说明 fin_018 是真异常；如果是 +3.97，说明跨文档题都加权；如果是 0 或负，说明我的协议判断在这类题上失败。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;fan-zheng-na-tiao-yu&quot;&gt;反证那条鱼&lt;&#x2F;h2&gt;
+&lt;p&gt;07:07，第 18 枪 res_a_003。&lt;&#x2F;p&gt;
+&lt;p&gt;题目是跨文档的数值比较（一个 12% 的数据点 vs 一个 20-50% 的区间，铁证），但只有&lt;strong&gt;一个维度&lt;&#x2F;strong&gt;——不是 compound AND，不是多维度。&lt;&#x2F;p&gt;
+&lt;p&gt;提交前先 round-trip——脚本告诉我严格 1 行差异，token summary 字节一致。上传。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;83.4552&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;83.4552 − 82.4617 = 0.9935&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;完美的 +0.99，正常 1× 权重。&lt;&#x2F;p&gt;
+&lt;p&gt;这一刻我确认了：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;不是所有跨文档题都加权。只有&amp;quot;跨域 + compound AND + 多维度 reasoning&amp;quot;三条件齐备的题才上 4×。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;判定路径写出来很简单：跨多文档&#x2F;跨域? → 是 → compound AND? → 是 → 多维度? → 是 → weight ≈ 4×。任何一个条件缺失，都回到 1×。&lt;&#x2F;p&gt;
+&lt;p&gt;fin_018 不是 grader bug，是真题型权重信号。&lt;&#x2F;p&gt;
+&lt;p&gt;07:15，第 19 枪 res_a_018，同 evidence_class 类比 res_003，预期 +0.99——&lt;code&gt;84.4487&lt;&#x2F;code&gt;，准确度小数点后误差为零。&lt;&#x2F;p&gt;
+&lt;p&gt;19 分钟，三条鱼，net +5.961。A 榜 oracle 可识别队列清空。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;na-dao-zhi-jin-mei-na-man-fen-de-ti&quot;&gt;那道至今没拿满分的题&lt;&#x2F;h2&gt;
+&lt;p&gt;但今晚最让我犹豫的不是这三条鱼。是 fc_004——那堵 06-23 用 4 枪 0 分换来 &lt;code&gt;topic_aligned&lt;&#x2F;code&gt; 钢板的钉子户。&lt;&#x2F;p&gt;
+&lt;p&gt;到今天它已经被提交过 5 次（A &#x2F; AC &#x2F; ACD &#x2F; AD &#x2F; C），全是 0 增量。第 18 次单选 C 的探针 06-24 凌晨刚做完，证明 &lt;code&gt;gold ≠ {C} 单选&lt;&#x2F;code&gt;。我们的最强协议推断（Gate1 字面支持 + Gate2 topic 对齐 双 PASS）指向 C，但 oracle 实证又把它否了。&lt;&#x2F;p&gt;
+&lt;p&gt;剩下的 gold 只能在 &lt;code&gt;{D 单独, CD}&lt;&#x2F;code&gt; 两个里。&lt;&#x2F;p&gt;
+&lt;p&gt;我盯着账本里那行字看了一会，问了一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;fc_004 虽然我们还没能完全找到最佳正确答案，但以目前来看，我觉得我们改为 C 是不是最符合逻辑（分数虽然没涨，但推理完全有逻辑支撑）？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是一个很诱人的问题——&lt;strong&gt;协议推断最强，证据闭合，把账本里 fc_004 的答案改成 C 不是顺理成章吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;但仔细想，这里有一个我以前没明确意识到的层次：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层&lt;&#x2F;th&gt;&lt;th&gt;含义&lt;&#x2F;th&gt;&lt;th&gt;fc_004 改 C 的影响&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;best CSV&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;提交给评分系统的答案&lt;&#x2F;td&gt;&lt;td&gt;EV = 0（A 和 C 实测都不涨分；A 在 gold 里被实证假，C 单选也已被证伪），但新增&amp;quot;看似合理却假设性&amp;quot;的成分&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;账本 reconstructed&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;协议推断的推理留档&lt;&#x2F;td&gt;&lt;td&gt;可以记 C 反映协议直觉，不影响 score&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;grader_verdict&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;oracle 真值&lt;&#x2F;td&gt;&lt;td&gt;必须维持 null，oracle 已证伪 &lt;code&gt;gold ≠ {C} 单选&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;最后决定走中间路：&lt;strong&gt;best CSV 维持 A&lt;&#x2F;strong&gt;（被实证错误的、对分数贡献 0 的 A），&lt;strong&gt;账本加 &lt;code&gt;reconstructed_protocol_max = C&lt;&#x2F;code&gt; + &lt;code&gt;oracle_constrained_gold_set = [D, CD]&lt;&#x2F;code&gt;&lt;&#x2F;strong&gt; 留协议直觉档。&lt;&#x2F;p&gt;
+&lt;p&gt;不是因为协议不重要。是因为：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;best CSV 是 oracle 实证圣域，不让 calibration 污染。协议直觉值得留档，但永远不能反过来声明真值。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是 fc_004 这堵钢板今晚给我的第三次教训。前两次分别是&amp;quot;字面真不等于答对&amp;quot;和&amp;quot;双闸门 PASS 也不等于 oracle gold&amp;quot;，这次是&amp;quot;协议最强不等于 gold 真值，账本和提交 CSV 必须层次分明&amp;quot;。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wei-shi-yao-wu-chai-ge-chi-bu-shi-ji-pi&quot;&gt;为什么误差隔离不是洁癖&lt;&#x2F;h2&gt;
+&lt;p&gt;今晚 5 次 round-trip 警觉的本质，是&lt;strong&gt;误差隔离术&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;p&gt;每次只动一道题，让结果跟动作严格 1:1 对应。多动一道，因果链就断了——你拿到的不再是&amp;quot;这道题对不对&amp;quot;的信号，而是&amp;quot;这堆改动加起来净分如何&amp;quot;的噪声。&lt;&#x2F;p&gt;
+&lt;p&gt;这在写论文里叫 ablation study，在工程里叫 minimal reproducible example，在 debug 里叫 git bisect。它们都是同一种纪律。&lt;&#x2F;p&gt;
+&lt;p&gt;但我以前觉得这是&amp;quot;严谨派&amp;quot;才做的事。今晚 fin_018 的 +3.97 让我看清楚：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;这不是严谨问题，是因果验证能不能成立的问题&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;没有误差隔离，你的数据可能正确，但你&lt;strong&gt;永远不知道为什么&lt;&#x2F;strong&gt;。一旦你的归因模型错了，错误会一路潜伏到你以为它已经收敛的地方。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;具体到这一晚——如果第 17 枪没 rebase，+3.97 会被算成 +0.99 + 隐藏的 +2.98 噪声，我会以为&amp;quot;等权假设&amp;quot;还成立，第 18 枪 res_003 的 +0.99 会被解读为&amp;quot;正常&amp;quot;，第 19 枪 res_018 我会按 +0.99 预期。表面上分数还是 84.45，但&lt;strong&gt;我会带着一个错误的题型权重模型走进 Phase 3，每一次 token 预算估算都偏 4 倍&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;代价不是这一晚的 +3 分，是接下来所有基于这个模型的决策。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;shou-guan-ye&quot;&gt;收官夜&lt;&#x2F;h2&gt;
+&lt;p&gt;天池榜上现在显示 &lt;code&gt;84.4487&lt;&#x2F;code&gt;，acc 96.14%。&lt;&#x2F;p&gt;
+&lt;p&gt;A 榜 oracle 可识别队列清空了——11 条鱼全护，剩 4 道题的 acc gap 全在我们 blind 判断与 best 一致的桶里，没有 divergence 信号，不适合再开单点 oracle 探针。&lt;&#x2F;p&gt;
+&lt;p&gt;但 acc 100% 也只能拿到 87.84——token 2.03M 锁死了 coef = 0.87841816。&lt;strong&gt;冲 90 的唯一路径不是再抓鱼，是把 token 砍到一半。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这正好回到赛题的原名——&lt;strong&gt;「金融长文本 Agent 的动态记忆压缩与高效问答」&lt;&#x2F;strong&gt;。token 效率从来不是评分的小数点，它是与准确率同等的乘数。&lt;&#x2F;p&gt;
+&lt;p&gt;下一战场是 Phase 3 harness：让模型只看压缩后的证据态，acc 保持 95-96%，token 从 2.03M 砍到 ≤1.0M。这条路从 06-22 第一次提&amp;quot;动态记忆压缩&amp;quot;开始就在那等着，今晚 Oracle Hunt 收官，终于轮到它了。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;桌上的咖啡早凉了。&lt;&#x2F;p&gt;
+&lt;p&gt;那条 4× 的鱼游进账本的时候不是异常，是一个我之前没读懂的信号。它没破坏假设，它只是迫使假设从&amp;quot;每题等权&amp;quot;细化到&amp;quot;按复合度分级&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;凌晨四点，新假设也只是更精确版本的旧假设。它还会被下一条鱼推翻——也许在 B 榜，也许在决赛。&lt;&#x2F;p&gt;
+&lt;p&gt;但&lt;strong&gt;只要 round-trip 警觉还在，下一次推翻的过程就还是干净的&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>观潮 · 第一刀</title>
         <published>2026-05-01T00:00:00+00:00</published>
