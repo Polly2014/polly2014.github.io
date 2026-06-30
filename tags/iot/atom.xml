@@ -5,8 +5,74 @@
     <link href="https://polly.wang/tags/iot/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-01T00:00:00+00:00</updated>
+    <updated>2026-06-30T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/iot/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loiter 满岛记：六座岛，终于挤满了人</title>
+        <published>2026-06-30T00:00:00+00:00</published>
+        <updated>2026-06-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loiter-full-isles/" type="text/html"/>
+        <id>https://polly.wang/loiter-full-isles/</id>
+        
+        <content type="html">&lt;p&gt;接上回：&lt;a href=&quot;&#x2F;loiter-islands&quot;&gt;Loiter 造岛记：48 小时，六座彩虹岛&lt;&#x2F;a&gt;。那篇结束时，六座岛刚刚成形，等的是一场真正的活动。今天，活动来了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;na-yi-ke-hai-shang-ji-man-liao-ren&quot;&gt;那一刻，海上挤满了人&lt;&#x2F;h2&gt;
+&lt;p&gt;大屏亮起来的时候，我下意识屏住了呼吸。&lt;&#x2F;p&gt;
+&lt;p&gt;六座岛——红色的 Ember、橙色的 Hearth、黄色的 Spark、绿色的 Grove、蓝色的 Tide、紫色的 Mist——每一座上面，都站着一排排小小的像素人。他们顶着自己取的名字，散落在火山、村庄、草原、森林和海岸边。两道跨海的彩虹弧横在画面中央，是两个人刚刚隔着海打了招呼。&lt;&#x2F;p&gt;
+&lt;!-- 图片占位 1：现场大屏全景（你提供的那张挤满小人的截图） --&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-full-isles&#x2F;placeholder-fullmap.jpg&quot; alt=&quot;六座岛屿挤满了参与者的像素小人，跨海彩虹弧横跨画面&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这张画面，一个月前只存在于我的笔记本里。那时屏幕上最多两三个测试用的小人，是我一个人来回切换设备模拟出来的。今天，每一个小人背后都是一个真实的人，正低头摆弄着手里那块 240×135 像素的卡片机。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ta-ben-lai-zhi-wei-shi-liu-ge-ren-zhun-bei&quot;&gt;它本来只为十六个人准备&lt;&#x2F;h2&gt;
+&lt;p&gt;这件事最让我心里打鼓的地方在于：&lt;strong&gt;Loiter 从来不是为这么多人设计的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;产品定位写得清清楚楚——一场 75 分钟的 Pride Month workshop，大约 16 个人，每人一台 M5 Cardputer。整套后端是个纯内存态的单进程服务，跑在一台 Azure 小机器上。16 个人，它闭着眼睛都能扛。&lt;&#x2F;p&gt;
+&lt;p&gt;可今天的报名，是五十多个。&lt;&#x2F;p&gt;
+&lt;p&gt;数字翻了三倍。对一个&amp;quot;刚好够用&amp;quot;的系统来说，三倍不是放大，是照妖镜——所有原来藏在水面下的临界点，会在那一刻同时浮出来。&lt;&#x2F;p&gt;
+&lt;!-- 图片占位 2：现场环境照 &#x2F; 大家低头玩卡片机的样子（可选） --&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-full-isles&#x2F;placeholder-scene.jpg&quot; alt=&quot;参与者人手一台卡片机，低头操作&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sai-qian-yi-ye-wo-ba-ji-ge-xuan-niu-du-ning-da-liao&quot;&gt;赛前一夜，我把几个旋钮都拧大了&lt;&#x2F;h2&gt;
+&lt;p&gt;活动前，我把整条链路从头到尾过了一遍，专挑那些&amp;quot;和人数同量级&amp;quot;的地方看——因为这些地方最容易在五十人涌进来的那一刻被顶穿。&lt;&#x2F;p&gt;
+&lt;p&gt;果然找到了三个：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;烧录限流&lt;&#x2F;strong&gt;：每个 IP 每小时只放 50 次。问题是，五十多人很可能挤在同一个网络出口，再加上偶尔失败重来一次，50 这个数字和参与人数几乎一样大——任何人多试一次都会撞墙。我把它提到了 200。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;分岛的等待&lt;&#x2F;strong&gt;：每个人烧录时，服务器要现场读一段他写的话、替他选一座岛。这一步等太久，烧录就会卡。我把它的耐心从 8 秒压到 5 秒——等不及就走兜底逻辑，宁可快，不要卡。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;写解读的并发&lt;&#x2F;strong&gt;：活动尾声，所有人几乎同时翻到&amp;quot;今天的你&amp;quot;那一屏，让 AI 给自己写一段话。原来只允许 5 个人同时排队，五十人一拥而上必然有人排到天荒地老。我把它放大到 10。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;容量的默认值，永远不要和你预期的人数贴齐。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是这一夜留给我的一句话。限额、超时、并发——这些旋钮的出厂值如果刚好等于&amp;quot;够用&amp;quot;，那它就只在理想情况下够用。真实世界里总有人多按一次、网络慢一拍、所有人恰好同一秒抬头。给它们留出三到四倍的余量，不是浪费，是给意外留的座位。&lt;&#x2F;p&gt;
+&lt;p&gt;改完，部署，重启。服务器安静地亮着绿灯。然后我就只能等了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wu-shi-duo-ge-ren-zhen-de-pao-tong-liao&quot;&gt;五十多个人，真的跑通了&lt;&#x2F;h2&gt;
+&lt;p&gt;结果是——它扛住了。&lt;&#x2F;p&gt;
+&lt;p&gt;人陆续到场，一台台卡片机被点亮、配网、输入名字。大屏上的小人一个接一个冒出来，自己走到属于他的那座岛上。没有卡顿，没有掉线潮，没有哪座岛突然黑掉。&lt;&#x2F;p&gt;
+&lt;p&gt;然后是我最喜欢的环节：有人开始跨岛打招呼。一个住在 Spark 黄岛的人，向住在 Tide 蓝岛的人发起一次&amp;quot;HI&amp;quot;——对方接受，两人之间就升起一道跨海的彩虹弧，各自的光谱里多了一格对方的颜色。屏幕上的彩虹弧越来越多，像一张慢慢织起来的网。&lt;&#x2F;p&gt;
+&lt;!-- 图片占位 3：跨海彩虹弧特写 &#x2F; 某个互动瞬间（可选） --&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;polly.wang&#x2F;loiter-full-isles&#x2F;placeholder-arc.jpg&quot; alt=&quot;两座岛之间升起的跨海彩虹弧&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;到最后，每个人翻到自己的那段 AI 解读——一段为他和他今天走过的路写的双语短诗。五十多段，几乎同时生成，没有一个人卡在加载界面上。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-wo-de-bi-ji-ben-dao-yi-wu-zi-ren-tou-ding-de-tong-yi-pian-hai&quot;&gt;从我的笔记本，到一屋子人头顶的同一片海&lt;&#x2F;h2&gt;
+&lt;p&gt;写到这里我才意识到，这一篇其实没什么技术好讲。赛前那几个旋钮，调一调，半小时的事。真正发生的事，是另一种性质的。&lt;&#x2F;p&gt;
+&lt;p&gt;一个东西，在你的笔记本上跑通，和它在一屋子真人手里跑通，是两件完全不同的事。前者证明它&amp;quot;能工作&amp;quot;，后者证明它&amp;quot;对人有意义&amp;quot;。中间隔着的，不是几行代码，是一群愿意拿起一块陌生小屏、给自己取个名字、走到一座虚拟岛上、再向另一座岛上的陌生人说声&amp;quot;嗨&amp;quot;的人。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;开厅记&lt;&#x2F;a&gt;里我写过一句话，当时觉得是个浪漫的设定：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;最离谱的是，用它的人本来就站在彼此身边。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;今天，这句话从设定变成了事实。屏幕上那五十多个分散在六座岛上的小人，在物理世界里，正坐在同一个房间里，抬头看着同一面墙上的同一片海。选岛是认领自己，跨岛是走向别人，满屏的彩虹弧是这个房间今天真正发生过的连接。&lt;&#x2F;p&gt;
+&lt;p&gt;六座岛，终于挤满了人。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;Loiter 系列&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;文章&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;2026-05-30&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;loiter-opening&quot;&gt;开厅记：240×135 像素的社交宇宙&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-05-31&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;loiter-building&quot;&gt;造厅记：30 小时 4500 行，一个人类和两个 AI&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-06-01&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;loiter-pitfalls&quot;&gt;踩坑记：Cardputer 生存指南&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-06-15&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;loiter-summoning&quot;&gt;招魂记：当大屏上的小人集体蒸发&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-06-17&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;loiter-islands&quot;&gt;造岛记：48 小时，六座彩虹岛&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2026-06-30&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;满岛记：六座岛，终于挤满了人&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Loiter 踩坑记：Cardputer 生存指南</title>
         <published>2026-06-01T00:00:00+00:00</published>
