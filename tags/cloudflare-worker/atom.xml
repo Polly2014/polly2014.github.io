@@ -5,8 +5,110 @@
     <link href="https://polly.wang/tags/cloudflare-worker/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-05-13T00:00:00+00:00</updated>
+    <updated>2026-07-14T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/cloudflare-worker/atom.xml</id>
+    <entry xml:lang="en">
+        <title>他没有拿走钥匙，却打开了门</title>
+        <published>2026-07-14T00:00:00+00:00</published>
+        <updated>2026-07-14T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/he-didnt-take-the-key/" type="text/html"/>
+        <id>https://polly.wang/he-didnt-take-the-key/</id>
+        
+        <content type="html">&lt;p&gt;晚上打开 CopilotX 的 Dashboard，我看到一串不属于我的调用。&lt;&#x2F;p&gt;
+&lt;p&gt;GPT、Gemini、Claude Haiku，还有几个我从没给博客配置过的模型。它们挤在 Recent Requests 里，成功的、失败的、枚举模型的，前后只隔几秒。&lt;&#x2F;p&gt;
+&lt;p&gt;我的博客聊天一直固定使用 Claude Sonnet。那些模型从哪儿来的？&lt;&#x2F;p&gt;
+&lt;p&gt;第一反应只有一个：&lt;strong&gt;API Key 泄露了。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这不是上一篇“钥匙丢了怎么换”的续集。那次讨论的是凭证本身；这一次，钥匙从头到尾都在原处，出问题的是拿着钥匙的那个代理人。&lt;&#x2F;p&gt;
+&lt;img src=&quot;dashboard-anomalous-requests.webp&quot; alt=&quot;CopilotX Dashboard 中出现的陌生模型调用&quot; style=&quot;display:block;width:86%;max-width:100%;height:auto;margin:1.5rem auto;border-radius:6px;&quot; &#x2F;&gt;
+&lt;h2 id=&quot;dashboard-zhong-yu-you-jiu-liao-wo-yi-ci&quot;&gt;Dashboard 终于又救了我一次&lt;&#x2F;h2&gt;
+&lt;p&gt;四月给 CopilotX 装上 &lt;a href=&quot;&#x2F;copilotx-dashboard-first-eyes&quot;&gt;Dashboard&lt;&#x2F;a&gt; 时，我只是想知道它每天转发多少请求、烧多少 token、哪些服务在用。那时写过一句：没有仪表盘，就像开了三个月的出租车，却不知道跑了多少公里。&lt;&#x2F;p&gt;
+&lt;p&gt;这次，仪表盘没有告诉我“跑了多远”。它告诉我：&lt;strong&gt;有人坐上了车。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;请求顺序告诉我两件事：对方先尝试直连 Dashboard、登录和 API 路径，却被 CopilotX 的认证挡住；随后流量转向 &lt;code&gt;chat.polly.wang&lt;&#x2F;code&gt;，来源显示为代理节点，Client 统一变成 &lt;code&gt;blog-chat&lt;&#x2F;code&gt;，模型枚举和试探调用也开始成功。&lt;&#x2F;p&gt;
+&lt;p&gt;如果 key 真被拿走，对方完全可以直接请求 &lt;code&gt;api.polly.wang&lt;&#x2F;code&gt;，没必要绕道博客聊天域名。&lt;&#x2F;p&gt;
+&lt;p&gt;所以问题不在 CopilotX。问题在中间那一层 Worker。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mei-na-yao-chi-ye-neng-rang-men-wei-kai-men&quot;&gt;没拿钥匙，也能让门卫开门&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;Polly-Chat-2.0&quot;&gt;Polly Chat 2.0&lt;&#x2F;a&gt; 上线时，我把 API Key 存进了 Cloudflare Worker 的加密环境变量。浏览器只请求 &lt;code&gt;chat.polly.wang&lt;&#x2F;code&gt;，Worker 在服务器侧补上 key，再转发给 CopilotX。&lt;&#x2F;p&gt;
+&lt;p&gt;这是正确的一半。&lt;&#x2F;p&gt;
+&lt;p&gt;Key 确实没有出现在 HTML、JavaScript 或网络响应里。外部调用者看不到它，也无法让 Worker 把它转发到自己的服务器。直到今天，仍然没有证据表明 key 的明文离开过 Cloudflare。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Worker 当时做了两件危险的事：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;只有请求带 &lt;code&gt;Origin&lt;&#x2F;code&gt; 时，才检查来源是否合法；&lt;&#x2F;li&gt;
+&lt;li&gt;只要路径以 &lt;code&gt;&#x2F;v1&#x2F;&lt;&#x2F;code&gt; 开头，就原样转发给 CopilotX，并自动注入管理员 key。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;浏览器通常会带 &lt;code&gt;Origin&lt;&#x2F;code&gt;，命令行工具默认可以不带。于是，一个没有 &lt;code&gt;Origin&lt;&#x2F;code&gt; 的请求会绕过来源检查；一个请求 &lt;code&gt;&#x2F;v1&#x2F;models&lt;&#x2F;code&gt; 或 &lt;code&gt;&#x2F;v1&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt; 的陌生人，也会被 Worker 当成博客前端，替他补上真正的钥匙。&lt;&#x2F;p&gt;
+&lt;p&gt;安全里有个词叫 &lt;strong&gt;confused deputy&lt;&#x2F;strong&gt;，中文常译作“困惑的代理人”。代理人本身拥有合法权限，却没有分清究竟在替谁办事。攻击者不必偷走它的钥匙，只要骗它代为使用。&lt;&#x2F;p&gt;
+&lt;p&gt;这正是眼前发生的事。&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;密钥没有泄露，不代表密钥的权力没有泄露。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;origin-bu-shi-men-suo&quot;&gt;Origin 不是门锁&lt;&#x2F;h2&gt;
+&lt;p&gt;最直觉的修法，是把 Origin 校验改严：没有 Origin 也拒绝。&lt;&#x2F;p&gt;
+&lt;p&gt;这当然应该做，但它不是完整答案。&lt;code&gt;Origin&lt;&#x2F;code&gt; 是浏览器自动附带的来源信号，不是不可伪造的身份证明。命令行调用者可以不发，也可以手动写成 &lt;code&gt;https:&#x2F;&#x2F;polly.wang&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;如果把全部希望压在 Origin 上，只是把“没带工牌就能进”修成了“自己打印一张工牌就能进”。&lt;&#x2F;p&gt;
+&lt;p&gt;所以这次没有继续把 Origin 包装成更复杂的门锁。修复选择了更直接的方向：删掉所有多余路由，让伪造出来的合法 Origin 也换不来额外能力。&lt;&#x2F;p&gt;
+&lt;p&gt;真正要回答的问题不是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这个请求看起来像不像从我的博客发出？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;而是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;即使它来自陌生人，我最多允许它做什么？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;答案因此从“再加一道门”变成了“收走多余的能力”。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-tong-yong-dai-li-shou-suo-cheng-yi-ge-chan-pin-duan-dian&quot;&gt;从通用代理，收缩成一个产品端点&lt;&#x2F;h2&gt;
+&lt;p&gt;CopilotX 仍然是通用 API。我的 Python 脚本、Agent 和其他应用可以继续直接调用不同模型、不同协议。这些能力没有必要因为博客 Worker 出事而一起被砍掉。&lt;&#x2F;p&gt;
+&lt;p&gt;需要收缩的只有 &lt;code&gt;chat.polly.wang&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;修复后的 Worker 只保留一个 AI 入口：&lt;code&gt;POST &#x2F;v1&#x2F;messages&lt;&#x2F;code&gt;。其他模型列表、Chat Completions、Responses 和未知 &lt;code&gt;&#x2F;v1&#x2F;*&lt;&#x2F;code&gt; 路径全部在边缘返回 404，根本到不了 CopilotX。&lt;&#x2F;p&gt;
+&lt;p&gt;即使有人伪造合法 Origin，他能得到的也只是一套被产品定义好的聊天能力：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;模型固定为 Claude Sonnet 4.6；&lt;&#x2F;li&gt;
+&lt;li&gt;输出预算固定，客户端传来的模型名和 token 数被忽略；&lt;&#x2F;li&gt;
+&lt;li&gt;请求由 Worker 重新构造，陌生字段、客户端 tools 和请求头不会透传；&lt;&#x2F;li&gt;
+&lt;li&gt;单条消息最多四张图片，请求体、文本量和消息数都有宽松但明确的上限；&lt;&#x2F;li&gt;
+&lt;li&gt;Agent 最多执行两轮工具调用，再完成一次最终回答；两轮足够覆盖“先搜索、再读文章、最后回答”的典型路径；&lt;&#x2F;li&gt;
+&lt;li&gt;聊天和 D1 写入使用两套独立限速，日志与 pageview 还有自己的体积边界。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这里最重要的不是某个数字，而是边界发生了变化：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;以前，Worker 是“带着管理员钥匙的通用代理”；现在，它只是“会完成博客聊天这一件事的产品端点”。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;an-quan-bu-neng-ba-zheng-chang-yong-hu-yi-qi-guan-zai-men-wai&quot;&gt;安全不能把正常用户一起关在门外&lt;&#x2F;h2&gt;
+&lt;p&gt;加固过程中，我反复问一个问题：普通访客会不会因此变得难用？&lt;&#x2F;p&gt;
+&lt;p&gt;答案应该由架构保证，而不是靠一句“理论上不会”。&lt;&#x2F;p&gt;
+&lt;p&gt;博客正文是静态站点。文章、图片、RSS、sitemap 和搜索引擎爬虫都不经过聊天 Worker，因此完全不受聊天限速影响。即使 Worker 故障，文章仍然照常打开。&lt;&#x2F;p&gt;
+&lt;p&gt;聊天入口限制为每个 IP 每分钟十条用户消息。一次用户消息内部即使触发了博客搜索，也只计一次入口请求。普通问答通常调用一次模型，需要搜索时通常两次，复杂的“先搜索、再读文章”最多三次。对正常对话足够，对自动化脚本却不再是无限放大的免费接口。&lt;&#x2F;p&gt;
+&lt;p&gt;pageview 和聊天日志使用另一套更宽松的写入限速。即使共享网络下偶尔超限，最坏也只是少记一条统计，不会挡住页面访问。&lt;&#x2F;p&gt;
+&lt;p&gt;这才是我要的安全：&lt;strong&gt;把危险能力关起来，而不是把读者关起来。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;review-hou-de-di-er-jie-duan-bu-qiang&quot;&gt;Review 后的第二阶段补强&lt;&#x2F;h2&gt;
+&lt;p&gt;第一版修复上线后，Codex 又做了一轮独立复核。结论很克制：原始的通用带密钥代理已经封住，可以作为第一阶段止血；但还不能把近似限速当成绝对安全边界。&lt;&#x2F;p&gt;
+&lt;p&gt;它指出了两个我差点留到“以后再说”的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;一是旧的通用转发代码虽然已经不可达，却还躺在文件里。未来某次重构只要误接一条路由，漏洞就可能原样复活。于是死代码被彻底删除，回归测试也明确禁止 &lt;code&gt;startsWith(&#x27;&#x2F;v1&#x2F;&#x27;)&lt;&#x2F;code&gt; 这类通用代理重新出现。&lt;&#x2F;p&gt;
+&lt;p&gt;二是聊天日志和 pageview 虽然不能调用模型，却仍然是公开写入 D1 的入口。只靠可伪造的 Origin，别人可以向数据库灌垃圾。于是它们获得了独立限速，以及 content、metadata、path 和请求体的硬上限。&lt;&#x2F;p&gt;
+&lt;p&gt;安全修复不能只修“这一次攻击用了哪条路”。还要问：&lt;strong&gt;同一个错误假设，在旁边还留下了哪些门？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhe-tang-ke-bu-zhi-shu-yu-api-key&quot;&gt;这堂课不只属于 API Key&lt;&#x2F;h2&gt;
+&lt;p&gt;很多安全检查都从“秘密有没有泄露”开始：代码库里有没有 key，日志里有没有 token，前端 bundle 里有没有密码。&lt;&#x2F;p&gt;
+&lt;p&gt;这些当然重要。但它们只检查了秘密的&lt;strong&gt;形状&lt;&#x2F;strong&gt;，没有检查秘密的&lt;strong&gt;权力&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;一个 key 可以从未出现在任何公开文件里，却仍然通过代理、Webhook、后端任务或内部工具被外部用户间接调用。一个服务也可以通过全部 secret scanning，却仍然是别人手里的遥控器。&lt;&#x2F;p&gt;
+&lt;p&gt;所以以后再审一个持有高权限凭证的服务，我会多问一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;一个不可信的外部请求，能让它替自己做什么？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这句话适用于 AI 网关，也适用于云存储签名、支付回调、内部管理 API，以及任何“服务端替客户端持有秘密”的系统。&lt;&#x2F;p&gt;
+&lt;p&gt;秘密留在服务器里，只是第一步。它的能力边界，也必须留在那里。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xie-zai-zui-hou&quot;&gt;写在最后&lt;&#x2F;h2&gt;
+&lt;p&gt;Dashboard 里的那些陌生请求还留在记录中。&lt;&#x2F;p&gt;
+&lt;p&gt;它们没有带走我的钥匙，却借门卫的手打开了门。好在仪表盘看见了，好在门后还有 CopilotX 的认证，也好在修复发生在真正的损失之前。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;&#x2F;copilotx-key-rotation&quot;&gt;上个月我写过&lt;&#x2F;a&gt;：一把钥匙的价值，在于丢了以后换得起。&lt;&#x2F;p&gt;
+&lt;p&gt;今天再补一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;真正需要审计的，不只是钥匙有没有丢，还有门卫愿意替谁开门。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这一次，钥匙还在。&lt;&#x2F;p&gt;
+&lt;p&gt;门卫终于认清了自己该替谁办事。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Polly Chat v3.5：让思考被看见</title>
         <published>2026-05-13T00:00:00+00:00</published>
