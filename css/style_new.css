@@ -1614,6 +1614,7 @@ blockquote p {
 @media (max-width: 768px) {
     .container {
         position: relative; /* 为侧边栏滑动提供定位上下文 */
+        height: 100dvh;
     }
 
     .sidebar {
@@ -1621,7 +1622,7 @@ blockquote p {
         top: 0;
         left: -50%; /* 初始状态隐藏在左侧 */
         width: 50%;
-        height: 100vh;
+        height: 100dvh;
         z-index: 1000;
         transition: left 0.3s ease-out;
         padding: 20px;
@@ -1745,7 +1746,13 @@ blockquote p {
     }
     
     .polly-chat.expanded .input-container {
-        margin-bottom: 24px;
+        margin-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .new-chat-btn .icon,
+    #send-button .icon {
+        width: 1em;
+        height: 1em;
     }
     
     #chat-box {
@@ -1754,7 +1761,7 @@ blockquote p {
         overflow-y: auto;
         margin-left: auto;
         margin-right: auto;
-        max-height: calc(100vh - 120px); /* 移动端自适应高度 */
+        max-height: calc(100dvh - 120px); /* 移动端自适应高度 */
     }
 
     #chat-box.expanded {
