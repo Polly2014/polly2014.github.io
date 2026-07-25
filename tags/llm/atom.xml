@@ -5,8 +5,112 @@
     <link href="https://polly.wang/tags/llm/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-04-26T00:00:00+00:00</updated>
+    <updated>2026-07-25T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/llm/atom.xml</id>
+    <entry xml:lang="en">
+        <title>从 Capability 到 Reliability：Agent 研究的下一个范式转移</title>
+        <published>2026-07-25T00:00:00+00:00</published>
+        <updated>2026-07-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/capability-to-reliability/" type="text/html"/>
+        <id>https://polly.wang/capability-to-reliability/</id>
+        
+        <content type="html">&lt;p&gt;当一个金融Agent在分析年报时，先从报表中提取了&amp;quot;营业收入7,768亿元&amp;quot;，然后在记忆压缩中&amp;quot;亿元&amp;quot;被截断，变成了&amp;quot;7,768&amp;quot;。接下来它用这个数字去计算同比增长率——7,768除以上年的6,023亿元——得到了129%的增长率。&lt;&#x2F;p&gt;
+&lt;p&gt;实际增长率是28.9%。但Agent仍然自信地输出了&amp;quot;同比增长129%&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;整个过程中，没有任何机制检测到这个跨步骤的corruption。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是一个假设的场景。在构建金融长文档Agent的过程中，我反复遇到这类问题：Agent有时答对，有时答错，而我无法区分&amp;quot;这次对了是因为推理正确&amp;quot;还是&amp;quot;碰巧中间步骤的错误相互抵消了&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;这让我开始思考一个根本性的问题：&lt;strong&gt;当前Agent研究的评价体系，是不是问错了问题？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;suo-you-ren-du-zai-wen-de-wen-ti-vs-ying-gai-wen-de-wen-ti&quot;&gt;所有人都在问的问题 vs 应该问的问题&lt;&#x2F;h2&gt;
+&lt;p&gt;2023-2024年的Agent研究——ReAct、Reflexion、AutoGPT、CrewAI——核心追问都是同一个：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;Agent能做什么？能调用更多工具吗？能处理更复杂的任务吗？能推理更长的链路吗？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这是 &lt;strong&gt;Capability-first&lt;&#x2F;strong&gt; 的范式。它产出了令人兴奋的demo，但也产出了一个尴尬的现实：在production环境中，没有人敢真正信任这些Agent的输出。&lt;&#x2F;p&gt;
+&lt;p&gt;因为我们问错了问题。真正的问题应该是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;Agent给出答案的过程，是否每一步都可验证、可追溯、可恢复？&amp;quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这就是 &lt;strong&gt;Reliability-first&lt;&#x2F;strong&gt; 的范式。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-lei-bi-cong-neng-pao-dao-ke-kao&quot;&gt;一个类比：从&amp;quot;能跑&amp;quot;到&amp;quot;可靠&amp;quot;&lt;&#x2F;h2&gt;
+&lt;p&gt;这个范式转移并非凭空发明——它在计算机科学史上反复发生：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;领域&lt;&#x2F;th&gt;&lt;th&gt;Capability时代&lt;&#x2F;th&gt;&lt;th&gt;Reliability时代&lt;&#x2F;th&gt;&lt;th&gt;转折点&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;软件工程&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;代码能跑&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;代码可测试、可审计&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;结构化编程 &#x2F; TDD&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;数据库&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;能存取数据&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;ACID事务保证&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;关系数据库理论&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;密码学&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;能加密&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;&amp;quot;可证明安全&amp;quot;&lt;&#x2F;td&gt;&lt;td&gt;形式化证明&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;AI Agent&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;&amp;quot;能答对&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;&amp;quot;过程可验证&amp;quot;&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;← 我们在这里&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;数据库领域的转变最具启发性。早期数据库只关心&amp;quot;能存能取&amp;quot;——直到人们意识到并发写入可能导致数据不一致。ACID（原子性、一致性、隔离性、持久性）不是让数据库&amp;quot;更强大&amp;quot;，而是让数据库&amp;quot;可信赖&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Agent领域需要自己的&amp;quot;ACID时刻&amp;quot;。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;agent-reliabilityde-si-ge-ceng-ci&quot;&gt;Agent Reliability的四个层次&lt;&#x2F;h2&gt;
+&lt;p&gt;我将Agent研究的可靠性问题分为四个递进层次：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;level-1-capability-agentneng-zuo-shi-yao&quot;&gt;Level 1: Capability — &amp;quot;Agent能做什么&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;em&gt;2023-2024，已充分研究&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;代表工作：ReAct、Toolformer、AutoGPT。核心突破是让LLM不只是生成文本，而是能调用工具、检索信息、分步推理。&lt;&#x2F;p&gt;
+&lt;p&gt;这个层次已趋于饱和。更多的工具集成、更长的上下文窗口带来的是diminishing returns。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;level-2-self-correction-agentzuo-de-dui-bu-dui&quot;&gt;Level 2: Self-Correction — &amp;quot;Agent做的对不对&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;em&gt;2024-2025，正在研究&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;代表工作：Self-Consistency、CoVe (Chain of Verification)、Reflexion。让Agent能够发现并修正自己的错误。&lt;&#x2F;p&gt;
+&lt;p&gt;但这里有一个根本性的循环问题：&lt;strong&gt;用同一个LLM验证自己的输出，本质上是circular reasoning&lt;&#x2F;strong&gt;。模型不会比自己更聪明。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;level-3-verifiable-execution-agentzuo-de-guo-cheng-ke-bu-ke-xin&quot;&gt;Level 3: Verifiable Execution — &amp;quot;Agent做的过程可不可信&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;em&gt;2025-2026，正在开创&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这是我站的位置。核心问题不是&amp;quot;答案对不对&amp;quot;，而是&amp;quot;从输入到输出的每一步，是否形成了一条不可篡改、可机械验证的执行链&amp;quot;。&lt;&#x2F;p&gt;
+&lt;p&gt;关键区别：Self-Correction依赖模型的判断力（可能出错）；Verifiable Execution依赖类型系统和密码学绑定（mechanical guarantee）。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;level-4-provable-reasoning-agentneng-zheng-ming-zi-ji-wei-shi-yao-zhe-yao-zuo&quot;&gt;Level 4: Provable Reasoning — &amp;quot;Agent能证明自己为什么这么做&amp;quot;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;em&gt;未来方向&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;最终形态：Agent不仅给出答案，还生成一份machine-checkable proof——证明答案是从证据经过合法推理步骤得出的。类似于程序验证中的&amp;quot;proof-carrying code&amp;quot;。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;typed-react-yi-ge-level-3de-xie-yi&quot;&gt;Typed ReAct：一个Level 3的协议&lt;&#x2F;h2&gt;
+&lt;p&gt;在实践中，我设计了一个叫做 &lt;strong&gt;Typed ReAct&lt;&#x2F;strong&gt; 的协议来解决Level 3的问题。&lt;&#x2F;p&gt;
+&lt;p&gt;传统ReAct是一个自由的循环：Thought → Action → Observation，模型自行决定何时停止。这很灵活，但也很脆弱——任何一步的corruption都可以无声地传播到最终输出。&lt;&#x2F;p&gt;
+&lt;p&gt;Typed ReAct的核心改变：&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;每个Action和Observation都有typed contract。&lt;&#x2F;strong&gt; 不是自由文本，而是结构化的、有schema约束的数据。这意味着非法的状态转换在类型层面就不可能发生——类似Rust的ownership system在编译时就排除了内存错误。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;状态完整性链。&lt;&#x2F;strong&gt; 从原始证据的hash，到记忆压缩后的protected signature，到决策指纹，到阶段receipt chain——每一层都绑定到前一层，形成不可篡改的执行轨迹。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Failure as first-class citizen。&lt;&#x2F;strong&gt; 不是&amp;quot;正常执行 + exception handling&amp;quot;，而是&amp;quot;每一步都假设会失败，每种失败都有typed分类和对应的minimal-cost recovery策略&amp;quot;。局部失败被隔离在失败的claim内部，不会传播到无关的claims。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;liu-lei-corruption-duo-bu-agentzhi-xing-zhong-de-zhen-shi-gu-zhang&quot;&gt;六类Corruption：多步Agent执行中的真实故障&lt;&#x2F;h2&gt;
+&lt;p&gt;在实践中，我系统性地识别了六类corruption pattern：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Evidence corruption&lt;&#x2F;strong&gt; — 记忆压缩丢失了关键信息（数字、单位、否定词、限定条件）&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Stale reference&lt;&#x2F;strong&gt; — 后续步骤引用了已被invalidate的早期结论&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Silent override&lt;&#x2F;strong&gt; — 验证步骤覆盖了已确认的判定，无审计痕迹&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Calculation contamination&lt;&#x2F;strong&gt; — 计算引用了provenance不明的数值&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Partial failure propagation&lt;&#x2F;strong&gt; — 一个局部失败扩散到不相关的其他判定&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Completion gate bypass&lt;&#x2F;strong&gt; — 状态未满足所有invariant时强行输出答案&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这些不是假设——每一类都在360个claim验证中被真实触发和检测过。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cost-benefit-reliabilityde-dai-jie&quot;&gt;Cost-Benefit: Reliability的代价&lt;&#x2F;h2&gt;
+&lt;p&gt;诚实地说：完整的Typed ReAct比简单的单次调用&lt;strong&gt;贵得多&lt;&#x2F;strong&gt;。在实验中，完整6阶段pipeline消耗约16M tokens&#x2F;100题，而单次调用的Fast Path只需1.1M tokens。&lt;&#x2F;p&gt;
+&lt;p&gt;但这不意味着Reliability没有价值——它意味着我们需要 &lt;strong&gt;Cost-Aware Selective Integrity&lt;&#x2F;strong&gt;：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;低风险操作&lt;&#x2F;strong&gt;（常规查询）：跳过完整验证，信任缓存结果&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;中等风险&lt;&#x2F;strong&gt;（多步推理）：验证provenance chain&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;高风险&lt;&#x2F;strong&gt;（金融决策、法律判断）：完整integrity chain + 独立验证&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;关键决策&lt;&#x2F;strong&gt;（医疗诊断）：形式化证明 + 人工审核&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这就是Reliability和Cost之间的 &lt;strong&gt;Pareto frontier&lt;&#x2F;strong&gt; ——不是&amp;quot;全都验证&amp;quot;或&amp;quot;全都不验证&amp;quot;，而是根据stakes动态选择验证深度。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;3-5nian-yan-jiu-zhan-wang&quot;&gt;3-5年研究展望&lt;&#x2F;h2&gt;
+&lt;p&gt;我认为Agent Reliability是一个至少持续5年的研究方向，以下是我看到的几条值得深入的路线：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-xiang-yi-typed-integrity-protocolde-xing-shi-hua&quot;&gt;方向一：Typed Integrity Protocol的形式化&lt;&#x2F;h3&gt;
+&lt;p&gt;将typed state protocol从工程实现提升为可证明的形式化性质。核心问题：在什么条件下，typed integrity chain能保证N步执行后的最终输出与原始证据保持一致性？&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-xiang-er-selective-integrityde-jue-ce-li-lun&quot;&gt;方向二：Selective Integrity的决策理论&lt;&#x2F;h3&gt;
+&lt;p&gt;何时需要full chain验证，何时可以跳过？这本质上是一个决策理论问题——在给定的风险分布和cost constraint下，什么是最优的验证策略？&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-xiang-san-kua-yu-reliability-benchmark&quot;&gt;方向三：跨域Reliability Benchmark&lt;&#x2F;h3&gt;
+&lt;p&gt;当前没有一个benchmark评估Agent的&amp;quot;过程可靠性&amp;quot;而非&amp;quot;答案正确性&amp;quot;。我们需要一个覆盖金融、法律、医疗等regulated domain的benchmark，评估维度包括corruption detection rate、recovery cost和integrity violation frequency。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-xiang-si-reliability-capability-paretofen-xi&quot;&gt;方向四：Reliability-Capability Pareto分析&lt;&#x2F;h3&gt;
+&lt;p&gt;大规模实证研究：在什么任务、什么风险级别下，Reliability投入产生正ROI？什么时候&amp;quot;答对就行&amp;quot;已经够好？&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fang-xiang-wu-self-certifying-agents&quot;&gt;方向五：Self-Certifying Agents&lt;&#x2F;h3&gt;
+&lt;p&gt;最终目标：Agent不仅生成答案，还生成一份可独立验证的&amp;quot;推理证书&amp;quot;——第三方可以无需重跑整个过程就验证输出的合法性。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bu-zhi-shi-ji-zhu-wen-ti&quot;&gt;不只是技术问题&lt;&#x2F;h2&gt;
+&lt;p&gt;Capability → Reliability的转移不只是一个技术研究方向——它反映了一个更深层的认知转变：&lt;&#x2F;p&gt;
+&lt;p&gt;当我们说&amp;quot;信任一个Agent&amp;quot;，我们到底在信任什么？&lt;&#x2F;p&gt;
+&lt;p&gt;如果信任的是&amp;quot;它大部分时候答对&amp;quot;——那是Capability问题，用更大的模型、更多的数据可以改善。&lt;&#x2F;p&gt;
+&lt;p&gt;如果信任的是&amp;quot;它的推理过程每一步都可追溯、可验证、出错时可恢复&amp;quot;——那是Reliability问题，需要的不是更强的模型，而是更好的协议。&lt;&#x2F;p&gt;
+&lt;p&gt;在金融审计、医疗诊断、法律判决这些场景中，后者才是deployment的真正门槛。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;也许几年后回看，2025-2026正是Agent研究从&amp;quot;它能做什么&amp;quot;转向&amp;quot;我们凭什么信它&amp;quot;的转折点。就像数据库从文件系统走向ACID，Agent正在从demo走向production——而production需要的不是更多的Capability，是可以被验证的Reliability。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>LoRA 工程化：peft + QLoRA 实战</title>
         <published>2026-04-26T00:00:00+00:00</published>
