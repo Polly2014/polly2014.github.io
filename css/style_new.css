@@ -217,7 +217,7 @@ table td {
     text-align: center;
     font-size: 1.5em;
     margin: 20px 0;
-    color: #333;
+    color: #2d3748;
 }
 
 
@@ -271,7 +271,7 @@ table td {
 }
 
 .nav .nav-links li a:hover {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
     text-decoration: none;
 }
 
@@ -284,7 +284,7 @@ table td {
 }
 
 .nav .nav-links li a:hover i {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 /* 社交链接部分 */
@@ -320,7 +320,7 @@ table td {
 
 .social .social-links li a:hover,
 .social .social-links li a:hover i {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 
@@ -450,7 +450,7 @@ table td {
 
 /* 使分类悬停时图标和文字颜色同步变化 */
 .post-category:hover i {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 .category-item {
@@ -470,7 +470,7 @@ table td {
     left: 0;
     width: 0;
     height: 1px;
-    background-color: rgb(61, 146, 201);
+    background-color: #2b6cb0;
     transition: width 0.3s ease;
 }
 
@@ -479,7 +479,7 @@ table td {
 }
 
 .category-item:hover {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
     text-decoration: none;
 }
 
@@ -512,7 +512,7 @@ table td {
     left: 0;
     width: 0;
     height: 1px;
-    background-color: rgb(61, 146, 201);
+    background-color: #2b6cb0;
     transition: width 0.3s ease;
 }
 
@@ -522,13 +522,13 @@ table td {
 
 /* 标签悬停效果 */
 .tag-item:hover {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
     text-decoration: none;
 }
 
 /* 标签父元素悬停时图标颜色同步变化 - 排除日期 */
 .post-meta-item:not(.post-date):hover i {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 /* 移动端适配 */
@@ -551,7 +551,7 @@ table td {
 
 /* Archive页面 
 .archive-page h1 {
-    color: #333;
+    color: #2d3748;
     font-size: 1.8em;
     text-align: left;
 }
@@ -574,7 +574,7 @@ table td {
 }
 
 .archive-page a {
-    color: #333;
+    color: #2d3748;
     text-decoration: none;
 }
 
@@ -601,7 +601,7 @@ table td {
 }
 
 .publication h3 {
-    color: #333; /* 修改标题颜色 */
+    color: #2d3748; /* 修改标题颜色 */
     margin-bottom: 5px; /* 减小标题和下一元素之间的间距 */
     font-weight: 200; /* 修改标题字体粗细 */
 }
@@ -623,7 +623,7 @@ table td {
 
 /* About Me 页面 */
 .about-me a {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 @media (max-width: 600px) {
@@ -699,8 +699,8 @@ table td {
 
 .chip:hover {
     background: #f0f7ff;
-    border-color: rgb(61, 146, 201);
-    color: rgb(61, 146, 201);
+    border-color: #2b6cb0;
+    color: #2b6cb0;
 }
 
 .chip:active {
@@ -728,7 +728,7 @@ table td {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 .lang-zh {
-    background: #e8e8e8;
+    background: #edf2f7;
     color: #999;
 }
 .lang-en {
@@ -769,7 +769,7 @@ table td {
 }
 
 .new-chat-btn:hover {
-    color: #333;
+    color: #2d3748;
 }
 
 .new-chat-btn i {
@@ -838,7 +838,7 @@ table td {
 
 .chat-header h2 {
     font-size: 2.2em;
-    color: #333;
+    color: #2d3748;
     text-align: center;
     margin-bottom: 0.5em;
     font-weight: 300;
@@ -856,7 +856,7 @@ table td {
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: rgb(61, 146, 201);
+    background: #2b6cb0;
     border-radius: 2px;
 }
 
@@ -946,7 +946,7 @@ table td {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #333;
+    background: #1a2332;
     color: #fff;
     border: 2px solid #fff;
     cursor: pointer;
@@ -1136,7 +1136,7 @@ table td {
     width: 11px;
     height: 11px;
     border: 1.5px solid rgba(61, 146, 201, 0.22);
-    border-top-color: rgb(61, 146, 201);
+    border-top-color: #2b6cb0;
     border-radius: 50%;
     animation: trace-spin 0.8s linear infinite;
     flex-shrink: 0;
@@ -1152,7 +1152,7 @@ table td {
     font-size: 0.72rem;
     font-weight: bold;
     flex-shrink: 0;
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 .trace-card.failed .trace-card-icon {
@@ -1214,7 +1214,7 @@ table td {
 }
 
 .trace-summary-icon {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
     font-weight: bold;
 }
 
@@ -1262,7 +1262,7 @@ table td {
 /* Polly 答案里的链接：用博客主蓝（覆盖默认浏览器蓝） */
 .chat-bubble.polly a,
 .chat-answer a {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
     text-decoration: none;
     border-bottom: 1px dashed rgba(61, 146, 201, 0.4);
     transition: border-color 0.15s ease, border-bottom-style 0.15s ease;
@@ -1273,12 +1273,12 @@ table td {
        否则 dashed border + underline 会同时显示成两条线 */
     text-decoration: none;
     border-bottom-style: solid;
-    border-bottom-color: rgb(61, 146, 201);
+    border-bottom-color: #2b6cb0;
 }
 /* 答案里加粗强调（Markdown **xxx**）也用博客蓝，跟博文风格一致 */
 .chat-bubble.polly strong,
 .chat-answer strong {
-    color: rgb(61, 146, 201);
+    color: #2b6cb0;
 }
 
 .chat-avatar {
@@ -1500,7 +1500,7 @@ table td {
 
 /* 引用样式调整 */
 blockquote {
-    border-left: 4px solid #333; /* 使用网站主题蓝色作为边框 */
+    border-left: 4px solid #1a2332; /* 使用网站主题蓝色作为边框 */
     padding: 10px 15px;
     margin: 20px 0;
     background-color: rgba(61, 146, 201, 0.05); /* 添加淡蓝色背景 */
@@ -1529,7 +1529,7 @@ blockquote p {
 }
 
 .chat-bubble table th {
-    background-color: #f2f2f2;
+    background-color: #edf2f7;
     font-weight: bold;
 }
 
@@ -1560,7 +1560,7 @@ blockquote p {
 
 /* 聊天气泡中的引用样式 */
 .chat-bubble blockquote {
-    border-left: 3px solid rgb(61, 146, 201); /* 稍窄的边框 */
+    border-left: 3px solid #2b6cb0; /* 稍窄的边框 */
     padding: 6px 10px;
     margin: 10px 0;
     background-color: rgba(61, 146, 201, 0.05);
@@ -1593,7 +1593,7 @@ blockquote p {
 /* 评论区标题 */
 #giscus-container h2 {
     font-size: 1.5em;
-    color: #333;
+    color: #2d3748;
     margin-bottom: 20px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -1609,7 +1609,7 @@ blockquote p {
     left: 0;
     width: 40px;
     height: 2px;
-    background: rgb(61, 146, 201); /* 使用网站主题蓝色 */
+    background: #2b6cb0; /* 使用网站主题蓝色 */
 }
 
 /* Giscus 框架样式 */
@@ -1634,7 +1634,7 @@ blockquote p {
 }
 
 .color-bg-primary {
-    background-color: #333;
+    background-color: #2d3748;
     color: #fff;
 }
 
