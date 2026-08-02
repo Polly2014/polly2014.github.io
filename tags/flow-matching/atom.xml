@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Flow Matching</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/flow-matching/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-08-02T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/flow-matching/atom.xml</id>
+    <entry xml:lang="en">
+        <title>CFG 局部收敛停止：让关键区域决定何时停</title>
+        <published>2026-08-02T00:00:00+00:00</published>
+        <updated>2026-08-02T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slides/cfg-local-convergence/" type="text/html"/>
+        <id>https://polly.wang/slides/cfg-local-convergence/</id>
+        
+        <content type="html">&lt;p&gt;这套课件从零解释扩散模型每一步在预测什么、CFG 为什么需要条件与无条件两次前向，以及停止无条件分支为什么不能只看整张图的平均收敛状态。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nei-rong-gai-yao&quot;&gt;内容概要&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Part 1 — 单步采样&lt;&#x2F;strong&gt;：从带噪 latent、速度预测到 scheduler 更新，理解 Qwen-Image-Edit 的 flow matching 采样过程&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 2 — CFG 原理&lt;&#x2F;strong&gt;：条件分支与无条件分支如何合成引导方向，以及双前向带来的计算成本&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 3 — 全局盲区&lt;&#x2F;strong&gt;：固定停止与全局平均判据为什么会让困难花纹过早失去 CFG&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 4 — 局部收敛&lt;&#x2F;strong&gt;：用逐 token 引导差值定位高引导区域，只在关键区域判断收敛，并通过暖机门和单调锁定稳定停止&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 5 — 实验证据&lt;&#x2F;strong&gt;：等算力质量、困难样本改善、热力图对比，以及结果能够支持和不能支持的结论&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Part 6 — 创新边界&lt;&#x2F;strong&gt;：与 Adaptive Guidance、mask-guided diffusion、S-CFG 等方法的区别，以及五分钟口述框架&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;yi-ju-hua-li-jie&quot;&gt;一句话理解&lt;&#x2F;h2&gt;
+&lt;p&gt;旧方法问“整张图平均完成了吗”，局部收敛方法问“最需要 CFG 的关键区域完成了吗”。&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

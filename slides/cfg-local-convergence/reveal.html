@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>CFG 局部收敛停止：专利原理自讲课</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --r-background-color: #0d1117;
+      --r-main-color: #e6edf3;
+      --r-heading-color: #58a6ff;
+      --r-link-color: #58a6ff;
+    }
+    .reveal { font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { color: #58a6ff; font-weight: 700; letter-spacing: 0; }
+    .reveal h1 { font-size: 2.05em; text-shadow: 0 0 20px rgba(88,166,255,0.28); }
+    .reveal h2 { font-size: 1.45em; }
+    .reveal h3 { font-size: 1.05em; color: #7ee787; }
+    .reveal p, .reveal li { line-height: 1.45; }
+    .reveal code { background: rgba(110,118,129,0.2); padding: 2px 6px; border-radius: 4px; font-family: "JetBrains Mono", "Fira Code", monospace; }
+    .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 8px; }
+    .reveal pre code { font-size: 0.68em; line-height: 1.45; }
+    .reveal table { border-collapse: collapse; margin: 0.5em auto; font-size: 0.67em; }
+    .reveal table th { background: #161b22; color: #58a6ff; padding: 8px 14px; border-bottom: 2px solid #30363d; }
+    .reveal table td { padding: 8px 14px; border-bottom: 1px solid #21262d; }
+    .reveal blockquote { background: rgba(88,166,255,0.08); border-left: 4px solid #58a6ff; padding: 12px 20px; font-style: normal; border-radius: 0 6px 6px 0; }
+    .columns { display: flex; gap: 34px; align-items: stretch; }
+    .columns > * { flex: 1; }
+    .accent { color: #f0883e; font-weight: 700; }
+    .green { color: #7ee787; }
+    .red { color: #f85149; }
+    .blue { color: #58a6ff; }
+    .dim { color: #8b949e; font-size: 0.78em; }
+    .big-number { font-size: 2.8em; font-weight: 900; color: #f0883e; line-height: 1; }
+    .panel { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 18px 22px; }
+    .panel h3 { margin-top: 0; }
+    .flow { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0.8em 0; }
+    .flow-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px; min-width: 135px; }
+    .arrow { color: #f0883e; font-size: 1.4em; font-weight: 700; }
+    .formula { font-size: 1.06em; margin: 0.55em 0; }
+    .image-frame { max-height: 430px; max-width: 100%; border: 1px solid #30363d; border-radius: 6px; }
+    .compact { font-size: 0.84em; }
+    .compact h2 { margin-bottom: 0.35em; }
+    .compact p { margin: 0.35em 0; }
+    .compact .panel { padding: 12px 16px; }
+    .compact .formula { margin: 0.3em 0; }
+    .dense { font-size: 0.72em; }
+    .dense h2 { margin-bottom: 0.25em; }
+    .dense p { margin: 0.25em 0; }
+    .dense .image-frame { max-height: 350px; }
+    .reveal .slide-number { font-size: 14px; color: #8b949e; }
+    @media (max-width: 767px) {
+      .columns { gap: 18px; }
+      .flow { gap: 6px; }
+      .flow-box { min-width: 110px; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%)">
+  <h1>CFG 局部收敛停止</h1>
+  <h3>从“每步两次前向”到“关键区域决定何时停”</h3>
+  <p class="dim" style="margin-top:1.5em;">目标：不背术语，也能独立讲清问题、公式、创新和证据</p>
+  <aside class="notes">开场只说目标：今天不是背权利要求，而是把整条因果链讲通。</aside>
+</section>
+
+<section>
+  <h2>先记住这一句话</h2>
+  <blockquote style="font-size:1.15em;margin-top:1.2em;">
+    旧方法问：<span class="red">整张图平均完成了吗？</span><br><br>
+    本方法问：<span class="green">最需要 CFG 的关键区域完成了吗？</span>
+  </blockquote>
+  <p class="fragment dim">这不是发明 CFG，而是发明一个更可靠的“CFG 何时可以关闭”的判据。</p>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+  <h2 class="green">Part 1</h2>
+  <h1>模型每一步<br>到底在做什么</h1>
+</section>
+
+<section>
+  <h2>扩散生成：从噪声一步步走向图片</h2>
+  <div class="flow" style="margin-top:1.3em;">
+    <div class="flow-box"><span class="dim">Step 0</span><br><strong>随机噪声</strong></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><span class="dim">Step 6</span><br><strong>人物轮廓</strong></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><span class="dim">Step 13</span><br><strong>服装结构</strong></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><span class="dim">Step 25</span><br><strong class="green">花纹细节</strong></div>
+  </div>
+  <p class="fragment">每一步，模型回答的不是“最终图片是什么”，而是：</p>
+  <blockquote class="fragment">当前 latent 下一小步应该朝哪个方向移动？</blockquote>
+</section>
+
+<section class="compact">
+  <h2>Qwen 更准确地预测“速度”</h2>
+  <p>经典 DDPM 常写成噪声预测 $\epsilon_\theta$；Qwen-Image-Edit 的 flow matching 更接近速度预测：</p>
+  <div class="formula">$$v_\theta(z_t,t,c)$$</div>
+  <div class="columns" style="margin-top:0.8em;">
+    <div class="panel fragment">
+      <h3>$z_t$</h3>
+      <p>当前带噪 latent</p>
+    </div>
+    <div class="panel fragment">
+      <h3>$t$</h3>
+      <p>当前采样时刻</p>
+    </div>
+    <div class="panel fragment">
+      <h3>$c$</h3>
+      <p>人物、服装、文字条件</p>
+    </div>
+  </div>
+  <p class="fragment dim">叫“噪声预测”还是“速度预测”不影响 CFG 结构：它们都输出本步的更新方向。</p>
+</section>
+
+<section>
+  <h2>Scheduler 把方向变成下一步</h2>
+  <div class="formula">$$z_{\sigma_{next}} = z_\sigma + (\sigma_{next}-\sigma) v$$</div>
+  <div class="flow">
+    <div class="flow-box">当前 $z_\sigma$</div>
+    <div class="arrow">+</div>
+    <div class="flow-box">步长</div>
+    <div class="arrow">×</div>
+    <div class="flow-box">模型方向 $v$</div>
+    <div class="arrow">→</div>
+    <div class="flow-box green">下一步 latent</div>
+  </div>
+  <p class="fragment">模型负责<span class="accent">指方向</span>，scheduler 负责<span class="blue">迈一步</span>。</p>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #1a2332 0%, #0d2137 100%)">
+  <h2 class="green">Part 2</h2>
+  <h1>CFG 为什么<br>每一步都要算两次</h1>
+</section>
+
+<section>
+  <h2>同一个 latent，问模型两个问题</h2>
+  <div class="columns" style="margin-top:0.8em;">
+    <div class="panel">
+      <h3>条件分支 · $v_c$</h3>
+      <p>“已知这个人和这件目标服装，应该往哪里走？”</p>
+      <div class="formula">$$v_c=f_\theta(z_t,t,c)$$</div>
+    </div>
+    <div class="panel fragment">
+      <h3>无条件分支 · $v_u$</h3>
+      <p>“不强调目标条件时，你本来会往哪里走？”</p>
+      <div class="formula">$$v_u=f_\theta(z_t,t,\varnothing)$$</div>
+    </div>
+  </div>
+  <p class="fragment red">代价：每个采样步需要两次约 200 亿参数模型的前向计算。</p>
+</section>
+
+<section class="compact">
+  <h2>CFG：放大“条件带来的改变”</h2>
+  <div class="formula" style="font-size:1.32em;">$$v_{cfg}=v_u+s(v_c-v_u)$$</div>
+  <div class="columns" style="margin-top:1em;">
+    <div class="panel fragment">
+      <h3>$v_c-v_u$</h3>
+      <p>因为加入了目标服装，去噪方向发生的变化</p>
+    </div>
+    <div class="panel fragment">
+      <h3>$s$</h3>
+      <p>把这项条件变化放大；当前设置约为 <span class="accent">3.0</span></p>
+    </div>
+  </div>
+  <blockquote class="fragment">CFG 是“条件纠偏器”：让模型更忠实地朝目标服装方向生成。</blockquote>
+</section>
+
+<section class="dense">
+  <h2>为什么要研究“何时停”</h2>
+  <div class="columns" style="align-items:center;margin-top:1em;">
+    <div>
+      <div class="big-number">50</div>
+      <p>25 步完整 CFG<br>约 50 次模型前向</p>
+    </div>
+    <div class="arrow">→</div>
+    <div class="panel">
+      <p>如果后半程可以安全关闭 $v_u$：</p>
+      <div class="formula">$$v_{final}=v_c$$</div>
+      <p class="green">剩余步骤仍继续，只是不再跑无条件分支。</p>
+    </div>
+  </div>
+  <p class="fragment dim">关键不是“能不能停”，而是“怎样知道关键细节已经安全到可以停”。</p>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #201923 0%, #2a1a20 100%)">
+  <h2 class="red">Part 3</h2>
+  <h1>全局平均值<br>为什么会骗人</h1>
+</section>
+
+<section>
+  <h2>固定停止：所有题目同一交卷时间</h2>
+  <div class="columns">
+    <div class="panel fragment">
+      <h3 class="green">纯色简单样本</h3>
+      <p>已经稳定却继续计算</p>
+      <p class="red">浪费算力</p>
+    </div>
+    <div class="panel fragment">
+      <h3 class="accent">格纹困难样本</h3>
+      <p>花纹未稳定就被强制停止</p>
+      <p class="red">细节崩坏</p>
+    </div>
+  </div>
+  <p class="fragment">固定时间表与输入内容无关，无法按难度分配计算。</p>
+</section>
+
+<section class="compact">
+  <h2>全局停止：90 个简单 token 掩盖 10 个难 token</h2>
+  <table style="font-size:0.78em;">
+    <thead><tr><th>区域</th><th>token 数</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr class="fragment"><td>背景</td><td>50</td><td class="green">已稳定</td></tr>
+      <tr class="fragment"><td>皮肤与头发</td><td>30</td><td class="green">已稳定</td></tr>
+      <tr class="fragment"><td>服装轮廓</td><td>10</td><td class="green">已稳定</td></tr>
+      <tr class="fragment"><td>服装花纹</td><td>10</td><td class="red">仍在强引导</td></tr>
+    </tbody>
+  </table>
+  <blockquote class="fragment">全图平均：“90% 都好了，可以停。”<br>真正重要的花纹：“等等，我还没完成。”</blockquote>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #13231d 0%, #10251f 100%)">
+  <h2 class="green">Part 4</h2>
+  <h1>让关键区域<br>自己决定停止时机</h1>
+</section>
+
+<section class="compact">
+  <h2>第一步：找到 CFG 正在“用力”的 token</h2>
+  <div class="formula" style="font-size:1.28em;">$$g_{t,i}=\lVert v_{c,t,i}-v_{u,t,i}\rVert_2$$</div>
+  <div class="columns">
+    <div class="panel fragment">
+      <h3 class="red">差值大</h3>
+      <p>有无条件时方向明显不同</p>
+      <p>CFG 仍然重要</p>
+    </div>
+    <div class="panel fragment">
+      <h3 class="green">差值小</h3>
+      <p>有无条件时方向已经接近</p>
+      <p>CFG 边际作用较弱</p>
+    </div>
+  </div>
+  <p class="fragment accent">按幅值排序，取前 15% 作为动态高引导区域。</p>
+</section>
+
+<section class="compact">
+  <h2>它不是服装分割 mask</h2>
+  <div class="columns">
+    <div class="panel">
+      <h3 class="red">不是</h3>
+      <ul>
+        <li>人工标注的服装区域</li>
+        <li>额外分割网络的输出</li>
+        <li>固定不变的空间位置</li>
+      </ul>
+    </div>
+    <div class="panel fragment">
+      <h3 class="green">而是</h3>
+      <ul>
+        <li>每一步动态产生</li>
+        <li>完全来自模型内部张量</li>
+        <li>VTON 中通常对应花纹与材质</li>
+      </ul>
+    </div>
+  </div>
+  <blockquote class="fragment">真正的上位概念是“高引导区域”，不是“衣服在哪里”。</blockquote>
+</section>
+
+<section class="compact">
+  <h2>第二步：只在高引导区域判断收敛</h2>
+  <div class="formula">$$S_t=\operatorname{TopK}_i(g_{t,i})$$</div>
+  <div class="formula">$$C_t=\frac{1}{|S_t|}\sum_{i\in S_t}\cos(v_{c,t,i},v_{u,t,i})$$</div>
+  <p class="fragment">如果连 CFG 作用最强的 token 上，两个方向也已经接近：</p>
+  <div class="formula fragment">$$C_t\ge \tau_{local}$$</div>
+  <p class="fragment green">才认为后续无条件分支可以安全关闭。</p>
+</section>
+
+<section>
+  <h2>第三步：暖机门，防止第 0 步假收敛</h2>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.8em;line-height:1.5;margin:1em 0;">
+    <span class="green">相似度高</span> ●╲<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╲__________╱ ● <span class="green">重新收敛</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="red">中段分歧低谷</span>
+  </div>
+  <p>起点的高相似只是“内容还没形成”，不是真正完成。</p>
+  <div class="formula fragment">$$\text{允许停止}=(t\ge gate)\land(C_t\ge\tau_{local})$$</div>
+  <p class="fragment dim">暖机门要求先经过中段分歧期，再判断后期的重新收敛。</p>
+</section>
+
+<section>
+  <h2>第四步：单调锁定，停止后不再开启</h2>
+  <pre><code class="python" data-trim data-line-numbers="1-3|4-5">
+if step >= gate and not stopped and local_cos >= tau_local:
+    stopped = True
+    stop_step = step
+if stopped:
+    velocity = velocity_cond  # 不再计算 uncond
+  </code></pre>
+  <div class="columns">
+    <div class="panel fragment"><h3>稳定</h3><p>不会在“停/开”之间振荡</p></div>
+    <div class="panel fragment"><h3>可预测</h3><p>停止后每一步只跑 cond</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>完整算法，一页讲完</h2>
+  <div class="flow" style="flex-wrap:wrap;">
+    <div class="flow-box">跑 $v_c,v_u$</div><div class="arrow">→</div>
+    <div class="flow-box">算逐 token 差值</div><div class="arrow">→</div>
+    <div class="flow-box">取 top 高引导区</div><div class="arrow">→</div>
+    <div class="flow-box">局部余弦</div><div class="arrow">→</div>
+    <div class="flow-box">gate 后达阈值</div><div class="arrow">→</div>
+    <div class="flow-box green">锁定并跳过 $v_u$</div>
+  </div>
+  <blockquote class="fragment">简单样本早停，困难花纹晚停，同一组超参数自动按输入分配算力。</blockquote>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+  <h2 class="green">Part 5</h2>
+  <h1>证据证明了什么<br>又没有证明什么</h1>
+</section>
+
+<section>
+  <h2>机理证据：全局值真的掩盖了局部</h2>
+  <div class="columns" style="align-items:center;">
+    <div>
+      <div class="big-number">0.97</div>
+      <p>全局平均余弦<br><span class="green">看起来已收敛</span></p>
+    </div>
+    <div style="font-size:1.8em;">vs</div>
+    <div>
+      <div class="big-number" style="color:#f85149;">0.83</div>
+      <p>高引导区域余弦<br><span class="red">实际仍有分歧</span></p>
+    </div>
+  </div>
+  <p class="fragment">20 个样本的中段步骤稳定存在约 <span class="accent">+0.12 至 +0.15</span> 差距。</p>
+</section>
+
+<section>
+  <h2>等算力结果：质量增益来自重新分配</h2>
+  <table>
+    <thead><tr><th>策略</th><th>平均跳过 uncond</th><th>LPIPS 均值</th><th>LPIPS 最大值</th></tr></thead>
+    <tbody>
+      <tr><td>全局判据</td><td>13.6</td><td>0.0086</td><td>0.0233</td></tr>
+      <tr class="fragment"><td class="green"><strong>局部判据</strong></td><td>12.7</td><td class="green"><strong>0.0071</strong></td><td class="green"><strong>0.0177</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="columns fragment">
+    <div><div class="big-number">16.9%</div><p>平均失真降低</p></div>
+    <div><div class="big-number">24%</div><p>最差失真降低</p></div>
+    <div><div class="big-number">~3×</div><p>困难灰格纹改善</p></div>
+  </div>
+</section>
+
+<section class="dense">
+  <h2>差异发生在真正困难的样本</h2>
+  <img class="image-frame" src="SHOWCASE_zoom_heatmap.png" alt="服装区域相对完整 CFG 基线的差异热力图">
+  <p class="dim">红色表示偏离完整 CFG 基线；局部判据在高频花纹区域更接近基线。</p>
+</section>
+
+<section class="compact">
+  <h2>必须主动讲出的边界</h2>
+  <div class="columns">
+    <div class="panel">
+      <h3 class="green">证据支持</h3>
+      <ul>
+        <li>等平均算力时质量更好</li>
+        <li>困难样本最差失真更低</li>
+        <li>无需外部分割 mask</li>
+        <li>自动按输入分配计算</li>
+      </ul>
+    </div>
+    <div class="panel fragment">
+      <h3 class="red">不要声称</h3>
+      <ul>
+        <li>同等平均质量下一定更快</li>
+        <li>top 15% 是精确服装分割</li>
+        <li>额外张量运算严格为零</li>
+        <li>先验技术在任何参数下都不可能达到</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #1a2332 0%, #0d2137 100%)">
+  <h2 class="green">Part 6</h2>
+  <h1>如何讲清<br>创新边界</h1>
+</section>
+
+<section>
+  <h2>它和相邻技术的本质区别</h2>
+  <table>
+    <thead><tr><th>方法</th><th>看什么</th><th>改变什么</th></tr></thead>
+    <tbody>
+      <tr><td>Fixed interval</td><td>固定步数</td><td>停止时刻</td></tr>
+      <tr><td>Adaptive Guidance</td><td>全部 token 平均收敛</td><td>停止时刻</td></tr>
+      <tr><td>Mask-guided</td><td>外部分割区域</td><td>区域引导方式</td></tr>
+      <tr><td>S-CFG / C2FG</td><td>区域或分数差</td><td>引导强度 $s$</td></tr>
+      <tr class="fragment"><td class="green"><strong>本方法</strong></td><td class="green">内部信号识别的高引导区</td><td class="green">辅助前向停止时刻</td></tr>
+    </tbody>
+  </table>
+  <p class="fragment accent">不主要回答“CFG 应该多强”，而是回答“什么时候可以彻底不算 uncond”。</p>
+</section>
+
+<section>
+  <h2>两层保护：具体实现 + 上位原理</h2>
+  <div class="columns">
+    <div class="panel">
+      <h3>VTON 具体层</h3>
+      <ul>
+        <li>$\lVert cond-uncond\rVert$ 定位</li>
+        <li>top 比例 token</li>
+        <li>局部余弦</li>
+        <li>暖机门 + 单调锁定</li>
+        <li>停止 CFG 无条件分支</li>
+      </ul>
+    </div>
+    <div class="panel fragment">
+      <h3>扩散模型通用层</h3>
+      <ul>
+        <li>任意内部引导影响信号</li>
+        <li>任意区域受限一致性度量</li>
+        <li>任意引导相关辅助计算</li>
+        <li>换脸、文字、Logo、商品编辑</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>五分钟口述骨架</h2>
+  <ol style="font-size:0.83em;">
+    <li class="fragment"><strong class="blue">代价</strong>：CFG 每步需要 cond/uncond 两次大模型前向。</li>
+    <li class="fragment"><strong class="red">缺陷</strong>：全局平均被背景/人体稀释，花纹未稳就误停。</li>
+    <li class="fragment"><strong class="accent">洞察</strong>：逐 token 的 $\lVert cond-uncond\rVert$ 表示 CFG 当前作用强度。</li>
+    <li class="fragment"><strong class="green">方案</strong>：只在动态高引导区判收敛，加 gate 与单调锁定。</li>
+    <li class="fragment"><strong class="blue">结果</strong>：等算力均值失真低 16.9%，最差低 24%。</li>
+    <li class="fragment"><strong class="accent">边界</strong>：主张等算力质量和困难样本可达性，不主张纯速度全面领先。</li>
+  </ol>
+</section>
+
+<section>
+  <h2>最后自测：能答出才算真的会</h2>
+  <ol style="font-size:0.78em;">
+    <li class="fragment">Qwen 每一步预测的是噪声还是速度？Scheduler 做什么？</li>
+    <li class="fragment">为什么 CFG 要在同一个 latent 上跑 cond 和 uncond？</li>
+    <li class="fragment">为什么全局余弦 0.97 仍可能误停？</li>
+    <li class="fragment">$\lVert cond-uncond\rVert$ 为什么能作为高引导信号？</li>
+    <li class="fragment">暖机门和单调锁定分别解决什么问题？</li>
+    <li class="fragment">为什么等平均算力仍能改善困难样本？</li>
+    <li class="fragment">本方法与 S-CFG 的根本区别是什么？</li>
+  </ol>
+</section>
+
+<section data-background-gradient="linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%)">
+  <h1>关键区域还没完成<br>就不应该被平均值宣布结束</h1>
+  <div class="formula" style="margin-top:1.2em;">$$\text{内部信号定位}\rightarrow\text{局部收敛}\rightarrow\text{停止辅助计算}$$</div>
+</section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/math/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script>
+  var isMobile = window.innerWidth < 768;
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    width: isMobile ? 960 : 1280,
+    height: 720,
+    margin: isMobile ? 0.04 : 0.08,
+    plugins: [RevealHighlight, RevealMath.KaTeX, RevealNotes]
+  });
+</script>
+</body>
+</html>
