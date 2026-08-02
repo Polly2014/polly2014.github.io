@@ -749,6 +749,7 @@ table td {
     align-items: center;
     width: 80%;
     position: relative;
+    padding-top: env(safe-area-inset-top, 0px);
 }
 
 .new-chat-btn {
@@ -1681,7 +1682,7 @@ blockquote p {
     /* 显示汉堡菜单图标 */
     .menu-toggle {
         position: fixed;
-        top: 15px;
+        top: calc(15px + env(safe-area-inset-top, 0px));
         left: 15px;
         z-index: 1001;
         width: 44px;
