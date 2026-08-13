@@ -5,8 +5,134 @@
     <link href="https://polly.wang/tags/tool-calling/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-02-13T00:00:00+00:00</updated>
+    <updated>2026-08-13T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/tool-calling/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Claude Code 遇上 GPT-5.6：一次跨协议桥接的完整优化之旅</title>
+        <published>2026-08-13T00:00:00+00:00</published>
+        <updated>2026-08-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-code-gpt-5-6-protocol-bridge/" type="text/html"/>
+        <id>https://polly.wang/claude-code-gpt-5-6-protocol-bridge/</id>
+        
+        <content type="html">&lt;p&gt;最近，公司的 GitHub Copilot 订阅取消了 Claude 系列模型。Claude Code 还在，但之前配置的 Claude 模型随之失效——客户端仍然能打开，背后的那颗大脑却已经不可用了。&lt;&#x2F;p&gt;
+&lt;p&gt;既然 Claude Code 本身支持通过自定义 API 接入其他模型，我便把它切到自己的 CopilotX，改用 &lt;code&gt;gpt-5.6-sol&lt;&#x2F;code&gt;。本以为只是换一个模型继续干活，配置完成后，我对它说了最简单的一句：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;hi&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;它回给我的不是问候，而是一记干脆的 400：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;API Error: 400 model &amp;quot;gpt-5.6-sol&amp;quot; is not accessible via the &#x2F;chat&#x2F;completions endpoint
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这句话其实已经把答案说了一半：&lt;strong&gt;新的模型存在，认证也成功了，只是走错了门。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;GPT-5.6 Sol 能用，但它只接受 Responses API；Claude Code 发出的却是 Anthropic Messages 请求。夹在两者中间的 CopilotX，仍然把所有 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; 请求翻译到 &lt;code&gt;&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt;。于是一个看起来像模型权限的问题，真正的根因却藏在协议边界里。&lt;&#x2F;p&gt;
+&lt;p&gt;GitHub Copilot 模型目录的一次变化，迫使我把 Claude Code 切到 GPT；而这次被动换模，又撞开了 CopilotX 一直隐藏着的协议裂缝。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇记录 CopilotX v2.8 的诞生。它不是一次简单的 endpoint 替换，而是一次关于“代理层到底应该替谁做决定”的完整优化。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-fan-ying-shi-bu-shi-pei-zhi-xie-cuo-liao&quot;&gt;第一反应：是不是配置写错了？&lt;&#x2F;h2&gt;
+&lt;p&gt;因为刚刚从 Claude 换到 GPT，看到 400 时，我最先怀疑的当然是新配置。我检查了项目下的 &lt;code&gt;.claude&#x2F;settings.json&lt;&#x2F;code&gt;：Claude Code 的 base URL、认证变量、默认模型都指向了 CopilotX，看起来没有异常。更关键的是，请求已经抵达上游，并且上游准确识别出了 &lt;code&gt;gpt-5.6-sol&lt;&#x2F;code&gt;——如果地址或密钥错了，通常不会得到这么具体的 endpoint 错误。&lt;&#x2F;p&gt;
+&lt;p&gt;于是归因很快收敛到 CopilotX 内部：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;这一跳&lt;&#x2F;th&gt;&lt;th&gt;实际协议&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Claude Code → CopilotX&lt;&#x2F;td&gt;&lt;td&gt;Anthropic &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;CopilotX 内部转换&lt;&#x2F;td&gt;&lt;td&gt;Anthropic → OpenAI Chat&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;CopilotX → GitHub Copilot&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;GPT-5.6 Sol 真正支持的入口&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;&#x2F;responses&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;旧设计在 Claude、Gemini 和过去的 GPT 模型上一直工作，所以它显得非常合理：既然 Claude Code 用 Anthropic 格式进来，那就统一转成 CopilotX 已经成熟的 Chat 格式出去。&lt;&#x2F;p&gt;
+&lt;p&gt;但 GPT-5.6 出现之后，这个隐含前提失效了。&lt;strong&gt;统一的客户端入口，不再意味着统一的上游协议。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yi-ge-kan-si-zhi-jie-qi-shi-guo-tou-de-fang-an&quot;&gt;一个看似直接、其实过头的方案&lt;&#x2F;h2&gt;
+&lt;p&gt;最直觉的修法是：既然 GPT-5.6 只支持 Responses，那就让 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; 从此全部转去 &lt;code&gt;&#x2F;responses&lt;&#x2F;code&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这时问题反过来了：如果把所有 Anthropic 请求都强行切到 Responses，GPT-5.6 是好了，但只支持 &lt;code&gt;&#x2F;chat&#x2F;completions&lt;&#x2F;code&gt; 的模型怎么办？Gemini 等已经稳定工作的模型，可能会因为这次“修复”集体回归。&lt;&#x2F;p&gt;
+&lt;p&gt;从一个写死的 Chat，换成一个写死的 Responses，本质上没有进步。只是把撞错的门换了一扇。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zhen-zheng-de-da-an-rang-mo-xing-neng-li-jue-ding-chuan-shu-xie-yi&quot;&gt;真正的答案：让模型能力决定传输协议&lt;&#x2F;h2&gt;
+&lt;p&gt;最终方案保留了 Claude Code 看到的公共接口：它仍然只需要调用 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt;。变化发生在 CopilotX 内部——每次请求推理前，先读取 GitHub Copilot 实时模型目录里的 &lt;code&gt;supported_endpoints&lt;&#x2F;code&gt;，再选择上游传输。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;if model supports Chat:
+&lt;&#x2F;span&gt;&lt;span&gt;    use the existing Chat bridge
+&lt;&#x2F;span&gt;&lt;span&gt;elif model supports Responses:
+&lt;&#x2F;span&gt;&lt;span&gt;    use the new Responses bridge
+&lt;&#x2F;span&gt;&lt;span&gt;else:
+&lt;&#x2F;span&gt;&lt;span&gt;    reject before inference
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;完整规则是：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模型能力&lt;&#x2F;th&gt;&lt;th&gt;CopilotX 的选择&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;只支持 Chat Completions&lt;&#x2F;td&gt;&lt;td&gt;继续走原有 Chat 路径&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;只支持 Responses&lt;&#x2F;td&gt;&lt;td&gt;走新的 Anthropic ↔ Responses 桥&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;两者都支持&lt;&#x2F;td&gt;&lt;td&gt;第一阶段优先 Chat，减少回归面&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;模型缺失或能力声明异常&lt;&#x2F;td&gt;&lt;td&gt;推理前明确报错&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;还有一个刻意没有采用的策略：&lt;strong&gt;先试 Chat，失败了再重试 Responses。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;这种“撞门式路由”看起来省事，实际上会制造更多不确定性。非流式请求可能重复计费，工具调用可能执行两次；流式响应一旦已经向客户端发出第一个字节，就更不可能安全换轨。既然模型目录已经给出了能力，就应该在请求发出前做一次确定的选择，而不是拿生产请求当探针。&lt;&#x2F;p&gt;
+&lt;p&gt;这是这次优化里最关键的架构转折：&lt;strong&gt;协议不是客户端的永久属性，也不该靠模型名字猜；它是模型在当前目录中声明的能力。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;lu-you-zhi-zhan-yi-xiao-ban-zhen-zheng-nan-de-shi-da-qiao&quot;&gt;路由只占一小半，真正难的是搭桥&lt;&#x2F;h2&gt;
+&lt;p&gt;决定“走 Responses”只需要很少的代码。让 Claude Code 在桥的另一端仍然感觉自己面对的是一个完整的 Anthropic 服务，才是工作量最大的部分。&lt;&#x2F;p&gt;
+&lt;p&gt;一轮 Agent 对话远不止输入一句话、输出一段文本。桥接层需要同时处理：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;system 指令、文本和图片；&lt;&#x2F;li&gt;
+&lt;li&gt;多轮完整历史；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;tool_use&lt;&#x2F;code&gt; 与 &lt;code&gt;tool_result&lt;&#x2F;code&gt;；&lt;&#x2F;li&gt;
+&lt;li&gt;非流式结果和流式 SSE 事件；&lt;&#x2F;li&gt;
+&lt;li&gt;token usage、停止原因、拒绝与错误；&lt;&#x2F;li&gt;
+&lt;li&gt;reasoning 摘要及其不可见的来源信息。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;工具调用尤其不能只做“字段名翻译”。Anthropic 用 content block 表达工具请求和结果，Responses 则使用 function call 与 function call output item。桥接时必须保持 call ID 不变，否则下一轮的工具结果就找不到上一轮的问题，Agent 会在最关键的一步断链。&lt;&#x2F;p&gt;
+&lt;p&gt;流式更像是在做一个小型状态机。Responses 发来的是“某个 output item 出现了”“文本增加了一段”“函数参数增加了一段”“响应完成了”；Claude Code 等待的却是 Anthropic 的 &lt;code&gt;message_start&lt;&#x2F;code&gt;、&lt;code&gt;content_block_*&lt;&#x2F;code&gt;、&lt;code&gt;message_delta&lt;&#x2F;code&gt; 和 &lt;code&gt;message_stop&lt;&#x2F;code&gt;。CopilotX 必须按正确顺序开关每个内容块，而且成功时只能发出一次终止序列。上游如果意外断流，也不能伪装成正常结束。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-huan-yao-bao-liu-reasoning-de-shen-fen-zheng&quot;&gt;为什么还要保留 reasoning 的“身份证”&lt;&#x2F;h2&gt;
+&lt;p&gt;这次最容易被忽略的细节，是 reasoning provenance。&lt;&#x2F;p&gt;
+&lt;p&gt;Responses API 的 reasoning item 不只有一段可见摘要，它还有成对出现的 item ID 与 encrypted content。Claude Code 下一轮会把之前的 thinking block 随完整历史送回来；如果桥接层只保留摘要、丢掉这对来源信息，上游就无法验证这段 reasoning 是否真的是自己上一轮产生的。&lt;&#x2F;p&gt;
+&lt;p&gt;CopilotX 因此把 &lt;strong&gt;reasoning item ID + encrypted content&lt;&#x2F;strong&gt; 一起封装进 Anthropic thinking block 的 signature。下一轮请求回来时，再把二者原样还原成 Responses reasoning item。&lt;&#x2F;p&gt;
+&lt;p&gt;这里没有使用 &lt;code&gt;previous_response_id&lt;&#x2F;code&gt;。Claude Code 本来就会携带完整历史，CopilotX 继续保持无状态：任何一台实例拿到完整请求，都能独立完成转换，不需要记住上一轮落在哪个进程，也不会把代理层变成另一个会话数据库。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;shun-shou-jiu-chu-de-gpt-5-4-xiao-keng&quot;&gt;顺手揪出的 GPT-5.4 小坑&lt;&#x2F;h2&gt;
+&lt;p&gt;能力路由写好后，双端点模型 GPT-5.4 暴露了另一个兼容细节。&lt;&#x2F;p&gt;
+&lt;p&gt;它既支持 Chat，也支持 Responses，按照第一阶段规则会优先走 Chat。但新一代 GPT 的 Chat 请求不接受传统的 &lt;code&gt;max_tokens&lt;&#x2F;code&gt;，而是要求 &lt;code&gt;max_completion_tokens&lt;&#x2F;code&gt;。Claude Code 传进来的仍然是 Anthropic 的 &lt;code&gt;max_tokens&lt;&#x2F;code&gt;，所以 Chat 转译器还需要对 GPT-5.4 家族做一次字段归一化。&lt;&#x2F;p&gt;
+&lt;p&gt;这个 bug 很小，却再次说明：&lt;strong&gt;选对协议只是第一层，协议内部仍然存在模型代际差异。&lt;&#x2F;strong&gt; 一个成熟代理不能只负责把 URL 拼对，还要把这些差异限制在明确、可测试的兼容层里。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cong-57-xiang-ce-shi-dao-zhen-shi-claude-code&quot;&gt;从 57 项测试到真实 Claude Code&lt;&#x2F;h2&gt;
+&lt;p&gt;这种改动最怕“curl 能说话，Agent 一动手就坏”。所以验收没有停在单次文本响应。&lt;&#x2F;p&gt;
+&lt;p&gt;本地 57 项离线测试覆盖了三种模型能力、请求与响应转换、流式事件顺序、工具参数增量、reasoning 往返、异常终止和 GPT-5.4 字段兼容。随后，同一套版本被部署到 Azure VM，依次通过 staging、生产机 localhost 和公网域名三层验证。&lt;&#x2F;p&gt;
+&lt;p&gt;生产矩阵包括：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;GPT-5.6 Responses 非流式与流式；&lt;&#x2F;li&gt;
+&lt;li&gt;工具调用 → 工具结果 → 最终回答的完整往返；&lt;&#x2F;li&gt;
+&lt;li&gt;流式工具参数拼接；&lt;&#x2F;li&gt;
+&lt;li&gt;Gemini Chat-only 回归；&lt;&#x2F;li&gt;
+&lt;li&gt;GPT-5.4 双端点兼容；&lt;&#x2F;li&gt;
+&lt;li&gt;真实 Claude Code v2.1.195 端到端调用。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;最后，我没有让 Claude Code 只回答一句普通文本，而是让它分别完成基础对话和真实工具调用。终端里出现了两句验收信号：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;CLAUDE-CODE-BRIDGE-OK&lt;&#x2F;code&gt;
+&lt;code&gt;CLAUDE-TOOL-BRIDGE-OK&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;到这里，CopilotX v2.8.0 才算真正上线。服务健康检查返回 200，版本正确，进程保持 active，当前进程日志没有新增错误。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;copilotx-v2-8-zhen-zheng-sheng-ji-liao-shi-yao&quot;&gt;CopilotX v2.8 真正升级了什么&lt;&#x2F;h2&gt;
+&lt;p&gt;表面上，这次增加了大约两千行实现与测试，新增一条 Anthropic ↔ Responses 桥，顺便修了 GPT-5.4 的 token 字段。&lt;&#x2F;p&gt;
+&lt;p&gt;但我觉得真正值得记下来的，不是代码量，也不是“终于用上 GPT-5.6”。而是 CopilotX 的职责发生了一次变化：&lt;&#x2F;p&gt;
+&lt;p&gt;过去，它认为自己的任务是&lt;strong&gt;把一种请求格式翻译成另一种固定格式&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;现在，它开始理解：自己面对的是一个持续变化的模型目录。相同的公共接口背后，不同模型可能要求不同协议；新模型也不该再靠散落的 &lt;code&gt;if model == ...&lt;&#x2F;code&gt; 一个个补洞。代理层应该读取能力、提前决策、选择一条确定的路径，然后忠实地把语义带到桥的另一端。&lt;&#x2F;p&gt;
+&lt;p&gt;所以最终方案从来不是“让 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; 全部转走 Responses API”。&lt;&#x2F;p&gt;
+&lt;p&gt;而是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;让 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt; 保持稳定，让上游协议服从模型能力。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;shou-shu&quot;&gt;收束&lt;&#x2F;h2&gt;
+&lt;p&gt;故事开始时，公司的 GitHub Copilot 订阅取消了 Claude 系列模型。我只是想给仍然顺手的 Claude Code 换一颗 GPT-5.6 大脑，让工作继续下去。&lt;&#x2F;p&gt;
+&lt;p&gt;那句问候没有出现，反而撞出了一条藏在 CopilotX 深处的协议裂缝。顺着它往下挖，我经历了“配置是不是错了”“要不要全部切 Responses”“会不会把 Chat 模型弄坏”，最后才抵达那个更稳的答案：不要替所有模型选同一扇门，让每个模型公开声明自己能走哪一扇。&lt;&#x2F;p&gt;
+&lt;p&gt;现在，Claude Code 依然只认识熟悉的 &lt;code&gt;&#x2F;v1&#x2F;messages&lt;&#x2F;code&gt;。Chat-only 模型继续走老路，Responses-only 的 GPT-5.6 走上新桥，双端点模型则保留稳定优先级。&lt;&#x2F;p&gt;
+&lt;p&gt;至于换模后的第一句 &lt;code&gt;hi&lt;&#x2F;code&gt;——它当然也终于有了回答。&lt;&#x2F;p&gt;
+&lt;p&gt;只不过为了等到它，CopilotX 先学会了看路。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;CopilotX 版本线：&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;日期&lt;&#x2F;th&gt;&lt;th&gt;版本&lt;&#x2F;th&gt;&lt;th&gt;博文&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;9&lt;&#x2F;td&gt;&lt;td&gt;v1.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-turn-copilot-into-local-api&quot;&gt;把 Copilot 变成本地 API&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;9&lt;&#x2F;td&gt;&lt;td&gt;v2.0&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v2-remote-deployment&quot;&gt;从本地工具到远程服务&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;2&#x2F;13&lt;&#x2F;td&gt;&lt;td&gt;v2.3&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-v23-tools-support-journey&quot;&gt;让 OpenClaw 终于能动手了&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;4&#x2F;6&lt;&#x2F;td&gt;&lt;td&gt;v2.4&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-dashboard-first-eyes&quot;&gt;盲飞三个月后，它终于睁开了眼&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;6&#x2F;5&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;codex-meets-copilotx&quot;&gt;让 Codex 用上自家代理&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;6&#x2F;12&lt;&#x2F;td&gt;&lt;td&gt;v2.7&lt;&#x2F;td&gt;&lt;td&gt;&lt;a href=&quot;&#x2F;copilotx-key-rotation&quot;&gt;换锁记：当我把钥匙哈希之后&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;8&#x2F;13&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;v2.8&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;strong&gt;Claude Code 遇上 GPT-5.6&lt;&#x2F;strong&gt; ← 本文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>🔧 CopilotX v2.3: 让 OpenClaw 终于能动手了</title>
         <published>2026-02-13T00:00:00+00:00</published>

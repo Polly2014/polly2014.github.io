@@ -1516,6 +1516,20 @@ blockquote p {
     line-height: 1.6;
 }
 
+/* 博文正文引用：覆盖正文段落的 1.5em 下边距，保持上下留白一致 */
+.blog-post .content blockquote {
+    padding: 0.65em 1em;
+    margin: 1em 0;
+}
+
+.blog-post .content blockquote > :first-child {
+    margin-top: 0;
+}
+
+.blog-post .content blockquote > :last-child {
+    margin-bottom: 0;
+}
+
 /* 表格样式 */
 .chat-bubble table {
     border-collapse: collapse;
