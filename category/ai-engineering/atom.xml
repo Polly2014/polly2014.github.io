@@ -5,8 +5,239 @@
     <link href="https://polly.wang/category/ai-engineering/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-25T00:00:00+00:00</updated>
+    <updated>2026-08-15T00:00:00+00:00</updated>
     <id>https://polly.wang/category/ai-engineering/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Loop &amp; Graph Engineering 浅析</title>
+        <published>2026-08-15T00:00:00+00:00</published>
+        <updated>2026-08-15T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/loop-graph-engineering/" type="text/html"/>
+        <id>https://polly.wang/loop-graph-engineering/</id>
+        
+        <content type="html">&lt;p&gt;最近整理 Claude Code 的新能力时，我反复遇到两个词：&lt;strong&gt;Loop Engineering&lt;&#x2F;strong&gt; 和 &lt;strong&gt;Graph Engineering&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;第一次看到它们，很容易把它们归入新一轮 Agent 黑话。Prompt Engineering 还没讲完，Context Engineering 刚刚流行，又来了 Loop、Graph、Harness、Eval——仿佛只要不断给 Engineering 前面换一个名词，就能证明 AI 又进入了一个新时代。&lt;&#x2F;p&gt;
+&lt;p&gt;但把术语拆开后，我意识到它们描述的并不是新魔法，而是两个非常传统的工程问题：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个系统做错以后，怎样利用反馈逐步改对？&lt;&#x2F;li&gt;
+&lt;li&gt;一个复杂任务被拆开以后，多个执行单元怎样按照依赖关系协作？&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;前者是 &lt;strong&gt;Loop&lt;&#x2F;strong&gt;，后者是 &lt;strong&gt;Graph&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;我曾在&lt;a href=&quot;&#x2F;ai-fullstack-dev-methodology-landscape&quot;&gt;《从 Vibe Coding 到 BMAD》&lt;&#x2F;a&gt;里写过：AI 编程工具正在趋同，真正拉开差距的是方法论。当 Claude Code 已经能够读写代码、调用工具、管理记忆、启动子 Agent，新的瓶颈确实不再是“怎样让模型写一段代码”，而是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;怎样让错误在闭环中被淘汰，让正确的工作在图中被组织。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;cong-prompt-dao-context-zai-dao-loop-yu-graph&quot;&gt;从 Prompt 到 Context，再到 Loop 与 Graph&lt;&#x2F;h2&gt;
+&lt;p&gt;这四个概念解决的是四个不同层次的问题。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;方法&lt;&#x2F;th&gt;&lt;th&gt;关注的问题&lt;&#x2F;th&gt;&lt;th&gt;典型产物&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Prompt Engineering&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;这一轮怎样问，模型才容易答对？&lt;&#x2F;td&gt;&lt;td&gt;提示词、示例、输出格式&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Context Engineering&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;Agent 开始工作前，已经知道什么？&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;&#x2F;code&gt;、Memory、检索结果、工具说明&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Loop Engineering&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;第一次没做对，怎样根据反馈逐步收敛？&lt;&#x2F;td&gt;&lt;td&gt;评价器、重试策略、退出条件、人工闸门&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;strong&gt;Graph Engineering&lt;&#x2F;strong&gt;&lt;&#x2F;td&gt;&lt;td&gt;多个任务怎样拆分、并行、等待和汇合？&lt;&#x2F;td&gt;&lt;td&gt;节点、依赖边、分支、屏障、工作流&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Prompt 优化一次生成，Context 优化一次决策的输入，Loop 优化多轮行为的收敛，Graph 优化多个行为之间的组织。&lt;&#x2F;p&gt;
+&lt;p&gt;它们不是互相替代的关系。没有 Prompt，节点不知道要做什么；没有 Context，节点每次都从失忆开始；没有 Loop，错误得不到纠正；没有 Graph，复杂任务只能串行堆在一个对话里。&lt;&#x2F;p&gt;
+&lt;p&gt;如果把 AI Agent 看成一个新员工：Prompt 是当前任务说明，Context 是入职手册和项目资料，Loop 是绩效反馈与返工机制，Graph 则是整个团队的组织结构。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;loop-engineering-bu-shi-jian-dan-di-zai-pao-yi-ci&quot;&gt;Loop Engineering：不是简单地“再跑一次”&lt;&#x2F;h2&gt;
+&lt;p&gt;一个真正的闭环至少包含五个部分：状态、行动、观察、评价和决策。&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;State → Action → Observation → Evaluation → Decision
+&lt;&#x2F;span&gt;&lt;span&gt;  ↑                                         │
+&lt;&#x2F;span&gt;&lt;span&gt;  └──────────── revise &#x2F; retry ─────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                              │
+&lt;&#x2F;span&gt;&lt;span&gt;                              └── pass &#x2F; stop
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;以修复一个 API Bug 为例：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;State&lt;&#x2F;strong&gt;：当前代码、失败测试、已尝试过的方案&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Action&lt;&#x2F;strong&gt;：修改实现、增加日志、运行命令&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Observation&lt;&#x2F;strong&gt;：测试输出、HTTP 响应、浏览器行为&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Evaluation&lt;&#x2F;strong&gt;：是否满足验收条件，是否引入回归&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Decision&lt;&#x2F;strong&gt;：通过、继续修正、换一种策略，或者停止并请求人工输入&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这里最容易被忽略的是最后两个环节。&lt;&#x2F;p&gt;
+&lt;p&gt;很多所谓“自动修复循环”只有行动和观察：Agent 改一次，测试失败；再改一次，测试仍然失败；然后继续修改。它确实在循环，却没有收敛。因为系统没有定义什么证据足以改变判断，也没有定义何时应该停止。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;重复不是闭环。带有评价器和退出条件的重复，才是闭环。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yi-ge-zui-xiao-dan-wan-zheng-de-bian-ma-bi-huan&quot;&gt;一个最小但完整的编码闭环&lt;&#x2F;h3&gt;
+&lt;p&gt;在 Claude Code 中，不需要先搭建框架。一个写清楚边界的任务提示就能形成最小闭环：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Implement this change with a bounded verification loop:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;1. Make the smallest viable change.
+&lt;&#x2F;span&gt;&lt;span&gt;2. Run the most targeted relevant test.
+&lt;&#x2F;span&gt;&lt;span&gt;3. If it fails, classify the root cause before editing again.
+&lt;&#x2F;span&gt;&lt;span&gt;4. After targeted tests pass, run lint and the broader test suite.
+&lt;&#x2F;span&gt;&lt;span&gt;5. Ask an independent verifier to try to break the implementation.
+&lt;&#x2F;span&gt;&lt;span&gt;6. Repeat for at most five implementation rounds.
+&lt;&#x2F;span&gt;&lt;span&gt;7. Stop early if the same failure appears twice without new evidence.
+&lt;&#x2F;span&gt;&lt;span&gt;8. Do not claim completion unless the verification evidence passes.
+&lt;&#x2F;span&gt;&lt;span&gt;9. If blocked, report the exact command and output.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这段提示词真正重要的不是“最多五轮”，而是把不同失败转换成了不同决策：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;测试失败，不是立即重写，而是先分类原因；&lt;&#x2F;li&gt;
+&lt;li&gt;同一失败重复出现，说明当前策略没有产生新信息；&lt;&#x2F;li&gt;
+&lt;li&gt;实现者的测试通过，还要接受独立验证；&lt;&#x2F;li&gt;
+&lt;li&gt;没有证据时，不能用“看起来没问题”代替完成。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;它把 Agent 从一个连续生成器，变成了一个有停止条件的控制系统。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;loop-shi-loop-engineering-ma&quot;&gt;&lt;code&gt;&#x2F;loop&lt;&#x2F;code&gt; 是 Loop Engineering 吗？&lt;&#x2F;h2&gt;
+&lt;p&gt;不是。至少不完全是。&lt;&#x2F;p&gt;
+&lt;p&gt;Claude Code 的 &lt;a href=&quot;https:&#x2F;&#x2F;code.claude.com&#x2F;docs&#x2F;en&#x2F;scheduled-tasks&quot;&gt;&lt;code&gt;&#x2F;loop&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; 是&lt;strong&gt;时间调度工具&lt;&#x2F;strong&gt;。它可以每隔五分钟检查 CI，也可以让 Claude 根据部署状态动态决定下次检查时间：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;loop 5m check whether CI passed&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;loop monitor the deployment and stop once it is healthy&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;&#x2F;loop 20m &#x2F;review-pr 1234&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这解决的是“什么时候再次执行”，而 Loop Engineering 还必须回答“根据什么反馈改变下一步”。&lt;&#x2F;p&gt;
+&lt;p&gt;如果每五分钟执行同一句提示、读取同一份状态、做出同一种错误判断，那只是定时重播。只有当每轮结果进入状态、评价器改变决策、结束条件能够终止任务时，它才成为完整的工程闭环。&lt;&#x2F;p&gt;
+&lt;p&gt;因此，更准确的关系是：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;&#x2F;loop&lt;&#x2F;code&gt; 提供时钟，测试和工具提供观察，Evaluator 提供判断，状态与停止条件共同构成 Loop Engineering。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Claude Code 中还有几块同样重要的积木：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Hooks&lt;&#x2F;strong&gt;：在工具调用、任务完成、Worktree 创建、上下文压缩等节点确定性地执行检查；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Skills&lt;&#x2F;strong&gt;：把“实现—测试—诊断—再验证”的流程固化为可复用方法；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Subagents&lt;&#x2F;strong&gt;：把独立验证放进干净的上下文，避免实现者自己证明自己；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Task List&lt;&#x2F;strong&gt;：保存任务状态、依赖和完成条件；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Worktrees&lt;&#x2F;strong&gt;：隔离并行修改，为失败方案保留可回滚边界；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Agent SDK&lt;&#x2F;strong&gt;：在生产环境中设置最大轮数、费用预算、中断和结构化结果。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;其中，Hooks 很像闭环里的传感器和保险丝。它不依赖模型“记得”运行格式化或安全检查，而是在特定事件发生时必定执行。对于任何关键验证，&lt;strong&gt;确定性 Hook 都比一句“记得检查”更可靠。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;graph-engineering-fu-za-ren-wu-bu-shi-qing-dan-er-shi-tu&quot;&gt;Graph Engineering：复杂任务不是清单，而是图&lt;&#x2F;h2&gt;
+&lt;p&gt;当一个任务无法由单个循环完成，就进入 Graph Engineering 的范围。&lt;&#x2F;p&gt;
+&lt;p&gt;Graph 的节点可以是 Agent、工具调用、测试、人工审批或部署任务；边则表达依赖、数据传递、条件分支和失败回退。&lt;&#x2F;p&gt;
+&lt;p&gt;例如，一次多维代码审查不是四个 reviewer 的简单清单，而是一张有分叉与汇合的图：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Correctness、Security、Performance、Tests 四路并行；&lt;&#x2F;li&gt;
+&lt;li&gt;每一路输出 findings；&lt;&#x2F;li&gt;
+&lt;li&gt;findings 进入独立的对抗验证；&lt;&#x2F;li&gt;
+&lt;li&gt;被证伪的问题淘汰；&lt;&#x2F;li&gt;
+&lt;li&gt;剩余问题统一排序、去重和综合。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这里有两个关键词：&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fan-out-ba-du-li-gong-zuo-san-kai&quot;&gt;Fan-out：把独立工作散开&lt;&#x2F;h3&gt;
+&lt;p&gt;不同维度、不同文件、不同候选方案之间没有依赖，就应该并行。串行执行不仅慢，还会让后一个 Agent 被前一个 Agent 的判断锚定。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fan-in-zai-zhen-zheng-xu-yao-quan-ju-xin-xi-shi-hui-he&quot;&gt;Fan-in：在真正需要全局信息时汇合&lt;&#x2F;h3&gt;
+&lt;p&gt;去重、统一排序、跨模块一致性检查，需要看到所有上游结果，才值得设置 barrier。过早汇合会浪费并行度；没有汇合又会让重复和冲突一直传到最终答案。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Graph Engineering 的关键不是多开几个 Agent，而是设计信息什么时候分开、什么时候重新相遇。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;claude-code-li-de-san-chong-zhi-xing-tu&quot;&gt;Claude Code 里的三种执行图&lt;&#x2F;h2&gt;
+&lt;p&gt;Claude Code 已经提供了三种不同强度的图结构。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-task-dependencies-gua-he-xiao-xing-xian-shi-dag&quot;&gt;1. Task Dependencies：适合小型显式 DAG&lt;&#x2F;h3&gt;
+&lt;p&gt;Task 可以声明 &lt;code&gt;blockedBy&lt;&#x2F;code&gt; 和 &lt;code&gt;blocks&lt;&#x2F;code&gt;。例如数据库 Schema 完成后，后端和前端并行；二者都完成后，端到端测试才能开始。&lt;&#x2F;p&gt;
+&lt;p&gt;这种图最适合十几个以内、依赖关系清楚、需要人类随时查看状态的任务。它的优势不是自动化程度最高，而是可解释：哪个节点被谁阻塞，一眼就能看见。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-dynamic-workflows-gua-he-da-gui-mo-que-ding-xing-bian-pai&quot;&gt;2. Dynamic Workflows：适合大规模确定性编排&lt;&#x2F;h3&gt;
+&lt;p&gt;Claude Code 的 &lt;a href=&quot;https:&#x2F;&#x2F;code.claude.com&#x2F;docs&#x2F;en&#x2F;workflows&quot;&gt;Dynamic Workflows&lt;&#x2F;a&gt; 用 JavaScript 描述编排逻辑，支持 &lt;code&gt;agent()&lt;&#x2F;code&gt;、&lt;code&gt;pipeline()&lt;&#x2F;code&gt;、&lt;code&gt;parallel()&lt;&#x2F;code&gt;、阶段、结构化输出、预算和恢复。它从 v2.1.154 起提供，是当前最接近原生 Graph Engineering 的能力。&lt;&#x2F;p&gt;
+&lt;p&gt;下面是一张“审查—反驳—综合”工作图的简化骨架：&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;meta &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;  name: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;review-and-refute&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  description: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review changes from independent lenses and verify each result&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  phases: [
+&lt;&#x2F;span&gt;&lt;span&gt;    { title: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, detail: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Find issues independently&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;    { title: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Verify&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, detail: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Try to refute each review&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;    { title: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Synthesize&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, detail: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Merge verified findings&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;  ],
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimensions &lt;&#x2F;span&gt;&lt;span&gt;= [
+&lt;&#x2F;span&gt;&lt;span&gt;  { key: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;correctness&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, prompt: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review the current diff for correctness bugs.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;  { key: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;security&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, prompt: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review the current diff for security issues.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;  { key: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;performance&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, prompt: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review the current diff for performance regressions.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;  { key: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;tests&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, prompt: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review the current diff for missing test coverage.&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;verified &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;pipeline&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimensions&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;agent&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension&lt;&#x2F;span&gt;&lt;span&gt;.prompt, {
+&lt;&#x2F;span&gt;&lt;span&gt;    label: `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;review:${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;    phase: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Review&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  }),
+&lt;&#x2F;span&gt;&lt;span&gt;  (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;review&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;agent&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Try to refute this ${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;} review with concrete code evidence:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;review&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;      label: `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;verify:${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;dimension&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;key&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;      phase: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Verify&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;    },
+&lt;&#x2F;span&gt;&lt;span&gt;  ),
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;agent&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Deduplicate, rank, and synthesize only the findings that survived verification:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;${JSON.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;stringify&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;verified&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;)}&lt;&#x2F;span&gt;&lt;span&gt;`,
+&lt;&#x2F;span&gt;&lt;span&gt;  { label: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;synthesize&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, phase: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Synthesize&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; },
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;这里使用 &lt;code&gt;pipeline()&lt;&#x2F;code&gt; 而不是在每一阶段都设置全局 &lt;code&gt;parallel()&lt;&#x2F;code&gt; barrier。某个 reviewer 完成后，它可以立刻进入验证，不必等待最慢的 reviewer。只有最终综合需要完整结果，因此 fan-in 放在最后。&lt;&#x2F;p&gt;
+&lt;p&gt;生产工作流还应该为 Agent 输出增加 JSON Schema，避免靠自然语言解析 findings；修改文件的并行节点则应使用独立 Worktree，避免多个 Agent 同时写入同一工作副本。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-agent-teams-gua-he-xu-yao-tao-lun-de-tong-xin-tu&quot;&gt;3. Agent Teams：适合需要讨论的通信图&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;code.claude.com&#x2F;docs&#x2F;en&#x2F;agent-teams&quot;&gt;Agent Teams&lt;&#x2F;a&gt; 让多个完整 Claude Code 会话共享任务并直接互发消息。它适合竞争性假设、架构辩论、跨模块协作这类“节点之间必须持续交流”的任务。&lt;&#x2F;p&gt;
+&lt;p&gt;但 Agent Teams 目前仍是实验性功能，需要显式开启 &lt;code&gt;CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1&lt;&#x2F;code&gt;，而且每个成员都是完整 Claude 实例，token 成本明显高于 Subagents。&lt;&#x2F;p&gt;
+&lt;p&gt;因此推荐非常明确：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;只需要结果返回主线程&lt;&#x2F;strong&gt;：用 Subagent；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;需要几十个节点按脚本执行&lt;&#x2F;strong&gt;：用 Dynamic Workflow；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;节点必须持续互相讨论和协调&lt;&#x2F;strong&gt;：才用 Agent Teams。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;不要因为“三个 Agent 看起来更高级”，就把一个 Grep 能解决的问题变成团队会议。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;loop-yu-graph-bu-shi-liang-tao-xi-tong&quot;&gt;Loop 与 Graph 不是两套系统&lt;&#x2F;h2&gt;
+&lt;p&gt;一张成熟的执行图，节点内部往往是 Loop；一条成熟的 Loop，也可能在某轮动态展开新的 Graph。&lt;&#x2F;p&gt;
+&lt;p&gt;例如一次大型迁移：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Graph 按文件或模块 fan-out；&lt;&#x2F;li&gt;
+&lt;li&gt;每个节点内部执行“修改—测试—修正”的 bounded loop；&lt;&#x2F;li&gt;
+&lt;li&gt;节点通过后进入集成测试；&lt;&#x2F;li&gt;
+&lt;li&gt;集成失败时，根据错误类型只回退相关节点；&lt;&#x2F;li&gt;
+&lt;li&gt;最终由独立 reviewer 做全局验证。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;因此，真正的 Agent 系统更像一张“带环的图”，而不是纯 DAG。DAG 适合表达明确依赖，Loop 适合表达反馈控制，二者共同组成运行时拓扑。&lt;&#x2F;p&gt;
+&lt;p&gt;这也解释了为什么 Graph Engineering 不等于 LangGraph，Loop Engineering 也不等于某个 &lt;code&gt;&#x2F;loop&lt;&#x2F;code&gt; 命令。框架只是表达方式，核心问题仍然是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;状态存在哪里？&lt;&#x2F;li&gt;
+&lt;li&gt;观察是否可信？&lt;&#x2F;li&gt;
+&lt;li&gt;哪个节点有权改变状态？&lt;&#x2F;li&gt;
+&lt;li&gt;失败应该重试、回退，还是升级给人？&lt;&#x2F;li&gt;
+&lt;li&gt;怎样证明整个图已经完成，而不是所有节点都“自称完成”？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;wu-ge-zui-chang-jian-de-shi-bai-mo-shi&quot;&gt;五个最常见的失败模式&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;1-wu-xian-xun-huan-ba-jian-chi-wu-dang-cheng-zhi-neng&quot;&gt;1. 无限循环：把坚持误当成智能&lt;&#x2F;h3&gt;
+&lt;p&gt;没有最大轮数、预算和熔断条件的 Agent，可能只是更昂贵地重复同一个错误。每个 Loop 都应同时具备质量上限和资源上限。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-zi-zheng-xun-huan-shi-xian-zhe-ye-shi-wei-yi-ping-jie-zhe&quot;&gt;2. 自证循环：实现者也是唯一评价者&lt;&#x2F;h3&gt;
+&lt;p&gt;同一个 Agent 写代码、写测试、解释测试并宣布成功，容易共享同一盲点。高价值变更应由独立上下文中的 verifier 尝试反驳。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-gong-shi-huan-jue-duo-ge-agent-gong-xiang-tong-yi-mao-dian&quot;&gt;3. 共识幻觉：多个 Agent 共享同一锚点&lt;&#x2F;h3&gt;
+&lt;p&gt;如果后续 Agent 先读到第一个结论，它们很可能只是换一种措辞表示赞同。需要独立判断时，应先并行生成，再汇合比较。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-barrier-fan-lan-mei-yi-bu-du-deng-dai-quan-yuan&quot;&gt;4. Barrier 泛滥：每一步都等待全员&lt;&#x2F;h3&gt;
+&lt;p&gt;Graph 不是把每个阶段排成整齐队列。只要下一阶段不需要全部上游结果，就应让快节点继续前进。否则多 Agent 只增加成本，不增加吞吐。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-wan-cheng-tiao-jian-xie-cheng-yi-ju-gan-jue&quot;&gt;5. 完成条件写成一句感觉&lt;&#x2F;h3&gt;
+&lt;p&gt;“代码质量良好”“报告足够全面”“界面看起来不错”都无法稳定评价。退出条件应该可观察：测试命令通过、响应 Schema 正确、指定文件存在、关键路径完成、独立验证无阻断项。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;yi-tiao-zu-gou-shi-yong-de-sheng-ji-lu-xian&quot;&gt;一条足够实用的升级路线&lt;&#x2F;h2&gt;
+&lt;p&gt;不需要一开始就搭建复杂多 Agent 系统。最稳妥的顺序是：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;先给单 Agent 加一个 bounded loop&lt;&#x2F;strong&gt;：实现、测试、诊断、重试、停止；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;把独立调查交给 Subagents&lt;&#x2F;strong&gt;：减少主上下文污染，也降低相互锚定；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;用 Task Dependencies 表达小型依赖图&lt;&#x2F;strong&gt;：先让阻塞关系可见；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;独立节点超过五个，或者需要重复运行时，升级为 Dynamic Workflow&lt;&#x2F;strong&gt;；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;只有节点之间必须持续讨论时，才启用 Agent Teams&lt;&#x2F;strong&gt;；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;跨天运行、关键业务、严格 SLA 和持久状态，交给 Agent SDK、Managed Agents 或 Temporal 一类外部编排器。&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;这条路线的原则是：先增加反馈，再增加并行；先证明一个节点能可靠收敛，再复制更多节点。&lt;&#x2F;p&gt;
+&lt;p&gt;一个不会验证自己的 Agent，复制十份不会变成团队，只会变成十个同时犯错的人。&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;jie-yu-cong-sheng-cheng-da-an-dao-she-ji-shou-lian&quot;&gt;结语：从生成答案，到设计收敛&lt;&#x2F;h2&gt;
+&lt;p&gt;Prompt Engineering 教会我们怎样开口，Context Engineering 教会 Agent 在行动前先理解世界。Loop Engineering 再往前一步：第一次答案不重要，重要的是系统能否利用真实反馈，持续淘汰错误。Graph Engineering 则让这种能力跨越一个 Agent，扩展到一组有依赖、有分工、也有汇合点的执行单元。&lt;&#x2F;p&gt;
+&lt;p&gt;这也是 AI 编程正在发生的变化。&lt;&#x2F;p&gt;
+&lt;p&gt;过去，我们盯着模型第一次写出了什么；现在，更值得设计的是它写完以后会检查什么、失败以后会改变什么、何时应该停下，以及不同 Agent 的判断会在哪里相遇。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;代码不是一次生成出来的。它是在回环中被修正，在图中被组织，最后从一批可能答案里被筛出来的。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>断章取义之七：那条 4× 的鱼</title>
         <published>2026-06-25T00:00:00+00:00</published>
