@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Agent Reliability</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/agent-reliability/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-08-30T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/agent-reliability/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Multi-Layer State Integrity for Evidence-Grounded AI Agents</title>
+        <published>2026-08-30T00:00:00+00:00</published>
+        <updated>2026-08-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/slides/agent-state-integrity/" type="text/html"/>
+        <id>https://polly.wang/slides/agent-state-integrity/</id>
+        
+        <content type="html">&lt;p&gt;这组 slides 讨论长流程 Agent 如何把证据、记忆、决策、验证、恢复与最终输出绑定为一条可机械检查的状态链。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nei-rong-gai-yao&quot;&gt;内容概要&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;问题边界&lt;&#x2F;strong&gt;：为什么 result-only evaluation 不能证明跨阶段执行完整性&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;核心机制&lt;&#x2F;strong&gt;：Source Span Hash → Protected Memory Signature → Decision Fingerprint → Stage Receipt Hash Chain → Mechanical Completion Gate&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;实施方式&lt;&#x2F;strong&gt;：typed state、不可变证据、完整性压缩、隔离验证、artifact-aware recovery、typed abstention&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;工程证据&lt;&#x2F;strong&gt;：严格区分 runtime closure、protocol verification 与 answer accuracy&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;闭环结论&lt;&#x2F;strong&gt;：回答状态链如何阻断静默错误，并明确现有证据边界&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>
