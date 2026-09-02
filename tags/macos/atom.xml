@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - macOS</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/macos/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-09-03T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/macos/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Claude Desktop 换脑记：当 GPT-5.6 Sol 住进 Claude App</title>
+        <published>2026-09-03T00:00:00+00:00</published>
+        <updated>2026-09-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/claude-desktop-copilotx-custom-model/" type="text/html"/>
+        <id>https://polly.wang/claude-desktop-copilotx-custom-model/</id>
+        
+        <summary type="html">&lt;p&gt;Claude Code 和 Codex 渐渐用得得心应手之后，我本来已经不缺一个能写代码、跑命令、改文件的 Agent。&lt;&#x2F;p&gt;
+&lt;p&gt;真正让我再次技痒的，是我陆续在网上看到的另一套工作方式：&lt;a href=&quot;https:&#x2F;&#x2F;claude.com&#x2F;product&#x2F;cowork&quot;&gt;Claude Cowork&lt;&#x2F;a&gt; 可以接手一整个文件夹、拆分并行工作流，还能使用内置浏览器、操作桌面应用、定时执行任务。相比守着终端和代码仓库，它更像是在接过一整件知识工作。&lt;&#x2F;p&gt;
+&lt;p&gt;今晚，研习各种攻略后，我从官网下载并打开了 Claude Desktop App。开启 Developer Mode，一个 &lt;strong&gt;Configure third-party inference&lt;&#x2F;strong&gt; 页面出现在眼前：Claude Desktop 的界面、Cowork、Projects 和 Artifacts 都可以保留，真正处理请求的模型却可以来自另一套推理网关。看到这里，我还是有点意外——Claude 自家的桌面应用，竟然给“换掉 Claude”留了一扇门。&lt;&#x2F;p&gt;
+&lt;p&gt;我自然想到了 CopilotX。一个月前，&lt;a href=&quot;&#x2F;claude-code-gpt-5-6-protocol-bridge&quot;&gt;Claude Code 遇上 GPT-5.6&lt;&#x2F;a&gt;时，它已经搭好了 Anthropic Messages 到 OpenAI Responses API 的桥。看起来，只要把桌面端接到这座现成的桥上就够了。&lt;&#x2F;p&gt;
+&lt;p&gt;真正动手后，三扇门依次横在眼前：第一扇写着“App 已损坏”；第二扇只认名字里带 Claude 的模型；第三扇更隐蔽——它只拿 1 个 token 测试连接，而 GPT-5.6 Sol 至少要 16 个。&lt;&#x2F;p&gt;
+</summary>
+        
+    </entry>
+</feed>
