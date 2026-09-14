@@ -165,6 +165,23 @@
     .book-grid figure { display: flex; flex-direction: column; align-items: center; gap: 9px; }
     .book-grid img { height: 207px; width: 155px; object-fit: contain; object-position: bottom; filter: drop-shadow(2px 5px 4px #12223d99); }
     .book-grid figcaption { font-size: 16px; line-height: 1.15; text-align: center; }
+    .reveal .slides section.portfolio { padding: 40px 54px 48px; }
+    .portfolio .slide-head { text-align: left; margin: 0; padding-bottom: 22px; border-bottom: 1px solid #bbcade; }
+    .reveal .portfolio h2 { font-size: 34px; letter-spacing: 0; }
+    .portfolio-grid { position: absolute; top: 127px; left: 0; width: 1280px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .portfolio-card { height: 530px; padding: 0 28px; text-align: center; }
+    .portfolio-card + .portfolio-card { border-left: 1px solid #bbcade; }
+    .reveal .portfolio-card .portfolio-person { width: 100px; height: 120px; object-fit: contain; object-position: bottom; margin: 0 auto; }
+    .reveal .portfolio-card h3 { margin-top: 8px; font-size: 21px; line-height: 1.25; letter-spacing: 0; }
+    .reveal .portfolio-direction { margin-top: 6px; font-size: 14px; color: var(--cyan); }
+    .portfolio-book-row { display: flex; align-items: flex-start; justify-content: center; gap: 32px; height: 270px; margin-top: 16px; }
+    .portfolio-book-row figure { width: 146px; }
+    .reveal .portfolio-book-row img { width: 146px; height: 238px; object-fit: contain; filter: drop-shadow(2px 5px 4px #12223d66); }
+    .reveal .portfolio-ope-books img { width: auto; height: 219px; max-width: 146px; margin: 9.5px auto; }
+    .portfolio-book-row figcaption { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.3; }
+    .portfolio-book-row .portfolio-editions { width: 332px; }
+    .reveal .portfolio-book-row .portfolio-montage { width: 296px; margin: 0 auto; }
+    .reveal .portfolio-book-title { font-size: 18px; font-weight: 650; margin-top: 18px; }
     .closing .title-wrap { max-width: 1070px; margin: 0 auto; align-items: center; text-align: center; height: 515px; }
     .closing h2 { font-size: 62px; line-height: 1.22; }
     .closing p { font-size: 33px; color: var(--cyan); margin-top: 35px; }
@@ -262,6 +279,42 @@
         <figure><img src="assets/book-ko.webp" alt="Korean cover"><figcaption>Korean (한국어)</figcaption></figure>
         <figure><img src="assets/book-ar.webp" alt="Arabic cover"><figcaption>Arabic (<span lang="ar" dir="rtl">العربية</span>)</figcaption></figure>
       </div>
+    </section>
+
+    <section class="portfolio" aria-label="Translation portfolio across books and languages">
+      <header class="slide-head"><h2>Beyond One Book: 3 Authors, 3 Published Works</h2></header>
+      <div class="portfolio-grid">
+        <article class="portfolio-card">
+          <img class="portfolio-person" src="assets/portfolio-ope-person.webp" alt="">
+          <h3>QI ZHANG</h3>
+          <p class="portfolio-direction">CHINESE → ENGLISH</p>
+          <div class="portfolio-book-row portfolio-ope-books">
+            <figure><img src="assets/portfolio-ope-zh.webp" alt="One Person Entrepreneur, original Chinese cover"><figcaption>ORIGINAL</figcaption></figure>
+            <figure><img src="assets/portfolio-ope-en.webp" alt="One Person Entrepreneur, translated English cover"><figcaption>ENGLISH</figcaption></figure>
+          </div>
+          <p class="portfolio-book-title">One Person Entrepreneur</p>
+        </article>
+        <article class="portfolio-card">
+          <img class="portfolio-person" src="assets/portfolio-wave-person.webp" alt="">
+          <h3>MUSTAFA SULEYMAN</h3>
+          <p class="portfolio-direction">ENGLISH → CHINESE</p>
+          <div class="portfolio-book-row">
+            <figure class="portfolio-editions"><img class="portfolio-montage" src="assets/portfolio-wave-books.webp" alt="The Coming Wave, original and nine language editions photographed on a table"><figcaption>Original &amp; 9 Language edition</figcaption></figure>
+          </div>
+          <p class="portfolio-book-title">The Coming Wave</p>
+        </article>
+        <article class="portfolio-card">
+          <img class="portfolio-person" src="assets/portfolio-experiment-person.webp" alt="">
+          <h3>COLIN McFARLAND</h3>
+          <p class="portfolio-direction">ENGLISH → CHINESE</p>
+          <div class="portfolio-book-row">
+            <figure><img src="assets/portfolio-experiment-en.webp" alt="Experiment!, original English cover"><figcaption>ORIGINAL</figcaption></figure>
+            <figure><img src="assets/portfolio-experiment-zh.webp" alt="Experiment!, translated Chinese cover"><figcaption>CHINESE</figcaption></figure>
+          </div>
+          <p class="portfolio-book-title">Experiment!</p>
+        </article>
+      </div>
+      <aside class="notes">Source artwork: user-provided files in tmp/master-translator-ppt. Layout and edition labels follow the user's supplied reference.</aside>
     </section>
 
     <section class="closing" aria-label="Making knowledge cross language boundaries">
