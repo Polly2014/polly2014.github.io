@@ -5,8 +5,182 @@
     <link href="https://polly.wang/tags/ai-agent/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://polly.wang"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-08-15T00:00:00+00:00</updated>
+    <updated>2026-09-27T00:00:00+00:00</updated>
     <id>https://polly.wang/tags/ai-agent/atom.xml</id>
+    <entry xml:lang="en">
+        <title>When Agents Handle Secrets：一条不能静默断裂的完整性链</title>
+        <published>2026-09-27T00:00:00+00:00</published>
+        <updated>2026-09-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/when-agents-handle-secrets-state-integrity/" type="text/html"/>
+        <id>https://polly.wang/when-agents-handle-secrets-state-integrity/</id>
+        
+        <content type="html">&lt;p&gt;Agent 给出了正确答案。系统却应该拒绝它。&lt;&#x2F;p&gt;
+&lt;p&gt;它收到一个任务：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;今天，能否把一份包含 12,400 条记录的事故数据包发送给外部应急服务商？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;三条规则摆在面前：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;与该服务商签订的正式数据处理协议将在 9 月 30 日生效，今天尚未生效；&lt;&#x2F;li&gt;
+&lt;li&gt;在此之前，一项临时应急批准只允许发送哈希用户 ID 和错误码，并明确禁止发送消息正文；&lt;&#x2F;li&gt;
+&lt;li&gt;每批最多发送 10,000 条记录。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Agent 的回答也完全合理：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;不能原样发送。删除 &lt;code&gt;message_body&lt;&#x2F;code&gt; 后，分两批发送。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;问题是，这个答案可能来自一条已经失效的执行链。&lt;&#x2F;p&gt;
+&lt;p&gt;在上下文压缩时，“临时”和“不得包含”可能被省略；在重新判断后，Verifier 可能仍在验证旧决定；在中断恢复时，两轮执行留下的产物可能被拼在一起。最后一句话没有错，但系统已经无法证明，它仍然来自那三条当前有效的规则。&lt;&#x2F;p&gt;
+&lt;p&gt;秘密没有泄露。真正发生变化的，是附着在秘密上的条件。&lt;&#x2F;p&gt;
+&lt;p&gt;这篇文章要讨论的，正是如何让这些条件——来源、限制、例外、时效和验证关系——从证据进入记忆，再进入决策、恢复和最终输出时，始终处在同一条不可静默断裂的完整性链上。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-xian-bu-zhi-lai-zi-mei-zhao-dao-ye-lai-zi-zhong-tu-bian-liao&quot;&gt;危险不只来自“没找到”，也来自“中途变了”&lt;&#x2F;h2&gt;
+&lt;p&gt;传统 RAG 经常把问题理解成：找到相关文档，把它们交给模型，然后生成答案。&lt;&#x2F;p&gt;
+&lt;p&gt;这解决了“模型有没有看到材料”，却没有自动解决“后续阶段是否仍在使用同一份材料”。一条长执行链里，至少有五个位置可能发生静默漂移：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;证据漂移&lt;&#x2F;strong&gt;：引用看起来仍来自同一份文件，实际段落、偏移或版本已经变化；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;记忆漂移&lt;&#x2F;strong&gt;：上下文压缩保留了大意，却丢掉数字、单位、否定、限定条件或例外；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;验证陈旧&lt;&#x2F;strong&gt;：Judge 修改了决定或证据，Verifier 返回的却是旧决定的通过结果；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;恢复串线&lt;&#x2F;strong&gt;：Checkpoint 能被加载，不代表其中所有产物来自同一轮一致执行；&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;过早输出&lt;&#x2F;strong&gt;：模型说“任务完成”，但仍有证据、计算或验证依赖没有闭合。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;这些故障有一个共同点：单看每个组件，它可能都“工作正常”。检索器找到了文档，摘要器生成了摘要，Verifier 返回了 PASS，Checkpoint 也成功反序列化。&lt;&#x2F;p&gt;
+&lt;p&gt;断裂发生在组件之间。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;typed-agent-zhen-zheng-yao-shou-zhu-shi-yao&quot;&gt;Typed Agent 真正要守住什么&lt;&#x2F;h2&gt;
+&lt;p&gt;这套 Typed Agent 架构的核心不是一种新的检索算法，也不是简单地多调用一次 Verifier。它关注的是：如何把证据、记忆、决策、验证、恢复和输出绑定在同一个受约束状态上，使任何跨阶段的不一致都不能静默通过。&lt;&#x2F;p&gt;
+&lt;p&gt;核心可以压缩成一条连续的完整性链：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Source Span Hash
+&lt;&#x2F;span&gt;&lt;span&gt;  → Protected Memory Signature
+&lt;&#x2F;span&gt;&lt;span&gt;  → Decision Fingerprint
+&lt;&#x2F;span&gt;&lt;span&gt;  → Stage Receipt Hash Chain
+&lt;&#x2F;span&gt;&lt;span&gt;  → Mechanical Completion Gate
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;每一层都在回答不同的问题：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层次&lt;&#x2F;th&gt;&lt;th&gt;要回答的问题&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;原文片段哈希&lt;&#x2F;td&gt;&lt;td&gt;这还是刚才接受的那段原文吗？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;受保护记忆签名&lt;&#x2F;td&gt;&lt;td&gt;压缩后，关键事实和限制是否保持不变？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;决策指纹&lt;&#x2F;td&gt;&lt;td&gt;Verifier 检查的还是当前这项决定吗？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;阶段收据链&lt;&#x2F;td&gt;&lt;td&gt;这些阶段产物是否来自同一条合法执行链？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;机械完成门&lt;&#x2F;td&gt;&lt;td&gt;当前状态真的获得了输出许可吗？&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;关键不在“使用了 Hash”。单个 Hash 只能说明某个对象有没有变化；连续绑定要证明的是对象之间的身份、引用关系、修改权限和进入下一阶段的条件仍然成立。&lt;&#x2F;p&gt;
+&lt;p&gt;换句话说，它不是给每份文件盖一个章，而是给整条交接链建立一套不能跳步的验收制度。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-yi-bu-bu-yao-ji-zhao-hui-da-xian-ba-wen-ti-chai-kai&quot;&gt;第一步：不要急着回答，先把问题拆开&lt;&#x2F;h2&gt;
+&lt;p&gt;“能不能发送”看起来像一个二元问题，实际上包含几个可以独立验证的主张：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;C1：&lt;&#x2F;strong&gt; 这份包含消息正文的数据包能否原样发送？&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;C2：&lt;&#x2F;strong&gt; 临时应急批准是否允许今天向指定服务商发送限定字段？&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;C3：&lt;&#x2F;strong&gt; 消息正文是否属于允许发送的字段？&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;C4：&lt;&#x2F;strong&gt; 12,400 条记录在每批最多 10,000 条的限制下需要几个批次？&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;随后为这些主张定义证据槽：协议生效时间、临时批准范围、禁止字段、单批上限以及待发送文件的实际结构。&lt;&#x2F;p&gt;
+&lt;p&gt;这一步看似只是结构化，实际非常重要。解释阶段只能建立“需要寻找什么”的搜索假设，不能提前把“允许发送”写进状态。否则，Agent 可能在证据出现之前就把结论藏进问题表示里。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-er-bu-ba-yuan-wen-bian-cheng-ke-hui-fang-de-zheng-ju&quot;&gt;第二步：把原文变成可回放的证据&lt;&#x2F;h2&gt;
+&lt;p&gt;每一条被接受的证据都不只是自然语言摘抄，而是带着稳定身份的记录：文档身份、章节身份、字符偏移、精确原文和内容摘要。&lt;&#x2F;p&gt;
+&lt;p&gt;系统必须能够从规范源文件中，按照保存的偏移重新取回同一段文字，并重新得到相同摘要，才能接受这条证据。&lt;&#x2F;p&gt;
+&lt;p&gt;因此，“禁止发送消息正文”不能被一段生成式摘要替代。摘要可以引用这条证据，却不能成为新的证据原件。&lt;&#x2F;p&gt;
+&lt;p&gt;这解决的是最上游的问题：后续所有判断究竟站在哪一段原文上。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-san-bu-ya-suo-sou-suo-li-shi-dan-bu-neng-ya-suo-diao-tiao-jian&quot;&gt;第三步：压缩搜索历史，但不能压缩掉条件&lt;&#x2F;h2&gt;
+&lt;p&gt;长流程 Agent 必须压缩上下文。真正的问题不是“要不要压缩”，而是“什么可以丢，什么绝不能变”。&lt;&#x2F;p&gt;
+&lt;p&gt;在这个案例中，可以删除失败的搜索词、重复观察和已拒绝的候选文档；但以下内容进入受保护状态：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;与该服务商签订的正式数据处理协议要到 9 月 30 日才生效；&lt;&#x2F;li&gt;
+&lt;li&gt;在此之前，临时应急批准当前有效；&lt;&#x2F;li&gt;
+&lt;li&gt;允许字段只有哈希用户 ID 和错误码；&lt;&#x2F;li&gt;
+&lt;li&gt;消息正文被明确排除；&lt;&#x2F;li&gt;
+&lt;li&gt;单批上限是 10,000 条；&lt;&#x2F;li&gt;
+&lt;li&gt;待发送数据共有 12,400 条；&lt;&#x2F;li&gt;
+&lt;li&gt;各事实分别来自哪条已接受证据；&lt;&#x2F;li&gt;
+&lt;li&gt;哪些依赖和冲突仍未解决。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;压缩前，系统对受保护部分进行规范序列化并计算签名；压缩器只能修改可替换历史；压缩后再计算一次签名。&lt;&#x2F;p&gt;
+&lt;p&gt;两次签名相同还不够。状态中每个证据 ID、事实 ID、计算 ID 和主张 ID 都必须仍然解析到当前任务中类型正确、状态有效的记录。&lt;&#x2F;p&gt;
+&lt;p&gt;签名相同证明“目录没有被改写”，引用闭合证明“目录里的每本书仍在正确书架上”。两项都通过，候选压缩状态才能提交。&lt;&#x2F;p&gt;
+&lt;p&gt;如果压缩器把“禁止发送消息正文”改成“建议删除消息正文”，系统不讨论这两句话在语义上是否“差不多”。受保护状态已经改变，候选压缩直接失败闭锁。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-si-bu-rang-ji-suan-hui-da-shu-liang-wen-ti-er-bu-shi-ti-dai-shou-quan-pan-duan&quot;&gt;第四步：让计算回答数量问题，而不是替代授权判断&lt;&#x2F;h2&gt;
+&lt;p&gt;批次数计算很简单：&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;ceil(12,400 &#x2F; 10,000) = 2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;但两个输入不能凭空出现在表达式里。&lt;code&gt;12,400&lt;&#x2F;code&gt; 必须来自待发送文件的已接受事实，&lt;code&gt;10,000&lt;&#x2F;code&gt; 必须来自传输规则。计算记录保存表达式、输入、结果以及对应的事实和证据引用。&lt;&#x2F;p&gt;
+&lt;p&gt;这还暴露了一个经常被忽略的边界：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“至少需要两批”是数量结论，不是发送许可。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;计算正确，不能覆盖正式协议尚未生效、字段不允许或者临时批准已经失效的问题。计算层只回答它被授权回答的那一部分。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-wu-bu-jue-ding-bi-xu-bang-ding-dao-ta-de-lai-yuan-lian&quot;&gt;第五步：决定必须绑定到它的来源链&lt;&#x2F;h2&gt;
+&lt;p&gt;经过证据和计算后，四项主张可以得到不同结果：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;主张&lt;&#x2F;th&gt;&lt;th&gt;结果&lt;&#x2F;th&gt;&lt;th&gt;原因&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;C1 原样发送&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;REFUTED&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;数据包包含被禁止的消息正文&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;C2 限定字段发送&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;SUPPORTED&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;当前临时批准覆盖指定服务商与字段&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;C3 发送消息正文&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;REFUTED&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;临时批准明确排除该字段&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;C4 分批数量&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;SUPPORTED&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;有来源的计算结果为两批&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;每项决定都根据“主张、裁决、证据引用、计算引用”生成独立决策指纹。&lt;&#x2F;p&gt;
+&lt;p&gt;这意味着系统保存的不是一句孤立的“可以”，而是：&lt;strong&gt;由当前这组证据和计算支持的这个‘可以’。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;如果数据包后来删除了 &lt;code&gt;message_body&lt;&#x2F;code&gt;，或者临时批准的有效期发生变化，相关决定必须重新生成指纹。旧决定与新决定即使自然语言结论相同，也不是同一个可验证对象。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-liu-bu-verifier-zhi-neng-yan-zheng-bu-neng-shun-shou-gai-da-an&quot;&gt;第六步：Verifier 只能验证，不能顺手改答案&lt;&#x2F;h2&gt;
+&lt;p&gt;隔离式 Verifier 收到当前主张、已接受证据、已接受计算、当前决定字段和决策指纹。它不需要读取 Judge 的私有推理，也没有权限直接覆盖决策账本。&lt;&#x2F;p&gt;
+&lt;p&gt;Verifier 可以检查：接收方是否一致、日期是否仍然有效、数量和单位是否正确、否定词与例外是否被保留、计算是否引用了正确输入。&lt;&#x2F;p&gt;
+&lt;p&gt;如果它发现问题，可以阻断最终化并提出修订建议。真正改变裁决或来源集合，必须回到独立的重新判断步骤，生成新决定、新指纹，再接受新一轮验证。&lt;&#x2F;p&gt;
+&lt;p&gt;假设 Verifier 开始工作后，Agent 删除了消息正文字段并更新了 C1。此时旧 Verifier 即使返回 PASS，也会因为携带旧指纹而被拒绝。&lt;&#x2F;p&gt;
+&lt;p&gt;它可能正确验证过一个曾经存在的决定，但那已经不是现在的决定。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;di-qi-bu-checkpoint-bu-shi-bao-cun-xian-chang-er-shi-yan-zheng-hou-zhong-jian&quot;&gt;第七步：Checkpoint 不是保存现场，而是验证后重建&lt;&#x2F;h2&gt;
+&lt;p&gt;如果 Agent 在验证阶段突然中断，最省事的做法是把序列化对象重新载入，然后从原位置继续。&lt;&#x2F;p&gt;
+&lt;p&gt;但“能加载”不等于“可信”。&lt;&#x2F;p&gt;
+&lt;p&gt;阶段收据会把每个阶段的前状态指纹、后状态指纹、产物摘要和上一张收据摘要连接起来。恢复时，系统重新检查任务身份、前置产物是否完整、产物摘要是否匹配、收据关系是否成立，再把已接受产物按合法状态转换依次重放到一个新状态中。&lt;&#x2F;p&gt;
+&lt;p&gt;如果证据阶段需要重跑，旧的记忆、判断、验证和最终输出必须全部失效。不能保留一半新证据，再接上一半旧结论。&lt;&#x2F;p&gt;
+&lt;p&gt;恢复不是“相信昨天保存的内存”，而是“从仍然有效的产物重新建立今天可信的状态”。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zui-hou-yi-bu-shu-chu-shi-yi-chong-quan-xian&quot;&gt;最后一步：输出是一种权限&lt;&#x2F;h2&gt;
+&lt;p&gt;模型很擅长说“任务完成”。机械完成门不听这句话。&lt;&#x2F;p&gt;
+&lt;p&gt;它检查每项主张是否已经进入可解释的终态，证据和计算引用是否闭合，Verifier 是否绑定当前指纹，是否仍存在被阻断的决定，输出格式和执行核算是否完整。&lt;&#x2F;p&gt;
+&lt;p&gt;在当前案例中，完成门通过后，Agent 才能生成可执行结论：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;不能原样发送。&lt;&#x2F;strong&gt; 删除 &lt;code&gt;message_body&lt;&#x2F;code&gt;，仅保留哈希用户 ID 和错误码；确认临时应急批准仍然有效后，将 12,400 条记录拆成两批发送。&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;如果单批上限的来源缺失，即使“删除消息正文”已经得到验证，系统也不应拼出一个貌似完整的发送指令。它可以保留已经闭合的局部判断，但由于这是一项高风险外发动作，输出策略应要求所有关键条件完整，最终选择类型化未解决，而不是部分放行。&lt;&#x2F;p&gt;
+&lt;p&gt;局部失败隔离的作用，是避免一项失败污染无关状态；它不是绕过业务完整性要求的捷径。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;san-ge-xiao-gu-zhang-kan-kan-lian-tiao-ru-he-bi-he&quot;&gt;三个小故障，看看链条如何闭合&lt;&#x2F;h2&gt;
+&lt;p&gt;现在可以故意破坏案例中的三个位置。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;故障一：压缩器丢掉“禁止发送消息正文”。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;受保护状态发生变化，压缩前后签名不一致。候选记忆不提交，后续判断看不到这份错误摘要。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;故障二：决定修改后，旧 Verifier 返回 PASS。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;验证记录携带的决策指纹与当前指纹不一致。结果被标记为陈旧，不能把当前决定转成已验证。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;故障三：恢复前有人替换了证据阶段产物。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;重新计算的产物摘要与阶段收据不一致。恢复停止，所有依赖该产物的下游状态保持失效。&lt;&#x2F;p&gt;
+&lt;p&gt;这三种处理都没有要求模型“再仔细想想”。系统依靠的是状态身份、引用闭合和合法转换，而不是模型临场发挥出的谨慎。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wei-shi-yao-rag-verifier-he-checkpoint-huan-bu-gou&quot;&gt;为什么 RAG、Verifier 和 Checkpoint 还不够&lt;&#x2F;h2&gt;
+&lt;p&gt;这些组件都重要，只是各自解决的问题不同：&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组件&lt;&#x2F;th&gt;&lt;th&gt;擅长解决&lt;&#x2F;th&gt;&lt;th&gt;单独使用时没有证明&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;RAG&lt;&#x2F;td&gt;&lt;td&gt;找到相关材料&lt;&#x2F;td&gt;&lt;td&gt;下游始终使用同一份已接受证据&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;上下文压缩&lt;&#x2F;td&gt;&lt;td&gt;降低上下文成本&lt;&#x2F;td&gt;&lt;td&gt;数字、否定、例外和依赖没有变化&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Verifier&lt;&#x2F;td&gt;&lt;td&gt;再检查一个结论&lt;&#x2F;td&gt;&lt;td&gt;它检查的是当前决定，且没有越权改写&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Checkpoint&lt;&#x2F;td&gt;&lt;td&gt;保存和恢复进度&lt;&#x2F;td&gt;&lt;td&gt;恢复的产物彼此一致且仍然有效&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Hash&lt;&#x2F;td&gt;&lt;td&gt;检测单个对象变化&lt;&#x2F;td&gt;&lt;td&gt;整个引用图和状态转换仍然合法&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;真正的技术问题不是再增加一个组件，而是让每个组件只有在上游完整性条件满足时，才获得推进状态的权限。&lt;&#x2F;p&gt;
+&lt;p&gt;这也是此前&lt;a href=&quot;&#x2F;capability-to-reliability&quot;&gt;《从 Capability 到 Reliability：Agent 研究的下一个范式转移》&lt;&#x2F;a&gt;没有展开的那一层：Agent Reliability 不只是“多做几次检查”，而是把检查结果变成后续执行不可绕过的许可条件。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ta-bu-hui-ti-dai-mi-mi-guan-li-xi-tong&quot;&gt;它不会替代秘密管理系统&lt;&#x2F;h2&gt;
+&lt;p&gt;必须明确：状态完整性不等于秘密保密性。&lt;&#x2F;p&gt;
+&lt;p&gt;Vault 和密钥管理系统负责保存凭证；IAM 决定谁能访问；加密保护传输与存储；DLP 和输出策略限制数据能否离开边界；沙箱限制工具可以执行什么操作。&lt;&#x2F;p&gt;
+&lt;p&gt;状态完整性解决的是下一层问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当秘密材料已经被授权交给 Agent 后，怎样保证其中的事实、限制、例外和来源关系不会在多步执行中被悄悄改变？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;两类能力缺一不可。没有权限控制，Agent 不该看到的秘密可能被打开；没有状态完整性，Agent 即使只看到了被允许的材料，也可能依据一份已经变形的内部状态作出动作。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bing-bu-shi-mei-ge-wen-ti-du-xu-yao-wan-zheng-lian&quot;&gt;并不是每个问题都需要完整链&lt;&#x2F;h2&gt;
+&lt;p&gt;完整验证会增加状态存储、计算、模型调用和延迟成本。把同样强度的协议套在天气查询和事故数据外发上，并不合理。&lt;&#x2F;p&gt;
+&lt;p&gt;更实际的方向是选择性完整性：普通信息查询使用轻量路径；涉及多文档推理、秘密材料、资金、法律义务或不可逆工具动作时，逐步启用更强的证据、验证、恢复和完成约束。&lt;&#x2F;p&gt;
+&lt;p&gt;风险越高，“系统凭什么允许这一步”就应该越明确。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mi-mi-huan-zai-dan-tiao-jian-ye-bi-xu-huan-zai&quot;&gt;秘密还在，但条件也必须还在&lt;&#x2F;h2&gt;
+&lt;p&gt;回到最初那份 12,400 条记录的数据包。&lt;&#x2F;p&gt;
+&lt;p&gt;真正安全的系统不能只证明文件没有泄露、密钥没有暴露。它还要证明：当 Agent 最终说“可以发送”时，“删除消息正文”“临时批准有效”“分成两批”这些条件仍然来自同一组当前证据，并且中间没有一次状态转换悄悄绕过它们。&lt;&#x2F;p&gt;
+&lt;p&gt;秘密没有被偷走，不代表围绕秘密的约束没有被改写。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Agent 处理秘密时，最终答案相同，不等于执行有效。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Loop &amp; Graph Engineering 浅析</title>
         <published>2026-08-15T00:00:00+00:00</published>
