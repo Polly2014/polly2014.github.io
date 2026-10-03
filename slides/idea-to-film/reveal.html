@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parking Copilot制作实录 · 从停车idea到两分钟短片</title>
+<meta property="og:type" content="article"><meta property="og:title" content="Parking Copilot制作实录"><meta property="og:description" content="一次从构思、故事、分镜到素材、录屏、剪辑与返工的完整回看。"><meta property="og:image" content="https://polly.wang/slides/idea-to-film/thumbnail.png"><meta property="og:url" content="https://polly.wang/slides/idea-to-film/reveal.html">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/theme/black.css">
+<style>
+/* Evidence Grid composition adapted from slide-maker's default-reveal.html. */
+:root{--r-background-color:#07111f;--r-main-color:#e9f2ff;--r-heading-color:#f7fbff;--r-link-color:#3dd6d0;--ink:#e9f2ff;--muted:#aac0d7;--line:#8fafc735;--cyan:#3dd6d0;--blue:#6aa9ff;--amber:#ffb454;--red:#ff8793}*{box-sizing:border-box}body{background:#07111f}.reveal{color:var(--ink);font:30px/1.45 "Avenir Next","PingFang SC","Segoe UI",sans-serif}.reveal .slides{text-align:left}.reveal .slides section{padding:40px 52px 48px;height:100%}.reveal h1,.reveal h2,.reveal h3{color:#f7fbff;text-transform:none;margin:0;font-weight:650;letter-spacing:-.03em}.reveal h1{font-size:2.08em;line-height:1.17}.reveal h2{font-size:1.43em;line-height:1.23}.reveal h3{font-size:.87em;line-height:1.4}.reveal p{margin:.55em 0;line-height:1.65}.reveal a{color:var(--cyan)}.reveal strong{color:white}.reveal .progress,.reveal .controls{color:var(--cyan)}.reveal .slide-number{font-size:12px;background:none;color:var(--muted);right:24px;bottom:18px}.reveal blockquote{font-style:normal;background:none;box-shadow:none;width:100%;padding:18px 24px;border-left:3px solid var(--cyan);margin:26px 0;font-size:1.15em}.bg-grid:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#6aa9ff0b 1px,transparent 1px),linear-gradient(90deg,#6aa9ff0b 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(#000,transparent 90%)}.bg-glow:after{content:"";position:absolute;right:-180px;top:-220px;width:620px;height:620px;pointer-events:none;background:radial-gradient(circle,#3dd6d029,#6aa9ff12 38%,transparent 68%)}.slide-head{display:flex;justify-content:space-between;gap:28px;margin-bottom:30px}.slide-head>div:first-child{flex:1;min-width:0}.eyebrow{color:var(--cyan);font:600 .44em/1.4 Menlo,monospace;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}.eyebrow:before{content:"";width:28px;height:2px;background:var(--cyan)}.kicker{flex:0 0 190px;text-align:right;color:var(--muted);font-size:.48em;line-height:1.6}.title-wrap{height:100%;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1}.title-sub{font-size:.78em;color:var(--muted);margin-top:26px!important;max-width:1000px}.tagline{font-family:"Iowan Old Style","Songti SC",serif;font-size:1.3em;color:var(--cyan);margin-bottom:30px}.deck-footer{position:fixed;left:22px;bottom:18px;font:10px Menlo,monospace;letter-spacing:.08em;color:#adc7dd;z-index:100}.deck-tools{position:fixed;top:12px;right:18px;z-index:100;display:flex;gap:18px;font:12px sans-serif}.deck-tools a{color:#aec7db;text-decoration:none}.deck-tools span{color:#d8b17a}.grid-2,.grid-3{display:grid;gap:20px;grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.card{min-width:0;padding:23px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,#122841dc,#091728cc)}.card h3{margin-bottom:14px}.card p{font-size:.7em;color:#bed0e2;margin:0;line-height:1.7}.card.cyan-top{border-top:2px solid var(--cyan)}.card.amber-top{border-top:2px solid var(--amber)}.card.red-top{border-top:2px solid var(--red)}.boundary,.status-callout{padding:14px 18px;border-left:3px solid var(--amber);background:#ffb4540e;color:#d0ddeb;font-size:.57em;line-height:1.6;margin-top:23px}.lead{font-size:.85em;color:var(--muted)}.cyan{color:var(--cyan)}.muted{color:var(--muted)}.small{font-size:.57em;color:var(--muted)}.flow{display:flex;gap:16px;margin:28px 0}.flow-node{flex:1;min-width:0;border:1px solid var(--line);padding:23px 17px;border-radius:10px;background:#102138;position:relative}.flow-node:not(:last-child):after{content:"→";position:absolute;right:-15px;top:53px;color:var(--cyan);font-size:22px;z-index:1}.flow-node b{font-size:.73em;display:block;line-height:1.5}.flow-node small{font-size:.55em;line-height:1.65;color:var(--muted);display:block;margin-top:12px}.row{display:grid;grid-template-columns:110px 1fr 1fr;gap:18px;padding:17px 20px;border-bottom:1px solid var(--line);font-size:.7em;line-height:1.6}.row b{color:var(--cyan)}.row span:last-child{color:#bcd0e4}.reveal table{width:100%;margin:0;border-collapse:collapse;font-size:.64em}.reveal table th,.reveal table td{padding:12px 16px;border-bottom:1px solid var(--line);line-height:1.5;vertical-align:top}.reveal table th{color:var(--cyan)}.metric{font:500 2.1em/1.1 Menlo,monospace;letter-spacing:-.06em;color:var(--cyan);margin:12px 0 22px}.tree{font:18px/1.9 Menlo,"PingFang SC",monospace;white-space:pre-wrap;background:#081624;border:1px solid var(--line);border-radius:10px;padding:24px;color:#c5dcee;margin:0}.links{font-size:.57em;display:flex;flex-wrap:wrap;gap:18px;margin-top:22px}.split{display:grid;grid-template-columns:1.05fr .95fr;gap:25px}.frame-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.frame-tile{border:1px solid var(--line);border-radius:7px;background:#10253b;min-height:220px;padding:16px;display:flex;flex-direction:column;justify-content:space-between}.frame-tile .shot{font:14px Menlo,monospace;color:var(--cyan)}.frame-tile strong{font-size:.69em;line-height:1.6}.frame-tile small{font-size:.48em;color:#9fb8d2}.frame-tile.dynamic{background:#103137;border-color:#3dd6d085}.strip-clock{display:flex;height:90px;margin:30px 0 15px}.strip-clock>div{padding:16px;border:1px solid var(--line);font-size:.65em;display:flex;align-items:center;justify-content:center;text-align:center}.hold{flex:24;background:#193249}.starting{flex:6;background:#155866}.navigating{flex:6;background:#207167}.track{display:grid;grid-template-columns:145px 1fr;gap:12px;font-size:.7em;margin:12px 0;align-items:center}.track div{border:1px solid var(--line);border-radius:5px;padding:14px 20px;background:#16344a}.track:nth-child(2) div{background:#12534e}.track:nth-child(3) div{background:#314054}.car-layout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;background:#263540;padding:35px 24px;border-radius:10px}.bay{height:210px;border:2px solid #dbe4e985;border-top:0;display:grid;place-items:center;font-size:.65em;color:#dce9f1}.bay.target{border-color:var(--cyan);color:var(--cyan);background:#3dd6d010}.car-layout small{grid-column:1/-1;text-align:center;font-size:.5em;color:#c2d4e3;margin-top:15px}.claim{font-size:.9em;line-height:1.6;border-left:3px solid var(--cyan);padding:20px 26px;background:#122a3d;margin-top:30px}.load-message{position:fixed;inset:35% 10% auto;background:#142d40;padding:28px;text-align:center;color:#eaf3fb;z-index:200;font:16px/1.8 sans-serif}.load-message a{color:var(--cyan)}
+@media(max-width:767px){.reveal .slides section{padding:36px 34px 48px}.reveal h1{font-size:1.85em}.reveal h2{font-size:1.22em}.kicker{flex-basis:150px}.card{padding:18px}.card p{font-size:.64em}.flow-node{padding:18px 12px}.flow-node small{font-size:.5em}.frame-tile{padding:12px;min-height:200px}.frame-tile strong{font-size:.6em}.tree{font-size:15px}.row{grid-template-columns:90px 1fr 1fr;font-size:.62em}.reveal table{font-size:.57em}.bay{height:170px}.deck-tools{font-size:10px}.deck-footer{font-size:8px;left:12px}}@media print{.deck-tools,.load-message{display:none!important}}
+</style><link rel="stylesheet" href="images.css?v=film-20261003-recap-cyan"></head><body>
+<div class="deck-tools"><a href="./">实录总览</a><a href="handout.html" target="_blank" rel="noopener">制作流程笔记</a></div>
+<div class="deck-footer">PARKING COPILOT / MAKING OF</div><div id="load-message" class="load-message">正在加载分享。需要联网获取Reveal.js；也可打开<a href="handout.html">制作流程笔记</a>。</div>
+<div class="reveal"><div class="slides">
+
+<section class="bg-grid bg-glow visual-slide" id="opening" data-background-gradient="linear-gradient(135deg,#06101d,#0b1c31 58%,#0b2736)">
+<div class="photo-title"><div><div class="eyebrow">Parking Copilot · Making of</div><h1>一个停车idea，<br>怎样变成<br>两分钟短片？</h1><p class="title-sub">构思、拆镜、制作、返工。<br>沿着真实画面，回到每一次选择。</p></div><figure class="evidence"><img src="images/first-memory.webp" alt="Lexie在白车旁举起手机拍纪念照的第一幕选用静帧"></figure></div>
+<aside class="notes">以 Parking Copilot 为例，回看从构思、剧本、分镜到素材制作、剪辑与精修的过程。封面图是第一幕选用的 AI 生产静帧，不是完整影片抽帧；下一页先播放成片。</aside></section>
+
+<section class="bg-grid film-slide" id="result"><div class="slide-head"><div><div class="eyebrow">Parking Copilot · The Freedom to Arrive</div><h2>先看成片。</h2></div></div>
+<div class="film-frame">
+<video id="full-film" controls playsinline preload="none" data-ignore poster="images/opening-composite.webp" aria-label="Parking Copilot完整成片，约两分钟">
+<source src="https://media.polly.wang/parking-copilot-2026/parking-copilot-v7-20260920-web-1080p.mp4" type="video/mp4">
+浏览器不支持视频播放，请使用下方链接单独打开。
+</video>
+<button class="film-play" type="button" aria-controls="full-film" hidden>▶ 播放成片 · 2分钟</button>
+</div>
+<p class="film-link"><span id="film-status" role="status" aria-live="polite"></span><a href="https://media.polly.wang/parking-copilot-2026/parking-copilot-v7-20260920-web-1080p.mp4" target="_blank" rel="noopener noreferrer">单独打开视频 ↗</a></p>
+<aside class="notes">先看完整影片，再讨论它如何做出来。网页播放的是成片的压缩版本；点击才加载，离页暂停，返回不自动恢复。封面预览是片头制作合成图。交互 Demo 与 Film 制作回放仍保留验证码入口。</aside></section>
+
+<section class="bg-grid bg-glow" id="reframing">
+<div class="slide-head"><div><div class="eyebrow">01 · 构思 / 视角的转变</div><h2>从「AI 能做什么」，<br>到「她需要什么」。</h2></div></div>
+<div class="flow">
+<div class="flow-node"><div class="eyebrow">Capability</div><b>AI 能做什么？</b><small>基于历史停车数据，<br>借助 AI 预测、优化车位使用，<br>提升整体使用率。</small><div class="reframing-lens"><strong>停车场管理员的视角</strong><span>面向高层，讲运营效率。</span></div></div>
+<div class="flow-node reframing-pivot"><div class="eyebrow">User Experience</div><b>她需要什么帮助？</b><small>她在哪些时刻遇到困难？<br>怎样让她知道下一步？</small><div class="reframing-lens"><strong>日常停车的员工视角</strong><span>面向员工，讲切身体验。</span></div></div>
+<div class="flow-node"><div class="eyebrow">Story</div><b>怎样把这些时刻串成故事？</b><small>一名毕业不久的职场新人，<br>靠自己的努力买下第一辆车。</small><div class="reframing-lens"><strong>等待、停车、充电、找车</strong><span>四个触点，串成她的一段经历。</span></div></div>
+</div>
+<p class="lead">让观众在她的故事里，看见自己的日常。</p>
+<aside class="notes">最初从 Capability 出发，希望用历史停车数据和 AI 预测优化车位使用。后来转向 User Experience，以毕业不久、努力买下第一辆车的职场新人为主角，让员工更容易代入。改变的是叙事入口，不是放弃能力；也不是说管理员不能成为主角。四个触点不代表都由同一个预测模型实现。</aside></section>
+
+<section class="bg-grid visual-slide" id="character-story"><div class="slide-head"><div><div class="eyebrow">01 · 构思 / 人物的起点</div><h2>先让观众关心她，再让产品出现。</h2></div></div>
+<div class="visual-story"><figure class="evidence"><img src="images/first-memory.webp" alt="职场新人站在第一辆车旁微笑自拍留念的1-02静帧"></figure><div class="visual-copy"><h3>买车，是努力换来的自由</h3><p>终于有了自己的第一辆车。<br>她以为，从此就能自由出发。</p><h3>停车，却处处充满未知</h3><p>但公司停车的种种麻烦，<br>让这份期待一次次被打断。</p></div></div>
+<aside class="notes">人物期待的是买车后的自由，遇到的却是停车中的未知。排队、停车、充电和找车，把零散麻烦串为连续经历。三个月是剧情设定，不是排队承诺。配图为选用的 AI 静帧，不是真实员工纪录片。</aside></section>
+
+<section class="bg-grid visual-slide" id="idea"><div class="slide-head"><div><div class="eyebrow">01 · 构思 / 四个体验触点</div><h2>从她的经历里，找到四个具体的“不知道”。</h2></div></div>
+<div class="visual-grid touchpoint-grid">
+<figure class="evidence"><img src="images/queue-ui.webp" alt="排队名次和预计等待区间的Film演示截图"><figcaption><span class="touchpoint-label">01 · 等待</span><b>什么时候能在公司停车？</b><span class="touchpoint-answer">知道排到哪，还要等多久</span></figcaption></figure>
+<figure class="evidence"><img src="images/space-ui.webp" alt="Film车位推荐与楼层关系截图"><figcaption><span class="touchpoint-label">02 · 停车</span><b>进了车库，该停在哪里？</b><span class="touchpoint-answer">找到具体车位和路线</span></figcaption></figure>
+<figure class="evidence"><img src="images/charging-ui.webp" alt="Film充电环节中的人物与车辆"><figcaption><span class="touchpoint-label">03 · 充电</span><b>充电位满了，怎么办？</b><span class="touchpoint-answer">协调已充满的车位</span></figcaption></figure>
+<figure class="evidence"><img src="images/found-ui.webp" alt="Film找到车环节的白车画面"><figcaption><span class="touchpoint-label">04 · 找车</span><b>下班了，我的车在哪里？</b><span class="touchpoint-answer">记住停车位置，带她找到车</span></figcaption></figure>
+</div>
+<p class="visual-note">停车不应该是一连串未知。<br><strong>AI 应该在人真正需要答案的那一刻出现。</strong></p>
+<aside class="notes">四个触点都是一次及时出现的帮助：等待需要答案，停车需要方向，充电需要协调，找车需要记忆。先让观众理解人物此刻的问题，再呈现产品回应。图为制作画面示例，不是最初构思时就已有的素材；等待区间属于演示数据。</aside></section>
+
+<section class="bg-grid visual-slide" id="emotional-arc"><div class="slide-head"><div><div class="eyebrow">01 · 构思 / 人物的情绪变化</div><h2>从梦想成真，到重获自由。</h2></div></div>
+<div class="visual-grid three"><figure class="evidence"><img src="images/first-memory.webp" alt="1-02车边纪念照"><figcaption><b>期待</b> · 终于拥有第一辆车</figcaption></figure><figure class="evidence"><img src="images/uncertain.webp" alt="4-02车库中犹豫的人物反应"><figcaption><b>不确定</b> · 到了车库，还是不知道</figcaption></figure><figure class="evidence"><img src="images/phone-ready.webp" alt="6-05b拿起手机的人物动作"><figcaption><b>信任</b> · 再遇到问题，她知道可以问谁</figcaption></figure></div>
+<ol class="flow emotion-flow" aria-label="人物情绪的五个阶段">
+<li class="flow-node">梦想成真</li>
+<li class="flow-node emotion-uncertain">遭遇不确定</li>
+<li class="flow-node">得到安心</li>
+<li class="flow-node">建立信任</li>
+<li class="flow-node emotion-freedom">重获自由</li>
+</ol>
+<p class="emotion-quote">“One less worry. A little more freedom.”</p>
+<aside class="notes">梦想成真、遭遇不确定、得到安心、建立信任、重获自由，构成人物的情绪弧线。三张静帧用于情绪对照，并非相邻电影帧或五阶段逐一证明。拿起手机表现主动寻求帮助，不代表已经找到了车。片尾补句在后期形成，与早期主题相呼应。</aside></section>
+
+<section class="bg-grid visual-slide" id="script-excerpt"><div class="slide-head"><div><div class="eyebrow">02 · 剧本与分镜 / 从构思到文字</div><h2>先把故事写下来，再决定怎么拍。</h2></div></div>
+<div class="script-sheet">
+<div class="script-sheet-head"><h3>第一场 · 人生第一辆车</h3><span>早期中文剧本摘录</span></div>
+<dl class="script-lines">
+<div><dt>画面</dt><dd>工牌和新车钥匙卡放在一起。<br>她在车旁拍下一张并不张扬的纪念照。</dd></div>
+<div><dt>旁白</dt><dd>“那一刻，她以为自己终于拥有了自由。”</dd></div>
+<div><dt>声音</dt><dd>安全带扣合声、电车启动提示音。</dd></div>
+<div><dt>转场</dt><dd>她在导航里点击“公司”。画面从目的地卡片切到公司停车申请页面。</dd></div>
+</dl>
+</div>
+<p class="visual-note">写清楚<strong>看见什么、听见什么，以及怎样进入下一场。</strong></p>
+<aside class="notes">展示早期剧本的写作结构：画面、旁白、声音与转场。内容为节选，旁白和声音在当时仍属暂定；不把早期第三人称旁白、实拍设想或旧时码当作最终成片的执行方案。</aside></section>
+
+<section class="bg-grid visual-slide" id="script"><div class="slide-head"><div><div class="eyebrow">02 · 剧本与分镜 / 七幕故事</div><h2>把四个触点，串成一段完整旅程。</h2></div></div>
+<div class="story-map">
+<div class="story-act-row story-act-setup">
+<article class="story-act" data-story-act="1"><img src="images/first-memory.webp" alt="第一幕车边纪念照选用静帧"><h3><span class="act-number">01</span>Lexie 的第一辆车</h3><p>建立对自由的期待</p></article>
+<article class="story-act" data-story-act="2"><img src="images/queue-ui.webp" alt="第二幕排队名次与预计等待区间的Film截图"><h3><span class="act-number">02</span>等待有了答案</h3><p>让她对等待心里有数</p></article>
+<article class="story-act" data-story-act="3"><div class="act-time" aria-label="三个月后的剧情时间跳转">三个月后</div><h3><span class="act-number">03</span>权限获批</h3><p>从等待转入车库体验</p></article>
+</div>
+<div class="story-act-row">
+<article class="story-act" data-story-act="4"><img src="images/target-final.webp" alt="第四幕选用图：目标车位218"><h3><span class="act-number">04</span>找到车位</h3><p>把答案变成可走的路线</p></article>
+<article class="story-act" data-story-act="5"><img src="images/charging-ui.webp" alt="第五幕Film画面：车辆开始充电"><h3><span class="act-number">05</span>协调充电</h3><p>遇到新难题，仍有下一步</p></article>
+<article class="story-act" data-story-act="6"><img src="images/found-ui.webp" alt="第六幕Film找到车的结果画面"><h3><span class="act-number">06</span>下班找车</h3><p>让一次次帮助积累成信任</p></article>
+<article class="story-act story-act-close" data-story-act="7"><img src="images/recap-overview.webp" alt="后期四服务回顾生产片段末帧"><h3><span class="act-number">07</span>回到自由</h3><p>回应开场对自由的期待</p></article>
+</div>
+</div>
+<aside class="notes">七幕依次建立人物期待、给等待一个答案、进入车库、找到车位、友好协调充电、减轻找车的记忆负担，再回扣自由。三个月后是剧情跳转；充电完成识别在没有真实数据时属于概念体验。这里说明叙事任务，不代表早期剧本的每个动作都出现在最终影片。后期片头与片尾另行设计。</aside></section>
+
+<section class="bg-grid visual-slide" id="director-storyboard"><div class="slide-head"><div><div class="eyebrow">02 · 剧本与分镜 / 导演分镜预演</div><h2>把文字里的故事，先变成看得见的画面。</h2></div></div>
+<figure class="evidence storyboard-sheet"><img src="images/director-storyboard.jpg" width="1536" height="876" alt="早期导演分镜的十二帧总览：第一辆车、等待与排队答案、驶入车库、空位数字与具体路线、充电协调、找车与自由抵达"><figcaption>早期分镜草案 · 12 个关键画面，预演人物处境、构图与 AI 的出场时机。</figcaption></figure>
+<aside class="notes">十二帧是导演级视觉预演，不是十二幕，也不是最终逐镜拍摄表。早期分镜人物不同于后来选用的角色形象；图中 UI 和路线是构图占位。它帮助检查构图、调度、视线、空间关系和 AI 出现的时机。</aside></section>
+
+<section class="bg-grid visual-slide shot-purpose"><div class="slide-head"><div><div class="eyebrow">02 · 剧本与分镜 / 镜头的职责</div><h2>每个镜头，先讲清一件事。</h2></div></div>
+<div class="visual-grid three"><figure class="evidence"><img src="images/work-composite.webp" alt="1-05 Work车内合成"><figcaption><div class="shot-caption-title"><span class="shot-id">1-05</span><b>去公司</b></div>交代目的地，推动故事出发</figcaption></figure><figure class="evidence"><img src="images/target-final.webp" alt="4-10中央空车位218"><figcaption><div class="shot-caption-title"><span class="shot-id">4-10</span><b>停这里</b></div>明确目标，让观众知道该停哪</figcaption></figure><figure class="evidence"><img src="images/parked-final.webp" alt="4-11白车已停妥与Parked卡"><figcaption><div class="shot-caption-title"><span class="shot-id">4-11</span><b>停好了</b></div>确认结果，让这一段体验收住</figcaption></figure></div>
+<p class="visual-note">分镜不是给画面编号，而是决定：<strong>这一刻要让观众知道什么。</strong></p>
+<aside class="notes">给每镜一个主要叙事任务：1-05 交代通勤目的地并启动导航，4-10 明确目标车位，4-11 确认停妥。三个例子来自不同场次，并非连续三镜。第一图为生产视频解码帧，后两图为选用静帧。</aside></section>
+
+<section class="bg-grid visual-slide" id="first-act"><div class="slide-head"><div><div class="eyebrow">02 · 剧本与分镜 / 第一幕试制</div><h2>先用六个镜头，做出故事的开场。</h2></div><div class="kicker">5 张静帧＋1 段合成视频</div></div>
+<div class="visual-grid six"><figure class="evidence"><img src="images/first-badge.webp" alt="1-01影片道具工牌与钥匙"><figcaption><span class="shot-id">1-01</span><b>工牌与钥匙</b></figcaption></figure><figure class="evidence"><img src="images/first-memory.webp" alt="1-02车边自拍"><figcaption><span class="shot-id">1-02</span><b>车边纪念照</b></figcaption></figure><figure class="evidence"><img src="images/first-touch.webp" alt="1-03手触方向盘"><figcaption><span class="shot-id">1-03</span><b>触碰方向盘</b></figcaption></figure><figure class="evidence"><img src="images/first-driver.webp" alt="1-04驾驶位侧脸"><figcaption><span class="shot-id">1-04</span><b>准备出发</b></figcaption></figure><figure class="evidence"><img src="images/work-composite.webp" alt="1-05车内导航解码帧"><figcaption><span class="shot-id">1-05</span><b>开启导航</b></figcaption></figure><figure class="evidence"><img src="images/first-office.webp" alt="1-06白车驶向办公楼"><figcaption><span class="shot-id">1-06</span><b>驶向公司</b></figcaption></figure></div>
+<aside class="notes">第一幕的六个镜头由五张静帧和一段车内导航合成视频构成。原独立第一幕长 10 秒：前五镜各 36 帧，末镜 60 帧，按 24fps 计。后加的 2 秒片头需另计。此页为讲述用分镜板，不是剪映时间线截图；工牌是影片道具。</aside></section>
+
+<section class="bg-grid visual-slide" id="production"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 选择制作路线</div><h2>不同的画面，交给不同的工具。</h2></div></div>
+<div class="visual-grid three"><figure class="evidence"><img src="images/first-driver.webp" alt="生成的人物与车内环境静帧"><figcaption><b>AI 生成静帧</b><span class="production-tool">gpt-image-2</span>生成人物、光线与环境</figcaption></figure><figure class="evidence"><img src="images/work-ui.webp" alt="代码制作的Work导航界面"><figcaption><b>代码制作界面</b><span class="production-tool">React + TypeScript</span>精确控制文字、数字与交互</figcaption></figure><figure class="evidence"><img src="images/layout-empty.webp" alt="Three.js搭建的三格车位空间参考"><figcaption><b>三维搭建参考</b><span class="production-tool">Three.js</span>先确定车位、车辆与机位关系<span class="reference-note">空间参考，不直接入片</span></figcaption></figure></div>
+<p class="visual-note">先按画面需求分工，再通过<strong>合成与剪映完成短片。</strong></p>
+<aside class="notes">AI 静帧、确定性 UI 与 Three.js 空间参考各司其职。静帧由剪辑赋予克制运动；浏览器按固定时序运行 UI，再采样成视频。三维低模约束位置、尺度和机位，不直接作为成片画面，也不保证独立生成的车型一致。</aside></section>
+
+<section class="bg-grid visual-slide" id="identity"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 人物一致性</div><h2>先确定她的样子，再让她进入镜头。</h2></div></div>
+<div class="visual-story identity-layout"><figure class="evidence master"><img src="images/lexie-master.webp" alt="AI生成的Lexie四格角色参考图v2：统一的米白上装与长裤"><figcaption class="identity-caption"><span><b>AI 生成的角色参考图</b> <span class="shot-id">v2</span></span>
+<div class="generation-detail identity-prompt"><button class="generation-prompt-trigger" id="master-prompt-trigger" type="button" aria-label="查看角色参考图 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="master-prompt-dialog" aria-describedby="master-prompt-preview">Prompt <span aria-hidden="true">↗</span></button>
+<div class="generation-preview" id="master-prompt-preview" role="tooltip" hidden><dl class="generation-prompt-fields">
+<div><dt>参考分工</dt><dd>主参考确定脸部身份，辅助参考确定身体比例与长发长度。</dd></div>
+<div><dt>四格设定</dt><dd>正面、三分之二侧面、侧面与全身；统一光线和中性背景，后续将长裤调整为米白色。</dd></div>
+<div><dt>画面边界</dt><dd>四格是同一个人，不继承原照的衣服、背景或姿势；不加文字和道具。</dd></div>
+</dl><span class="generation-preview-hint">点击查看初版生成与裤装调整的两段 Prompt</span></div></div>
+</figcaption></figure><div class="visual-copy"><figure class="evidence"><img src="images/selfie-input-v3.webp" alt="1-02镜头图v3，米白衣装，视线与手部透视待修订；与下一页输入为同一张图"><figcaption class="identity-caption"><span><span class="shot-id">1-02 · </span><b>车边纪念照</b> <span class="identity-status">待修订</span></span>
+<div class="generation-detail identity-prompt"><button class="generation-prompt-trigger" id="identity-prompt-trigger" type="button" aria-label="查看镜头生成 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="identity-prompt-dialog" aria-describedby="identity-prompt-preview">Prompt <span aria-hidden="true">↗</span></button>
+<div class="generation-preview" id="identity-prompt-preview" role="tooltip" hidden><dl class="generation-prompt-fields">
+<div><dt>参考分工</dt><dd>原始人像约束身份，已有站姿图参考白车、米白服装与人车位置。</dd></div>
+<div><dt>镜头描述</dt><dd>清晨的办公园区，她站在白车旁，望向自己的手机，带着克制的笑意留下一张纪念照。</dd></div>
+<div><dt>画面边界</dt><dd>生活纪实感，不拍成汽车广告；单人、单车、单手机，不加文字或水印。</dd></div>
+</dl><span class="generation-preview-hint">生成意图，不代表全部实现 · 点击查看 v3 Prompt</span></div></div>
+</figcaption></figure><p><strong>保持一致：</strong>脸型、发型、服装与比例。<br><strong>随镜头变化：</strong>场景、机位、动作与表情。</p><p class="identity-transition">有了镜头图，再把视线与手部姿态修到自然。</p></div></div>
+<aside class="notes">角色参考图统一人物与衣装，右侧展示仍待修订的车边纪念照，与下一页输入为同一张图。角色 Prompt 保留初次生成与裤装调整两个步骤。右侧镜头生成实际使用人像身份参考与车边站姿参考，角色母版用于核对，不把本页两图冒充完整的上传附件流程。原始人像不展示。</aside></section>
+
+<section class="bg-grid visual-slide generation-inputs"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 镜头图修订</div><h2>有了画面，再把细节修到自然。</h2></div><div class="kicker">1-02 · 车边纪念照<br>后续姿态修订 · v3 → v4</div></div>
+<div class="visual-grid revision-pair" role="group" aria-label="车边纪念照修订前后对比">
+<figure class="evidence old generation-reference"><img src="images/selfie-input-v3.webp" alt="修订前的车边自拍图：人物看向主镜头，举手机的手部透视偏大"><figcaption><b>修订前</b><span class="revision-caption-text">视线偏离手机，手部透视偏大</span></figcaption></figure>
+<figure class="evidence generation-output"><img src="images/first-memory.webp" alt="修订后的车边自拍图：人物看向自己的手机，手部比例与自拍姿态更自然"><figcaption><b>修订后</b><span class="revision-caption-text">看向手机，自拍姿态更自然</span></figcaption></figure>
+</div>
+<div class="revision-details">
+<div class="generation-reference-tags">
+<div class="generation-detail"><button class="generation-reference-tag" type="button" aria-expanded="false" aria-controls="generation-person-preview" aria-describedby="generation-person-preview">保留人物设定 <span aria-hidden="true">ⓘ</span></button><div class="generation-preview" id="generation-person-preview" role="tooltip" hidden><b>保留人物设定</b><p>沿用已有图中的人物身份、发型与象牙白衣装。角色母版在这次修订中没有重新上传。</p></div></div>
+<div class="generation-detail"><button class="generation-reference-tag" type="button" aria-expanded="false" aria-controls="generation-space-preview" aria-describedby="generation-space-preview">保留场景关系 <span aria-hidden="true">ⓘ</span></button><div class="generation-preview" id="generation-space-preview" role="tooltip" hidden><b>保留场景关系</b><p>沿用已有图中的白车、园区晨光、人车比例与画面构图，不重新设计场景，也没有额外上传场景图。</p></div></div>
+</div>
+<div class="generation-detail generation-prompt">
+<button class="generation-prompt-trigger" id="generation-prompt-trigger" type="button" aria-label="查看完整 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="generation-prompt-dialog" aria-describedby="generation-prompt-preview">修订 Prompt <span aria-hidden="true">↗</span></button>
+<div class="generation-preview" id="generation-prompt-preview" role="tooltip" hidden>
+<dl class="generation-prompt-fields">
+<div><dt>镜头描述</dt><dd>看向自己的手机，修正手部透视，让自拍更自然。</dd></div>
+<div><dt>画面边界</dt><dd>保持人物、衣装与人车比例；不改背景，不加文字或 UI。</dd></div>
+</dl><span class="generation-preview-hint">中文摘要 · 点击查看完整英文 Prompt</span></div></div>
+</div>
+<aside class="notes">这是基于已有镜头图的修订，不是从零生成：输入仅为左侧镜头图，右侧是后续选用结果。重点修正看向手机的头眼朝向及举手机的手部透视，保留人物、衣装、人车关系与晨光。Prompt 为讲解摘要；四类信息不等于四张附件，也不承诺逐像素不变。</aside></section>
+
+<section class="bg-grid visual-slide demo-production"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 界面与 Demo</div><h2>Demo 不只用来体验，也用来制作镜头。</h2></div></div>
+<div class="visual-story"><figure class="evidence"><img src="images/queue-ui.webp" alt="Film排队页面：人物与排名27、等待区间卡片"><figcaption><b>排队界面示例</b> · 演示数据</figcaption></figure><div class="visual-copy"><h3>界面内容可控</h3><p>停车排队名次、等待区间与文案<br>由代码控制，按剧本呈现需要的信息。</p><h3>镜头节奏可控</h3><p>在 Film 制作页控制状态与时序，<br>反复回看，再采样成视频素材。</p></div></div>
+<div class="links"><a href="https://parking.polly.wang/?view=queue" target="_blank" rel="noopener noreferrer">交互体验（Demo）↗</a><a href="https://parking.polly.wang/film/act-2.html?clip=queue&amp;view=composite&amp;frame=48" target="_blank" rel="noopener noreferrer">制作回放（Film）↗</a><span class="muted">均需验证码</span></div>
+<aside class="notes">排队 UI 是运行中的前端演示，不代表已经接通 Teams 或车辆接口。交互 Demo 用于体验原型，Film 页用于控制时序、回放与采样，二者用途不同。停车排队名次和等待区间为演示数据，不是真实预测或承诺日期。链接仍需验证码。</aside></section>
+
+<section class="bg-grid visual-slide" id="work-shot"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 界面合成</div><h2>把网页界面，合成进车机屏幕。</h2></div><div class="kicker">1-05 · 车内导航<br>1.5秒合成片段</div></div>
+<div class="visual-grid"><figure class="evidence"><img src="images/work-ui.webp" alt="1-05浏览器Work界面原片解码帧24"><figcaption><b>① 制作界面视频</b>让网页按固定时序运行，逐帧采样。</figcaption></figure><figure class="evidence"><img src="images/work-composite.webp" alt="相同帧UI映射到汽车中控屏的合成结果"><figcaption><b>② 合成进车内画面</b>按中控屏的透视调整界面，保留车内底图。</figcaption></figure></div>
+<p class="visual-note">前1秒展示通勤目的地，后0.5秒切入导航。</p>
+<div class="links"><a href="https://parking.polly.wang/film/act-1-work.html" target="_blank" rel="noopener noreferrer">播放1.5秒合成片段 ↗（需验证码）</a></div>
+<aside class="notes">左右图是生产视频同一时刻的界面与合成画面。片段为 36 帧、24fps、1.5 秒、无声：前 24 帧读通勤目的地，随后各 6 帧呈现 Starting 与导航。前段保持静止是读屏安排，不是掉帧。剪辑使用车内合成版本；不表示已接入真实车机系统。</aside></section>
+
+<section class="bg-grid visual-slide space-route"><div class="slide-head"><div><div class="eyebrow">03 · 制作 / 空间与路线</div><h2>先看清车位在哪，再看清怎么过去。</h2></div><div class="kicker">4-06 · 车位定位<br>4-07 · 路线展示</div></div>
+<div class="visual-grid"><figure class="evidence"><img src="images/space-ui.webp" alt="4-06车位定位：从四层车库聚焦B2层的218号车位"><figcaption><b>① 定位车位</b>从四层总览，聚焦 B2 层的 218 号车位。</figcaption></figure><figure class="evidence"><img src="images/route-ui.webp" alt="4-07路线展示：B2层前往218号车位的路线"><figcaption><b>② 展开路线</b>只保留 B2 层，逐步显示前往目标车位的路线。</figcaption></figure></div>
+<p class="visual-note">用代码控制楼层聚焦与路线显现，让空间信息跟着镜头节奏展开。</p>
+<div class="links"><a href="https://parking.polly.wang/film/act-4-space.html?frame=59" target="_blank" rel="noopener noreferrer">回看车位定位 ↗</a><a href="https://parking.polly.wang/film/act-4-route.html?frame=59" target="_blank" rel="noopener noreferrer">回看路线展示 ↗</a><span class="muted">均需验证码</span></div>
+<aside class="notes">先从四层车库聚焦 B2 的目标车位，再展开该层路线。画面按影片需要表达空间，不是测绘导航。光点表示路线揭示，不是车辆高速驶完整程；回放入口仍需验证码。</aside></section>
+
+<section class="bg-grid" id="editing"><div class="slide-head"><div><div class="eyebrow">04 · 剪辑 / 素材交付</div><h2>每幕一份素材包，配一份剪映操作指南。</h2></div></div>
+<div class="split delivery-layout">
+<div class="card delivery-package"><h3>每幕素材包</h3><div class="tree">├─ 画面与声音
+├─ 分层与参考（按需）
+├─ <button class="generation-prompt-trigger guide-preview-trigger" id="guide-prompt-trigger" type="button" aria-label="预览第一幕剪映操作指南" aria-haspopup="dialog" aria-expanded="false" aria-controls="guide-prompt-dialog">剪映操作指南 <span aria-hidden="true">↗</span></button>
+├─ 素材清单与核验记录
+└─ 历史备份（不导入）</div><p class="guide-scope"><b>点击指南，预览第一幕示例</b><br>镜序、时长、图层、效果与声音落点</p></div>
+<div class="delivery-paths">
+<div class="card cyan-top"><h3>首次导入 <span>· 搭起时间线</span></h3><p>按指南选择素材，接入统一工程。<br>按镜序、时长和图层关系装配。<br>回放检查，再逐步精修。</p></div>
+<div class="card"><h3>后续更新 <span>· 修改已有工程</span></h3><p>先备份，只处理受影响的镜头。<br>单镜替换后核对时长、效果和音字。<br>拆镜或改时长，按更新说明调整。</p></div>
+</div></div>
+<p class="visual-note">素材按幕交付，剪辑在同一工程里持续推进。</p>
+<aside class="notes">每幕素材包区分画面、声音、可选分层、参考预览和备份，素材清单不等于剪映工程。首次导入按指南搭起时间线，并带临时旁白检查节奏。后续更新先备份，只替换受影响镜头，再核对时长、裁剪、关键帧、字幕与声音。文件同名或等长不保证工程自动刷新；拆镜、改时长及新增音轨需按更新说明处理。指南示例是制作过程参考，不是最终工程参数记录。</aside></section>
+
+<section class="bg-grid editing-order"><div class="slide-head"><div><div class="eyebrow">04 · 剪辑 / 装配顺序</div><h2>先把节奏排顺，再打磨画面与声音。</h2></div></div>
+<ol class="flow" aria-label="剪辑装配的三个步骤">
+<li class="flow-node card"><span class="editing-step">01</span><h3>排顺节奏</h3><p>按镜序与时长排好素材。</p><p>带上临时旁白，<br>检查叙述节奏。</p></li>
+<li class="flow-node card"><span class="editing-step">02</span><h3>打磨画面</h3><p>加入轻推、图层运动<br>与必要转场。</p><p>保持人物、文字和界面清晰。</p></li>
+<li class="flow-node card"><span class="editing-step">03</span><h3>完善声音</h3><p>分轨调整旁白、音效、<br>环境声与配乐。</p><p>让声音衔接自然、主次清楚。</p></li>
+</ol>
+<p class="visual-note"><strong>每一遍只集中解决一类问题，</strong>避免节奏、效果和声音同时改动。</p>
+<aside class="notes">三遍装配各有重点：先排顺镜序、时长和临时旁白；再打磨画面与转场；最后完善分轨声音。并非等画面剪完才加旁白，也不要求三遍严格割裂。每次回放仍可返回调整。指南参数只是起点，不代表最终时间线设置。</aside></section>
+
+<section class="bg-grid visual-slide" id="opening-layers"><div class="slide-head"><div><div class="eyebrow">04 · 剪辑 / 分层合成</div><h2>把片头拆成三层，让画面与标题各自可调。</h2></div></div>
+<div class="visual-grid three"><figure class="evidence"><img src="images/opening-base.webp" alt="片头驾驶位人车底图"><figcaption><b>底层 · 人车画面</b></figcaption></figure><figure class="evidence layer-evidence"><img src="images/opening-garage.webp" alt="带透明背景的车场示意图层"><figcaption><b>中层 · 车场示意</b> · 透明层</figcaption></figure><figure class="evidence layer-evidence"><img src="images/opening-title.webp" alt="带透明背景的Parking Copilot标题图层"><figcaption><b>上层 · 标题文字</b> · 透明层</figcaption></figure></div>
+<div class="layer-result"><figure class="evidence"><img src="images/opening-composite.webp" alt="三层素材合并后的静态预览"><figcaption>叠加后的静态预览</figcaption></figure><div class="layer-copy"><p>三层叠在同一个 0–2 秒片头里。<br>底图可以轻推，标题保持稳定。</p><p><strong>需要修改哪一层，就只调整哪一层。</strong></p><div class="links"><a href="https://parking.polly.wang/film/act-0-opening.html" target="_blank" rel="noopener noreferrer">回看2秒片头参考 ↗</a><span class="muted">需验证码</span></div></div></div>
+<aside class="notes">片头分为人车底图、透明车场示意和标题三层，分别对应剪辑轨道，不是版本编号。三层叠在同一段 0–2 秒里，不连续顺排。合成参考不是第四层；已经含标题的参考视频不可再重复叠标题。示例说明独立调整的好处，不是最终工程截图。</aside></section>
+
+<section class="bg-grid narration-slide"><div class="slide-head"><div><div class="eyebrow">04 · 剪辑 / 旁白与字幕</div><h2>用旁白串起故事，也给画面留出呼吸。</h2></div></div>
+<div class="grid-3">
+<div class="card"><h3>旁白制作</h3><p class="voice-tool">Edge TTS · Ava 声线</p><p>从英文定稿出发，<br>按幕生成八段旁白。</p><p class="voice-purpose">分段便于调整停顿与位置，<br>不必把两分钟说满。</p></div>
+<div class="card"><h3>双语字幕</h3><p>根据旁白句级时间生成双语 SRT，<br>在剪映里调整样式与落点。</p><div class="subtitle-example" aria-label="双语字幕示例，中文在上，英文在下"><p lang="zh-CN">第一辆车，让我自由出发。</p><p lang="en">My first car gave me<br>the freedom to go.</p></div></div>
+<div class="card cyan-top"><h3>影片收尾</h3><p class="brand-line" lang="en">One less worry.<br>A little more freedom.</p><p>沿用同一声线，单独生成补句，<br>配合片尾画面收束主题。</p><div class="brand-audio-control"><button id="brand-audio-play" type="button" aria-label="试听片尾旁白 · 约3秒" aria-controls="brand-audio-preview" aria-pressed="false"><span class="brand-audio-icon" aria-hidden="true">▶</span> <span class="brand-audio-label">试听片尾旁白 · 约3秒</span></button><span id="brand-audio-status" role="status" aria-live="polite"></span></div><audio id="brand-audio-preview" data-ignore preload="none" data-preview-src="media/ava-brand-freedom.mp3" hidden></audio></div>
+</div>
+<p class="visual-note">旁白不必填满时间，<strong>留白也是叙事的一部分。</strong></p>
+<aside class="notes">Ava 是 Edge TTS 神经声线，不是真人录音或声音克隆。英文旁白按幕生成，再结合句级时间制作双语字幕；字体与位置仍需在剪映设置。正文八段与片尾补句分开，给读屏、空间观察和配乐保留时间。约 3 秒试听仅展示片尾声线，不证明最终混音。不同格式副本不重复叠播。</aside></section>
+
+<section class="bg-grid visual-slide" id="garage-compare"><div class="slide-head"><div><div class="eyebrow">05 · 精修 / 场景可信度</div><h2>剧情说找位难，画面却像一座空车库。</h2></div></div>
+<div class="visual-grid"><figure class="evidence old"><img src="images/garage-before.webp" alt="修改前的车库：左右停车区空旷"><figcaption><div class="garage-caption-head"><b>修改前 · 车位空旷</b></div>画面很干净，却削弱了找位难的前提。</figcaption></figure><figure class="evidence"><img src="images/garage-after.webp" alt="修改后的车库：两侧车位补入停放车辆，通道与指示箭头保持清晰"><figcaption><div class="garage-caption-head"><b>修改后 · 补入停放车辆</b>
+<div class="generation-detail garage-prompt"><button class="generation-prompt-trigger" id="garage-prompt-trigger" type="button" aria-label="查看补车修订 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="garage-prompt-dialog" aria-describedby="garage-prompt-preview">修订 Prompt <span aria-hidden="true">↗</span></button>
+<div class="generation-preview" id="garage-prompt-preview" role="tooltip" hidden><dl class="generation-prompt-fields">
+<div><dt>参考输入</dt><dd>同一镜头的无箭头底图；指示箭头在生成后本地合成。</dd></div>
+<div><dt>修改目标</dt><dd>在两侧车位补入停放车辆，仍留少量空位，不营造堵车或全满的场景。</dd></div>
+<div><dt>保留内容</dt><dd>保持机位、建筑与光线，车道和坡道畅通；不生成文字、箭头或 UI。</dd></div>
+</dl><span class="generation-preview-hint">中文摘要 · 点击查看完整英文 Prompt</span></div></div>
+</div>增加车位占用，同时保留清晰的通道与指示箭头。</figcaption></figure></div>
+<p class="visual-note">补车不是为了热闹。<strong>环境也要帮故事说话。</strong></p>
+<aside class="notes">连看后先检查环境是否支持剧情。补入停放车辆，让找位难更可信，但保留车道与坡道通畅。生成时输入无箭头底图，指示箭头后期合成；左侧带箭头展示图不等于实际上传附件。Prompt 中的车辆数量是生成目标，不是数量验收结论。此次为部分镜头精修，不是全片重做。提示词方法参考 Serge Shima 的 visual-skills（CC BY 4.0），按 GPT Image 2 适配。</aside></section>
+
+<section class="bg-grid visual-slide pair-refinement" id="rework"><div class="slide-head"><div><div class="eyebrow">05 · 精修 / 镜头连续性</div><h2>单张看着自然，连起来却不像同一个车位。</h2></div></div>
+<div class="visual-grid" role="group" aria-label="未采用版本：停车前后两镜对照"><figure class="evidence old"><img src="images/rework-empty.webp" alt="未采用的停车前候选：218目标位为空，邻车与柱位围绕目标位分布"><figcaption><b>停车前 · 找到目标车位</b><span class="pair-caption-detail">目标位空着，邻车提供位置参照</span></figcaption></figure><figure class="evidence old"><img src="images/rework-parked.webp" alt="未采用的停车后候选：白车停妥，但邻车与目标位的关系无法和前镜自然对应"><figcaption><b>停车后 · 车辆停妥</b><span class="pair-caption-detail">换了机位，邻车与目标位的关系却接不上</span></figcaption></figure></div>
+<p class="visual-note"><span class="pair-status">未采用版本</span>逐张修补，越来越难兼顾整个停车区。<br><strong>于是先停下来，重新设计两个镜头共用的空间。</strong></p>
+<aside class="notes">两张未采用候选各自自然，连看却难以认成同一停车位。问题是邻车、柱位与车格的跨镜关系，不是正常机位切换本身。局部修补越来越难兼顾全局，于是回到共同空间设计；工具检查通过不能替代人的连续性判断。</aside></section>
+
+<section class="bg-grid visual-slide pair-refinement" id="shared-layout"><div class="slide-head"><div><div class="eyebrow">05 · 精修 / 共同空间</div><h2>先搭同一个停车区，再生成两个镜头。</h2></div><div class="kicker">Three.js<br>共同布局 · 两个机位</div></div>
+<div class="visual-grid"><figure class="evidence"><img src="images/layout-empty.webp" alt="Three.js共同场景的停车前布局：中央空位，两侧邻车"><figcaption><div class="pair-caption-head"><b>停车前 · 中央空位</b>
+<div class="generation-detail layout-prompt"><button class="generation-prompt-trigger" id="layout-empty-prompt-trigger" type="button" aria-label="查看停车前生成 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="layout-empty-prompt-dialog" aria-describedby="layout-empty-prompt-preview">生成 Prompt <span aria-hidden="true">↗</span></button><div class="generation-preview" id="layout-empty-prompt-preview" role="tooltip" hidden><dl class="generation-prompt-fields"><div><dt>参考输入</dt><dd>只上传这张空位布局图，约束车格、车辆尺度、朝向与机位。</dd></div><div><dt>生成目标</dt><dd>把低模转换为摄影画面；中央车位保持空，两侧为普通通勤轿车。</dd></div><div><dt>画面边界</dt><dd>不继承方块车造型，不加主角白车；218编号和高亮框后期合成。</dd></div></dl><span class="generation-preview-hint">中文摘要 · 点击查看完整英文 Prompt</span></div></div>
+</div><span class="pair-caption-detail">布局参考图 + 镜头 Prompt</span></figcaption></figure><figure class="evidence"><img src="images/layout-parked.webp" alt="同一个Three.js场景的停车后布局：中央白车停妥，保留两侧邻车"><figcaption><div class="pair-caption-head"><b>停车后 · 白车停妥</b>
+<div class="generation-detail layout-prompt"><button class="generation-prompt-trigger" id="layout-parked-prompt-trigger" type="button" aria-label="查看停车后生成 Prompt" aria-haspopup="dialog" aria-expanded="false" aria-controls="layout-parked-prompt-dialog" aria-describedby="layout-parked-prompt-preview">生成 Prompt <span aria-hidden="true">↗</span></button><div class="generation-preview" id="layout-parked-prompt-preview" role="tooltip" hidden><dl class="generation-prompt-fields"><div><dt>参考分工</dt><dd>布局图约束空间与尺度；另加早期白车细节图，只参考车辆外观。</dd></div><div><dt>生成目标</dt><dd>同一中央车位内，白车已经停妥，车头朝向通道。</dd></div><div><dt>画面边界</dt><dd>不沿用旧问题停车图，不继承低模质感；为后期确认卡留出空间。</dd></div></dl><span class="generation-preview-hint">中文摘要 · 点击查看完整英文 Prompt</span></div></div>
+</div><span class="pair-caption-detail">布局参考图 + 白车外观参考 + 镜头 Prompt</span></figcaption></figure></div>
+<p class="visual-note">先确定车位、车辆尺度与机位，<br><strong>再用 gpt-image-2 补上真实质感，生成摄影画面。</strong></p>
+<aside class="notes">共同 Three.js 场景定义停车前后两种状态和两个机位。停车前仅上传空位布局；停车后上传停妥布局及白车外观参考。两次独立生成，几何只约束位置、体量、数量和方向，不是实测地图，也不自动锁住邻车车型。提示词方法参考 Serge Shima 的 visual-skills（CC BY 4.0），按 GPT Image 2 适配。</aside></section>
+
+<section class="bg-grid visual-slide pair-refinement" id="final-pair"><div class="slide-head"><div><div class="eyebrow">05 · 精修 / 细节收尾</div><h2>统一车型，再补上车位标记与确认卡。</h2></div></div>
+<div class="visual-grid"><figure class="evidence"><img src="images/target-final.webp" alt="最终选用的停车前图：邻车车型已修正，中央空位带218编号与高亮框"><figcaption><b>停车前 · 目标车位</b></figcaption></figure><figure class="evidence"><img src="images/parked-final.webp" alt="最终选用的停车后图：同一中央车位内白车停妥，右侧叠加Parked确认卡"><figcaption><b>停车后 · 位置确认</b></figcaption></figure></div>
+<div class="refinement-summary"><p><strong>统一车型：</strong>以停车后画面为参考，修正停车前画面的邻车。<br><strong>补上界面：</strong>车位编号、高亮框与确认卡，由本地代码合成。</p><button class="generation-prompt-trigger" id="continuity-prompt-trigger" type="button" aria-label="查看车型不一致的中间版本" aria-haspopup="dialog" aria-expanded="false" aria-controls="continuity-prompt-dialog">查看中间版本 <span aria-hidden="true">↗</span></button></div>
+<aside class="notes">共同布局解决空间关系后，仍需检查车型。以停车后画面为参考，仅修正停车前画面的邻车，随后用代码合成车位编号、高亮框和确认卡。主图为选用的生产静帧；中间版本用于展示车型漂移，不是最终成片抽帧。</aside></section>
+
+<section class="bg-grid visual-slide pair-refinement" id="delivery"><div class="slide-head"><div><div class="eyebrow">06 · 收尾 / 片尾设计</div><h2>回顾四个体验触点，让影片自然收尾。</h2></div></div>
+<div class="visual-grid"><figure class="evidence"><img src="images/recap-overview.webp" alt="四个体验触点汇成总览：排队、停车、充电与找车"><figcaption><b>四个触点回顾 <span class="ending-duration">· 10秒</span></b><span class="pair-caption-detail">排队、停车、充电、找车，依次出现后汇成总览。</span></figcaption></figure><figure class="evidence"><img src="images/brand-card.webp" alt="片尾落版：Parking Copilot与The Freedom to Arrive"><figcaption><b>片尾落版 <span class="ending-duration">· 7秒</span></b><span class="pair-caption-detail">从总览过渡到 Parking Copilot 与 The Freedom to Arrive。</span></figcaption></figure></div>
+<div class="ending-summary"><p>复用前面的镜头与界面，<br><strong>把四次体验重新编排成片尾。</strong></p><button class="generation-prompt-trigger" id="ending-prompt-trigger" type="button" aria-label="播放片尾衔接 · 17秒" aria-haspopup="dialog" aria-expanded="false" aria-controls="ending-prompt-dialog"><span aria-hidden="true">▶</span> 播放片尾衔接 <span class="ending-duration">· 17秒</span></button></div>
+<aside class="notes">片尾把四个触点重新编排为 10 秒回顾，再接 7 秒落版，替代早期片尾方案，而非在全片后额外加 17 秒。按需播放是 1080p、24fps、无声的画面衔接参考，不是最终混音影片节选。片尾旁白另轨配画面，不增加视频时长。</aside></section>
+
+<section class="bg-grid bg-glow making-recap"><div class="slide-head"><div><div class="eyebrow">Closing the loop</div><h2>从一个 idea 到成片，走过这四步。</h2></div></div>
+<ol class="grid-2 recap-grid" aria-label="从构思到成片的四步回顾">
+<li class="card cyan-top"><h3><span class="recap-step">01</span>找到故事</h3><p>从能力转向用户体验，<br>用人物经历串起四个触点。</p></li>
+<li class="card cyan-top"><h3><span class="recap-step">02</span>做出镜头</h3><p>用剧本与分镜明确画面，<br>再用 AI 图片、Demo 与代码制作素材。</p></li>
+<li class="card cyan-top"><h3><span class="recap-step">03</span>连成影片</h3><p>用剪辑、旁白、字幕与声音，<br>组织故事的节奏。</p></li>
+<li class="card cyan-top"><h3><span class="recap-step">04</span>回看精修</h3><p>连起来看是否自然，发现问题，<br>再回到镜头与设计。</p></li>
+</ol>
+<p class="recap-takeaway">故事决定镜头。镜头决定素材。</p>
+<aside class="notes">以找到故事、做出镜头、连成影片、回看精修四步回应开场。精修单列，因为发现问题后可能回到镜头或空间设计；这不是只走一遍的线性流程，也不是一键成片的承诺。用“故事决定镜头。镜头决定素材。”收尾，流程笔记展开具体选择与操作细节。</aside></section>
+
+</div></div>
+<dialog class="prompt-dialog ending-preview-dialog" id="ending-prompt-dialog" aria-labelledby="ending-preview-title" aria-describedby="ending-preview-caption" data-reading-hint="17秒 · 无声画面预览 · Esc 关闭">
+<div class="prompt-dialog-header"><div><h2 id="ending-preview-title">片尾衔接预览</h2><p id="ending-preview-caption">四个触点回顾 → 片尾落版</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭片尾衔接预览" autofocus>×</button></div>
+<div class="prompt-dialog-body"><video id="ending-preview" controls playsinline preload="none" data-ignore data-preview-src="media/ending-preview.mp4" aria-label="17秒片尾衔接，无声画面预览" tabindex="0">你的浏览器不支持视频播放。</video></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">17秒 · 无声画面预览 · Esc 关闭</span></div>
+</dialog>
+<!-- Readable excerpts only; no private production files or asset links. -->
+<dialog class="prompt-dialog" id="layout-empty-prompt-dialog" aria-labelledby="layout-empty-prompt-title" aria-describedby="layout-empty-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">4-10 · 停车前 · 目标空位 / gpt-image-2</p><h2 id="layout-empty-prompt-title">完整 Prompt</h2><p id="layout-empty-prompt-caption">共同布局生成 · 实际使用的英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭完整 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="停车前生成英文 Prompt，可滚动阅读"><p class="prompt-dialog-context">Image 1 为本页左侧空位布局图，是本次唯一上传参考，只约束空间、比例、方向与机位。模型负责将低模转为摄影画面；中央保持空位，218编号与高亮框留到后期合成。</p><pre id="layout-empty-full-prompt" lang="en">Create a new photographic underground-office-parking still using Image 1 ONLY as a measured composition and spatial-layout guide. Replace the primitive blockout appearance with believable real-world photography. Do not preserve its box-shaped toy vehicles, faceted body panels or flat shading.
+
+Scene and geometry:
+Show one compact three-bay parking group in a neutral grey office garage. The central target bay is completely empty, a medium silver-grey four-door sedan occupies the bay on its left, and a dark graphite four-door sedan occupies the bay on its right. Both neighbours face nose-first toward the foreground driving aisle, with their rears toward the back wall. Keep their positions, relative body sizes and directions from Image 1. No extra vehicles. The bays are identical, approximately 2.65 metres wide and 5.4 metres deep, and the neighbouring sedans are about 4.7 metres long and 1.85 metres wide; these are proportional art-direction guides, not signs to render. Maintain visible clearance around each parked car. Do not stretch one car larger than the other, make a miniature neighbour, or widen the empty target into a double bay.
+
+Wheel stops and boundaries:
+Each bay has the same two low black rubber wheel stops with small yellow inserts, each about 0.56m wide, 0.18m deep and 0.12m tall, placed symmetrically at the rear-wheel positions. Keep the two target-bay stops visible and aligned at the same setback as the neighbours' stops, allowing real occlusion by parked vehicles. Exactly two stops per bay, not a single concrete beam or an invented pile of blocks. Match the white boundary lines and column locations from Image 1; columns remain outside the car envelopes. All tires rest on the ground, parked bodies remain within their bay markings, and the foreground aisle remains clear.
+
+Camera and image hierarchy:
+Use Image 1's driver's-eye-height camera in the aisle on the same side of the parked-car axis. Look slightly toward the empty central bay; show its clear entry and both side lines. Keep the central empty bay readable and the two neighbours secondary. An extremely narrow dark windshield/dashboard edge may be visible at the bottom but must not cover the target floor, change the camera or add a person. Do not mirror the image or turn either neighbour around. Keep the target and neighbours at Image 1's perspective, not a newly invented garage view.
+
+Photographic finish:
+Realistic everyday sedans with curved sheet metal, normal tires and wheels, understated lamps, black window trim and natural glass. The left silver-grey sedan and right graphite sedan are both ordinary similar-sized four-door cars, not SUVs or sports cars. Use soft neutral overhead strip lighting, plain light-grey concrete walls and columns, subtle ceiling pipes, matte grey epoxy floor with very mild reflections and natural contact shadows. Concrete is smooth-to-finely-grained, not a repeated swirled, embossed, stippled or etched pattern. No dramatic headlights, glossy showroom floor, fog or coloured lighting. Keep the real-world scale and camera of the layout while improving materials and automotive realism.
+
+Use case and constraints:
+This is shot 4-10: the driver recognizes a specific available space, not a panoramic tour of an empty garage. The following shot shows the white protagonist car parked in this exact central bay. Do not put that white car here yet. Leave the empty floor unnumbered for local perspective-compositing of 218. No text, digits, signs, arrows, bay number, cyan line, glowing boundary, map, interface, logo, readable licence plate, person, hands, white car, extra car, extra bay or collage. Return one complete 16:9 photographic scene, 2048x1152, not the blockout, not a grid and not a drawing.</pre></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button type="button">复制 Prompt</button></div>
+</dialog>
+
+<dialog class="prompt-dialog" id="layout-parked-prompt-dialog" aria-labelledby="layout-parked-prompt-title" aria-describedby="layout-parked-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">4-11 · 停车后 · 白车停妥 / gpt-image-2</p><h2 id="layout-parked-prompt-title">完整 Prompt</h2><p id="layout-parked-prompt-caption">共同布局生成 · 实际使用的英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭完整 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="停车后生成英文 Prompt，可滚动阅读"><p class="prompt-dialog-context">Image 1 为本页右侧停妥布局图，约束空间与尺度；Image 2 为早期白车细节参考，只约束白车外观，不继承其室外背景。两张布局分别用于两次生成，本次没有上传前一个镜头的新输出。</p><pre id="layout-parked-full-prompt" lang="en">Create one new photographic parking-result still. Image 1 is ONLY a shared three-dimensional staging and scale guide; Image 2 is ONLY the visual reference for the central white protagonist sedan. Produce realistic photography, not the primitive blockout or an edit of a previously generated garage.
+
+Scene and shared parking layout:
+Reconstruct Image 1's exact small three-bay arrangement in a neutral grey office garage. The central white sedan is now reverse-parked and centred in the central bay, nose facing the foreground driving aisle. A medium silver-grey four-door sedan occupies the bay on its left and a dark graphite four-door sedan occupies the bay on its right. All three cars face the same aisle; do not turn a neighbour around or mirror the frame. The earlier target-empty view uses the same bay, neighbours, wheel stops and background. Keep the same column locations and clear front aisle from the guide. Each bay is approximately 2.65m wide and 5.4m deep; the sedans are about 4.7m long and 1.85m wide. These numbers guide scale only. Preserve realistic side clearances and parking depth, four wheels on the ground and no body/column/line intersection.
+
+Stops and floor:
+All bays have the same two low black rubber wheel stops with small yellow inserts at the rear-wheel positions, each about 0.56m wide, 0.18m deep and 0.12m tall, at the same setback. The white car's rear wheels sit just ahead of its stops, with no wheel perched on top. Allow stops to be naturally hidden by the cars rather than inventing extra blocks in front. Keep the white side lines, target bay width and aisle boundary from Image 1. No mismatched long concrete bars, oversized stops or different stop systems between bays.
+
+Hero vehicle and reference roles:
+Replace the central white blockout proxy with the white Tesla Model 3-style four-door sedan represented by Image 2. Preserve its white paint, low sedan proportions, slim front lights, dark aerodynamic wheels, black window trim, dark glass roof, white mirrors and dark flush door handles. Use Image 1 to keep its physical size comparable to the neighbours and completely inside its bay. Image 2 is a car-detail crop only: do not bring in its outdoor light, pavement, greenery or background. Do not make the white car an SUV, enlarge it to fill the frame, copy a cropped body, or render readable license text. Replace both neighbour proxies with ordinary realistic sedans, not blocky toy cars; retain their restrained colours, equal scale and orientation.
+
+Camera and story:
+Use the guide's exterior front-right three-quarter camera from the clear aisle. This is the settled parking result, not a moving car or a parking manoeuvre. The white car's complete silhouette is the primary subject in the left/central two-thirds; keep a calm region on the right for a later small editorial Parked card, but do not move a column or distort the scene to make space. Do not add an interior dashboard: the previous shot was the driver's discovery, this one is outside the car. Doors shut, wheels straight, lights subdued; any cabin occupant is not visible or identifiable. Nobody stands outside or exits the car.
+
+Photographic treatment and constraints:
+Soft neutral overhead strip lighting, plain light-grey concrete and understated ceiling pipes, matte grey epoxy floor with faint reflections, normal soft tire/chassis contact shadows. Fine photographic detail, no swirled or embossed concrete patterns, no showroom gloss, fog, exaggerated headlight bloom or coloured lights. The low-poly guide determines geometry, not final materials or vehicle styling. Add no text, digits, bay number, time, card, cyan highlight, arrow, map, interface, extra person, extra car, new garage geometry, watermark or collage. The original Parked / B2 218 / 08:47 card is added locally afterwards. Return one full 16:9 photographic scene, 2048x1152.</pre></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button type="button">复制 Prompt</button></div>
+</dialog>
+
+<dialog class="prompt-dialog continuity-dialog" id="continuity-prompt-dialog" aria-labelledby="continuity-prompt-title" aria-describedby="continuity-prompt-caption" data-reading-hint="Esc 关闭 · 中间版本对照">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">共同布局之后 · 中间版本</p><h2 id="continuity-prompt-title">空间接近了，邻车却换了车型。</h2><p id="continuity-prompt-caption">同一组布局参考生成的两张摄影底图 · 尚未统一车型或添加界面</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭车型对照" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="车型不一致的中间版本对照"><p class="prompt-dialog-context">重点看两图左侧银车的前脸：颜色相近，但格栅与灯组不同。右侧深灰车的前脸也有差异。共同布局约束了空间，却没有自动固定两次生成中的车辆外观。</p><figure><img src="images/model-drift-pair.webp" alt="共同布局生成后的中间版本：左为停车前，右为停车后；左侧银色邻车跨镜更换车型"><figcaption>后续保留右侧的停车后底图，以其邻车为参考，只修正左侧停车前底图的两辆邻车；车型确认后，再分别合成车位标记与停车确认卡。</figcaption></figure></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 中间版本对照</span></div>
+</dialog>
+
+<dialog class="prompt-dialog" id="garage-prompt-dialog" aria-labelledby="garage-prompt-title" aria-describedby="garage-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">4-03 · 车库补车 / gpt-image-2</p><h2 id="garage-prompt-title">补车修订 Prompt</h2><p id="garage-prompt-caption">实际使用的完整英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭补车修订 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="补车修订英文 Prompt，可滚动阅读"><p class="prompt-dialog-context">Image 1 是同一镜头的无箭头底图；页面左图已叠加箭头，不能直接当作本次上传输入。模型只补停车区内的车辆，指示箭头在生成后本地合成。原文的六辆为生成目标，重点是让车库显得正常使用，同时保留空位与通行空间。</p><pre id="garage-full-prompt" lang="en">Edit Image 1 by adding six realistically parked everyday passenger vehicles inside the existing parking bays beyond the ramp. This is a precise occupancy edit of the supplied photograph, not a new garage design.
+
+Scene:
+Keep the same underground office parking garage, exact windshield viewpoint, framing, perspective, concrete columns, low ramp walls, ceiling beams and pipes, strip lights, protective yellow-black corner markings and dry lightly reflective floor. The camera remains inside the same left-hand-drive vehicle before the first junction. The ramp foreground, its landing, the transverse junction and the central driving aisle must remain open and usable.
+
+Subject:
+Place three stationary commuter cars in existing marked parking bays along the left-side parking band beyond the low ramp wall, and three in existing marked bays along the right-side parking band. Distribute them through near-middle and deeper visible bays, using realistic perspective and natural partial occlusion behind the original columns. Use a charcoal sedan, a silver hatchback and a muted dark-blue compact SUV on the left, and a dark-grey compact SUV, a silver sedan and a muted grey hatchback on the right. Place each car completely inside its own existing bay; orient it consistently with that bay's floor markings. Do not park a vehicle on the ramp, at the ramp mouth, in the transverse junction or across the central driving lane. Retain a few visible unoccupied bays between or beyond parked cars, rather than implying that the whole garage is full.
+
+Important Details:
+All six vehicles are parked, switched off, and unoccupied, with normal proportions, tires resting on the floor, restrained reflections and contact shadows consistent with the existing ceiling lights. Keep a varied but ordinary office-commuter appearance, not a showroom of identical cars. Vehicle scale must agree with the original bay widths, columns and ceiling height. Keep original columns intact in front of any naturally occluded vehicle parts. License-plate surfaces should remain visually indistinct without readable invented identifiers. Preserve the quiet neutral concrete colour grade, brightness, saturation, material texture and subtle floor reflections; add only the local shadows and reflections caused by the parked cars.
+
+Use Case:
+One complete 16:9 photographic still for shot 4-03 of an existing film. The image should make the garage look normally used while a newcomer still needs guidance to locate a suitable free space. It must not portray a traffic jam or the last remaining bay. The two existing overhead dark rectangular sign faces stay blank at exactly their current positions and sizes; the original left/right arrows will be added locally afterwards.
+
+Constraints — Change / Preserve:
+Change only occupancy of the existing side parking bays by adding the six vehicles and their physically necessary shadows and reflections. Preserve the camera, all architecture and floor markings, blank overhead signs, side mirror in the garage, lights, low walls, windshield, black left A-pillar, dashboard and steering-wheel crop. Keep all travel lanes unobstructed. Preserve the original image geometry without cropping, zooming, mirroring or repositioning objects. Add no person, driver, hands, extra cabin, moving car, headlights, queue, barrier, new wall or new parking-bay layout. Add no text, digits, arrows, bay number, floor label, logo, cyan route, destination highlight, UI, map, border, collage or watermark. Return one clean edited photographic scene plate.</pre></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button type="button">复制 Prompt</button></div>
+</dialog>
+
+<dialog class="prompt-dialog" id="guide-prompt-dialog" aria-labelledby="guide-prompt-title" aria-describedby="guide-prompt-caption" data-reading-hint="Esc 关闭 · 节选可滚动阅读">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">第一幕 · 交付文件示例</p><h2 id="guide-prompt-title">剪映逐镜实操指南</h2><p id="guide-prompt-caption">Jianying_Guide.md · 首次导入与后续更新节选</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭剪映操作指南" autofocus>×</button></div>
+<div class="prompt-dialog-body guide-document" role="region" tabindex="0" aria-label="第一幕剪映指南节选，可滚动阅读">
+<p class="prompt-dialog-context">以下节选整理自第一幕实际交付指南，展示当时的操作写法。首次导入部分保留当时的10秒工程时码；临时旁白和参数属于历史方案，不是当前成片的重做要求。已省略内部素材路径与链接，原始指南未改动。</p>
+<h3>01 · 建立项目与导入素材</h3>
+<p>目标：用5张原图＋1段导航合成视频，在剪映内完成可继续精修的10秒第一幕。</p>
+<ol><li>在项目/草稿设置或播放器比例入口确认 <strong>16:9、SDR/Rec.709</strong>。画面导出目标为1920×1080。</li><li>在“媒体 → 本地 → 导入”中选择本包 <strong>01-picture</strong> 的六个文件。</li><li>对照下表核实缩略图及文件名。导航选的是带车内环境的MP4，不是UI源视频，也不是空屏图片。</li></ol>
+<p class="guide-caption">原指南按24fps说明帧时码；若软件只能按秒排片，导出时明确24fps，再核验实际文件。</p>
+<h3>02 · 第一遍：只排时间，不加效果</h3>
+<p>将素材拖到最下方主画面轨，依次排列；可用吸附帮助对齐。下表起点包含，终点不包含，后一镜从前一镜终点开始。</p>
+<table><caption>第一幕六镜 · 初次10秒工程的局部时间</caption><thead><tr><th scope="col">镜号</th><th scope="col">素材</th><th scope="col">起点 / 秒</th><th scope="col">终点 / 秒</th><th scope="col">帧数</th></tr></thead><tbody>
+<tr><td>1-01</td><td>工牌与 freedom 钥匙卡</td><td>0.000</td><td>1.500</td><td>36</td></tr>
+<tr><td>1-02</td><td>车边纪念照</td><td>1.500</td><td>3.000</td><td>36</td></tr>
+<tr><td>1-03</td><td>美甲手部</td><td>3.000</td><td>4.500</td><td>36</td></tr>
+<tr><td>1-04</td><td>车内侧脸</td><td>4.500</td><td>6.000</td><td>36</td></tr>
+<tr><td>1-05</td><td>Work 导航合成视频</td><td>6.000</td><td>7.500</td><td>36</td></tr>
+<tr><td>1-06</td><td>驶向办公室</td><td>7.500</td><td>10.000</td><td>60</td></tr>
+</tbody></table>
+<p>导航视频保持 <strong>100%速度、源入点0、全部36帧</strong>。不延长、不加光流、不复制末帧，也不要为了补时间把它变速。</p>
+<h3>03 · 第二遍：在剪映里做图片运动</h3>
+<ol><li>播放头放在该片段<strong>第一帧</strong>，设置起始缩放/位置，点击对应属性右侧的菱形关键帧。</li><li>播放头移到该片段<strong>最后一个可见帧</strong>，修改到结束值。若没有自动出现第二个菱形，再手动添加。</li><li>仅做一个主运动，不同时套照片“入场动画”、组合动画和缩放关键帧。后者会叠加导致跳动或裁脸。</li></ol>
+<p class="guide-caption">这里摘录通用操作，不照搬后来已换构图的1-02旧缩放、位移参数。具体效果仍需在播放器里检查。</p>
+<h3>04 · 声音分轨（当时的方案）</h3>
+<ul><li><strong>A1：</strong>已有十秒临时旁白，0秒开始，锁定位置。</li><li><strong>A2：</strong>短动作声；需要重叠的声音可分两条轨，不强塞一个轨道。</li><li><strong>A3：</strong>环境底噪，由清晨过渡到车内、再到行驶。</li><li><strong>A4：</strong>BGM，连续一条，避免每镜换音乐。</li></ul>
+<p>这些是轨道职责，不要求剪映显示同名轨道。若版本不能重命名，保持上下顺序并在备注中记录。</p>
+<p class="guide-caption">本次首包不含BGM或音效，指南提供选材和落点建议；后期已定稿的Ava、字幕与音乐不按这段历史说明重导。</p>
+<h3>05 · 导出前检查</h3>
+<ul><li>正文结尾10.000秒，24fps对应240帧；导航从6秒到7.5秒且不变速。</li><li>Work至少前一秒稳定可读，出发动画未被转场遮掉。</li><li>封面没有未经决定插入主轨。复制草稿/保存后再导出，不覆盖唯一工程。</li></ul>
+<p>导出后打开实际MP4，从头到尾看一次，再对照以下关键点：0秒工牌、3秒手部、6秒Work、7秒点击、7.5秒出发外景、10秒结束。</p>
+<h3>06 · 后续更新：只替换1-02自拍图</h3>
+<p class="guide-caption">这一段来自指南顶部后来补入的单镜替换说明，与首次建工程步骤分开阅读。</p>
+<ol><li>先保存并备份草稿，关闭再打开，检查时间线里的画面是否刷新，不能仅凭媒体库缩略图判断。</li><li>若旧缓存或另一份副本仍在使用，以独立v4原图替换该单片，<strong>保持36帧</strong>，复核已有缩放/裁剪/关键帧和相邻切点；不要波纹删除、重新插入或清空未知缓存目录。</li><li>新v4是膝部以上构图，旧“保鞋子/脚底”的参数不再适用；检查脸和手机不被现有裁剪遮挡，其他镜头与声音不动。</li></ol>
+<p class="guide-caption">旧工程的1-02位于1.5–3秒；加入2秒片头后的对应区间为3.5–5秒。实际操作核对当前工程，不只凭旧表定位。素材交付记录不等于最终原生工程的独立验收。</p>
+</div><div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 节选可滚动阅读</span></div>
+</dialog>
+<!-- Character-generation prompt; private source photos are not included. -->
+<dialog class="prompt-dialog" id="master-prompt-dialog" aria-labelledby="master-prompt-title" aria-describedby="master-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">Lexie · 角色参考图 / gpt-image-2</p><h2 id="master-prompt-title">完整 Prompt</h2><p id="master-prompt-caption">初版生成 + 裤装调整 · 两次独立请求的英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭完整 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="完整英文 Prompt，可滚动阅读"><p class="prompt-dialog-context">第 1 步：两张原始人像分别约束脸部身份与身体比例，生成角色母版 v1（原始人像不展示）。第 2 步：只上传 v1，将炭灰长裤调整为米白色，得到页面所示的 v2。以下是两次独立请求，不能合并成一次执行。</p><pre id="master-full-prompt" lang="en">STEP 1 — Create the character reference (v1)
+
+Create one square 2-by-2 casting reference sheet. Use Image 1 as the exact primary facial-identity reference. Use Image 2 only as the supporting full-body proportion and hair-length reference; Image 2 must not override the face from Image 1.
+
+Scene:
+A clean 2-by-2 grid on a uniform warm-neutral gray studio background (#D8D3CC), with narrow even gutters and no outer decorative border. Soft, broad, neutral daylight comes from camera-left with gentle fill from camera-right. Lighting direction, white balance, exposure, skin tone, background, and wardrobe remain identical in all four panels.
+
+Subject:
+The exact same recognizable East Asian woman from Image 1 appears once in each panel. Preserve her real facial identity from Image 1: the same slim oval face, almond-shaped dark eyes, natural eyebrow shape, nose structure, lips, jawline, warm natural skin tone, hairline, age, and individual asymmetries. Use Image 2 to preserve realistic shoulder-to-waist, leg-length, height, and long-hair proportions. Dress her consistently in a lightly structured warm-ivory blazer over an ivory matte blouse, charcoal straight-leg trousers, simple dark flat shoes, and small understated stud earrings. Natural minimal makeup; visible real skin texture.
+
+Important Details:
+Top-left panel: head-and-shoulders front view, face perpendicular to camera, direct eye contact only for identity inspection, closed lips, calm neutral expression, hair resting naturally behind one shoulder.
+Top-right panel: head-and-shoulders three-quarter view turned approximately 35 degrees toward frame-right, eyes looking slightly beyond camera, closed lips, calm attentive expression.
+Bottom-left panel: waist-up clean side profile facing frame-right, both eyes and nose silhouette physically coherent, head level, shoulders relaxed, closed lips.
+Bottom-right panel: full-body front three-quarter standing view, feet fully visible on the same neutral floor, arms relaxed naturally at her sides, balanced posture, realistic body proportions and garment drape.
+
+All four panels depict one person during the same studio session. Keep the exact same face, hairstyle, hair length, earrings, wardrobe colors, garment cut, body proportions, and lighting. Leave enough resolution on the three face panels to inspect eyes, nose, lips, jawline, hairline, ears, and natural skin texture. The full-body panel is functional wardrobe and proportion reference, not a fashion pose.
+
+Use Case:
+Private production identity reference for deriving consistent photorealistic stills across a workplace short film. This sheet is not a final movie frame and contains no story environment.
+
+Constraints:
+One sheet with exactly four panels and exactly one instance of the same woman in each panel. Image 1 has priority for every facial feature; Image 2 contributes only body proportions and hair length. Do not blend, average, beautify, age-shift, ethnicity-shift, slim, reshape, stylize, or reinterpret her face or body. Keep lips closed in all panels. Keep hair length, part, texture, and color consistent. Keep the same blazer, blouse, trousers, shoes, and earrings in every panel. Ignore the pink striped top, jeans, beige sweater, leather skirt, handbag, tall boots, large flower earrings, yacht, lake, trees, and all hand gestures from the references. No labels, captions, names, measurements, height lines, logos, watermark, jewelry changes, glasses, handbag, phone, vehicle, office, outdoor scenery, dramatic colored light, glamour retouching, airbrushed skin, exaggerated smile, duplicate limbs, extra fingers, cropped feet, or additional people.
+
+STEP 2 — Update the trousers (v1 → v2)
+
+Edit the supplied 2-by-2 character reference sheet in place. This is a small wardrobe continuity update to an established character master, not a new character sheet. Change only the existing charcoal trousers in the bottom-right full-body panel to warm ivory suiting fabric. Return one complete square 2-by-2 sheet, with all four existing panels kept in the same positions and proportions.
+
+Change:
+In the bottom-right full-body panel, recolor the existing high-waisted straight-leg trousers to a restrained warm off-white that harmonizes with the woman's existing cream blazer and ivory blouse. Preserve the same matte woven suiting texture, original waistband, tailoring, folds, leg width, hem height and ankle exposure. Retain visible creases and softly shaded folds, so the trousers keep their volume and do not become a flat white patch. Use the same neutral studio light already present in the source image. The update should read as a coordinated ivory outfit, not pure overexposed white, glossy satin or yellow fabric.
+
+Preserve:
+Keep the top-left front portrait, top-right three-quarter portrait and bottom-left side portrait unchanged in identity, facial features, expression, pose, hairstyle, clothing, lighting and framing. Preserve the bottom-right woman's exact face, age, hair, earrings, body proportions, shoulder width, waist, leg length, hands, standing pose and foot positions. Keep the original cream blazer, ivory blouse and dark flat shoes exactly as they are. Preserve the neutral studio background, floor shadows, camera perspectives, panel sizes, narrow dividers, white balance and overall exposure. Do not re-style, beautify, slim or elongate the character. The original master is the only authority for identity and anatomy.
+
+Constraints:
+Only the trouser color changes. Do not add high heels, new shoes, jewelry, makeup, a new nail design, labels, text, logos, measurements, a new pose, an extra person or additional panels. Do not turn any portrait into a full-body image or reveal clothing that was outside its existing crop. Do not replace the sheet with a different casting photo. Do not brighten the whole image or repaint the woman's skin in order to make the trousers lighter. All four panels must remain the same established woman; use the original panel content rather than inventing a new face. No collage comparison or before-and-after arrangement beyond the original four-panel reference layout.</pre></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button type="button">复制 Prompt</button></div>
+</dialog>
+<!-- Scene-generation prompt paired with v3, also the following slide's input. -->
+<dialog class="prompt-dialog" id="identity-prompt-dialog" aria-labelledby="identity-prompt-title" aria-describedby="identity-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">1-02 · 车边纪念照 / gpt-image-2</p><h2 id="identity-prompt-title">完整 Prompt</h2><p id="identity-prompt-caption">镜头 v3 · 实际使用的英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭完整 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="完整英文 Prompt，可滚动阅读"><p class="prompt-dialog-context">Image 1 为原始人像参考（不展示）；Image 2 为已有站姿无字图，用于参考白车、米白服装与人车位置。左侧角色母版在本次生成中仅作本地核对，未重新上传。输出即本页 v3，尚有视线与手部问题，下一页继续修订为 v4。</p><pre id="identity-full-prompt" lang="en">Create one natural photographic storytelling frame of a woman taking a personal commemorative selfie with her first car. Use the two references only for their explicitly assigned roles. This is one candid moment, not a car advertisement, fashion pose, collage or screenshot from the phone.
+
+Reference roles: Image 1 is the sole authority for the woman's facial identity, recognizable proportions and long dark hair. Do not transfer its boat, sea, vacation clothes, large flower earrings or gestures. Image 2 supplies the white Tesla Model 3 exterior, ivory tailored outfit and the broad front-three-quarter relationship of a woman standing near the car's front-side corner, with the car's nose directed toward image left. Do not copy Image 2's hand resting on the hood, direct look into the photographer's camera, nighttime showroom, dramatic presentation lighting or large empty title area. Where the woman's features differ, prioritize Image 1.
+
+Scene: A quiet contemporary office-campus forecourt in early morning, with soft warm daylight, understated glass architecture and greenery gently out of focus. The car is stationary in a safe paved parking area. Keep the setting ordinary and uncluttered without recognizable company signs, license plates or readable building labels. Natural daylight and car reflections connect to a morning commute, not a nighttime exhibition.
+
+Subject and action: The woman wears the approved ivory blazer, ivory inner top, matching straight-leg trousers, discreet small stud earrings and dark flat shoes shown by the outfit in Image 2. She stands beside the near front-side corner of her white car, comfortably away from the hood rather than leaning on it. She holds one dark smartphone vertically in her right hand, at a comfortable arm's length just above eye level. The phone screen and front-facing camera face her and the car behind her; the main film camera sees the phone's plain back and rear camera module. She looks at her own screen with a small, genuine closed-mouth smile, proud and quietly pleased. Her other arm rests naturally at her side. Keep her face fully visible and the raised phone clear of her face. No hand touching the hood, crossed model stance or eyes addressing the main camera.
+
+Framing: Use an outside observer's medium-full three-quarter view, roughly from her knees upward, with her head and raised phone comfortably inside the frame. Keep the front light, hood edge and a substantial portion of the side doors and windows visible, so the white Model 3 is recognizable as the object of her celebration. The car faces image left. Arrange the woman's position at the near front corner and the phone in front of her so a believable wide-angle front camera can include her and the car behind her in the same selfie. Prioritize her expression and the simple phone gesture at a 1.5-second viewing time. Fill the composition with the person and car; do not reserve a large blank region for titles, shrink her into a full-car catalog shot or crop away the phone. Preserve realistic arm length, body proportions, natural wrist angle and human grip.
+
+Use case and constraints: This frame communicates "I finally bought my first car" through a personal action, not through a label or corporate slogan. One woman, one phone, one foreground white left-hand-drive Model 3. Preserve plausible headlights, black flush door handles, mirrors, wheel shapes and connected body panels; doors are closed and the car is not moving. No duplicate people, extra fingers or limbs, floating phone, visible screen text, artificial beautification, dramatic makeup, high heels, map, cyan navigation line, hologram, title, watermark, border or inset. Render a single coherent opaque 16:9 photograph with natural skin texture and restrained warm morning light.</pre></div>
+<div class="prompt-dialog-footer"><span role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button type="button">复制 Prompt</button></div>
+</dialog>
+<!-- Verbatim executable prompt only; production metadata and private references stay out of this reader. -->
+<dialog class="prompt-dialog" id="generation-prompt-dialog" aria-labelledby="generation-prompt-title" aria-describedby="generation-prompt-caption">
+<div class="prompt-dialog-header"><div><p class="prompt-dialog-eyebrow">1-02 · 车边纪念照</p><h2 id="generation-prompt-title">完整 Prompt</h2><p id="generation-prompt-caption">自拍姿态修订 · 实际使用的英文原文</p></div><button class="prompt-dialog-close" type="button" aria-label="关闭完整 Prompt" autofocus>×</button></div>
+<div class="prompt-dialog-body" tabindex="0" aria-label="完整英文 Prompt，可滚动阅读"><pre id="generation-full-prompt" lang="en">Edit this single reference photograph in place to correct the woman's selfie pose. Preserve the photograph's composition and scene. Return one complete photograph, not a comparison or collage.
+
+Change the raised RIGHT hand and its perspective: This is her anatomical right hand, currently on the LEFT side of the image. Keep that hand holding the same vertical dark smartphone. Relax and slightly bend the right elbow so the forearm extends sideways toward the phone rather than strongly toward the main photographer. Bring the hand and phone a little closer to her depth plane, while retaining a comfortable arm's-length selfie distance and keeping the phone clearly left of her unobstructed face. Reduce the exaggerated apparent size of the palm, fingers and phone together; aim for roughly a fifth less projected size than in the reference, guided by believable adult anatomy rather than a tiny doll hand. Keep a continuous, proportionate shoulder–sleeve–forearm–wrist connection, a natural wrist angle and relaxed fingers holding the phone securely. The lowered left hand is unchanged.
+
+Change head orientation and gaze together: Turn her head naturally toward her own phone on IMAGE LEFT. Her nose and chin should point visibly toward the phone, producing a gentle three-quarter face, not a frontal face addressing the main camera. Both eyes focus naturally on the upper part of her phone screen near its front camera. Let her head, pupils and the phone's inward-facing screen form a coherent sightline. Do not merely slide the pupils sideways within a front-facing head. Keep her small, pleased closed-mouth smile, recognizable facial proportions, long dark hair and small stud earrings. Make the shot read immediately as a private selfie with her first car, not as a portrait taken by another photographer while she holds up a phone.
+
+Preserve: The woman's identity, face size, standing position, torso and leg proportions, ivory blazer and inner top, ivory trousers, relaxed lowered arm, and the existing morning color grade. Preserve the stationary white Tesla Model 3, its image-left nose direction, headlights, hood, side doors, black flush handles, mirror, windows, wheels and reflections. Preserve the paved parking area, glass buildings, trees, greenery, warm daylight, shadows, camera framing, crop and depth of field. Keep the person and car at their current scale; do not solve the hand problem by shrinking the whole woman, zooming out, changing to a wide-angle lens or recomposing the scene.
+
+Constraints: Only one woman and one phone. Keep the screen facing her and the phone back facing the main photographer; small angle/position adjustments are allowed only to make the selfie geometry natural. Do not switch to her left hand, mirror the image, add a selfie stick, show readable phone content, add or fuse fingers, enlarge the palm, stretch a finger, disconnect the wrist, hide the face, change the car or invent new props. No retouching that changes her identity, no new makeup, no text, watermark, map, cyan route, UI, border or inset. Deliver one opaque 16:9 photograph. Local edits may reconstruct hair and sleeve edges naturally; do not paste isolated smaller hands or eye cutouts onto the image.</pre></div>
+<div class="prompt-dialog-footer"><span id="generation-copy-status" role="status" aria-live="polite">Esc 关闭 · 全文可滚动阅读</span><button id="generation-copy-prompt" type="button">复制 Prompt</button></div>
+</dialog>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/dist/reveal.js"></script><script src="https://cdn.jsdelivr.net/npm/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+<script>if(location.hash==='#/script-acts-4-7')history.replaceState(null,'','#/script');if(window.Reveal){const mobile=innerWidth<768;Reveal.initialize({hash:true,slideNumber:'c/t',transition:matchMedia('(prefers-reduced-motion: reduce)').matches?'none':'slide',backgroundTransition:'fade',width:mobile?960:1280,height:720,margin:mobile?.04:.08,center:false,scrollActivationWidth:null,plugins:[RevealNotes]}).then(()=>document.getElementById('load-message').hidden=true)}</script>
+<script src="film-player.js?v=20261002-cinema"></script>
+<script src="generation-interactions.js?v=20261003-guide-reader"></script>
+<script src="ending-preview.js?v=20261003-ending"></script>
+<script src="audio-preview.js?v=20261003-ending-preview"></script>
+</body></html>

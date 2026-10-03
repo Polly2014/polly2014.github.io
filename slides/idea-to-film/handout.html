@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parking Copilot · 制作流程笔记</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f4f3ed;color:#1b3440;font:16px/1.9 "Avenir Next","PingFang SC",sans-serif}main{max-width:920px;margin:auto;padding:34px 30px 70px}nav{display:flex;gap:18px;flex-wrap:wrap;font-size:13px}a{color:#087b76}h1{font-size:36px;line-height:1.3;letter-spacing:-.035em;margin:32px 0 16px}h2{font-size:24px;margin:42px 0 12px}h3{font-size:18px;margin:25px 0 8px}.eyebrow{font:12px Menlo,monospace;letter-spacing:.12em;color:#087b76}.lead{color:#516b78}.artifact{font:13px/1.8 Menlo,"PingFang SC",monospace;white-space:pre-wrap;background:#102839;color:#e4f1f6;border-radius:8px;padding:20px;overflow-wrap:anywhere}.boundary{font-size:13px;line-height:1.8;background:#eee9dc;border-left:3px solid #b58b3a;padding:15px 19px;margin:20px 0}.jump{font-size:13px;padding:14px 0;border-top:1px solid #cfdcde}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{border:1px solid #d5dedf;background:#fff;padding:20px;border-radius:7px}.card h3{margin-top:0}.card p{font-size:14px;margin:0}.route{padding-left:22px}.route li{padding:3px 0}.muted{font-size:13px;color:#576e79}footer{border-top:1px solid #cbd9dd;margin-top:45px;padding-top:20px;font-size:13px}@media(max-width:600px){main{padding:24px 18px}h1{font-size:29px}.grid{grid-template-columns:1fr}.artifact{font-size:12px}}@media print{body{background:white}main{padding:0}nav{display:none}h2,h3{break-after:avoid}.artifact,.card,.boundary{break-inside:avoid}}
+h4{font-size:16px;line-height:1.7;margin:24px 0 8px}.card h4{margin:0 0 8px}
+.opening-subtitle{font-size:20px;line-height:1.65;margin:0 0 20px;color:#087b76}.opening-copy{max-width:760px}
+.notes-toc{display:block;margin:30px 0 22px;font-size:16px}.toc-title{margin:0 0 12px;font-size:14px;font-weight:600;color:#516b78}
+.toc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.toc-grid a{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:12px;row-gap:4px;height:100%;padding:18px 20px;border:1px solid #d5dedf;border-radius:8px;background:#fff;text-decoration:none}
+.toc-grid a:hover{background:#eaf3ef;border-color:#087b76}.toc-grid a:focus-visible,summary:focus-visible{outline:2px solid #087b76;outline-offset:4px}
+.toc-number{font:500 14px/1.9 Menlo,monospace;color:#087b76}.toc-grid strong{font-size:18px;line-height:1.5;color:#1b3440}.toc-grid small{grid-column:2;font-size:13px;line-height:1.65;color:#516b78}
+.notes-chapter{border-top:1px solid #cfdcde;margin-top:40px;padding-top:6px;scroll-margin-top:24px}.notes-chapter h2{margin-top:22px}.notes-chapter h3,.notes-chapter h4{scroll-margin-top:24px}
+.reading-note{margin:18px 0;color:#576e79;font-size:13px}.reading-note p{margin:8px 0 0}summary{cursor:pointer;color:#087b76;font-weight:600;line-height:1.7;padding:6px 0}
+.closing-line{font-size:20px;font-weight:600;color:#087b76;margin:0 0 14px}
+.script-page{margin:24px 0 28px;padding:28px 32px;background:#fffdfa;border:1px solid #d5dedf;border-radius:8px;scroll-margin-top:24px}
+.script-page .script-label{margin:0 0 6px;color:#087b76;font-size:12px;letter-spacing:.08em}.script-page h4{margin:0 0 24px;font-size:22px;line-height:1.5}
+.script-page h5{margin:24px 0 10px;font-size:13px;color:#576e79;letter-spacing:.08em}.script-action{margin:0;padding-left:24px;font-size:15px;line-height:1.9}.script-action li{padding:3px 0 3px 4px}
+.script-voice{margin:0;padding-left:20px;border-left:2px solid #087b76;font:18px/1.9 Georgia,"Songti SC",serif}.script-voice p{margin:0 0 12px}.script-voice p:last-child{margin-bottom:0}
+.script-screen{min-width:0;border-left:2px solid #cfdcde;padding-left:16px;font-size:14px}.script-screen p{margin:0 0 8px}.script-screen .script-screen-label{font-size:12px;color:#576e79}.script-transition{margin:0;font-size:15px}
+@media(max-width:600px){.toc-grid{grid-template-columns:1fr}.toc-grid a{padding:15px 16px}.opening-subtitle{font-size:18px}.notes-chapter h2{font-size:23px}}
+@media(max-width:600px){.script-page{padding:20px 18px}.script-page h4{font-size:20px}.script-voice{font-size:17px;padding-left:14px}}
+@media print{h4{break-after:avoid}.notes-chapter{margin-top:28px}.notes-toc{display:none}}
+@media print{.script-page{background:white;padding:18px;border-radius:0}.script-page h5{break-after:avoid}.script-action li,.script-voice,.script-screen{break-inside:avoid}}
+</style></head><body><main>
+<nav aria-label="页面导航"><a href="./">实录总览</a><a href="reveal.html">全屏分享</a></nav>
+<header>
+<p class="eyebrow">PARKING COPILOT / PRODUCTION NOTES</p><h1>从一个停车 idea，<br>到两分钟短片。</h1>
+<p class="opening-subtitle">一连串制作选择，让故事一步步成为画面。</p>
+<p class="lead opening-copy">一个停车 idea 怎样成为故事，又怎样拆成能做出来的镜头？这份笔记沿着 Parking Copilot 的制作过程，展开几个具体选择：人物为什么这样设定，一场戏怎样写，素材怎样制作，以及剪起来以后为什么还要改。你可以独立阅读，也可以在看过 slide 后，回到这里细看其中的方法。</p>
+<p class="jump"><strong>先看成片，再看过程：</strong><a href="reveal.html#/result">在 slide 中播放</a> · <a href="https://media.polly.wang/parking-copilot-2026/parking-copilot-v7-20260920-web-1080p.mp4" target="_blank" rel="noopener noreferrer">单独打开两分钟完整成片</a></p>
+</header>
+<nav class="notes-toc" aria-label="四步目录">
+<p class="toc-title">制作流程 · 按四步回看</p>
+<ol class="toc-grid">
+<li><a href="#idea"><span class="toc-number">01</span><strong>找到故事</strong><small>视角转变、人物与四个体验触点</small></a></li>
+<li><a href="#shots"><span class="toc-number">02</span><strong>做出镜头</strong><small>剧本、分镜、AI 图片与界面合成</small></a></li>
+<li><a href="#editing"><span class="toc-number">03</span><strong>连成影片</strong><small>素材包、剪辑、声音字幕与片尾</small></a></li>
+<li><a href="#rework"><span class="toc-number">04</span><strong>回看精修</strong><small>发现问题、重建布局与修订素材</small></a></li>
+</ol>
+</nav>
+<details class="reading-note"><summary>关于这份笔记</summary><p>为方便阅读，下面把制作过程组织为四步。实际制作中，剪辑和回看常常会带来新的发现，需要回到剧本、镜头或素材继续调整。</p></details>
+
+<section class="notes-chapter" id="idea" aria-labelledby="idea-title">
+<h2 id="idea-title">01 · 找到故事</h2>
+<h3>从系统能力，转向一个人的日常</h3>
+<p>最初的 idea 是通过历史停车数据，借助 AI 预测、优化车位使用，提升整体使用率。从管理员视角讲，很容易成为面向高层的效率介绍。为了让以员工为主的观众更有代入感，构思从 Capability 转向 User Experience：她在停车时遇到什么困难，又需要怎样的答案？</p>
+<h3>第一辆车，是故事的情感起点</h3>
+<p>主角是一名毕业不久、靠自己的努力买下第一辆车的职场新人。工牌与钥匙、车边纪念照，让“买车”成为努力换来的新生活，而不只是一次功能演示的开场。她以为从此能自由出发，停车中的未知却一次次打断这份期待。</p>
+<h3>四次帮助，串成一段经历</h3>
+<p>等待资格、进入陌生车库、寻找充电位、下班找车，都围绕“不知道下一步怎么办”展开。同一个人物经历四次帮助，安心与信任便能逐渐积累。开头的自由是拥有一辆车，结尾的自由则是能够计划、知道方向、从容抵达。</p>
+<p class="jump">回看 slide：<a href="reveal.html#/reframing">视角的转变</a> · <a href="reveal.html#/idea">四个体验触点</a> · <a href="reveal.html#/emotional-arc">人物的情绪变化</a></p>
+</section>
+
+<section class="notes-chapter" id="shots" aria-labelledby="shots-title">
+<h2 id="shots-title">02 · 做出镜头</h2>
+<h3 id="script">先读一场戏，再看它为什么这样写</h3>
+<p>剧本里，这位新人叫 Lexie。刚买下第一辆车的她，向公司申请地下停车资格，却迟迟等不到进展。下面摘录这一场的画面、旁白、界面与转场，先看看故事在纸上是什么样子。</p>
+<p class="muted">这是中文剧本节选，不是最终成片的逐镜复述。停车排队名次与预计等待区间为演示设定，不是服务承诺。</p>
+<article class="script-page" id="script-wait" aria-labelledby="wait-scene-title">
+<p class="script-label">中文剧本 · 场景二节选</p>
+<h4 id="wait-scene-title">第一次及时出现——等待有了答案</h4>
+<h5>画面</h5>
+<ol class="script-action" data-script-source="chinese-v2">
+<li>到公司后，Lexie 用手机提交地下停车申请，点击“提交”。</li>
+<li>页面跳转后只留下一个冷冰冰的状态：“等待中”。</li>
+<li>午休时，她一边吃饭一边刷新页面，结果没有变化。</li>
+<li>第二天，她再次打开同一页面，屏幕依然停在“等待中”。可以复用同一构图，只改变桌面物品或窗外光线，让观众一眼看懂时间过去了。</li>
+<li>她尝试询问进度，得到的仍然只是“还没有排到”。不必安排同事出镜，一条简短旧系统回复即可。</li>
+<li>她抬头看向窗外，其他车辆正驶入公司地下车库；随后切到她把导航目的地改成外部停车场。</li>
+<li>就在她准备出发时，Teams 出现 Parking Copilot 消息。</li>
+<li>她读到“第 27 名”和“10–12 周”，神情不是惊喜，而是终于心里有数。</li>
+<li>她停止刷新，把预计时间加入日历，收起手机。</li>
+</ol>
+<h5>旁白</h5>
+<blockquote class="script-voice">
+<p>可公司的停车资格需要排队。<span data-script-source="chinese-v2">对我来说，真正令人焦虑的，不是等待，而是不知道还要等多久。</span></p>
+<p data-script-source="chinese-v2">Parking Copilot 把“还没有”，变成了一个我可以计划的答案。</p>
+</blockquote>
+<h5>屏幕信息</h5>
+<div class="grid">
+<div class="script-screen"><p class="script-screen-label">旧页面</p><p>申请已收到<br>地下停车权限：等待中</p></div>
+<div class="script-screen"><p class="script-screen-label">Teams 卡片</p><p><strong>Parking Copilot</strong><br>当前排队：<strong>第 27 名</strong><br>预计等待：<strong>10–12 周</strong><br>预计时间发生变化时，我会通知你。</p><p class="script-screen-label">次级入口</p><p>查看外部停车场步行路线 ›</p></div>
+</div>
+<h5>转场</h5>
+<p class="script-transition" data-script-source="chinese-v2">Teams 卡片边缘出现青蓝色脉冲，延展为时间线。日历快速推进，但不使用夸张的时钟飞转。</p>
+</article>
+
+<h4>回到这场戏，三个选择值得留下</h4>
+<ol class="route">
+<li><strong>三次打开同一页面，让焦虑有了形状。</strong>变化的是时间，不变的是“等待中”。不必再安排一段抱怨，反复查看的动作已经让观众理解她的处境。</li>
+<li><strong>没有立刻排到，也能得到有用的帮助。</strong>名次与预计区间让她心里有数，而不是制造突然获得车位的惊喜。这里遵循的是“<span data-script-source="story-v1">产品 UI 永远不能早于问题出现。</span>”先有困境，界面上的答案才有分量。</li>
+<li><strong>收起手机，让变化落到行为上。</strong>这场戏从反复刷新走向能够安排日程；产品带来的改变由人物动作完成，而不是只靠旁白宣布。</li>
+</ol>
+<h4 id="script-voice">旁白补充感受，不重复界面</h4>
+<p>画面已经交代反复查看，界面已经给出数字，第一人称旁白便专注于“我”的感受。英文把上面的焦虑收成两句，保留意思，调整口播节奏：</p>
+<blockquote class="script-voice"><p lang="en" data-script-source="english-v1">The hardest part wasn't waiting. It was not knowing how long.</p></blockquote>
+<h4 id="script-elision">其他场景，也只保留必要的因果</h4>
+<p>充电协调保留请求、时间经过和车位空出的结果，省去长聊天与完整移车；下班找车则让她停下核对方向、问一句，再沿路线找到车。前者不必增加第二位演员，后者也不把人物写成“记性差”。</p>
+<p>再往下，才是实现这些画面：人物状态用生成静帧表现，准确的数字和按钮交给网页界面，前后动作由剪辑连接。剧本里的连续动作还要拆成可制作的节点，不能让一张图同时完成打开、刷新和收起手机。</p>
+<p class="jump">回看 slide：<a href="reveal.html#/script">七幕故事总览</a> · <a href="reveal.html#/director-storyboard">导演分镜预演</a></p>
+
+<h3 id="storyboard">分镜让故事变成一批明确的任务</h3>
+<p>分镜曾以55个逻辑镜段、120秒、24fps进行规划。每镜有时长和信息职责；这是一份制作标尺，不是最终剪辑时间线的逐镜清单。</p>
+<div class="artifact">1-05：读到Work → 按下开始 → 导航已启动
+       不在开场提前推荐停车位
+
+4-10：原来该停这里 → 空格、边线、218
+4-11：已经停好了 → 主车在同一目标格、Parked卡
+       用结果剪接，不要求完整倒车动画</div>
+<p>第一幕先跑通六镜：工牌钥匙、车边纪念照、手部、侧脸、导航、通勤。五个36帧片段加最后60帧，组成原独立10秒第一幕；后来增加片头，不能再把早期0秒起点照搬进全片。</p>
+<p class="muted">4-10与4-11的分工在后续返工时进一步明确，具体过程见<a href="#rework">回看精修</a>。</p>
+
+<h3 id="production">把工作分给不同工具</h3>
+<div class="grid"><div class="card"><h4>生成画面负责什么</h4><p>人物情绪、衣装、车辆与环境氛围。先建立身份母版，再逐镜生成，不让模型同时承担准确UI文字与空间导航。</p></div><div class="card"><h4>确定性实现负责什么</h4><p>排名、预计区间、目标车位、路线、按钮反馈和品牌文字，由网页、Three.js、录屏和本地排字控制。</p></div></div>
+<p>人物一致性的一个教训是换裤子：局部遮罩修改没有自然解决边缘，继续贴补只会继承缺陷。回到米白造型母版后再生成正文镜头，才有共同参照。母版固定身份；场景和车型参考负责不同约束，不是“放一张参考就全锁住”。</p>
+<p>项目使用 gpt-image-2 生成静帧。生成前先明确参考图各自负责什么，再编写镜头描述与画面约束；生成后检查人物、构图与细节，再决定是否采用。静帧、界面视频与剪辑各自承担不同的制作任务。</p>
+
+<h3 id="demo">Demo 网站也是制作工具</h3>
+<p>React/TypeScript承载产品界面，Three.js负责楼层与路径；共同的演示夹具管理数字、文案和目标ID。clean移除页面外壳，autoplay重放动作，state直接进入指定状态；独立Film页再提供frame或seek接口，把讨论落到同一画面。</p>
+<p>例如先在4-06展示四层、聚焦B2和218，再用4-07揭示路径，而不是在一个画面里同时解释推荐、空间和行驶。充电完成、请求发出、车位可用也区分状态，不让一个“绿色”代表所有事实。</p>
+<p class="jump">可选现场示范（主动打开，需验证码）：<a href="https://parking.polly.wang/?view=queue" target="_blank" rel="noopener noreferrer">排队Demo</a> · <a href="https://parking.polly.wang/film/act-4-space.html?frame=59" target="_blank" rel="noopener noreferrer">4-06空间</a> · <a href="https://parking.polly.wang/film/act-4-route.html?frame=59" target="_blank" rel="noopener noreferrer">4-07路线</a>。</p>
+<div class="boundary">这些是真正运行的演示界面，不是实时企业系统接入。车位、ETA与路线含演示设定；真实图外观不证明实际可达性、精确距离或车辆净空。</div>
+
+<h3 id="work-shot">1-05 的1.5秒，怎样做出来</h3>
+<ol class="route"><li>先让Work页面实际运行，固定24fps采样时钟；不是实时录屏碰运气，也不是两张图片淡化。</li><li>采36帧：前24帧停留读Work，25–30帧Starting，31–36帧进入导航状态。</li><li>将UI逐帧映射进车内画面的屏幕四边形，保留无损合成序列。</li><li>输出UI原片和车内合成两条无声MP4，剪映选择车内版；不要把两个版本叠播。</li><li>导出后检查36帧是否完整、时间戳是否连续、有无黑帧，再观看画面是否自然。技术检查与观看判断缺一不可。</li></ol>
+<p>无损序列的屏幕外区域能和原底图逐像素核对；编码MP4有损，不能继承这个保证。片段无声是刻意交付，点击声与旁白在剪映里放入。</p>
+<p class="jump"><a href="https://parking.polly.wang/film/act-1-work.html" target="_blank" rel="noopener noreferrer">现场看1-05，暂停并拖动后12帧 ↗（需验证码）</a></p>
+
+</section>
+
+<section class="notes-chapter" id="editing" aria-labelledby="editing-title">
+<h2 id="editing-title">03 · 连成影片</h2>
+<h3 id="material-package">素材包与剪映接手</h3>
+<p>每幕整理成一份素材包，用镜号和用途区分画面、声音、可选层、参考预览和备份。另配素材清单，记录镜号、素材来源与时长；清单不等于可直接打开的剪映工程。</p>
+<p>第一幕指南的实际操作顺序是三遍：先将六镜排通，导航保持36帧原速；再给适合的静帧做轻推、保护人脸与文字；最后按职责接旁白、动作声、环境和BGM。先排节奏，是为了不要用过长转场挤掉UI读屏，或者反过来给导航变速凑时长。</p>
+<p>第0幕提供了直观的分层例子：V1人车底图、V2透明车场装饰、V3完整标题，三层同时显示。参考MP4已含标题，不能再叠一份；如果三PNG已经摆好，替换底图也不等于要把整个片头重装。</p>
+<p class="jump"><a href="https://parking.polly.wang/film/act-0-opening.html" target="_blank" rel="noopener noreferrer">2秒片头动效参考 ↗（需验证码；不是最终片头抽段）</a></p>
+<p class="muted">这里讲解素材装配的方法。示例中的时码、缩放与音量属于相应制作阶段，使用时需要结合当前工程和画面重新确认。</p>
+
+<h3 id="sound-subtitles">声音与字幕，留出呼吸</h3>
+<p>正式Ava旁白为八段，源音频合计61.512秒，包含原生停顿；120秒工作版其余部分是外加留白，让UI、空间和音乐有余地。工作版与独立段二选一，不重复叠放，也不与Samantha等旧临时声音混用。</p>
+<p>字幕采用中上英下的18条双语工作包。片尾补句“One less worry. A little more freedom.”是一段独立的2.904秒音频，另轨配合片尾画面，不作为第三段视频追加；WAV与MP3内容相同，二选一，具体落点结合时间线确认。</p>
+<p>声音实操的关键是看实际动作：例如导航点击要对齐Starting触发，而不是只凭脚本大致秒数。先听旁白，再加环境、动作声和BGM；分轨便于分别调整音量、时序与淡入淡出。</p>
+<p class="muted">Ava 是神经 TTS 声线，不是真人录音或声音克隆。选用音乐与音效时，还需确认适用的使用许可。</p>
+
+<h3 id="delivery">让四个体验触点，在片尾重新汇合</h3>
+<p>第七幕旧方案中尝试过七镜时间线、车模匹配与无车模叠化，后来改为10秒连续四服务回顾，再接7秒从总览直接进入品牌。它们是替代旧收尾的素材，不是在已完成片尾后再加17秒；17秒连看文件只作参考。</p>
+</section>
+
+<section class="notes-chapter" id="rework" aria-labelledby="rework-title">
+<h2 id="rework-title">04 · 回看精修</h2>
+<h3>第四幕返工：空车库与“两个地方”</h3>
+<p>第二轮首先发现叙事问题：既然剧情在讲停车的不确定，过于空旷的车库就缺少支撑。因此先试4-03，再扩展相关六镜补车，而不是把所有素材推倒重做。</p>
+<p>接着是空间问题。修柱车穿插、邻车车型、车头方向时，新的候选又带出轮挡、比例和纹理问题。单张局部看似通过，不等于4-10与4-11能接成同一个停车区；继续从坏候选上修下一张，反而叠加了约束冲突。</p>
+<p>真正的转折是停止补丁链，重新定义两镜职责：4-10给出空格目标，4-11展示停妥与记位。以同一个三格停车区建立Three.js布局，两机位共享尺度、车格与轮挡，再从干净输入生成。</p>
+<p>共同布局改善了几何，但两次生成仍换了邻车款式，因此后来又增加车型对照修正。之后在4-10中去掉黑色车牌，叠加218与车位高亮框、调整蓝框左上角；4-11补上Parked卡。最后备份旧素材，再替换对应镜头。</p>
+<div class="boundary">这个案例不是“写一个更长Prompt就能成功”。空间参考、车型参考和文字合成各管一件事；技术检查、专项review与人的整体观看都不能互相替代。</div>
+
+</section>
+
+<footer><p class="closing-line">故事决定镜头。镜头决定素材。</p><a href="reveal.html">返回全屏分享</a> · <a href="./">制作实录总览</a></footer>
+</main></body></html>
