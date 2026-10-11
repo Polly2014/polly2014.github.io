@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Polly Blog - AI Assistant, Tutorials, and Insights - Herdr</title>
+    <subtitle>Explore Polly Blog for AI tutorials, insights, and updates on cutting-edge technology.</subtitle>
+    <link href="https://polly.wang/tags/herdr/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://polly.wang"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-10-11T00:00:00+00:00</updated>
+    <id>https://polly.wang/tags/herdr/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Single Agent vs. Multi-Agents</title>
+        <published>2026-10-11T00:00:00+00:00</published>
+        <updated>2026-10-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://polly.wang/single-agent-vs-multi-agents/" type="text/html"/>
+        <id>https://polly.wang/single-agent-vs-multi-agents/</id>
+        
+        <content type="html">&lt;p&gt;最近总听到 Herdr，我的第一个问题很实际：它是什么，值不值得把现在的工作方式搬过去？&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;herdr.dev&#x2F;docs&#x2F;concepts&#x2F;&quot;&gt;Herdr&lt;&#x2F;a&gt; 管理运行在终端里的编码 Agent，把工作区、面板和任务状态组织起来。一个助手查资料，一个改代码，另一个等授权，不必逐个切过去确认。这确实有吸引力。&lt;&#x2F;p&gt;
+&lt;p&gt;但了解它以后，另一个问题浮了出来：&lt;strong&gt;同时使用多个 Agent，和让多个 Agent 协作解决一个问题，是同一件事吗？&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;显然不是。几个助手分别做几个项目，管理成本可能很低；几个助手共同修改一个项目，则要处理信息交接、状态冲突和最终责任。前者的便利，并不能直接证明后者的优势。&lt;&#x2F;p&gt;
+&lt;p&gt;我没有因为看到更多并行面板，就决定把每个任务都变成团队项目。我的选择是：&lt;strong&gt;单 Agent 优先，只有分工收益明确时，才增加独立的执行者。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;xian-shuo-qing-chu-wo-men-zai-bi-jiao-shi-yao&quot;&gt;先说清楚，我们在比较什么&lt;&#x2F;h2&gt;
+&lt;p&gt;“多 Agent”经常被用来描述几种不同的东西。&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;组织方式&lt;&#x2F;th&gt;&lt;th&gt;实际发生的事情&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;单 Agent＋工具&lt;&#x2F;td&gt;&lt;td&gt;一个决策循环，根据工具结果继续行动，也可以并行发起互不依赖的工具调用&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;主 Agent＋子 Agent&lt;&#x2F;td&gt;&lt;td&gt;主 Agent 委派任务，子 Agent 在自己的上下文中探索，再返回结果&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;多 Agent 团队&lt;&#x2F;td&gt;&lt;td&gt;多个执行者持续沟通、协调依赖，共同推进目标&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;多会话并行&lt;&#x2F;td&gt;&lt;td&gt;人分别给几个助手布置任务，它们未必互相协作&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;严格来说，第二种已经是多 Agent。调用同一个模型，也不妨碍多个实例组成多 Agent 系统；换了几个不同模型，也不自动构成有效协作。&lt;&#x2F;p&gt;
+&lt;p&gt;因此，我支持的不是“永远只有一个实例”，而是&lt;strong&gt;默认保持简单，按任务需要增加独立上下文和执行循环&lt;&#x2F;strong&gt;。&lt;&#x2F;p&gt;
+&lt;p&gt;这里也需要修正我之前的表述。在&lt;a href=&quot;&#x2F;claude-code-agent-orchestration&quot;&gt;拆解 Claude Code 并行模式&lt;&#x2F;a&gt;时，我把单 Agent 描述得过于串行。单 Agent 不等于一次回答，也不意味着所有工具调用必须排队。它可以循环、检索、保存状态、并行调用工具，再根据测试结果改变下一步。&lt;&#x2F;p&gt;
+&lt;p&gt;如果瓶颈只是几次互不依赖的查询，先让工具并行，未必需要再请来几位“专家”。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;yan-jiu-mei-you-xuan-bu-ying-jia-er-shi-hua-chu-liao-bian-jie&quot;&gt;研究没有宣布赢家，而是划出了边界&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;xiang-tong-de-duo-agent-ke-yi-ti-sheng-ye-ke-yi-tuo-hou-tui&quot;&gt;相同的“多 Agent”，可以提升，也可以拖后腿&lt;&#x2F;h3&gt;
+&lt;p&gt;Yubin Kim 等人的 &lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2512.08296v3&quot;&gt;《Towards a Science of Scaling Agent Systems》&lt;&#x2F;a&gt;提供了一组有价值的对照。本文采用的是 &lt;strong&gt;2026 年 4 月 8 日修订的 v3&lt;&#x2F;strong&gt;：研究覆盖 260 种配置、6 个基准，比较单 Agent 与四种多 Agent 架构，并对工具、提示和计算资源进行标准化控制。&lt;&#x2F;p&gt;
+&lt;p&gt;其报告的相对性能变化，从可拆分金融推理上的 &lt;strong&gt;+80.8%&lt;&#x2F;strong&gt;，到顺序规划上的 &lt;strong&gt;−70.0%&lt;&#x2F;strong&gt;。这里是相对单 Agent 基线的变化，不是准确率增加或减少了多少个百分点。&lt;&#x2F;p&gt;
+&lt;p&gt;最值得带走的不是两个极值，而是它们同时存在：在这些基准中，可独立展开的金融分析受益，而强顺序依赖的规划受到拖累。它提示我们检查任务的依赖结构，却没有证明所有顺序任务都不适合多 Agent。&lt;&#x2F;p&gt;
+&lt;p&gt;这仍然是特定模型、任务和实验设置下的证据，不能据此给所有系统划一条通用分界线。新模型和新工具出现后，具体选择仍需要重测。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;yan-jiu-xing-agent-de-cheng-gong-bu-deng-yu-suo-you-ren-wu-du-gai-zu-dui&quot;&gt;研究型 Agent 的成功，不等于所有任务都该组队&lt;&#x2F;h3&gt;
+&lt;p&gt;Jeremy Hadfield 等人在 Anthropic 的&lt;a href=&quot;https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;multi-agent-research-system&quot;&gt;多 Agent 研究系统复盘&lt;&#x2F;a&gt;中，报告了另一种成功：以 Claude Opus 4 为主 Agent、Sonnet 4 为子 Agent 的系统，在其内部研究评测中，相比单独使用 Opus 4 提升了 90.2%。&lt;&#x2F;p&gt;
+&lt;p&gt;广度搜索很适合这种组织方式。几个子 Agent 分别追踪不同线索，用各自的上下文处理资料，再把关键证据返回主线程。主 Agent 不必把每个网页的全部内容都装进同一个对话。&lt;&#x2F;p&gt;
+&lt;p&gt;但这项结果不是“同等预算下，任何问题都提升 90.2%”的证明。文章同时披露：其数据中，Agent 通常消耗约为普通聊天 4 倍的 token，多 Agent 系统约为普通聊天的 15 倍。&lt;strong&gt;15 倍的比较对象是聊天，不是单 Agent&lt;&#x2F;strong&gt;；这些也是该系统的经验数据，不是固定成本倍率，原文并未把前一个 4 倍明确限定为单 Agent。&lt;&#x2F;p&gt;
+&lt;p&gt;这更像是在回答：当问题足够有价值时，怎样把更多计算资源有效投入探索？而不是证明多 Agent 天然更省。&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;bian-ma-tuan-dui-de-nan-dian-wang-wang-zai-tuan-dui-er-zi&quot;&gt;编码团队的难点，往往在“团队”二字&lt;&#x2F;h3&gt;
+&lt;p&gt;Wilson Lin 在 Cursor 的&lt;a href=&quot;https:&#x2F;&#x2F;cursor.com&#x2F;blog&#x2F;scaling-agents&quot;&gt;长期自主编码实验&lt;&#x2F;a&gt;中描述过一种失败：让地位相同的 Agent 通过共享文件自行协调，结果出现锁竞争、等待，以及没有执行者承担端到端难题的情况。&lt;&#x2F;p&gt;
+&lt;p&gt;后来，他们区分了规划者和执行者，并在周期结束时判断是否继续，协调情况得到改善。但文章也提到，额外设置的集成者反而成了瓶颈，最终被移除。&lt;&#x2F;p&gt;
+&lt;p&gt;这不是一场能证明通用优越性的同预算对照实验，却说明了一个关键点：&lt;strong&gt;多 Agent 的能力不是人数相加，组织结构也需要删减和验证。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;duo-chu-lai-de-agent-jiu-jing-dai-lai-liao-shi-yao&quot;&gt;多出来的 Agent，究竟带来了什么？&lt;&#x2F;h2&gt;
+&lt;p&gt;增加一个 Agent，最直接增加的是一份独立上下文和一条探索路径。它可能带来新证据，也可能只是重复劳动。&lt;&#x2F;p&gt;
+&lt;p&gt;例如，让一个 Agent 独立调查数据库行为，另一个查看客户端日志，最后对照时间线，这种分工有明确的信息收益。让三个 Agent 阅读同一段错误描述，再投票判断原因，收益就没有那么确定。&lt;&#x2F;p&gt;
+&lt;p&gt;同一种模型、同一批资料、同一个最初假设，可能产生高度相关的错误。独立上下文不等于统计意义上的独立判断，换模型也不能保证错误互不相关。&lt;strong&gt;三个助手同意一个结论，不等于三份独立证据。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;另一笔容易漏算的成本是交接。一个子 Agent 读完长文档，汇报“选项有证据支持”，主 Agent 接受了结论，却没收到原文中的时间限制或例外条款。消息变短了，决定结论是否成立的条件也可能丢了。&lt;&#x2F;p&gt;
+&lt;p&gt;有效交付应该包含原文位置、限定条件、尚未解决的矛盾，而不只是流畅的总结。代码任务同样如此：交回补丁、测试结果和未覆盖路径，比一句“已经完成”更有用。&lt;&#x2F;p&gt;
+&lt;p&gt;到了写入阶段，问题还会从信息变成状态：两个 Agent 改同一份配置，分别通过局部测试，合起来却不成立。Worktree 能分开工作副本，却不会自动解决语义冲突，也不是权限沙箱。&lt;&#x2F;p&gt;
+&lt;p&gt;所以，&lt;strong&gt;上下文隔离、文件隔离、权限隔离和结果验收，是四件不同的事&lt;&#x2F;strong&gt;。不能因为开了几个独立面板，就假定它们一起解决了。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wo-de-mo-ren-jia-gou-yi-ge-fu-ze-ren-bu-shi-yi-ceng-ceng-shen-pi&quot;&gt;我的默认架构：一个负责人，不是一层层审批&lt;&#x2F;h2&gt;
+&lt;p&gt;在&lt;a href=&quot;&#x2F;loop-graph-engineering&quot;&gt;《Loop &amp;amp; Graph Engineering 浅析》&lt;&#x2F;a&gt;里，我讨论过先建立反馈闭环，再增加并行。现在更想补上的，是每一次扩展的理由。&lt;&#x2F;p&gt;
+&lt;p&gt;默认情况下，由一个主 Agent 维护目标、约束、当前假设和最终交付。只有发现可独立推进的部分，才委派给子 Agent。主 Agent 也可以亲自执行，不必先变成一个只会分配工作的经理。&lt;&#x2F;p&gt;
+&lt;p&gt;我最愿意增加的两类角色是：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;独立探索者&lt;&#x2F;strong&gt;：调查一个边界清楚的问题，交回证据、结论和不确定性。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;独立审查者&lt;&#x2F;strong&gt;：直接看需求、变更和原始材料，尝试找出反例，而不是先接受实现者的解释。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;审查者也不是必设岗位。小改动可以直接测试；高风险变更，才更值得支付额外审查成本。能由类型检查、测试、文件校验或业务规则判断的部分，优先交给这些机制。Agent 审查补充它们，不能替代它们。&lt;&#x2F;p&gt;
+&lt;p&gt;举几个任务选择的例子，而不是把它们当作已做过的对照实验：&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;定位一个紧密耦合的 bug&lt;&#x2F;strong&gt;：先单 Agent，保持完整的问题理解；需要时委派独立取证。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;调研几个技术方向&lt;&#x2F;strong&gt;：并行探索，约定统一的证据格式，再比较结果。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;修改核心架构&lt;&#x2F;strong&gt;：先明确接口和依赖；没有分清之前，不急着让多个执行者同时写。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;同时推进不同项目&lt;&#x2F;strong&gt;：可以直接多会话并行，不必强行建立 Agent 之间的通信。&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;“一个负责人”也不意味着所有动作都要等它审批。局部任务可以自治；汇合应该发生在确实需要全局信息的地方。否则只是把原来的串行执行，换成了串行等待经理。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bie-zhi-bi-jiao-zui-hao-de-yi-ci-da-an&quot;&gt;别只比较最好的一次答案&lt;&#x2F;h2&gt;
+&lt;p&gt;架构选择最终要落到评测。我希望比较的是三条线：&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;同等预算下，谁完成得更好？&lt;&#x2F;strong&gt; 把主 Agent、子 Agent、审查和重试的费用都算进去，而不是只看最后一次调用。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;达到相同质量，谁总成本更低？&lt;&#x2F;strong&gt; 纳入工具费用、合并冲突和人工返工，token 数也不直接等于账单金额。&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;在各自资源投入下，谁更快交付可用结果？&lt;&#x2F;strong&gt; 从接到任务计时到验收完成，而不是到某个 Agent 停止输出。&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;单 Agent 基线也必须认真做好：合理的工具、足够的上下文、反馈循环，以及必要的工具并行。拿一个裸提示词，对比一套精心设计、花费更多资源的团队，只能说明整套方案有差异，不能单独归功于 Agent 数量。&lt;&#x2F;p&gt;
+&lt;p&gt;同一批有代表性的任务应重复运行，观察平均表现、波动和失败类型；还要留出没有参与调优的任务，避免只适配熟悉样例。必要时把单 Agent 的多次尝试也加入对照，区分收益来自协作，还是仅仅来自更多尝试。&lt;&#x2F;p&gt;
+&lt;p&gt;最后做一个简单的删减实验：去掉某个子 Agent，质量、耗时和返工是否变差？如果没有，就很难说这个角色值得长期保留。&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;mei-yi-ci-fen-gong-du-ying-gai-you-li-you&quot;&gt;每一次分工，都应该有理由&lt;&#x2F;h2&gt;
+&lt;p&gt;我并不认为单 Agent 能包办一切。长时间探索会积累上下文负担，单一路径会形成盲点，真正可拆分的工作也没有必要强行串行。多 Agent 的价值就在这些具体位置，而不是一张看起来更热闹的架构图里。&lt;&#x2F;p&gt;
+&lt;p&gt;增加一个 Agent 之前，我会先问三个问题：&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;它能否不反复询问主 Agent，就独立推进？&lt;&#x2F;p&gt;
+&lt;p&gt;它能否交回可核验的产物，而不只是一段结论？&lt;&#x2F;p&gt;
+&lt;p&gt;新增的信息、质量或速度，能否覆盖交接与协调成本？&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;这三个问题答不清，先改善当前 Agent 的工具、上下文和反馈闭环。答清楚了，再让它分工。&lt;&#x2F;p&gt;
+&lt;p&gt;回到最初的 Herdr：我看重的，是不必逐个寻找正在等待的助手，而不是让每个面板都坐满。它能降低管理多个会话的摩擦，却不能替我判断一个问题该怎样拆。&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;我的选择仍然是单 Agent 优先。不是反对团队，而是不让团队成为默认成本。&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
